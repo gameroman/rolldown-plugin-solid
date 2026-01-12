@@ -184,33 +184,8 @@ export default defineConfig({
 });
 ```
 
-## Development
-
-```bash
-# Clone the repository
-git clone https://github.com/g-mero/rolldown-plugin-solid.git
-cd rolldown-plugin-solid
-
-# Install dependencies
-pnpm install
-
-# Build the plugin
-pnpm build
-
-# Run tests
-pnpm test
-
-# Run linting
-pnpm lint
-```
-
-## License
-
-MIT © [g-mero](https://github.com/g-mero)
-
 ## Related Projects
 
 - [Rolldown](https://github.com/rolldown/rolldown) - Fast Rust-based bundler
 - [SolidJS](https://github.com/solidjs/solid) - Simple and performant reactivity
 - [babel-preset-solid](https://github.com/solidjs/solid/tree/main/packages/babel-preset-solid) - Babel preset for Solid
-
