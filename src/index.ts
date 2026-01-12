@@ -3,8 +3,39 @@ import { type TransformOptions, transformAsync } from "@babel/core";
 // @ts-expect-error: Babel types are not installed
 import ts from "@babel/preset-typescript";
 // @ts-expect-error: Babel types are not installed
-import solid from "babel-preset-solid";
+import jsxTransform from "babel-plugin-jsx-dom-expressions";
 import type { RolldownPlugin } from "rolldown";
+
+function solidPreset(_context: unknown, options = {}) {
+  const plugins = [
+    [
+      jsxTransform,
+      Object.assign(
+        {
+          moduleName: "solid-js/web",
+          builtIns: [
+            "For",
+            "Show",
+            "Switch",
+            "Match",
+            "Suspense",
+            "SuspenseList",
+            "Portal",
+            "Index",
+            "Dynamic",
+            "ErrorBoundary",
+          ],
+          contextToCustomElements: true,
+          wrapConditionals: true,
+          generate: "dom",
+        },
+        options,
+      ),
+    ],
+  ];
+
+  return { plugins };
+}
 
 // These options are partly taken from vite-plugin-solid:
 
@@ -101,7 +132,7 @@ const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
 
         const result = await transformAsync(code, {
           presets: [
-            [solid, options?.solid ?? {}],
+            [solidPreset, options?.solid ?? {}],
             [ts, options?.typescript ?? {}],
           ],
           filename,

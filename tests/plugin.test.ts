@@ -1,6 +1,6 @@
-import { describe, it, expect } from "bun:test";
-import { build } from "rolldown";
+import { describe, expect, it } from "bun:test";
 import { resolve } from "node:path";
+import { build } from "rolldown";
 import solidPlugin from "../src";
 
 describe("rolldown-plugin-solid", () => {
