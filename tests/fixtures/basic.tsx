@@ -6,11 +6,11 @@ const App = () => {
   const inc = (by = 1) => setCount(count() + by);
 
   return (
-    <button onClick={[inc, 1]} type="button">
+    <button onClick={() => inc(1)} type="button">
       {count()}
     </button>
   );
 };
 
 // biome-ignore lint/style/noNonNullAssertion: We are sure the element exists.
-render(App, document.getElementById('app')!);
+render(() => <App />, document.getElementById('app')!);

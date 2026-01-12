@@ -26,6 +26,7 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "a11y": "off",
       "complexity": {
         /** ------------------------ JavaScript Rules ------------------------ **/
 

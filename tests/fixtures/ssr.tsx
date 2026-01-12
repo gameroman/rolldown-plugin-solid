@@ -6,10 +6,10 @@ const App = () => {
   const inc = (by = 1) => setCount(count() + by);
 
   return (
-    <button onClick={[inc, 1]} type="button">
+    <button onClick={() => inc(1)} type="button">
       {count()}
     </button>
   );
 };
 
-renderToString(App);
+export default renderToString(App);
