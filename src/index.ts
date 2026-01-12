@@ -1,10 +1,10 @@
-import { parse } from 'node:path';
-import { type TransformOptions, transformAsync } from '@babel/core';
+import { parse } from "node:path";
+import { type TransformOptions, transformAsync } from "@babel/core";
 // @ts-expect-error: Babel types are not installed
-import ts from '@babel/preset-typescript';
+import ts from "@babel/preset-typescript";
 // @ts-expect-error: Babel types are not installed
-import solid from 'babel-preset-solid';
-import type { RolldownPlugin } from 'rolldown';
+import solid from "babel-preset-solid";
+import type { RolldownPlugin } from "rolldown";
 
 // These options are partly taken from vite-plugin-solid:
 
@@ -45,7 +45,7 @@ export interface Options {
      *
      * @default "dom"
      */
-    generate?: 'ssr' | 'dom' | 'universal';
+    generate?: "ssr" | "dom" | "universal";
 
     /**
      * Indicate whether the output should contain hydratable markers.
@@ -90,7 +90,7 @@ export interface Options {
 const idRegex = /\.(t|j)sx$/;
 const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
   return {
-    name: 'rolldown-plugin-solid',
+    name: "rolldown-plugin-solid",
     transform: {
       filter: {
         id: idRegex,
@@ -105,12 +105,12 @@ const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
             [ts, options?.typescript ?? {}],
           ],
           filename,
-          sourceMaps: 'inline',
+          sourceMaps: "inline",
           ...(options?.babel ?? {}),
         });
 
         if (result?.code === undefined || result.code === null) {
-          throw new Error('No result was provided from Babel');
+          throw new Error("No result was provided from Babel");
         }
 
         return result.code;
