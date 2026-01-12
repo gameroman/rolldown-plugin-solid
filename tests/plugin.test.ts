@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { resolve } from "node:path";
 import { build } from "rolldown";
-import solidPlugin from "../src";
+import solidPlugin from "../dist/index.mjs";
 
 describe("rolldown-plugin-solid", () => {
   const testDir = resolve(import.meta.dir, "fixtures");
@@ -70,6 +70,81 @@ describe("rolldown-plugin-solid", () => {
     const result = await build({
       platform: "browser",
       input: resolve(testDir, "component.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with props", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "props.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with children", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "children.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with effects", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "effects.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with conditional rendering", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "conditional.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with list rendering", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "list.tsx"),
       plugins: [solidPlugin()],
       output: {
         format: "esm",
