@@ -155,4 +155,79 @@ describe("rolldown-plugin-solid", () => {
     const code = result.output[0].code;
     expect(code).toMatchSnapshot();
   });
+
+  it("should transform component with Suspense", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "suspense.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with ErrorBoundary", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "error-boundary.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with Context", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "context.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with Resource", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "resource.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
+
+  it("should transform component with Memo", async () => {
+    const result = await build({
+      platform: "browser",
+      input: resolve(testDir, "memo.tsx"),
+      plugins: [solidPlugin()],
+      output: {
+        format: "esm",
+      },
+      write: false,
+    });
+
+    const code = result.output[0].code;
+    expect(code).toMatchSnapshot();
+  });
 });
