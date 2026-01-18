@@ -105,13 +105,12 @@ export interface Options {
   };
 }
 
-const idRegex = /\.(t|j)sx$/;
 const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
   return {
     name: "rolldown-plugin-solid",
     transform: {
       filter: {
-        id: idRegex,
+        id: /\.(t|j)sx$/,
       },
       async handler(code: string, id: string) {
         const { name, ext } = parse(id);

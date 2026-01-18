@@ -1,11 +1,12 @@
 import { describe, expect, it } from "bun:test";
 import { build } from "rolldown";
+import solidPlugin from "../src";
 
 describe("Rolldown Build Integration", () => {
   it("should build basic component without errors", async () => {
     const result = await build({
       input: "./tests/fixtures/basic.tsx",
-      plugins: [(await import("../src")).default()],
+      plugins: [solidPlugin()],
       output: {
         dir: "./dist-test",
         format: "esm",
@@ -20,9 +21,7 @@ describe("Rolldown Build Integration", () => {
   it("should build SSR component without errors", async () => {
     const result = await build({
       input: "./tests/fixtures/ssr.tsx",
-      plugins: [
-        (await import("../src")).default({ solid: { generate: "ssr" } }),
-      ],
+      plugins: [solidPlugin({ solid: { generate: "ssr" } })],
       output: {
         dir: "./dist-test",
         format: "esm",
