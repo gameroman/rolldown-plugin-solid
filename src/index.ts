@@ -1,7 +1,6 @@
 import { parse } from "node:path";
 import { type TransformOptions, transformAsync } from "@babel/core";
-// @ts-expect-error: Babel types are not installed
-import ts from "@babel/preset-typescript";
+import ts from "./preset-typescript";
 import jsxTransform from "./babel-plugin-jsx-dom-expressions";
 import type { RolldownPlugin } from "rolldown";
 
