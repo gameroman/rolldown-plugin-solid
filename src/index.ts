@@ -3,7 +3,7 @@ import { type TransformOptions, transformAsync } from "@babel/core";
 // @ts-expect-error: Babel types are not installed
 import ts from "@babel/preset-typescript";
 // @ts-expect-error: Babel types are not installed
-import jsxTransform from "babel-plugin-jsx-dom-expressions";
+import jsxTransform from "./babel-plugin-jsx-dom-expressions/index.ts";
 import type { RolldownPlugin } from "rolldown";
 
 function solidPreset(_context: unknown, options = {}) {
