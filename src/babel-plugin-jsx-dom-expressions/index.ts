@@ -3,7 +3,7 @@ import SyntaxJSX from "@babel/plugin-syntax-jsx";
 import t from "@babel/types";
 // @ts-expect-error: Babel types are not installed
 import helperModuleImports from "@babel/helper-module-imports";
-import htmlEntities from "html-entities";
+import * as htmlEntities from "html-entities";
 import * as parse5 from "parse5";
 
 function _interopNamespaceDefault(e) {
