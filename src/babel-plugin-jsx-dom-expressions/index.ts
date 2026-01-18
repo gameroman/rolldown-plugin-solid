@@ -1,9 +1,10 @@
-"use strict";
-
-var SyntaxJSX = require("@babel/plugin-syntax-jsx");
-var t = require("@babel/types");
-var helperModuleImports = require("@babel/helper-module-imports");
-var htmlEntities = require("html-entities");
+// @ts-expect-error: Babel types are not installed
+import SyntaxJSX from "@babel/plugin-syntax-jsx";
+import t from "@babel/types";
+// @ts-expect-error: Babel types are not installed
+import helperModuleImports from "@babel/helper-module-imports";
+import htmlEntities from "html-entities";
+import * as parse5 from "parse5";
 
 function _interopNamespaceDefault(e) {
   var n = Object.create(null);
@@ -5017,9 +5018,6 @@ function transformElement(config, path, info = {}) {
   return transformElement$1(path);
 }
 
-// import parse5 from "parse5";
-const parse5 = require("parse5");
-
 /** `bodyElement` will be used as a `context` (The place where we run `innerHTML`) */
 const bodyElement = parse5.parse(
   `<!DOCTYPE html><html><head></head><body></body></html>`,
@@ -5227,4 +5225,4 @@ var index = () => {
   };
 };
 
-module.exports = index;
+export default index;
