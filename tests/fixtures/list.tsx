@@ -25,7 +25,7 @@ const ListDemo = () => {
 
   const addSimpleItem = () => {
     const colors = ["Yellow", "Purple", "Orange", "Pink"];
-    const newColor = colors[Math.floor(Math.random() * colors.length)];
+    const newColor = colors[Math.floor(Math.random() * colors.length)]!;
     setSimpleItems([...simpleItems(), newColor]);
   };
 

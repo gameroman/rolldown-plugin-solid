@@ -13,7 +13,7 @@ const Counter = (props: Props) => {
   const dec = () => setCount((c) => c - step);
 
   return (
-    <div className="counter">
+    <div class="counter">
       <h1>Count: {count()}</h1>
       <button onClick={inc}>+{step}</button>
       <button onClick={dec}>-{step}</button>

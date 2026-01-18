@@ -6,7 +6,7 @@ const Counter = () => {
   const dec = () => setCount((c) => c - 1);
 
   return (
-    <div className="counter">
+    <div class="counter">
       <h1>Count: {count()}</h1>
       <button onClick={inc}>+</button>
       <button onClick={dec}>-</button>

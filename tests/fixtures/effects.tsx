@@ -23,7 +23,7 @@ const Timer = () => {
   };
 
   return (
-    <div className="timer">
+    <div class="timer">
       <h2>Timer: {count()}s</h2>
       <button onClick={toggle}>{isRunning() ? "Pause" : "Start"}</button>
       <button onClick={reset}>Reset</button>
