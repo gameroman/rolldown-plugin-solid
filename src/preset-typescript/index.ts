@@ -1,11 +1,11 @@
+import type { PluginItem } from "@babel/core";
 import { declarePreset } from "@babel/helper-plugin-utils";
-import transformTypeScript from "@babel/plugin-transform-typescript";
 import syntaxJSX from "@babel/plugin-syntax-jsx";
 import transformModulesCommonJS from "@babel/plugin-transform-modules-commonjs";
-import normalizeOptions from "./normalize-options.ts";
+import transformTypeScript from "@babel/plugin-transform-typescript";
 import type { Options } from "./normalize-options.ts";
+import normalizeOptions from "./normalize-options.ts";
 import pluginRewriteTSImports from "./plugin-rewrite-ts-imports.ts";
-import type { PluginItem } from "@babel/core";
 
 export default declarePreset((api, opts: Options) => {
   const {
@@ -69,20 +69,20 @@ export default declarePreset((api, opts: Options) => {
           {
             test: !process.env.BABEL_8_BREAKING
               ? /\.ts$/
-              : filename => filename == null || filename.endsWith(".ts"),
+              : (filename) => filename == null || filename.endsWith(".ts"),
             plugins: getPlugins(false, false),
           },
           {
             test: !process.env.BABEL_8_BREAKING
               ? /\.mts$/
-              : filename => filename?.endsWith(".mts"),
+              : (filename) => filename?.endsWith(".mts"),
             sourceType: "module",
             plugins: getPlugins(false, true),
           },
           {
             test: !process.env.BABEL_8_BREAKING
               ? /\.cts$/
-              : filename => filename?.endsWith(".cts"),
+              : (filename) => filename?.endsWith(".cts"),
             sourceType: "unambiguous",
             plugins: [
               [transformModulesCommonJS, { allowTopLevelThis: true }],
@@ -92,7 +92,7 @@ export default declarePreset((api, opts: Options) => {
           {
             test: !process.env.BABEL_8_BREAKING
               ? /\.tsx$/
-              : filename => filename?.endsWith(".tsx"),
+              : (filename) => filename?.endsWith(".tsx"),
             // disallowAmbiguousJSXLike is a no-op when parsing TSX, since it's
             // always disallowed.
             plugins: getPlugins(true, false),

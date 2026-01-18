@@ -1,8 +1,8 @@
 import { parse } from "node:path";
 import { type TransformOptions, transformAsync } from "@babel/core";
-import ts from "./preset-typescript";
-import jsxTransform from "./babel-plugin-jsx-dom-expressions";
 import type { RolldownPlugin } from "rolldown";
+import jsxTransform from "./babel-plugin-jsx-dom-expressions";
+import ts from "./preset-typescript";
 
 function solidPreset(_context: unknown, options = {}) {
   const plugins = [

@@ -1,15 +1,16 @@
 // @ts-expect-error: Babel types are not installed
-import SyntaxJSX from "@babel/plugin-syntax-jsx";
-import t from "@babel/types";
+
 // @ts-expect-error: Babel types are not installed
 import helperModuleImports from "@babel/helper-module-imports";
+import SyntaxJSX from "@babel/plugin-syntax-jsx";
+import t from "@babel/types";
 import * as htmlEntities from "html-entities";
 import * as parse5 from "parse5";
 
 function _interopNamespaceDefault(e) {
   var n = Object.create(null);
   if (e) {
-    Object.keys(e).forEach(function (k) {
+    Object.keys(e).forEach((k) => {
       if (k !== "default") {
         var d = Object.getOwnPropertyDescriptor(e, k);
         Object.defineProperty(
@@ -19,9 +20,7 @@ function _interopNamespaceDefault(e) {
             ? d
             : {
                 enumerable: true,
-                get: function () {
-                  return e[k];
-                },
+                get: () => e[k],
               },
         );
       }
@@ -389,13 +388,13 @@ function registerImportMethod(path, name, moduleName) {
     (path.scope.getProgramParent().data.imports = new Map());
   moduleName = moduleName || getConfig(path).moduleName;
   if (!imports.has(`${moduleName}:${name}`)) {
-    let id = helperModuleImports.addNamed(path, name, moduleName, {
+    const id = helperModuleImports.addNamed(path, name, moduleName, {
       nameHint: `_$${name}`,
     });
     imports.set(`${moduleName}:${name}`, id);
     return id;
   } else {
-    let iden = imports.get(`${moduleName}:${name}`);
+    const iden = imports.get(`${moduleName}:${name}`);
     // the cloning is required to play well with babel-preset-env which is
     // transpiling import as we add them and using the same identifier causes
     // problems with the multiple identifiers of the same thing
@@ -977,7 +976,7 @@ const alwaysClose = [
 ];
 
 function transformElement$3(path, info) {
-  let tagName = getTagName(path.node),
+  const tagName = getTagName(path.node),
     config = getConfig(path),
     wrapSVG = info.topLevel && tagName != "svg" && SVGElements.has(tagName),
     voidTag = VoidElements.indexOf(tagName) > -1,
@@ -1093,7 +1092,7 @@ function transformElement$3(path, info) {
     results.templateWithClosingTags += `</${tagName}>`;
   }
   if (info.topLevel && config.hydratable && results.hasHydratableEvent) {
-    let runHydrationEvents = registerImportMethod(
+    const runHydrationEvents = registerImportMethod(
       path,
       "runHydrationEvents",
       getRendererConfig(path, "dom").moduleName,
@@ -1253,7 +1252,7 @@ function setAttr$2(
     );
   }
 
-  let isNameSpaced = name.indexOf(":") > -1;
+  const isNameSpaced = name.indexOf(":") > -1;
   name = Aliases[name] || name;
   !isSVG && (name = name.toLowerCase());
   const ns = isNameSpaced && SVGNamespace[name.split(":")[0]];
@@ -1624,7 +1623,7 @@ function transformAttributes$2(path, results) {
     }
 
     for (let i = 0, len = text.length; i < len; i++) {
-      let char = text[i];
+      const char = text[i];
 
       if (
         char === "'" ||
@@ -2297,7 +2296,7 @@ function transformChildren$2(path, results, config) {
       nextPlaceholder = null;
       i++;
     } else if (child.exprs.length) {
-      let insert = registerImportMethod(
+      const insert = registerImportMethod(
         path,
         "insert",
         getRendererConfig(path, "dom").moduleName,
@@ -2550,7 +2549,7 @@ function processSpreads$1(
         });
       if (dynamic) {
         const id = convertJSXIdentifier(node.name);
-        let expr =
+        const expr =
           wrapConditionals &&
           (t__namespace.isLogicalExpression(node.value.expression) ||
             t__namespace.isConditionalExpression(node.value.expression))
@@ -3691,7 +3690,7 @@ function createElement(path, { topLevel, hydratable }) {
               checkTags: true,
             })
           ) {
-            let expr = t__namespace.arrowFunctionExpression(
+            const expr = t__namespace.arrowFunctionExpression(
               [],
               value.expression,
             );
@@ -3751,7 +3750,7 @@ function createElement(path, { topLevel, hydratable }) {
 }
 
 function transformElement$1(path, info) {
-  let tagName = getTagName(path.node),
+  const tagName = getTagName(path.node),
     results = {
       id: path.scope.generateUidIdentifier("el$"),
       declarations: [],
@@ -4015,7 +4014,7 @@ function transformChildren(path, results) {
         Wrap the usage with a component that would render this element, eg. Canvas`);
     }
     if (child.id) {
-      let insertNode = registerImportMethod(
+      const insertNode = registerImportMethod(
         path,
         "insertNode",
         getRendererConfig(path, "universal").moduleName,
@@ -4023,7 +4022,7 @@ function transformChildren(path, results) {
 
       let insert = child.id;
       if (child.text) {
-        let createTextNode = registerImportMethod(
+        const createTextNode = registerImportMethod(
           path,
           "createTextNode",
           getRendererConfig(path, "universal").moduleName,
@@ -4066,7 +4065,7 @@ function transformChildren(path, results) {
       results.exprs.push(...child.exprs);
       results.dynamics.push(...child.dynamics);
     } else if (child.exprs.length) {
-      let insert = registerImportMethod(
+      const insert = registerImportMethod(
         path,
         "insert",
         getRendererConfig(path, "universal").moduleName,
@@ -4153,7 +4152,7 @@ function processSpreads(
         });
       if (dynamic) {
         const id = convertJSXIdentifier(node.name);
-        let expr =
+        const expr =
           wrapConditionals &&
           (t__namespace.isLogicalExpression(node.value.expression) ||
             t__namespace.isConditionalExpression(node.value.expression))
@@ -4690,7 +4689,7 @@ function transformComponentChildren(children, config) {
   const filteredChildren = filterChildren(children);
   if (!filteredChildren.length) return;
   let dynamic = false;
-  let pathNodes = [];
+  const pathNodes = [];
 
   let transformedChildren = filteredChildren.reduce((memo, path) => {
     if (t__namespace.isJSXText(path.node)) {
@@ -4888,7 +4887,7 @@ function transformNode(path, info = {}) {
   if (t__namespace.isJSXElement(node)) {
     return transformElement(config, path, info);
   } else if (t__namespace.isJSXFragment(node)) {
-    let results = { template: "", declarations: [], exprs: [], dynamics: [] };
+    const results = { template: "", declarations: [], exprs: [], dynamics: [] };
     // <><div /><Component /></>
     transformFragmentChildren(path.get("children"), results, config);
     return results;
@@ -4996,7 +4995,7 @@ function getCreateTemplate(config, path, result) {
 
 function transformElement(config, path, info = {}) {
   const node = path.node;
-  let tagName = getTagName(node);
+  const tagName = getTagName(node);
   // <Component ...></Component>
   if (isComponent(tagName)) return transformComponent(path);
 
@@ -5021,7 +5020,7 @@ function transformElement(config, path, info = {}) {
 /** `bodyElement` will be used as a `context` (The place where we run `innerHTML`) */
 const bodyElement = parse5.parse(
   `<!DOCTYPE html><html><head></head><body></body></html>`,
-  // @ts-ignore
+  // @ts-expect-error
 ).childNodes[1].childNodes[1];
 
 function innerHTML(htmlFragment) {
@@ -5155,10 +5154,10 @@ var postprocess = (path, state) => {
         }
       }
     }
-    let domTemplates = path.scope.data.templates.filter(
+    const domTemplates = path.scope.data.templates.filter(
       (temp) => temp.renderer === "dom",
     );
-    let ssrTemplates = path.scope.data.templates.filter(
+    const ssrTemplates = path.scope.data.templates.filter(
       (temp) => temp.renderer === "ssr",
     );
     domTemplates.length > 0 && appendTemplates$1(path, domTemplates);

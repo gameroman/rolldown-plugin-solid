@@ -1,7 +1,7 @@
+import type { NodePath, PluginPass, types as t } from "@babel/core";
 import { declare } from "@babel/helper-plugin-utils";
-import type { types as t, NodePath, PluginPass } from "@babel/core";
 
-export default declare(function ({ types: t, template }) {
+export default declare(({ types: t, template }) => {
   function maybeReplace(
     source: t.ArgumentPlaceholder | t.Expression,
     path: NodePath,
@@ -15,15 +15,14 @@ export default declare(function ({ types: t, template }) {
         // @see packages/babel-helpers/src/helpers/tsRewriteRelativeImportExtensions.ts
         source.value = source.value.replace(
           /\.(tsx)$|((?:\.d)?)((?:\.[^./]+)?)\.([cm]?)ts$/i,
-          function (m, tsx, d, ext, cm) {
-            return tsx
+          (m, tsx, d, ext, cm) =>
+            tsx
               ? preserveJsx
                 ? ".jsx"
                 : ".js"
               : d && (!ext || !cm)
                 ? m
-                : d + ext + "." + cm.toLowerCase() + "js";
-          },
+                : d + ext + "." + cm.toLowerCase() + "js",
         );
       }
       return;
