@@ -1,7 +1,6 @@
 // @ts-expect-error: Babel types are not installed
-
-// @ts-expect-error: Babel types are not installed
 import helperModuleImports from "@babel/helper-module-imports";
+// @ts-expect-error: Babel types are not installed
 import SyntaxJSX from "@babel/plugin-syntax-jsx";
 import t from "@babel/types";
 import * as htmlEntities from "html-entities";

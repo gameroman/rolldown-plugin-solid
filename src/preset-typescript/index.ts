@@ -3,9 +3,9 @@ import { declarePreset } from "@babel/helper-plugin-utils";
 import syntaxJSX from "@babel/plugin-syntax-jsx";
 import transformModulesCommonJS from "@babel/plugin-transform-modules-commonjs";
 import transformTypeScript from "@babel/plugin-transform-typescript";
-import type { Options } from "./normalize-options.ts";
-import normalizeOptions from "./normalize-options.ts";
-import pluginRewriteTSImports from "./plugin-rewrite-ts-imports.ts";
+import type { Options } from "./normalize-options";
+import normalizeOptions from "./normalize-options";
+import pluginRewriteTSImports from "./plugin-rewrite-ts-imports";
 
 export default declarePreset((api, opts: Options) => {
   const {
