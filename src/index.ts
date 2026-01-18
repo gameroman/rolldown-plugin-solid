@@ -40,8 +40,6 @@ function solidPreset(_context: unknown, options = {}) {
 
 /** Configuration options for esbuild-plugin-solid */
 export interface Options {
-  /** The options to use for @babel/preset-typescript @default {} */
-  typescript?: object;
   /**
    * Pass any additional [babel-plugin-jsx-dom-expressions](https://github.com/ryansolid/dom-expressions/tree/main/packages/babel-plugin-jsx-dom-expressions#plugin-options).
    * They will be merged with the defaults sets by [babel-preset-solid](https://github.com/solidjs/solid/blob/main/packages/babel-preset-solid/index.js#L8-L25).
@@ -122,7 +120,7 @@ const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
         const result = await transformAsync(code, {
           presets: [
             [solidPreset, options?.solid ?? {}],
-            [typescriptPreset, options?.typescript ?? {}],
+            [typescriptPreset],
           ],
           filename,
           sourceMaps: "inline"
