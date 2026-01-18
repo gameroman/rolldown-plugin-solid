@@ -30,6 +30,7 @@
     "@babel/core": "^7.28.6",
     "@babel/helper-module-imports": "7.28.6",
     "html-entities": "2.6.0",
+    "oxc-transform": "^0.108.0",
     "parse5": "^8.0.0"
   },
   "devDependencies": {
