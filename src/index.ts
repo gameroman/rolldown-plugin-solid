@@ -1,6 +1,5 @@
 import { parse } from "node:path";
 import { transformAsync } from "@babel/core";
-import { transform as oxcTransform } from "oxc-transform";
 import type { RolldownPlugin } from "rolldown";
 import jsxTransform from "./babel-plugin-jsx-dom-expressions";
 import typescriptPreset from "./preset-typescript";
@@ -117,12 +116,9 @@ const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
         const filename = name + ext;
 
         const result = await transformAsync(code, {
-          presets: [
-            [solidPreset, options?.solid ?? {}],
-            [typescriptPreset],
-          ],
+          presets: [[solidPreset, options?.solid ?? {}], [typescriptPreset]],
           filename,
-          sourceMaps: "inline"
+          sourceMaps: "inline",
         });
 
         if (result?.code === undefined || result.code === null) {

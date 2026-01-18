@@ -24,7 +24,6 @@
   "dependencies": {
     "@babel/helper-plugin-utils": "^7.28.6",
     "@babel/helper-validator-option": "^7.27.1",
-    "@babel/plugin-syntax-jsx": "^7.28.6",
     "@babel/plugin-transform-modules-commonjs": "^7.28.6",
     "@babel/plugin-transform-typescript": "^7.28.6",
     "@babel/core": "^7.28.6",

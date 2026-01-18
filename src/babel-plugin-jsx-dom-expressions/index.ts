@@ -1,10 +1,9 @@
 // @ts-expect-error: Babel types are not installed
 import helperModuleImports from "@babel/helper-module-imports";
-// @ts-expect-error: Babel types are not installed
-import SyntaxJSX from "@babel/plugin-syntax-jsx";
 import t from "@babel/types";
 import * as htmlEntities from "html-entities";
 import * as parse5 from "parse5";
+import syntaxJSX from "../syntax-jsx";
 
 function _interopNamespaceDefault(e) {
   var n = Object.create(null);
@@ -4998,9 +4997,6 @@ function transformElement(config, path, info = {}) {
   // <Component ...></Component>
   if (isComponent(tagName)) return transformComponent(path);
 
-  // <div ...></div>
-  // const element = getTransformElemet(config, path, tagName);
-
   const tagRenderer = (config.renderers ?? []).find((renderer) =>
     renderer.elements.includes(tagName),
   );
@@ -5020,9 +5016,9 @@ function transformElement(config, path, info = {}) {
 const bodyElement = parse5.parse(
   `<!DOCTYPE html><html><head></head><body></body></html>`,
   // @ts-expect-error
-).childNodes[1].childNodes[1];
+).childNodes[1]!.childNodes[1];
 
-function innerHTML(htmlFragment) {
+function innerHTML(htmlFragment: string) {
   /** `htmlFragment` will be parsed as if it was set to the `bodyElement`'s `innerHTML` property. */
   const parsedFragment = parse5.parseFragment(bodyElement, htmlFragment);
 
@@ -5033,13 +5029,13 @@ function innerHTML(htmlFragment) {
 /**
  * Returns an object with information when the markup is invalid
  *
- * @param {string} html - The html string to validate
+ * @param html - The html string to validate
  * @returns {{
  *   html: string; // html stripped of attributives and content
  *   browser: string; // what the browser returned from evaluating `html`
  * } | null}
  */
-function isInvalidMarkup(html) {
+function isInvalidMarkup(html: string) {
   html = html
 
     // normalize dom-expressions comments, so comments location are also validated
@@ -5211,7 +5207,7 @@ var preprocess = (path, state) => {
 var index = () => {
   return {
     name: "JSX DOM Expressions",
-    inherits: SyntaxJSX.default,
+    inherits: syntaxJSX,
     visitor: {
       JSXElement: transformJSX,
       JSXFragment: transformJSX,
