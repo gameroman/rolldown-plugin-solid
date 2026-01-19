@@ -7,7 +7,7 @@ import type { Options } from "./normalize-options";
 import normalizeOptions from "./normalize-options";
 import pluginRewriteTSImports from "./plugin-rewrite-ts-imports";
 
-export default declarePreset((api, opts: Options) => {
+const presetTypescript = declarePreset((api, opts: Options) => {
   const {
     allExtensions,
     ignoreExtensions,
@@ -100,3 +100,4 @@ export default declarePreset((api, opts: Options) => {
         ],
   };
 });
+export default presetTypescript;
