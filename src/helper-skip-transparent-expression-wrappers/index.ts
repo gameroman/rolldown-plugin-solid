@@ -1,12 +1,4 @@
-import type * as t from "@babel/types";
-import {
-  isParenthesizedExpression,
-  isTSAsExpression,
-  isTSNonNullExpression,
-  isTSSatisfiesExpression,
-  isTSTypeAssertion,
-  isTypeCastExpression,
-} from "@babel/types";
+import * as t from "@babel/types";
 
 type TransparentExprWrapper =
   | t.TSAsExpression
@@ -25,12 +17,12 @@ function isTransparentExprWrapper(
   node: t.Node,
 ): node is TransparentExprWrapper {
   return (
-    isTSAsExpression(node) ||
-    isTSSatisfiesExpression(node) ||
-    isTSTypeAssertion(node) ||
-    isTSNonNullExpression(node) ||
-    isTypeCastExpression(node) ||
-    isParenthesizedExpression(node)
+    t.isTSAsExpression(node) ||
+    t.isTSSatisfiesExpression(node) ||
+    t.isTSTypeAssertion(node) ||
+    t.isTSNonNullExpression(node) ||
+    t.isTypeCastExpression(node) ||
+    t.isParenthesizedExpression(node)
   );
 }
 
