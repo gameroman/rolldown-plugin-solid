@@ -20,10 +20,10 @@
 - [x] `Dynamic` fixture - Dynamic component rendering
 - [x] `batch` fixture - Grouping updates
 - [x] `onMount` fixture - Component mounting
+- [x] `createStore` fixture - Nested reactive state
 
 ## State Management
 
-- [ ] `createStore` fixture - Nested reactive state
 - [ ] `mergeProps` fixture - Props merging
 - [ ] `splitProps` fixture - Props splitting
 - [ ] `createComputed` fixture - Reactive computations
