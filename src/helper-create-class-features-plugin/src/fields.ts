@@ -300,7 +300,7 @@ function unshadow(
   }
 }
 
-export function buildCheckInRHS(
+function buildCheckInRHS(
   rhs: t.Expression,
   file: File,
   inRHSIsObject?: boolean,
@@ -895,7 +895,7 @@ const privateNameHandlerLoose: Handler<PrivateNameState> = {
   },
 };
 
-export function transformPrivateNamesUsage(
+function transformPrivateNamesUsage(
   ref: t.Identifier,
   path: NodePath<t.Class>,
   privateNamesMap: PrivateNamesMap,
@@ -1465,12 +1465,12 @@ function replaceThisContext(
   return state.needsClassRef;
 }
 
-export type PropNode =
+type PropNode =
   | t.ClassProperty
   | t.ClassPrivateMethod
   | t.ClassPrivateProperty
   | t.StaticBlock;
-export type PropPath = NodePath<PropNode>;
+type PropPath = NodePath<PropNode>;
 
 function isNameOrLength({ key, computed }: t.ClassProperty) {
   if (key.type === "Identifier") {
@@ -1529,7 +1529,7 @@ const enum ClassRefFlag {
   ForInnerBinding = 1 << 1,
 }
 
-export function buildFieldsInitNodes(
+function buildFieldsInitNodes(
   ref: t.Identifier | null,
   superRef: t.Expression | undefined,
   props: PropPath[],
@@ -1834,7 +1834,7 @@ export function buildFieldsInitNodes(
           );
         } else {
           if (innerBindingRef == null) {
-            // export anonymous class declaration
+            // anonymous class declaration
             path.node.id = ref;
           }
           if (classBindingNode != null) {
