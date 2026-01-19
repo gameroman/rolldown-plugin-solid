@@ -18,11 +18,9 @@
         "@babel/plugin-transform-modules-commonjs": "^7.28.6",
         "@babel/traverse": "7.28.6",
         "@babel/types": "7.28.6",
-        "charcodes": "0.2.1",
         "html-entities": "2.6.0",
         "oxc-transform": "^0.108.0",
         "parse5": "^8.0.0",
-        "semver": "7.7.3",
       },
       "devDependencies": {
         "@biomejs/biome": "2.3.11",
@@ -222,8 +220,6 @@
     "cac": ["cac@6.7.14", "", {}, "sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ=="],
 
     "caniuse-lite": ["caniuse-lite@1.0.30001733", "", {}, "sha512-e4QKw/O2Kavj2VQTKZWrwzkt3IxOmIlU6ajRb6LP64LHpBo1J67k2Hi4Vu/TgJWsNtynurfS0uK3MaUTCPfu5Q=="],
-
-    "charcodes": ["charcodes@0.2.1", "", {}, "sha512-od9I/QHdRWIk4bDVLlrSI2FMR7+Cdn6/b8lKN3My/305L9Zm43fV+81msV779/wMgPA8agAIMZErv83Vk4/7vg=="],
 
     "convert-source-map": ["convert-source-map@2.0.0", "", {}, "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg=="],
 

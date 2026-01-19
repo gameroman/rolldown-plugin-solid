@@ -34,8 +34,6 @@
     "@babel/helper-optimise-call-expression": "7.27.1",
     "@babel/helper-replace-supers": "7.28.6",
     "@babel/traverse": "7.28.6",
-    "semver": "7.7.3",
-    "charcodes": "0.2.1",
     "@babel/types": "7.28.6",
     "html-entities": "2.6.0",
     "oxc-transform": "^0.108.0",
