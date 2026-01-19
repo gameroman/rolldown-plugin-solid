@@ -7,9 +7,7 @@ import createDecoratorTransform, {
   buildNamedEvaluationVisitor,
   hasDecorators,
 } from "./decorators.ts";
-import { buildDecoratedClass } from "./decorators-2018-09.ts" with {
-  if: "!undefined",
-};
+import { buildDecoratedClass } from "./decorators-2018-09.ts";
 import {
   enableFeature,
   FEATURES,

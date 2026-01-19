@@ -1,10 +1,3 @@
-// TODO(Babel 8): Remove this file
-if (undefined && process.env.IS_PUBLISH) {
-  throw new Error(
-    "Internal Babel error: This file should only be loaded in Babel 7",
-  );
-}
-
 import type { File, NodePath } from "@babel/core";
 import { types as t, template } from "@babel/core";
 import ReplaceSupers from "@babel/helper-replace-supers";
