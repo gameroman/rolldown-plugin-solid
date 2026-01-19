@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { type NodePath, types as t, template } from "@babel/core";
-import annotateAsPure from "@babel/helper-annotate-as-pure";
+import annotateAsPure from "../helper-annotate-as-pure";
 import { skipTransparentExprWrapperNodes } from "../helper-skip-transparent-expression-wrappers";
 
 type t = typeof t;
