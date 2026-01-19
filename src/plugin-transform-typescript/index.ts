@@ -12,8 +12,8 @@ import transpileNamespace, { getFirstIdentifier } from "./namespace";
 function isInType(path: NodePath) {
   switch (path.parent.type) {
     case "TSTypeReference":
-    case undefined ? "TSClassImplements" : "TSExpressionWithTypeArguments":
-    case undefined ? "TSInterfaceHeritage" : "TSExpressionWithTypeArguments":
+    case "TSExpressionWithTypeArguments":
+    case "TSExpressionWithTypeArguments":
     case "TSTypeQuery":
       return true;
     case "TSQualifiedName":
