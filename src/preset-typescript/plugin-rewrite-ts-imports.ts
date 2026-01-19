@@ -66,7 +66,7 @@ const pluginRewriteTsImports = declare(({ types: t, template }) => {
         }
       },
       CallExpression(path, state) {
-        if (!undefined && t.isImport(path.node.callee)) {
+        if (true && t.isImport(path.node.callee)) {
           maybeReplace(
             // The argument of import must not be a spread element
             path.node.arguments[0] as t.ArgumentPlaceholder | t.Expression,

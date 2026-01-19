@@ -67,22 +67,18 @@ const presetTypescript = declarePreset((api, opts: Options) => {
         // Babel is being called with a filename.
         [
           {
-            test: !undefined
+            test: true
               ? /\.ts$/
               : (filename) => filename == null || filename.endsWith(".ts"),
             plugins: getPlugins(false, false),
           },
           {
-            test: !undefined
-              ? /\.mts$/
-              : (filename) => filename?.endsWith(".mts"),
+            test: true ? /\.mts$/ : (filename) => filename?.endsWith(".mts"),
             sourceType: "module",
             plugins: getPlugins(false, true),
           },
           {
-            test: !undefined
-              ? /\.cts$/
-              : (filename) => filename?.endsWith(".cts"),
+            test: true ? /\.cts$/ : (filename) => filename?.endsWith(".cts"),
             sourceType: "unambiguous",
             plugins: [
               [transformModulesCommonJS, { allowTopLevelThis: true }],
@@ -90,9 +86,7 @@ const presetTypescript = declarePreset((api, opts: Options) => {
             ],
           },
           {
-            test: !undefined
-              ? /\.tsx$/
-              : (filename) => filename?.endsWith(".tsx"),
+            test: true ? /\.tsx$/ : (filename) => filename?.endsWith(".tsx"),
             // disallowAmbiguousJSXLike is a no-op when parsing TSX, since it's
             // always disallowed.
             plugins: getPlugins(true, false),
