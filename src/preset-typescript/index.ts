@@ -1,7 +1,7 @@
 import type { PluginItem } from "@babel/core";
 import { declarePreset } from "@babel/helper-plugin-utils";
 import transformModulesCommonJS from "@babel/plugin-transform-modules-commonjs";
-import transformTypeScript from "@babel/plugin-transform-typescript";
+import transformTypeScript from "../plugin-transform-typescript";
 import syntaxJSX from "../syntax-jsx";
 import type { Options } from "./normalize-options";
 import normalizeOptions from "./normalize-options";
