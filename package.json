@@ -19,7 +19,6 @@
     "lint": "biome lint",
     "format": "biome check --write --linter-enabled=false",
     "test": "bun test",
-    "testcov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov --coverage-dir tests/coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
