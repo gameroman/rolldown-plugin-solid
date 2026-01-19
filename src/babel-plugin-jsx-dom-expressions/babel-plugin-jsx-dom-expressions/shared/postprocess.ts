@@ -2,7 +2,7 @@ import * as t from "@babel/types";
 import { appendTemplates as appendTemplatesDOM } from "../dom/template";
 import { appendTemplates as appendTemplatesSSR } from "../ssr/template";
 import { getRendererConfig, registerImportMethod } from "./utils";
-import { isInvalidMarkup } from "./validate.js";
+import { isInvalidMarkup } from "./validate";
 
 // add to the top/bottom of the module.
 export default (path, state) => {

@@ -1,7 +1,7 @@
 import * as t from "@babel/types";
 import { decode } from "html-entities";
 import { getCreateTemplate, transformNode } from "./transform";
-import { checkLength, filterChildren, trimWhitespace } from "./utils";
+import { filterChildren, trimWhitespace } from "./utils";
 
 export default function transformFragmentChildren(children, results, config) {
   const filteredChildren = filterChildren(children),
