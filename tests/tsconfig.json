@@ -4,5 +4,6 @@
     "isolatedDeclarations": false,
     "jsx": "preserve",
     "jsxImportSource": "solid-js"
-  }
+  },
+  "include": ["./**/*.ts"]
 }
