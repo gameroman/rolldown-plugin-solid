@@ -1,13 +1,15 @@
 import type { PluginItem } from "@babel/core";
+// @ts-expect-error: Babel types are not installed
 import { declarePreset } from "@babel/helper-plugin-utils";
 import transformModulesCommonJS from "../plugin-transform-modules-commonjs";
 import transformTypeScript from "../plugin-transform-typescript";
-import syntaxJSX from "../syntax-jsx";
 import type { Options } from "./normalize-options";
 import normalizeOptions from "./normalize-options";
 import pluginRewriteTSImports from "./plugin-rewrite-ts-imports";
 
-const presetTypescript = declarePreset((api, opts: Options) => {
+export type { Options as PresetTypescriptOptions };
+
+const presetTypescript: unknown = declarePreset((api, opts: Options) => {
   const {
     allExtensions,
     ignoreExtensions,
@@ -21,40 +23,23 @@ const presetTypescript = declarePreset((api, opts: Options) => {
     rewriteImportExtensions,
   } = normalizeOptions(opts);
 
-  const pluginOptions = undefined
-    ? (disallowAmbiguousJSXLike: boolean) => ({
-        allowNamespaces,
-        disallowAmbiguousJSXLike,
-        jsxPragma,
-        jsxPragmaFrag,
-        onlyRemoveTypeImports,
-        optimizeConstEnums,
-      })
-    : (disallowAmbiguousJSXLike: boolean) => ({
-        allowDeclareFields: opts.allowDeclareFields,
-        allowNamespaces,
-        disallowAmbiguousJSXLike,
-        jsxPragma,
-        jsxPragmaFrag,
-        onlyRemoveTypeImports,
-        optimizeConstEnums,
-      });
+  const pluginOptions = (disallowAmbiguousJSXLike: boolean) => ({
+    allowDeclareFields: opts.allowDeclareFields,
+    allowNamespaces,
+    disallowAmbiguousJSXLike,
+    jsxPragma,
+    jsxPragmaFrag,
+    onlyRemoveTypeImports,
+    optimizeConstEnums,
+  });
 
   const getPlugins = (isTSX: boolean, disallowAmbiguousJSXLike: boolean) => {
-    if (undefined) {
-      const tsPlugin: PluginItem = [
+    return [
+      [
         transformTypeScript,
-        pluginOptions(disallowAmbiguousJSXLike),
-      ];
-      return isTSX ? [tsPlugin, syntaxJSX] : [tsPlugin];
-    } else {
-      return [
-        [
-          transformTypeScript,
-          { isTSX, ...pluginOptions(disallowAmbiguousJSXLike) },
-        ] satisfies PluginItem,
-      ];
-    }
+        { isTSX, ...pluginOptions(disallowAmbiguousJSXLike) },
+      ] satisfies PluginItem,
+    ];
   };
 
   const disableExtensionDetect = allExtensions || ignoreExtensions;

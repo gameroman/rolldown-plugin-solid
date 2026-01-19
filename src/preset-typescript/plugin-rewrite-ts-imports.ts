@@ -1,7 +1,8 @@
 import type { NodePath, PluginPass, types as t } from "@babel/core";
+// @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
 
-const pluginRewriteTsImports = declare(({ types: t, template }) => {
+const pluginRewriteTSImports = declare(({ types: t, template }) => {
   function maybeReplace(
     source: t.ArgumentPlaceholder | t.Expression,
     path: NodePath,
@@ -28,10 +29,7 @@ const pluginRewriteTsImports = declare(({ types: t, template }) => {
       return;
     }
 
-    if (
-      undefined ||
-      state.availableHelper("tsRewriteRelativeImportExtensions")
-    ) {
+    if (state.availableHelper("tsRewriteRelativeImportExtensions")) {
       path.replaceWith(
         t.callExpression(
           state.addHelper("tsRewriteRelativeImportExtensions"),
@@ -81,4 +79,4 @@ const pluginRewriteTsImports = declare(({ types: t, template }) => {
     },
   };
 });
-export default pluginRewriteTsImports;
+export default pluginRewriteTSImports;
