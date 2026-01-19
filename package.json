@@ -31,6 +31,7 @@
     "@babel/helper-create-class-features-plugin": "7.28.6",
     "@babel/helper-skip-transparent-expression-wrappers": "7.27.1",
     "@babel/plugin-syntax-typescript": "7.28.6",
+    "@babel/types": "7.28.6",
     "html-entities": "2.6.0",
     "oxc-transform": "^0.108.0",
     "parse5": "^8.0.0"
