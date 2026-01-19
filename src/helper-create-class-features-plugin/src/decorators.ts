@@ -12,8 +12,8 @@ import { skipTransparentExprWrappers } from "@babel/helper-skip-transparent-expr
 import {
   type PrivateNameVisitorState,
   privateNameVisitorFactory,
-} from "./fields.ts";
-import { memoiseComputedKey } from "./misc.ts";
+} from "./fields";
+import { memoiseComputedKey } from "./misc";
 
 export function hasOwnDecorators(node: t.Class | t.ClassBody["body"][number]) {
   // @ts-expect-error: 'decorators' not in TSIndexSignature

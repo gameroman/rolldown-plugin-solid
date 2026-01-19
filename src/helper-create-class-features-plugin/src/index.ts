@@ -2,36 +2,25 @@ import type { NodePath, PluginAPI, PluginObject } from "@babel/core";
 import { types as t } from "@babel/core";
 
 import semver from "semver";
-import type { DecoratorVersionKind } from "./decorators.ts";
+import type { DecoratorVersionKind } from "./decorators";
 import createDecoratorTransform, {
   buildNamedEvaluationVisitor,
   hasDecorators,
-} from "./decorators.ts";
-import { buildDecoratedClass } from "./decorators-2018-09.ts";
-import {
-  enableFeature,
-  FEATURES,
-  isLoose,
-  shouldTransform,
-} from "./features.ts";
-import type { PropPath } from "./fields.ts";
+} from "./decorators";
+import { buildDecoratedClass } from "./decorators-2018-09";
+import { enableFeature, FEATURES, isLoose, shouldTransform } from "./features";
+import type { PropPath } from "./fields";
 import {
   buildCheckInRHS,
   buildFieldsInitNodes,
   buildPrivateNamesMap,
   buildPrivateNamesNodes,
   transformPrivateNamesUsage,
-} from "./fields.ts";
-import { extractComputedKeys, injectInitialization } from "./misc.ts";
-import { assertFieldTransformed } from "./typescript.ts";
+} from "./fields";
+import { extractComputedKeys, injectInitialization } from "./misc";
+import { assertFieldTransformed } from "./typescript";
 
-export {
-  FEATURES,
-  enableFeature,
-  injectInitialization,
-  buildCheckInRHS,
-  buildNamedEvaluationVisitor,
-};
+export { injectInitialization, buildNamedEvaluationVisitor };
 
 const versionKey = "@babel/plugin-class-features/version";
 
@@ -45,7 +34,7 @@ interface Options {
   decoratorVersion?: DecoratorVersionKind | "2018-09";
 }
 
-export function createClassFeaturePlugin({
+function createClassFeaturePlugin({
   name,
   feature,
   loose,
