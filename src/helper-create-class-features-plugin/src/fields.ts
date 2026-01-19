@@ -46,7 +46,7 @@ if (!undefined) {
   };
 }
 
-export function buildPrivateNamesMap(
+function buildPrivateNamesMap(
   className: string,
   privateFieldsAsSymbolsOrProperties: boolean,
   props: PropPath[],
@@ -133,7 +133,7 @@ export function buildPrivateNamesMap(
   return privateNamesMap;
 }
 
-export function buildPrivateNamesNodes(
+function buildPrivateNamesNodes(
   privateNamesMap: PrivateNamesMap,
   privateFieldsAsProperties: boolean,
   privateFieldsAsSymbols: boolean,
@@ -191,7 +191,7 @@ export function buildPrivateNamesNodes(
   return initNodes;
 }
 
-export interface PrivateNameVisitorState<V> {
+interface PrivateNameVisitorState<V> {
   privateNamesMap: PrivateNamesMapGeneric<V>;
   redeclared?: string[];
 }
@@ -199,7 +199,7 @@ export interface PrivateNameVisitorState<V> {
 // Traverses the class scope, handling private name references. If an inner
 // class redeclares the same private name, it will hand off traversal to the
 // restricted visitor (which doesn't traverse the inner class's inner scope).
-export function privateNameVisitorFactory<S, V>(
+function privateNameVisitorFactory<S, V>(
   visitor: Visitor<PrivateNameVisitorState<V & PrivateNameMetadata> & S>,
 ) {
   // Traverses the outer portion of a class, without touching the class's inner
