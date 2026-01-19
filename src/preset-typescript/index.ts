@@ -21,7 +21,7 @@ export default declarePreset((api, opts: Options) => {
     rewriteImportExtensions,
   } = normalizeOptions(opts);
 
-  const pluginOptions = process.env.BABEL_8_BREAKING
+  const pluginOptions = undefined
     ? (disallowAmbiguousJSXLike: boolean) => ({
         allowNamespaces,
         disallowAmbiguousJSXLike,
@@ -41,7 +41,7 @@ export default declarePreset((api, opts: Options) => {
       });
 
   const getPlugins = (isTSX: boolean, disallowAmbiguousJSXLike: boolean) => {
-    if (process.env.BABEL_8_BREAKING) {
+    if (undefined) {
       const tsPlugin: PluginItem = [
         transformTypeScript,
         pluginOptions(disallowAmbiguousJSXLike),
@@ -67,20 +67,20 @@ export default declarePreset((api, opts: Options) => {
         // Babel is being called with a filename.
         [
           {
-            test: !process.env.BABEL_8_BREAKING
+            test: !undefined
               ? /\.ts$/
               : (filename) => filename == null || filename.endsWith(".ts"),
             plugins: getPlugins(false, false),
           },
           {
-            test: !process.env.BABEL_8_BREAKING
+            test: !undefined
               ? /\.mts$/
               : (filename) => filename?.endsWith(".mts"),
             sourceType: "module",
             plugins: getPlugins(false, true),
           },
           {
-            test: !process.env.BABEL_8_BREAKING
+            test: !undefined
               ? /\.cts$/
               : (filename) => filename?.endsWith(".cts"),
             sourceType: "unambiguous",
@@ -90,7 +90,7 @@ export default declarePreset((api, opts: Options) => {
             ],
           },
           {
-            test: !process.env.BABEL_8_BREAKING
+            test: !undefined
               ? /\.tsx$/
               : (filename) => filename?.endsWith(".tsx"),
             // disallowAmbiguousJSXLike is a no-op when parsing TSX, since it's

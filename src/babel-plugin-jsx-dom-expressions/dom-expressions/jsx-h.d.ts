@@ -52,14 +52,14 @@ export namespace JSX {
       e: E & {
         currentTarget: T;
         target: DOMElement;
-      }
+      },
     ): void;
   }
 
   interface BoundEventHandler<
     T,
     E extends Event,
-    EHandler extends EventHandler<T, any> = EventHandler<T, E>
+    EHandler extends EventHandler<T, any> = EventHandler<T, E>,
   > {
     0: (data: any, ...e: Parameters<EHandler>) => void;
     1: any;
@@ -67,11 +67,14 @@ export namespace JSX {
   type EventHandlerUnion<
     T,
     E extends Event,
-    EHandler extends EventHandler<T, any> = EventHandler<T, E>
+    EHandler extends EventHandler<T, any> = EventHandler<T, E>,
   > = EHandler | BoundEventHandler<T, E, EHandler>;
 
-  interface EventHandlerWithOptions<T, E extends Event, EHandler = EventHandler<T, E>>
-    extends AddEventListenerOptions,
+  interface EventHandlerWithOptions<
+    T,
+    E extends Event,
+    EHandler = EventHandler<T, E>,
+  > extends AddEventListenerOptions,
       EventListenerOptions {
     handleEvent: EHandler;
   }
@@ -79,17 +82,20 @@ export namespace JSX {
   type EventHandlerWithOptionsUnion<
     T,
     E extends Event,
-    EHandler extends EventHandler<T, any> = EventHandler<T, E>
+    EHandler extends EventHandler<T, any> = EventHandler<T, E>,
   > = EHandler | EventHandlerWithOptions<T, E, EHandler>;
 
   interface InputEventHandler<T, E extends InputEvent> {
     (
       e: E & {
         currentTarget: T;
-        target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        target: T extends
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
           ? T
           : DOMElement;
-      }
+      },
     ): void;
   }
   type InputEventHandlerUnion<T, E extends InputEvent> = EventHandlerUnion<
@@ -102,10 +108,13 @@ export namespace JSX {
     (
       e: E & {
         currentTarget: T;
-        target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        target: T extends
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
           ? T
           : DOMElement;
-      }
+      },
     ): void;
   }
   type ChangeEventHandlerUnion<T, E extends Event> = EventHandlerUnion<
@@ -118,10 +127,13 @@ export namespace JSX {
     (
       e: E & {
         currentTarget: T;
-        target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        target: T extends
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
           ? T
           : DOMElement;
-      }
+      },
     ): void;
   }
   type FocusEventHandlerUnion<T, E extends FocusEvent> = EventHandlerUnion<
@@ -190,7 +202,10 @@ export namespace JSX {
     [Key in keyof ExplicitBoolAttributes as `bool:${Key}`]?: ExplicitBoolAttributes[Key];
   };
   type OnAttributes<T> = {
-    [Key in keyof CustomEvents as `on:${Key}`]?: EventHandlerWithOptionsUnion<T, CustomEvents[Key]>;
+    [Key in keyof CustomEvents as `on:${Key}`]?: EventHandlerWithOptionsUnion<
+      T,
+      CustomEvents[Key]
+    >;
   };
   type OnCaptureAttributes<T> = {
     [Key in keyof CustomCaptureEvents as `oncapture:${Key}`]?: EventHandler<
@@ -225,9 +240,13 @@ export namespace JSX {
     // TODO `PageSwapEvent` is currently undefined on TS
     onPageSwap?: EventHandlerUnion<T, Event> | undefined;
     onPopstate?: EventHandlerUnion<T, PopStateEvent> | undefined;
-    onRejectionHandled?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+    onRejectionHandled?:
+      | EventHandlerUnion<T, PromiseRejectionEvent>
+      | undefined;
     onStorage?: EventHandlerUnion<T, StorageEvent> | undefined;
-    onUnhandledRejection?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+    onUnhandledRejection?:
+      | EventHandlerUnion<T, PromiseRejectionEvent>
+      | undefined;
     onUnload?: EventHandlerUnion<T, Event> | undefined;
 
     onafterprint?: EventHandlerUnion<T, Event> | undefined;
@@ -248,32 +267,54 @@ export namespace JSX {
     // TODO `PageSwapEvent` is currently undefined in TS
     onpageswap?: EventHandlerUnion<T, Event> | undefined;
     onpopstate?: EventHandlerUnion<T, PopStateEvent> | undefined;
-    onrejectionhandled?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+    onrejectionhandled?:
+      | EventHandlerUnion<T, PromiseRejectionEvent>
+      | undefined;
     onstorage?: EventHandlerUnion<T, StorageEvent> | undefined;
-    onunhandledrejection?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+    onunhandledrejection?:
+      | EventHandlerUnion<T, PromiseRejectionEvent>
+      | undefined;
     onunload?: EventHandlerUnion<T, Event> | undefined;
 
     "on:afterprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:beforeprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:beforeunload"?: EventHandlerWithOptionsUnion<T, BeforeUnloadEvent> | undefined;
-    "on:gamepadconnected"?: EventHandlerWithOptionsUnion<T, GamepadEvent> | undefined;
-    "on:gamepaddisconnected"?: EventHandlerWithOptionsUnion<T, GamepadEvent> | undefined;
-    "on:hashchange"?: EventHandlerWithOptionsUnion<T, HashChangeEvent> | undefined;
+    "on:beforeunload"?:
+      | EventHandlerWithOptionsUnion<T, BeforeUnloadEvent>
+      | undefined;
+    "on:gamepadconnected"?:
+      | EventHandlerWithOptionsUnion<T, GamepadEvent>
+      | undefined;
+    "on:gamepaddisconnected"?:
+      | EventHandlerWithOptionsUnion<T, GamepadEvent>
+      | undefined;
+    "on:hashchange"?:
+      | EventHandlerWithOptionsUnion<T, HashChangeEvent>
+      | undefined;
     "on:languagechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:message"?: EventHandlerWithOptionsUnion<T, MessageEvent> | undefined;
-    "on:messageerror"?: EventHandlerWithOptionsUnion<T, MessageEvent> | undefined;
+    "on:messageerror"?:
+      | EventHandlerWithOptionsUnion<T, MessageEvent>
+      | undefined;
     "on:offline"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:online"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:pagehide"?: EventHandlerWithOptionsUnion<T, PageTransitionEvent> | undefined;
+    "on:pagehide"?:
+      | EventHandlerWithOptionsUnion<T, PageTransitionEvent>
+      | undefined;
     // TODO `PageRevealEvent` is currently undefined in TS
     "on:pagereveal"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:pageshow"?: EventHandlerWithOptionsUnion<T, PageTransitionEvent> | undefined;
+    "on:pageshow"?:
+      | EventHandlerWithOptionsUnion<T, PageTransitionEvent>
+      | undefined;
     // TODO `PageSwapEvent` is currently undefined in TS
     "on:pageswap"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:popstate"?: EventHandlerWithOptionsUnion<T, PopStateEvent> | undefined;
-    "on:rejectionhandled"?: EventHandlerWithOptionsUnion<T, PromiseRejectionEvent> | undefined;
+    "on:rejectionhandled"?:
+      | EventHandlerWithOptionsUnion<T, PromiseRejectionEvent>
+      | undefined;
     "on:storage"?: EventHandlerWithOptionsUnion<T, StorageEvent> | undefined;
-    "on:unhandledrejection"?: EventHandlerWithOptionsUnion<T, PromiseRejectionEvent> | undefined;
+    "on:unhandledrejection"?:
+      | EventHandlerWithOptionsUnion<T, PromiseRejectionEvent>
+      | undefined;
     "on:unload"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
   }
 
@@ -380,7 +421,9 @@ export namespace JSX {
     onScrollSnapChange?: EventHandlerUnion<T, Event> | undefined;
     // todo `SnapEvent` is currently undefined in TS
     onScrollSnapChanging?: EventHandlerUnion<T, Event> | undefined;
-    onSecurityPolicyViolation?: EventHandlerUnion<T, SecurityPolicyViolationEvent> | undefined;
+    onSecurityPolicyViolation?:
+      | EventHandlerUnion<T, SecurityPolicyViolationEvent>
+      | undefined;
     onSeeked?: EventHandlerUnion<T, Event> | undefined;
     onSeeking?: EventHandlerUnion<T, Event> | undefined;
     onSelect?: EventHandlerUnion<T, Event> | undefined;
@@ -500,7 +543,9 @@ export namespace JSX {
     onscrollsnapchange?: EventHandlerUnion<T, Event> | undefined;
     // todo `SnapEvent` is currently undefined in TS
     onscrollsnapchanging?: EventHandlerUnion<T, Event> | undefined;
-    onsecuritypolicyviolation?: EventHandlerUnion<T, SecurityPolicyViolationEvent> | undefined;
+    onsecuritypolicyviolation?:
+      | EventHandlerUnion<T, SecurityPolicyViolationEvent>
+      | undefined;
     onseeked?: EventHandlerUnion<T, Event> | undefined;
     onseeking?: EventHandlerUnion<T, Event> | undefined;
     onselect?: EventHandlerUnion<T, Event> | undefined;
@@ -527,39 +572,73 @@ export namespace JSX {
 
   interface CustomEventHandlersNamespaced<T> {
     "on:abort"?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
-    "on:animationcancel"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-    "on:animationend"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-    "on:animationiteration"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-    "on:animationstart"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
+    "on:animationcancel"?:
+      | EventHandlerWithOptionsUnion<T, AnimationEvent>
+      | undefined;
+    "on:animationend"?:
+      | EventHandlerWithOptionsUnion<T, AnimationEvent>
+      | undefined;
+    "on:animationiteration"?:
+      | EventHandlerWithOptionsUnion<T, AnimationEvent>
+      | undefined;
+    "on:animationstart"?:
+      | EventHandlerWithOptionsUnion<T, AnimationEvent>
+      | undefined;
     "on:auxclick"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:beforecopy"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
-    "on:beforecut"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
+    "on:beforecopy"?:
+      | EventHandlerWithOptionsUnion<T, ClipboardEvent>
+      | undefined;
+    "on:beforecut"?:
+      | EventHandlerWithOptionsUnion<T, ClipboardEvent>
+      | undefined;
     "on:beforeinput"?:
-      | EventHandlerWithOptionsUnion<T, InputEvent, InputEventHandler<T, InputEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          InputEvent,
+          InputEventHandler<T, InputEvent>
+        >
       | undefined;
     "on:beforematch"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:beforepaste"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
-    "on:beforetoggle"?: EventHandlerWithOptionsUnion<T, ToggleEvent> | undefined;
+    "on:beforepaste"?:
+      | EventHandlerWithOptionsUnion<T, ClipboardEvent>
+      | undefined;
+    "on:beforetoggle"?:
+      | EventHandlerWithOptionsUnion<T, ToggleEvent>
+      | undefined;
     "on:beforexrselect"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:blur"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          FocusEvent,
+          FocusEventHandler<T, FocusEvent>
+        >
       | undefined;
     "on:cancel"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:canplay"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:canplaythrough"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:change"?: EventHandlerWithOptionsUnion<T, Event, ChangeEventHandler<T, Event>> | undefined;
+    "on:change"?:
+      | EventHandlerWithOptionsUnion<T, Event, ChangeEventHandler<T, Event>>
+      | undefined;
     "on:click"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
     "on:close"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     // TODO `CommandEvent` is currently undefined in TS
     "on:command"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:compositionend"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
-    "on:compositionstart"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
-    "on:compositionupdate"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
+    "on:compositionend"?:
+      | EventHandlerWithOptionsUnion<T, CompositionEvent>
+      | undefined;
+    "on:compositionstart"?:
+      | EventHandlerWithOptionsUnion<T, CompositionEvent>
+      | undefined;
+    "on:compositionupdate"?:
+      | EventHandlerWithOptionsUnion<T, CompositionEvent>
+      | undefined;
     "on:contentvisibilityautostatechange"?:
       | EventHandlerWithOptionsUnion<T, ContentVisibilityAutoStateChangeEvent>
       | undefined;
     "on:contextlost"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:contextmenu"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:contextmenu"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:contextrestored"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:copy"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
     "on:cuechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
@@ -578,20 +657,38 @@ export namespace JSX {
     "on:ended"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:error"?: EventHandlerWithOptionsUnion<T, ErrorEvent> | undefined;
     "on:focus"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          FocusEvent,
+          FocusEventHandler<T, FocusEvent>
+        >
       | undefined;
     "on:focusin"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          FocusEvent,
+          FocusEventHandler<T, FocusEvent>
+        >
       | undefined;
     "on:focusout"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          FocusEvent,
+          FocusEventHandler<T, FocusEvent>
+        >
       | undefined;
     "on:formdata"?: EventHandlerWithOptionsUnion<T, FormDataEvent> | undefined;
     "on:fullscreenchange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:fullscreenerror"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:gotpointercapture"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:gotpointercapture"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:input"?:
-      | EventHandlerWithOptionsUnion<T, InputEvent, InputEventHandler<T, InputEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          InputEvent,
+          InputEventHandler<T, InputEvent>
+        >
       | undefined;
     "on:invalid"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:keydown"?: EventHandlerWithOptionsUnion<T, KeyboardEvent> | undefined;
@@ -601,7 +698,9 @@ export namespace JSX {
     "on:loadeddata"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:loadedmetadata"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:loadstart"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:lostpointercapture"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:lostpointercapture"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:mousedown"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
     "on:mouseenter"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
     "on:mouseleave"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
@@ -613,14 +712,28 @@ export namespace JSX {
     "on:pause"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:play"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:playing"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:pointercancel"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerdown"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerenter"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerleave"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointermove"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:pointercancel"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointerdown"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointerenter"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointerleave"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointermove"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:pointerout"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerover"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerrawupdate"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:pointerover"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointerrawupdate"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:pointerup"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
     "on:progress"?: EventHandlerWithOptionsUnion<T, ProgressEvent> | undefined;
     "on:ratechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
@@ -631,7 +744,9 @@ export namespace JSX {
     // todo `SnapEvent` is currently undefined in TS
     "on:scrollsnapchange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     // todo `SnapEvent` is currently undefined in TS
-    "on:scrollsnapchanging"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+    "on:scrollsnapchanging"?:
+      | EventHandlerWithOptionsUnion<T, Event>
+      | undefined;
     "on:securitypolicyviolation"?:
       | EventHandlerWithOptionsUnion<T, SecurityPolicyViolationEvent>
       | undefined;
@@ -650,10 +765,18 @@ export namespace JSX {
     "on:touchend"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
     "on:touchmove"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
     "on:touchstart"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
-    "on:transitioncancel"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-    "on:transitionend"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-    "on:transitionrun"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-    "on:transitionstart"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
+    "on:transitioncancel"?:
+      | EventHandlerWithOptionsUnion<T, TransitionEvent>
+      | undefined;
+    "on:transitionend"?:
+      | EventHandlerWithOptionsUnion<T, TransitionEvent>
+      | undefined;
+    "on:transitionrun"?:
+      | EventHandlerWithOptionsUnion<T, TransitionEvent>
+      | undefined;
+    "on:transitionstart"?:
+      | EventHandlerWithOptionsUnion<T, TransitionEvent>
+      | undefined;
     "on:volumechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:waiting"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:wheel"?: EventHandlerWithOptionsUnion<T, WheelEvent> | undefined;
@@ -703,7 +826,13 @@ export namespace JSX {
     [key: `-${string}`]: string | number | undefined;
   }
 
-  type HTMLAutocapitalize = "off" | "none" | "on" | "sentences" | "words" | "characters";
+  type HTMLAutocapitalize =
+    | "off"
+    | "none"
+    | "on"
+    | "sentences"
+    | "words"
+    | "characters";
   type HTMLAutocomplete =
     | "additional-name"
     | "address-level1"
@@ -769,7 +898,10 @@ export namespace JSX {
     | "work"
     | (string & {});
   type HTMLDir = "ltr" | "rtl" | "auto";
-  type HTMLFormEncType = "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain";
+  type HTMLFormEncType =
+    | "application/x-www-form-urlencoded"
+    | "multipart/form-data"
+    | "text/plain";
   type HTMLFormMethod = "post" | "get" | "dialog";
   type HTMLCrossorigin = "anonymous" | "use-credentials" | "";
   type HTMLReferrerPolicy =
@@ -849,7 +981,9 @@ export namespace JSX {
      * user's intended value for an input and specifies how predictions would be presented if they
      * are made.
      */
-    "aria-autocomplete"?: FunctionMaybe<"none" | "inline" | "list" | "both" | undefined>;
+    "aria-autocomplete"?: FunctionMaybe<
+      "none" | "inline" | "list" | "both" | undefined
+    >;
     /**
      * Indicates an element is being modified and that assistive technologies MAY want to wait until
      * the modifications are complete before exposing them to the user.
@@ -860,7 +994,9 @@ export namespace JSX {
      *
      * @see aria-pressed @see aria-selected.
      */
-    "aria-checked"?: FunctionMaybe<boolean | "false" | "mixed" | "true" | undefined>;
+    "aria-checked"?: FunctionMaybe<
+      boolean | "false" | "mixed" | "true" | undefined
+    >;
     /**
      * Defines the total number of columns in a table, grid, or treegrid.
      *
@@ -895,7 +1031,15 @@ export namespace JSX {
      * elements.
      */
     "aria-current"?: FunctionMaybe<
-      boolean | "false" | "true" | "page" | "step" | "location" | "date" | "time" | undefined
+      | boolean
+      | "false"
+      | "true"
+      | "page"
+      | "step"
+      | "location"
+      | "date"
+      | "time"
+      | undefined
     >;
     /**
      * Identifies the element (or elements) that describes the object.
@@ -959,7 +1103,15 @@ export namespace JSX {
      * that can be triggered by an element.
      */
     "aria-haspopup"?: FunctionMaybe<
-      boolean | "false" | "true" | "menu" | "listbox" | "tree" | "grid" | "dialog" | undefined
+      | boolean
+      | "false"
+      | "true"
+      | "menu"
+      | "listbox"
+      | "tree"
+      | "grid"
+      | "dialog"
+      | undefined
     >;
     /**
      * Indicates whether the element is exposed to an accessibility API.
@@ -972,7 +1124,9 @@ export namespace JSX {
      *
      * @see aria-errormessage.
      */
-    "aria-invalid"?: FunctionMaybe<boolean | "false" | "true" | "grammar" | "spelling" | undefined>;
+    "aria-invalid"?: FunctionMaybe<
+      boolean | "false" | "true" | "grammar" | "spelling" | undefined
+    >;
     /**
      * Indicates keyboard shortcuts that an author has implemented to activate or give focus to an
      * element.
@@ -1005,7 +1159,9 @@ export namespace JSX {
      * Indicates that the user may select more than one item from the current selectable
      * descendants.
      */
-    "aria-multiselectable"?: FunctionMaybe<boolean | "false" | "true" | undefined>;
+    "aria-multiselectable"?: FunctionMaybe<
+      boolean | "false" | "true" | undefined
+    >;
     /** Indicates whether the element's orientation is horizontal, vertical, or unknown/ambiguous. */
     "aria-orientation"?: FunctionMaybe<"horizontal" | "vertical" | undefined>;
     /**
@@ -1034,7 +1190,9 @@ export namespace JSX {
      *
      * @see aria-checked @see aria-selected.
      */
-    "aria-pressed"?: FunctionMaybe<boolean | "false" | "mixed" | "true" | undefined>;
+    "aria-pressed"?: FunctionMaybe<
+      boolean | "false" | "mixed" | "true" | undefined
+    >;
     /**
      * Indicates that the element is not editable, but is otherwise operable.
      *
@@ -1099,7 +1257,9 @@ export namespace JSX {
      */
     "aria-setsize"?: FunctionMaybe<number | string | undefined>;
     /** Indicates if items in a table or grid are sorted in ascending or descending order. */
-    "aria-sort"?: FunctionMaybe<"none" | "ascending" | "descending" | "other" | undefined>;
+    "aria-sort"?: FunctionMaybe<
+      "none" | "ascending" | "descending" | "other" | undefined
+    >;
     /** Defines the maximum allowed value for a range widget. */
     "aria-valuemax"?: FunctionMaybe<number | string | undefined>;
     /** Defines the minimum allowed value for a range widget. */
@@ -1208,13 +1368,28 @@ export namespace JSX {
     dir?: FunctionMaybe<HTMLDir | undefined>;
     draggable?: FunctionMaybe<boolean | "false" | "true" | undefined>;
     enterkeyhint?: FunctionMaybe<
-      "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | undefined
+      | "enter"
+      | "done"
+      | "go"
+      | "next"
+      | "previous"
+      | "search"
+      | "send"
+      | undefined
     >;
     exportparts?: FunctionMaybe<string | undefined>;
     hidden?: FunctionMaybe<boolean | "hidden" | "until-found" | undefined>;
     inert?: FunctionMaybe<boolean | undefined>;
     inputmode?: FunctionMaybe<
-      "decimal" | "email" | "none" | "numeric" | "search" | "tel" | "text" | "url" | undefined
+      | "decimal"
+      | "email"
+      | "none"
+      | "numeric"
+      | "search"
+      | "tel"
+      | "text"
+      | "url"
+      | undefined
     >;
     is?: FunctionMaybe<string | undefined>;
     lang?: FunctionMaybe<string | undefined>;
@@ -1226,10 +1401,20 @@ export namespace JSX {
 
     accessKey?: FunctionMaybe<string | undefined>;
     autoCapitalize?: FunctionMaybe<HTMLAutocapitalize | undefined>;
-    contentEditable?: FunctionMaybe<boolean | "plaintext-only" | "inherit" | undefined>;
+    contentEditable?: FunctionMaybe<
+      boolean | "plaintext-only" | "inherit" | undefined
+    >;
     exportParts?: FunctionMaybe<string | undefined>;
     inputMode?: FunctionMaybe<
-      "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search" | undefined
+      | "none"
+      | "text"
+      | "tel"
+      | "url"
+      | "email"
+      | "numeric"
+      | "decimal"
+      | "search"
+      | undefined
     >;
 
     // Microdata
@@ -1270,7 +1455,9 @@ export namespace JSX {
     ping?: FunctionMaybe<string | undefined>;
     referrerpolicy?: FunctionMaybe<HTMLReferrerPolicy | undefined>;
     rel?: FunctionMaybe<string | undefined>;
-    target?: FunctionMaybe<"_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined>;
+    target?: FunctionMaybe<
+      "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined
+    >;
     type?: FunctionMaybe<string | undefined>;
 
     /** @experimental */
@@ -1299,7 +1486,9 @@ export namespace JSX {
     referrerpolicy?: FunctionMaybe<HTMLReferrerPolicy | undefined>;
     rel?: FunctionMaybe<string | undefined>;
     shape?: FunctionMaybe<"rect" | "circle" | "poly" | "default" | undefined>;
-    target?: FunctionMaybe<"_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined>;
+    target?: FunctionMaybe<
+      "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined
+    >;
 
     /** @experimental */
     attributionsrc?: FunctionMaybe<string | undefined>;
@@ -1311,7 +1500,9 @@ export namespace JSX {
   }
   interface BaseHTMLAttributes<T> extends HTMLAttributes<T> {
     href?: FunctionMaybe<string | undefined>;
-    target?: FunctionMaybe<"_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined>;
+    target?: FunctionMaybe<
+      "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined
+    >;
   }
   interface BdoHTMLAttributes<T> extends HTMLAttributes<T> {
     dir?: FunctionMaybe<"ltr" | "rtl" | undefined>;
@@ -1319,7 +1510,9 @@ export namespace JSX {
   interface BlockquoteHTMLAttributes<T> extends HTMLAttributes<T> {
     cite?: FunctionMaybe<string | undefined>;
   }
-  interface BodyHTMLAttributes<T> extends HTMLAttributes<T>, WindowEventMap<T> {}
+  interface BodyHTMLAttributes<T>
+    extends HTMLAttributes<T>,
+      WindowEventMap<T> {}
   interface ButtonHTMLAttributes<T> extends HTMLAttributes<T> {
     disabled?: FunctionMaybe<boolean | undefined>;
     form?: FunctionMaybe<string | undefined>;
@@ -1327,7 +1520,9 @@ export namespace JSX {
     formenctype?: FunctionMaybe<HTMLFormEncType | undefined>;
     formmethod?: FunctionMaybe<HTMLFormMethod | undefined>;
     formnovalidate?: FunctionMaybe<boolean | undefined>;
-    formtarget?: FunctionMaybe<"_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined>;
+    formtarget?: FunctionMaybe<
+      "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined
+    >;
     name?: FunctionMaybe<string | undefined>;
     popovertarget?: FunctionMaybe<string | undefined>;
     popovertargetaction?: FunctionMaybe<"hide" | "show" | "toggle" | undefined>;
@@ -1373,7 +1568,9 @@ export namespace JSX {
     span?: FunctionMaybe<number | string | undefined>;
 
     /** @deprecated */
-    align?: FunctionMaybe<"left" | "center" | "right" | "justify" | "char" | undefined>;
+    align?: FunctionMaybe<
+      "left" | "center" | "right" | "justify" | "char" | undefined
+    >;
     /** @deprecated */
     bgcolor?: FunctionMaybe<string | undefined>;
     /** @deprecated */
@@ -1381,7 +1578,9 @@ export namespace JSX {
     /** @deprecated */
     charoff?: FunctionMaybe<string | undefined>;
     /** @deprecated */
-    valign?: FunctionMaybe<"baseline" | "bottom" | "middle" | "top" | undefined>;
+    valign?: FunctionMaybe<
+      "baseline" | "bottom" | "middle" | "top" | undefined
+    >;
     /** @deprecated */
     width?: FunctionMaybe<number | string | undefined>;
   }
@@ -1389,7 +1588,9 @@ export namespace JSX {
     span?: FunctionMaybe<number | string | undefined>;
 
     /** @deprecated */
-    align?: FunctionMaybe<"left" | "center" | "right" | "justify" | "char" | undefined>;
+    align?: FunctionMaybe<
+      "left" | "center" | "right" | "justify" | "char" | undefined
+    >;
     /** @deprecated */
     bgcolor?: FunctionMaybe<string | undefined>;
     /** @deprecated */
@@ -1397,7 +1598,9 @@ export namespace JSX {
     /** @deprecated */
     charoff?: FunctionMaybe<string | undefined>;
     /** @deprecated */
-    valign?: FunctionMaybe<"baseline" | "bottom" | "middle" | "top" | undefined>;
+    valign?: FunctionMaybe<
+      "baseline" | "bottom" | "middle" | "top" | undefined
+    >;
     /** @deprecated */
     width?: FunctionMaybe<number | string | undefined>;
   }
@@ -1448,7 +1651,9 @@ export namespace JSX {
     name?: FunctionMaybe<string | undefined>;
     novalidate?: FunctionMaybe<boolean | undefined>;
     rel?: FunctionMaybe<string | undefined>;
-    target?: FunctionMaybe<"_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined>;
+    target?: FunctionMaybe<
+      "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined
+    >;
 
     noValidate?: FunctionMaybe<boolean | undefined>;
 
@@ -1534,7 +1739,9 @@ export namespace JSX {
     useMap?: FunctionMaybe<string | undefined>;
 
     /** @deprecated */
-    align?: FunctionMaybe<"top" | "middle" | "bottom" | "left" | "right" | undefined>;
+    align?: FunctionMaybe<
+      "top" | "middle" | "bottom" | "left" | "right" | undefined
+    >;
     /** @deprecated */
     border?: FunctionMaybe<string | undefined>;
     /** @deprecated */
@@ -1710,7 +1917,9 @@ export namespace JSX {
     src?: FunctionMaybe<string | undefined>;
 
     onEncrypted?: EventHandlerUnion<T, MediaEncryptedEvent> | undefined;
-    "on:encrypted"?: EventHandlerWithOptionsUnion<T, MediaEncryptedEvent> | undefined;
+    "on:encrypted"?:
+      | EventHandlerWithOptionsUnion<T, MediaEncryptedEvent>
+      | undefined;
     onencrypted?: EventHandlerUnion<T, MediaEncryptedEvent> | undefined;
 
     onWaitingForKey?: EventHandlerUnion<T, Event> | undefined;
@@ -1847,7 +2056,9 @@ export namespace JSX {
     nomodule?: FunctionMaybe<boolean | undefined>;
     referrerpolicy?: FunctionMaybe<HTMLReferrerPolicy | undefined>;
     src?: FunctionMaybe<string | undefined>;
-    type?: FunctionMaybe<"importmap" | "module" | "speculationrules" | (string & {}) | undefined>;
+    type?: FunctionMaybe<
+      "importmap" | "module" | "speculationrules" | (string & {}) | undefined
+    >;
 
     /** @experimental */
     attributionsrc?: FunctionMaybe<string | undefined>;
@@ -1905,7 +2116,9 @@ export namespace JSX {
     /** @deprecated */
     abbr?: FunctionMaybe<string | undefined>;
     /** @deprecated */
-    align?: FunctionMaybe<"left" | "center" | "right" | "justify" | "char" | undefined>;
+    align?: FunctionMaybe<
+      "left" | "center" | "right" | "justify" | "char" | undefined
+    >;
     /** @deprecated */
     axis?: FunctionMaybe<string | undefined>;
     /** @deprecated */
@@ -1921,7 +2134,9 @@ export namespace JSX {
     /** @deprecated */
     scope?: FunctionMaybe<"col" | "row" | "rowgroup" | "colgroup" | undefined>;
     /** @deprecated */
-    valign?: FunctionMaybe<"baseline" | "bottom" | "middle" | "top" | undefined>;
+    valign?: FunctionMaybe<
+      "baseline" | "bottom" | "middle" | "top" | undefined
+    >;
     /** @deprecated */
     width?: FunctionMaybe<number | string | undefined>;
   }
@@ -1965,7 +2180,9 @@ export namespace JSX {
     rowSpan?: FunctionMaybe<number | string | undefined>;
 
     /** @deprecated */
-    align?: FunctionMaybe<"left" | "center" | "right" | "justify" | "char" | undefined>;
+    align?: FunctionMaybe<
+      "left" | "center" | "right" | "justify" | "char" | undefined
+    >;
     /** @deprecated */
     axis?: FunctionMaybe<string | undefined>;
     /** @deprecated */
@@ -1979,7 +2196,9 @@ export namespace JSX {
     /** @deprecated */
     nowrap?: FunctionMaybe<boolean | undefined>;
     /** @deprecated */
-    valign?: FunctionMaybe<"baseline" | "bottom" | "middle" | "top" | undefined>;
+    valign?: FunctionMaybe<
+      "baseline" | "bottom" | "middle" | "top" | undefined
+    >;
     /** @deprecated */
     width?: FunctionMaybe<number | string | undefined>;
   }
@@ -2018,13 +2237,25 @@ export namespace JSX {
     poster?: FunctionMaybe<string | undefined>;
     width?: FunctionMaybe<number | string | undefined>;
 
-    onEnterPictureInPicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
-    "on:enterpictureinpicture"?: EventHandlerWithOptionsUnion<T, PictureInPictureEvent> | undefined;
-    onenterpictureinpicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
+    onEnterPictureInPicture?:
+      | EventHandlerUnion<T, PictureInPictureEvent>
+      | undefined;
+    "on:enterpictureinpicture"?:
+      | EventHandlerWithOptionsUnion<T, PictureInPictureEvent>
+      | undefined;
+    onenterpictureinpicture?:
+      | EventHandlerUnion<T, PictureInPictureEvent>
+      | undefined;
 
-    onLeavePictureInPicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
-    "on:leavepictureinpicture"?: EventHandlerWithOptionsUnion<T, PictureInPictureEvent> | undefined;
-    onleavepictureinpicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
+    onLeavePictureInPicture?:
+      | EventHandlerUnion<T, PictureInPictureEvent>
+      | undefined;
+    "on:leavepictureinpicture"?:
+      | EventHandlerWithOptionsUnion<T, PictureInPictureEvent>
+      | undefined;
+    onleavepictureinpicture?:
+      | EventHandlerUnion<T, PictureInPictureEvent>
+      | undefined;
   }
 
   interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
@@ -2153,7 +2384,9 @@ export namespace JSX {
   }
   interface AnimationValueSVGAttributes {
     by?: FunctionMaybe<number | string | undefined>;
-    calcMode?: FunctionMaybe<"discrete" | "linear" | "paced" | "spline" | undefined>;
+    calcMode?: FunctionMaybe<
+      "discrete" | "linear" | "paced" | "spline" | undefined
+    >;
     from?: FunctionMaybe<number | string | undefined>;
     keySplines?: FunctionMaybe<string | undefined>;
     keyTimes?: FunctionMaybe<string | undefined>;
@@ -2189,7 +2422,9 @@ export namespace JSX {
     "baseline-shift"?: FunctionMaybe<number | string | undefined>;
     "clip-path"?: FunctionMaybe<string | undefined>;
     "clip-rule"?: FunctionMaybe<"nonzero" | "evenodd" | "inherit" | undefined>;
-    "color-interpolation"?: FunctionMaybe<"auto" | "sRGB" | "linearRGB" | "inherit" | undefined>;
+    "color-interpolation"?: FunctionMaybe<
+      "auto" | "sRGB" | "linearRGB" | "inherit" | undefined
+    >;
     "color-interpolation-filters"?: FunctionMaybe<
       "auto" | "sRGB" | "linearRGB" | "inherit" | undefined
     >;
@@ -2219,7 +2454,9 @@ export namespace JSX {
     "font-size"?: FunctionMaybe<string | undefined>;
     "font-size-adjust"?: FunctionMaybe<number | string | undefined>;
     "font-stretch"?: FunctionMaybe<string | undefined>;
-    "font-style"?: FunctionMaybe<"normal" | "italic" | "oblique" | "inherit" | undefined>;
+    "font-style"?: FunctionMaybe<
+      "normal" | "italic" | "oblique" | "inherit" | undefined
+    >;
     "font-variant"?: FunctionMaybe<string | undefined>;
     "font-weight"?: FunctionMaybe<number | string | undefined>;
     "glyph-orientation-horizontal"?: FunctionMaybe<string | undefined>;
@@ -2248,25 +2485,53 @@ export namespace JSX {
       | undefined
     >;
     "shape-rendering"?: FunctionMaybe<
-      "auto" | "optimizeSpeed" | "crispEdges" | "geometricPrecision" | "inherit" | undefined
+      | "auto"
+      | "optimizeSpeed"
+      | "crispEdges"
+      | "geometricPrecision"
+      | "inherit"
+      | undefined
     >;
     "stop-color"?: FunctionMaybe<string | undefined>;
     "stop-opacity"?: FunctionMaybe<number | string | "inherit" | undefined>;
     "stroke-dasharray"?: FunctionMaybe<string | undefined>;
     "stroke-dashoffset"?: FunctionMaybe<number | string | undefined>;
-    "stroke-linecap"?: FunctionMaybe<"butt" | "round" | "square" | "inherit" | undefined>;
-    "stroke-linejoin"?: FunctionMaybe<
-      "arcs" | "bevel" | "miter" | "miter-clip" | "round" | "inherit" | undefined
+    "stroke-linecap"?: FunctionMaybe<
+      "butt" | "round" | "square" | "inherit" | undefined
     >;
-    "stroke-miterlimit"?: FunctionMaybe<number | string | "inherit" | undefined>;
+    "stroke-linejoin"?: FunctionMaybe<
+      | "arcs"
+      | "bevel"
+      | "miter"
+      | "miter-clip"
+      | "round"
+      | "inherit"
+      | undefined
+    >;
+    "stroke-miterlimit"?: FunctionMaybe<
+      number | string | "inherit" | undefined
+    >;
     "stroke-opacity"?: FunctionMaybe<number | string | "inherit" | undefined>;
     "stroke-width"?: FunctionMaybe<number | string | undefined>;
-    "text-anchor"?: FunctionMaybe<"start" | "middle" | "end" | "inherit" | undefined>;
+    "text-anchor"?: FunctionMaybe<
+      "start" | "middle" | "end" | "inherit" | undefined
+    >;
     "text-decoration"?: FunctionMaybe<
-      "none" | "underline" | "overline" | "line-through" | "blink" | "inherit" | undefined
+      | "none"
+      | "underline"
+      | "overline"
+      | "line-through"
+      | "blink"
+      | "inherit"
+      | undefined
     >;
     "text-rendering"?: FunctionMaybe<
-      "auto" | "optimizeSpeed" | "optimizeLegibility" | "geometricPrecision" | "inherit" | undefined
+      | "auto"
+      | "optimizeSpeed"
+      | "optimizeLegibility"
+      | "geometricPrecision"
+      | "inherit"
+      | undefined
     >;
     "unicode-bidi"?: FunctionMaybe<string | undefined>;
     "word-spacing"?: FunctionMaybe<number | string | undefined>;
@@ -2283,10 +2548,14 @@ export namespace JSX {
     kerning?: FunctionMaybe<string | undefined>;
     mask?: FunctionMaybe<string | undefined>;
     opacity?: FunctionMaybe<number | string | "inherit" | undefined>;
-    overflow?: FunctionMaybe<"visible" | "hidden" | "scroll" | "auto" | "inherit" | undefined>;
+    overflow?: FunctionMaybe<
+      "visible" | "hidden" | "scroll" | "auto" | "inherit" | undefined
+    >;
     pathLength?: FunctionMaybe<string | number | undefined>;
     stroke?: FunctionMaybe<string | undefined>;
-    visibility?: FunctionMaybe<"visible" | "hidden" | "collapse" | "inherit" | undefined>;
+    visibility?: FunctionMaybe<
+      "visible" | "hidden" | "collapse" | "inherit" | undefined
+    >;
   }
   interface AnimationElementSVGAttributes<T>
     extends CoreSVGAttributes<T>,
@@ -2438,7 +2707,10 @@ export namespace JSX {
       AnimationTimingSVGAttributes,
       AnimationValueSVGAttributes,
       AnimationAdditionSVGAttributes,
-      Pick<PresentationSVGAttributes, "color-interpolation" | "color-rendering"> {}
+      Pick<
+        PresentationSVGAttributes,
+        "color-interpolation" | "color-rendering"
+      > {}
   interface AnimateMotionSVGAttributes<T>
     extends AnimationElementSVGAttributes<T>,
       AnimationTimingSVGAttributes,
@@ -2447,7 +2719,9 @@ export namespace JSX {
     keyPoints?: FunctionMaybe<string | undefined>;
     origin?: FunctionMaybe<"default" | undefined>;
     path?: FunctionMaybe<string | undefined>;
-    rotate?: FunctionMaybe<number | string | "auto" | "auto-reverse" | undefined>;
+    rotate?: FunctionMaybe<
+      number | string | "auto" | "auto-reverse" | undefined
+    >;
   }
   interface AnimateTransformSVGAttributes<T>
     extends AnimationElementSVGAttributes<T>,
@@ -2455,7 +2729,9 @@ export namespace JSX {
       AnimationTimingSVGAttributes,
       AnimationValueSVGAttributes,
       AnimationAdditionSVGAttributes {
-    type?: FunctionMaybe<"translate" | "scale" | "rotate" | "skewX" | "skewY" | undefined>;
+    type?: FunctionMaybe<
+      "translate" | "scale" | "rotate" | "skewX" | "skewY" | undefined
+    >;
   }
   interface CircleSVGAttributes<T>
     extends GraphicsElementSVGAttributes<T>,
@@ -2483,7 +2759,9 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes {}
-  interface DescSVGAttributes<T> extends CoreSVGAttributes<T>, StylableSVGAttributes {}
+  interface DescSVGAttributes<T>
+    extends CoreSVGAttributes<T>,
+      StylableSVGAttributes {}
   interface EllipseSVGAttributes<T>
     extends GraphicsElementSVGAttributes<T>,
       ShapeElementSVGAttributes<T>,
@@ -2501,13 +2779,17 @@ export namespace JSX {
     extends FilterPrimitiveElementSVGAttributes<T>,
       DoubleInputFilterSVGAttributes,
       StylableSVGAttributes {
-    mode?: FunctionMaybe<"normal" | "multiply" | "screen" | "darken" | "lighten" | undefined>;
+    mode?: FunctionMaybe<
+      "normal" | "multiply" | "screen" | "darken" | "lighten" | undefined
+    >;
   }
   interface FeColorMatrixSVGAttributes<T>
     extends FilterPrimitiveElementSVGAttributes<T>,
       SingleInputFilterSVGAttributes,
       StylableSVGAttributes {
-    type?: FunctionMaybe<"matrix" | "saturate" | "hueRotate" | "luminanceToAlpha" | undefined>;
+    type?: FunctionMaybe<
+      "matrix" | "saturate" | "hueRotate" | "luminanceToAlpha" | undefined
+    >;
     values?: FunctionMaybe<string | undefined>;
   }
   interface FeComponentTransferSVGAttributes<T>
@@ -2522,7 +2804,9 @@ export namespace JSX {
     k2?: FunctionMaybe<number | string | undefined>;
     k3?: FunctionMaybe<number | string | undefined>;
     k4?: FunctionMaybe<number | string | undefined>;
-    operator?: FunctionMaybe<"over" | "in" | "out" | "atop" | "xor" | "arithmetic" | undefined>;
+    operator?: FunctionMaybe<
+      "over" | "in" | "out" | "atop" | "xor" | "arithmetic" | undefined
+    >;
   }
   interface FeConvolveMatrixSVGAttributes<T>
     extends FilterPrimitiveElementSVGAttributes<T>,
@@ -2555,7 +2839,8 @@ export namespace JSX {
     xChannelSelector?: FunctionMaybe<"R" | "G" | "B" | "A" | undefined>;
     yChannelSelector?: FunctionMaybe<"R" | "G" | "B" | "A" | undefined>;
   }
-  interface FeDistantLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+  interface FeDistantLightSVGAttributes<T>
+    extends LightSourceElementSVGAttributes<T> {
     azimuth?: FunctionMaybe<number | string | undefined>;
     elevation?: FunctionMaybe<number | string | undefined>;
   }
@@ -2563,7 +2848,10 @@ export namespace JSX {
     extends CoreSVGAttributes<T>,
       FilterPrimitiveElementSVGAttributes<T>,
       StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "flood-color" | "flood-opacity"> {
+      Pick<
+        PresentationSVGAttributes,
+        "color" | "flood-color" | "flood-opacity"
+      > {
     dx?: FunctionMaybe<number | string | undefined>;
     dy?: FunctionMaybe<number | string | undefined>;
     stdDeviation?: FunctionMaybe<number | string | undefined>;
@@ -2571,7 +2859,10 @@ export namespace JSX {
   interface FeFloodSVGAttributes<T>
     extends FilterPrimitiveElementSVGAttributes<T>,
       StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "flood-color" | "flood-opacity"> {}
+      Pick<
+        PresentationSVGAttributes,
+        "color" | "flood-color" | "flood-opacity"
+      > {}
   interface FeFuncSVGAttributes<T> extends CoreSVGAttributes<T> {
     amplitude?: FunctionMaybe<number | string | undefined>;
     exponent?: FunctionMaybe<number | string | undefined>;
@@ -2579,7 +2870,9 @@ export namespace JSX {
     offset?: FunctionMaybe<number | string | undefined>;
     slope?: FunctionMaybe<number | string | undefined>;
     tableValues?: FunctionMaybe<string | undefined>;
-    type?: FunctionMaybe<"identity" | "table" | "discrete" | "linear" | "gamma" | undefined>;
+    type?: FunctionMaybe<
+      "identity" | "table" | "discrete" | "linear" | "gamma" | undefined
+    >;
   }
   interface FeGaussianBlurSVGAttributes<T>
     extends FilterPrimitiveElementSVGAttributes<T>,
@@ -2614,7 +2907,8 @@ export namespace JSX {
     dx?: FunctionMaybe<number | string | undefined>;
     dy?: FunctionMaybe<number | string | undefined>;
   }
-  interface FePointLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+  interface FePointLightSVGAttributes<T>
+    extends LightSourceElementSVGAttributes<T> {
     x?: FunctionMaybe<number | string | undefined>;
     y?: FunctionMaybe<number | string | undefined>;
     z?: FunctionMaybe<number | string | undefined>;
@@ -2629,7 +2923,8 @@ export namespace JSX {
     specularExponent?: FunctionMaybe<string | undefined>;
     surfaceScale?: FunctionMaybe<string | undefined>;
   }
-  interface FeSpotLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+  interface FeSpotLightSVGAttributes<T>
+    extends LightSourceElementSVGAttributes<T> {
     limitingConeAngle?: FunctionMaybe<number | string | undefined>;
     pointsAtX?: FunctionMaybe<number | string | undefined>;
     pointsAtY?: FunctionMaybe<number | string | undefined>;
@@ -2689,7 +2984,10 @@ export namespace JSX {
       ConditionalProcessingSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "color-profile" | "image-rendering"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "color-profile" | "image-rendering"
+      > {
     height?: FunctionMaybe<number | string | undefined>;
     href?: FunctionMaybe<string | undefined>;
     preserveAspectRatio?: FunctionMaybe<ImagePreserveAspectRatio | undefined>;
@@ -2704,13 +3002,17 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+      > {
     x1?: FunctionMaybe<number | string | undefined>;
     x2?: FunctionMaybe<number | string | undefined>;
     y1?: FunctionMaybe<number | string | undefined>;
     y2?: FunctionMaybe<number | string | undefined>;
   }
-  interface LinearGradientSVGAttributes<T> extends GradientElementSVGAttributes<T> {
+  interface LinearGradientSVGAttributes<T>
+    extends GradientElementSVGAttributes<T> {
     x1?: FunctionMaybe<number | string | undefined>;
     x2?: FunctionMaybe<number | string | undefined>;
     y1?: FunctionMaybe<number | string | undefined>;
@@ -2751,7 +3053,10 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+      > {
     d?: FunctionMaybe<string | undefined>;
     pathLength?: FunctionMaybe<number | string | undefined>;
   }
@@ -2778,7 +3083,10 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+      > {
     points?: FunctionMaybe<string | undefined>;
   }
   interface PolylineSVGAttributes<T>
@@ -2788,10 +3096,14 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+      > {
     points?: FunctionMaybe<string | undefined>;
   }
-  interface RadialGradientSVGAttributes<T> extends GradientElementSVGAttributes<T> {
+  interface RadialGradientSVGAttributes<T>
+    extends GradientElementSVGAttributes<T> {
     cx?: FunctionMaybe<number | string | undefined>;
     cy?: FunctionMaybe<number | string | undefined>;
     fx?: FunctionMaybe<number | string | undefined>;
@@ -2877,7 +3189,10 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "writing-mode" | "text-rendering"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "writing-mode" | "text-rendering"
+      > {
     dx?: FunctionMaybe<number | string | undefined>;
     dy?: FunctionMaybe<number | string | undefined>;
     lengthAdjust?: FunctionMaybe<"spacing" | "spacingAndGlyphs" | undefined>;
@@ -2965,7 +3280,8 @@ export namespace JSX {
     /** @deprecated */
     src?: FunctionMaybe<string | undefined>;
   }
-  interface MathMLAnnotationXmlElementAttributes<T> extends MathMLAttributes<T> {
+  interface MathMLAnnotationXmlElementAttributes<T>
+    extends MathMLAttributes<T> {
     encoding?: FunctionMaybe<string | undefined>;
 
     /** @deprecated */
@@ -3005,7 +3321,8 @@ export namespace JSX {
     mathvariant?: FunctionMaybe<"normal" | undefined>;
   }
 
-  interface MathMLMmultiscriptsElementAttributes<T> extends MathMLAttributes<T> {
+  interface MathMLMmultiscriptsElementAttributes<T>
+    extends MathMLAttributes<T> {
     /**
      * @deprecated
      * @non-standard
@@ -3120,7 +3437,9 @@ export namespace JSX {
   }
   interface MathMLMtableElementAttributes<T> extends MathMLAttributes<T> {
     /** @non-standard */
-    align?: FunctionMaybe<"axis" | "baseline" | "bottom" | "center" | "top" | undefined>;
+    align?: FunctionMaybe<
+      "axis" | "baseline" | "bottom" | "center" | "top" | undefined
+    >;
     /** @non-standard */
     columnalign?: FunctionMaybe<"center" | "left" | "right" | undefined>;
     /** @non-standard */
@@ -3132,7 +3451,9 @@ export namespace JSX {
     /** @non-standard */
     framespacing?: FunctionMaybe<string | undefined>;
     /** @non-standard */
-    rowalign?: FunctionMaybe<"axis" | "baseline" | "bottom" | "center" | "top" | undefined>;
+    rowalign?: FunctionMaybe<
+      "axis" | "baseline" | "bottom" | "center" | "top" | undefined
+    >;
     /** @non-standard */
     rowlines?: FunctionMaybe<"dashed" | "none" | "solid" | undefined>;
     /** @non-standard */
@@ -3146,14 +3467,18 @@ export namespace JSX {
     /** @non-standard */
     columnalign?: FunctionMaybe<"center" | "left" | "right" | undefined>;
     /** @non-standard */
-    rowalign?: FunctionMaybe<"axis" | "baseline" | "bottom" | "center" | "top" | undefined>;
+    rowalign?: FunctionMaybe<
+      "axis" | "baseline" | "bottom" | "center" | "top" | undefined
+    >;
   }
   interface MathMLMtextElementAttributes<T> extends MathMLAttributes<T> {}
   interface MathMLMtrElementAttributes<T> extends MathMLAttributes<T> {
     /** @non-standard */
     columnalign?: FunctionMaybe<"center" | "left" | "right" | undefined>;
     /** @non-standard */
-    rowalign?: FunctionMaybe<"axis" | "baseline" | "bottom" | "center" | "top" | undefined>;
+    rowalign?: FunctionMaybe<
+      "axis" | "baseline" | "bottom" | "center" | "top" | undefined
+    >;
   }
   interface MathMLMunderElementAttributes<T> extends MathMLAttributes<T> {
     accentunder?: FunctionMaybe<"" | boolean | undefined>;

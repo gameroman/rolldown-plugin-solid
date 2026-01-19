@@ -27,7 +27,14 @@ export namespace JSX {
     (): Element;
   }
 
-  type Element = Node | ArrayElement | (string & {}) | number | boolean | null | undefined;
+  type Element =
+    | Node
+    | ArrayElement
+    | (string & {})
+    | number
+    | boolean
+    | null
+    | undefined;
   // END - difference between `jsx.d.ts` and `jsx-h.d.ts`
 
   interface ArrayElement extends Array<Element> {}
@@ -49,14 +56,14 @@ export namespace JSX {
       e: E & {
         currentTarget: T;
         target: DOMElement;
-      }
+      },
     ): void;
   }
 
   interface BoundEventHandler<
     T,
     E extends Event,
-    EHandler extends EventHandler<T, any> = EventHandler<T, E>
+    EHandler extends EventHandler<T, any> = EventHandler<T, E>,
   > {
     0: (data: any, ...e: Parameters<EHandler>) => void;
     1: any;
@@ -64,11 +71,14 @@ export namespace JSX {
   type EventHandlerUnion<
     T,
     E extends Event,
-    EHandler extends EventHandler<T, any> = EventHandler<T, E>
+    EHandler extends EventHandler<T, any> = EventHandler<T, E>,
   > = EHandler | BoundEventHandler<T, E, EHandler>;
 
-  interface EventHandlerWithOptions<T, E extends Event, EHandler = EventHandler<T, E>>
-    extends AddEventListenerOptions,
+  interface EventHandlerWithOptions<
+    T,
+    E extends Event,
+    EHandler = EventHandler<T, E>,
+  > extends AddEventListenerOptions,
       EventListenerOptions {
     handleEvent: EHandler;
   }
@@ -76,17 +86,20 @@ export namespace JSX {
   type EventHandlerWithOptionsUnion<
     T,
     E extends Event,
-    EHandler extends EventHandler<T, any> = EventHandler<T, E>
+    EHandler extends EventHandler<T, any> = EventHandler<T, E>,
   > = EHandler | EventHandlerWithOptions<T, E, EHandler>;
 
   interface InputEventHandler<T, E extends InputEvent> {
     (
       e: E & {
         currentTarget: T;
-        target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        target: T extends
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
           ? T
           : DOMElement;
-      }
+      },
     ): void;
   }
   type InputEventHandlerUnion<T, E extends InputEvent> = EventHandlerUnion<
@@ -99,10 +112,13 @@ export namespace JSX {
     (
       e: E & {
         currentTarget: T;
-        target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        target: T extends
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
           ? T
           : DOMElement;
-      }
+      },
     ): void;
   }
   type ChangeEventHandlerUnion<T, E extends Event> = EventHandlerUnion<
@@ -115,10 +131,13 @@ export namespace JSX {
     (
       e: E & {
         currentTarget: T;
-        target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        target: T extends
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
           ? T
           : DOMElement;
-      }
+      },
     ): void;
   }
   type FocusEventHandlerUnion<T, E extends FocusEvent> = EventHandlerUnion<
@@ -187,7 +206,10 @@ export namespace JSX {
     [Key in keyof ExplicitBoolAttributes as `bool:${Key}`]?: ExplicitBoolAttributes[Key];
   };
   type OnAttributes<T> = {
-    [Key in keyof CustomEvents as `on:${Key}`]?: EventHandlerWithOptionsUnion<T, CustomEvents[Key]>;
+    [Key in keyof CustomEvents as `on:${Key}`]?: EventHandlerWithOptionsUnion<
+      T,
+      CustomEvents[Key]
+    >;
   };
   type OnCaptureAttributes<T> = {
     [Key in keyof CustomCaptureEvents as `oncapture:${Key}`]?: EventHandler<
@@ -222,9 +244,13 @@ export namespace JSX {
     // TODO `PageSwapEvent` is currently undefined on TS
     onPageSwap?: EventHandlerUnion<T, Event> | undefined;
     onPopstate?: EventHandlerUnion<T, PopStateEvent> | undefined;
-    onRejectionHandled?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+    onRejectionHandled?:
+      | EventHandlerUnion<T, PromiseRejectionEvent>
+      | undefined;
     onStorage?: EventHandlerUnion<T, StorageEvent> | undefined;
-    onUnhandledRejection?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+    onUnhandledRejection?:
+      | EventHandlerUnion<T, PromiseRejectionEvent>
+      | undefined;
     onUnload?: EventHandlerUnion<T, Event> | undefined;
 
     onafterprint?: EventHandlerUnion<T, Event> | undefined;
@@ -245,32 +271,54 @@ export namespace JSX {
     // TODO `PageSwapEvent` is currently undefined in TS
     onpageswap?: EventHandlerUnion<T, Event> | undefined;
     onpopstate?: EventHandlerUnion<T, PopStateEvent> | undefined;
-    onrejectionhandled?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+    onrejectionhandled?:
+      | EventHandlerUnion<T, PromiseRejectionEvent>
+      | undefined;
     onstorage?: EventHandlerUnion<T, StorageEvent> | undefined;
-    onunhandledrejection?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+    onunhandledrejection?:
+      | EventHandlerUnion<T, PromiseRejectionEvent>
+      | undefined;
     onunload?: EventHandlerUnion<T, Event> | undefined;
 
     "on:afterprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:beforeprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:beforeunload"?: EventHandlerWithOptionsUnion<T, BeforeUnloadEvent> | undefined;
-    "on:gamepadconnected"?: EventHandlerWithOptionsUnion<T, GamepadEvent> | undefined;
-    "on:gamepaddisconnected"?: EventHandlerWithOptionsUnion<T, GamepadEvent> | undefined;
-    "on:hashchange"?: EventHandlerWithOptionsUnion<T, HashChangeEvent> | undefined;
+    "on:beforeunload"?:
+      | EventHandlerWithOptionsUnion<T, BeforeUnloadEvent>
+      | undefined;
+    "on:gamepadconnected"?:
+      | EventHandlerWithOptionsUnion<T, GamepadEvent>
+      | undefined;
+    "on:gamepaddisconnected"?:
+      | EventHandlerWithOptionsUnion<T, GamepadEvent>
+      | undefined;
+    "on:hashchange"?:
+      | EventHandlerWithOptionsUnion<T, HashChangeEvent>
+      | undefined;
     "on:languagechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:message"?: EventHandlerWithOptionsUnion<T, MessageEvent> | undefined;
-    "on:messageerror"?: EventHandlerWithOptionsUnion<T, MessageEvent> | undefined;
+    "on:messageerror"?:
+      | EventHandlerWithOptionsUnion<T, MessageEvent>
+      | undefined;
     "on:offline"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:online"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:pagehide"?: EventHandlerWithOptionsUnion<T, PageTransitionEvent> | undefined;
+    "on:pagehide"?:
+      | EventHandlerWithOptionsUnion<T, PageTransitionEvent>
+      | undefined;
     // TODO `PageRevealEvent` is currently undefined in TS
     "on:pagereveal"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:pageshow"?: EventHandlerWithOptionsUnion<T, PageTransitionEvent> | undefined;
+    "on:pageshow"?:
+      | EventHandlerWithOptionsUnion<T, PageTransitionEvent>
+      | undefined;
     // TODO `PageSwapEvent` is currently undefined in TS
     "on:pageswap"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:popstate"?: EventHandlerWithOptionsUnion<T, PopStateEvent> | undefined;
-    "on:rejectionhandled"?: EventHandlerWithOptionsUnion<T, PromiseRejectionEvent> | undefined;
+    "on:rejectionhandled"?:
+      | EventHandlerWithOptionsUnion<T, PromiseRejectionEvent>
+      | undefined;
     "on:storage"?: EventHandlerWithOptionsUnion<T, StorageEvent> | undefined;
-    "on:unhandledrejection"?: EventHandlerWithOptionsUnion<T, PromiseRejectionEvent> | undefined;
+    "on:unhandledrejection"?:
+      | EventHandlerWithOptionsUnion<T, PromiseRejectionEvent>
+      | undefined;
     "on:unload"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
   }
 
@@ -377,7 +425,9 @@ export namespace JSX {
     onScrollSnapChange?: EventHandlerUnion<T, Event> | undefined;
     // todo `SnapEvent` is currently undefined in TS
     onScrollSnapChanging?: EventHandlerUnion<T, Event> | undefined;
-    onSecurityPolicyViolation?: EventHandlerUnion<T, SecurityPolicyViolationEvent> | undefined;
+    onSecurityPolicyViolation?:
+      | EventHandlerUnion<T, SecurityPolicyViolationEvent>
+      | undefined;
     onSeeked?: EventHandlerUnion<T, Event> | undefined;
     onSeeking?: EventHandlerUnion<T, Event> | undefined;
     onSelect?: EventHandlerUnion<T, Event> | undefined;
@@ -497,7 +547,9 @@ export namespace JSX {
     onscrollsnapchange?: EventHandlerUnion<T, Event> | undefined;
     // todo `SnapEvent` is currently undefined in TS
     onscrollsnapchanging?: EventHandlerUnion<T, Event> | undefined;
-    onsecuritypolicyviolation?: EventHandlerUnion<T, SecurityPolicyViolationEvent> | undefined;
+    onsecuritypolicyviolation?:
+      | EventHandlerUnion<T, SecurityPolicyViolationEvent>
+      | undefined;
     onseeked?: EventHandlerUnion<T, Event> | undefined;
     onseeking?: EventHandlerUnion<T, Event> | undefined;
     onselect?: EventHandlerUnion<T, Event> | undefined;
@@ -524,39 +576,73 @@ export namespace JSX {
 
   interface CustomEventHandlersNamespaced<T> {
     "on:abort"?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
-    "on:animationcancel"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-    "on:animationend"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-    "on:animationiteration"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-    "on:animationstart"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
+    "on:animationcancel"?:
+      | EventHandlerWithOptionsUnion<T, AnimationEvent>
+      | undefined;
+    "on:animationend"?:
+      | EventHandlerWithOptionsUnion<T, AnimationEvent>
+      | undefined;
+    "on:animationiteration"?:
+      | EventHandlerWithOptionsUnion<T, AnimationEvent>
+      | undefined;
+    "on:animationstart"?:
+      | EventHandlerWithOptionsUnion<T, AnimationEvent>
+      | undefined;
     "on:auxclick"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:beforecopy"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
-    "on:beforecut"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
+    "on:beforecopy"?:
+      | EventHandlerWithOptionsUnion<T, ClipboardEvent>
+      | undefined;
+    "on:beforecut"?:
+      | EventHandlerWithOptionsUnion<T, ClipboardEvent>
+      | undefined;
     "on:beforeinput"?:
-      | EventHandlerWithOptionsUnion<T, InputEvent, InputEventHandler<T, InputEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          InputEvent,
+          InputEventHandler<T, InputEvent>
+        >
       | undefined;
     "on:beforematch"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:beforepaste"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
-    "on:beforetoggle"?: EventHandlerWithOptionsUnion<T, ToggleEvent> | undefined;
+    "on:beforepaste"?:
+      | EventHandlerWithOptionsUnion<T, ClipboardEvent>
+      | undefined;
+    "on:beforetoggle"?:
+      | EventHandlerWithOptionsUnion<T, ToggleEvent>
+      | undefined;
     "on:beforexrselect"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:blur"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          FocusEvent,
+          FocusEventHandler<T, FocusEvent>
+        >
       | undefined;
     "on:cancel"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:canplay"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:canplaythrough"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:change"?: EventHandlerWithOptionsUnion<T, Event, ChangeEventHandler<T, Event>> | undefined;
+    "on:change"?:
+      | EventHandlerWithOptionsUnion<T, Event, ChangeEventHandler<T, Event>>
+      | undefined;
     "on:click"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
     "on:close"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     // TODO `CommandEvent` is currently undefined in TS
     "on:command"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:compositionend"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
-    "on:compositionstart"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
-    "on:compositionupdate"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
+    "on:compositionend"?:
+      | EventHandlerWithOptionsUnion<T, CompositionEvent>
+      | undefined;
+    "on:compositionstart"?:
+      | EventHandlerWithOptionsUnion<T, CompositionEvent>
+      | undefined;
+    "on:compositionupdate"?:
+      | EventHandlerWithOptionsUnion<T, CompositionEvent>
+      | undefined;
     "on:contentvisibilityautostatechange"?:
       | EventHandlerWithOptionsUnion<T, ContentVisibilityAutoStateChangeEvent>
       | undefined;
     "on:contextlost"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:contextmenu"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:contextmenu"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:contextrestored"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:copy"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
     "on:cuechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
@@ -575,20 +661,38 @@ export namespace JSX {
     "on:ended"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:error"?: EventHandlerWithOptionsUnion<T, ErrorEvent> | undefined;
     "on:focus"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          FocusEvent,
+          FocusEventHandler<T, FocusEvent>
+        >
       | undefined;
     "on:focusin"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          FocusEvent,
+          FocusEventHandler<T, FocusEvent>
+        >
       | undefined;
     "on:focusout"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          FocusEvent,
+          FocusEventHandler<T, FocusEvent>
+        >
       | undefined;
     "on:formdata"?: EventHandlerWithOptionsUnion<T, FormDataEvent> | undefined;
     "on:fullscreenchange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:fullscreenerror"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:gotpointercapture"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:gotpointercapture"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:input"?:
-      | EventHandlerWithOptionsUnion<T, InputEvent, InputEventHandler<T, InputEvent>>
+      | EventHandlerWithOptionsUnion<
+          T,
+          InputEvent,
+          InputEventHandler<T, InputEvent>
+        >
       | undefined;
     "on:invalid"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:keydown"?: EventHandlerWithOptionsUnion<T, KeyboardEvent> | undefined;
@@ -598,7 +702,9 @@ export namespace JSX {
     "on:loadeddata"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:loadedmetadata"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:loadstart"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:lostpointercapture"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:lostpointercapture"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:mousedown"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
     "on:mouseenter"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
     "on:mouseleave"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
@@ -610,14 +716,28 @@ export namespace JSX {
     "on:pause"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:play"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:playing"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-    "on:pointercancel"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerdown"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerenter"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerleave"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointermove"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:pointercancel"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointerdown"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointerenter"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointerleave"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointermove"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:pointerout"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerover"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-    "on:pointerrawupdate"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+    "on:pointerover"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
+    "on:pointerrawupdate"?:
+      | EventHandlerWithOptionsUnion<T, PointerEvent>
+      | undefined;
     "on:pointerup"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
     "on:progress"?: EventHandlerWithOptionsUnion<T, ProgressEvent> | undefined;
     "on:ratechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
@@ -628,7 +748,9 @@ export namespace JSX {
     // todo `SnapEvent` is currently undefined in TS
     "on:scrollsnapchange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     // todo `SnapEvent` is currently undefined in TS
-    "on:scrollsnapchanging"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+    "on:scrollsnapchanging"?:
+      | EventHandlerWithOptionsUnion<T, Event>
+      | undefined;
     "on:securitypolicyviolation"?:
       | EventHandlerWithOptionsUnion<T, SecurityPolicyViolationEvent>
       | undefined;
@@ -647,10 +769,18 @@ export namespace JSX {
     "on:touchend"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
     "on:touchmove"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
     "on:touchstart"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
-    "on:transitioncancel"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-    "on:transitionend"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-    "on:transitionrun"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-    "on:transitionstart"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
+    "on:transitioncancel"?:
+      | EventHandlerWithOptionsUnion<T, TransitionEvent>
+      | undefined;
+    "on:transitionend"?:
+      | EventHandlerWithOptionsUnion<T, TransitionEvent>
+      | undefined;
+    "on:transitionrun"?:
+      | EventHandlerWithOptionsUnion<T, TransitionEvent>
+      | undefined;
+    "on:transitionstart"?:
+      | EventHandlerWithOptionsUnion<T, TransitionEvent>
+      | undefined;
     "on:volumechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:waiting"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     "on:wheel"?: EventHandlerWithOptionsUnion<T, WheelEvent> | undefined;
@@ -700,7 +830,13 @@ export namespace JSX {
     [key: `-${string}`]: string | number | undefined;
   }
 
-  type HTMLAutocapitalize = "off" | "none" | "on" | "sentences" | "words" | "characters";
+  type HTMLAutocapitalize =
+    | "off"
+    | "none"
+    | "on"
+    | "sentences"
+    | "words"
+    | "characters";
   type HTMLAutocomplete =
     | "additional-name"
     | "address-level1"
@@ -766,7 +902,10 @@ export namespace JSX {
     | "work"
     | (string & {});
   type HTMLDir = "ltr" | "rtl" | "auto";
-  type HTMLFormEncType = "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain";
+  type HTMLFormEncType =
+    | "application/x-www-form-urlencoded"
+    | "multipart/form-data"
+    | "text/plain";
   type HTMLFormMethod = "post" | "get" | "dialog";
   type HTMLCrossorigin = "anonymous" | "use-credentials" | "";
   type HTMLReferrerPolicy =
@@ -932,7 +1071,14 @@ export namespace JSX {
      *
      * @deprecated In ARIA 1.1
      */
-    "aria-dropeffect"?: "none" | "copy" | "execute" | "link" | "move" | "popup" | undefined;
+    "aria-dropeffect"?:
+      | "none"
+      | "copy"
+      | "execute"
+      | "link"
+      | "move"
+      | "popup"
+      | undefined;
     /**
      * Identifies the element that provides an error message for the object.
      *
@@ -981,7 +1127,13 @@ export namespace JSX {
      *
      * @see aria-errormessage.
      */
-    "aria-invalid"?: boolean | "false" | "true" | "grammar" | "spelling" | undefined;
+    "aria-invalid"?:
+      | boolean
+      | "false"
+      | "true"
+      | "grammar"
+      | "spelling"
+      | undefined;
     /**
      * Indicates keyboard shortcuts that an author has implemented to activate or give focus to an
      * element.
@@ -1209,10 +1361,24 @@ export namespace JSX {
     accesskey?: string | undefined;
     autocapitalize?: HTMLAutocapitalize | undefined;
     autocorrect?: "on" | "off" | undefined;
-    contenteditable?: "true" | "false" | boolean | "plaintext-only" | "inherit" | undefined;
+    contenteditable?:
+      | "true"
+      | "false"
+      | boolean
+      | "plaintext-only"
+      | "inherit"
+      | undefined;
     dir?: HTMLDir | undefined;
     draggable?: boolean | "false" | "true" | undefined;
-    enterkeyhint?: "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | undefined;
+    enterkeyhint?:
+      | "enter"
+      | "done"
+      | "go"
+      | "next"
+      | "previous"
+      | "search"
+      | "send"
+      | undefined;
     exportparts?: string | undefined;
     hidden?: boolean | "hidden" | "until-found" | undefined;
     inert?: boolean | undefined;
@@ -1287,7 +1453,13 @@ export namespace JSX {
     ping?: string | undefined;
     referrerpolicy?: HTMLReferrerPolicy | undefined;
     rel?: string | undefined;
-    target?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+    target?:
+      | "_self"
+      | "_blank"
+      | "_parent"
+      | "_top"
+      | (string & {})
+      | undefined;
     type?: string | undefined;
 
     /** @experimental */
@@ -1316,7 +1488,13 @@ export namespace JSX {
     referrerpolicy?: HTMLReferrerPolicy | undefined;
     rel?: string | undefined;
     shape?: "rect" | "circle" | "poly" | "default" | undefined;
-    target?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+    target?:
+      | "_self"
+      | "_blank"
+      | "_parent"
+      | "_top"
+      | (string & {})
+      | undefined;
 
     /** @experimental */
     attributionsrc?: string | undefined;
@@ -1328,7 +1506,13 @@ export namespace JSX {
   }
   interface BaseHTMLAttributes<T> extends HTMLAttributes<T> {
     href?: string | undefined;
-    target?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+    target?:
+      | "_self"
+      | "_blank"
+      | "_parent"
+      | "_top"
+      | (string & {})
+      | undefined;
   }
   interface BdoHTMLAttributes<T> extends HTMLAttributes<T> {
     dir?: "ltr" | "rtl" | undefined;
@@ -1336,7 +1520,9 @@ export namespace JSX {
   interface BlockquoteHTMLAttributes<T> extends HTMLAttributes<T> {
     cite?: string | undefined;
   }
-  interface BodyHTMLAttributes<T> extends HTMLAttributes<T>, WindowEventMap<T> {}
+  interface BodyHTMLAttributes<T>
+    extends HTMLAttributes<T>,
+      WindowEventMap<T> {}
   interface ButtonHTMLAttributes<T> extends HTMLAttributes<T> {
     disabled?: boolean | undefined;
     form?: string | undefined;
@@ -1344,7 +1530,13 @@ export namespace JSX {
     formenctype?: HTMLFormEncType | undefined;
     formmethod?: HTMLFormMethod | undefined;
     formnovalidate?: boolean | undefined;
-    formtarget?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+    formtarget?:
+      | "_self"
+      | "_blank"
+      | "_parent"
+      | "_top"
+      | (string & {})
+      | undefined;
     name?: string | undefined;
     popovertarget?: string | undefined;
     popovertargetaction?: "hide" | "show" | "toggle" | undefined;
@@ -1464,7 +1656,13 @@ export namespace JSX {
     name?: string | undefined;
     novalidate?: boolean | undefined;
     rel?: string | undefined;
-    target?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+    target?:
+      | "_self"
+      | "_blank"
+      | "_parent"
+      | "_top"
+      | (string & {})
+      | undefined;
 
     noValidate?: boolean | undefined;
 
@@ -1724,7 +1922,9 @@ export namespace JSX {
     src?: string | undefined;
 
     onEncrypted?: EventHandlerUnion<T, MediaEncryptedEvent> | undefined;
-    "on:encrypted"?: EventHandlerWithOptionsUnion<T, MediaEncryptedEvent> | undefined;
+    "on:encrypted"?:
+      | EventHandlerWithOptionsUnion<T, MediaEncryptedEvent>
+      | undefined;
     onencrypted?: EventHandlerUnion<T, MediaEncryptedEvent> | undefined;
 
     onWaitingForKey?: EventHandlerUnion<T, Event> | undefined;
@@ -1860,7 +2060,12 @@ export namespace JSX {
     nomodule?: boolean | undefined;
     referrerpolicy?: HTMLReferrerPolicy | undefined;
     src?: string | undefined;
-    type?: "importmap" | "module" | "speculationrules" | (string & {}) | undefined;
+    type?:
+      | "importmap"
+      | "module"
+      | "speculationrules"
+      | (string & {})
+      | undefined;
 
     /** @experimental */
     attributionsrc?: string | undefined;
@@ -2030,13 +2235,25 @@ export namespace JSX {
     poster?: string | undefined;
     width?: number | string | undefined;
 
-    onEnterPictureInPicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
-    "on:enterpictureinpicture"?: EventHandlerWithOptionsUnion<T, PictureInPictureEvent> | undefined;
-    onenterpictureinpicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
+    onEnterPictureInPicture?:
+      | EventHandlerUnion<T, PictureInPictureEvent>
+      | undefined;
+    "on:enterpictureinpicture"?:
+      | EventHandlerWithOptionsUnion<T, PictureInPictureEvent>
+      | undefined;
+    onenterpictureinpicture?:
+      | EventHandlerUnion<T, PictureInPictureEvent>
+      | undefined;
 
-    onLeavePictureInPicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
-    "on:leavepictureinpicture"?: EventHandlerWithOptionsUnion<T, PictureInPictureEvent> | undefined;
-    onleavepictureinpicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
+    onLeavePictureInPicture?:
+      | EventHandlerUnion<T, PictureInPictureEvent>
+      | undefined;
+    "on:leavepictureinpicture"?:
+      | EventHandlerWithOptionsUnion<T, PictureInPictureEvent>
+      | undefined;
+    onleavepictureinpicture?:
+      | EventHandlerUnion<T, PictureInPictureEvent>
+      | undefined;
   }
 
   interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
@@ -2200,10 +2417,25 @@ export namespace JSX {
     "baseline-shift"?: number | string | undefined;
     "clip-path"?: string | undefined;
     "clip-rule"?: "nonzero" | "evenodd" | "inherit" | undefined;
-    "color-interpolation"?: "auto" | "sRGB" | "linearRGB" | "inherit" | undefined;
-    "color-interpolation-filters"?: "auto" | "sRGB" | "linearRGB" | "inherit" | undefined;
+    "color-interpolation"?:
+      | "auto"
+      | "sRGB"
+      | "linearRGB"
+      | "inherit"
+      | undefined;
+    "color-interpolation-filters"?:
+      | "auto"
+      | "sRGB"
+      | "linearRGB"
+      | "inherit"
+      | undefined;
     "color-profile"?: string | undefined;
-    "color-rendering"?: "auto" | "optimizeSpeed" | "optimizeQuality" | "inherit" | undefined;
+    "color-rendering"?:
+      | "auto"
+      | "optimizeSpeed"
+      | "optimizeQuality"
+      | "inherit"
+      | undefined;
     "dominant-baseline"?:
       | "auto"
       | "text-bottom"
@@ -2230,7 +2462,12 @@ export namespace JSX {
     "font-weight"?: number | string | undefined;
     "glyph-orientation-horizontal"?: string | undefined;
     "glyph-orientation-vertical"?: string | undefined;
-    "image-rendering"?: "auto" | "optimizeQuality" | "optimizeSpeed" | "inherit" | undefined;
+    "image-rendering"?:
+      | "auto"
+      | "optimizeQuality"
+      | "optimizeSpeed"
+      | "inherit"
+      | undefined;
     "letter-spacing"?: number | string | undefined;
     "lighting-color"?: string | undefined;
     "marker-end"?: string | undefined;
@@ -2262,7 +2499,14 @@ export namespace JSX {
     "stroke-dasharray"?: string | undefined;
     "stroke-dashoffset"?: number | string | undefined;
     "stroke-linecap"?: "butt" | "round" | "square" | "inherit" | undefined;
-    "stroke-linejoin"?: "arcs" | "bevel" | "miter" | "miter-clip" | "round" | "inherit" | undefined;
+    "stroke-linejoin"?:
+      | "arcs"
+      | "bevel"
+      | "miter"
+      | "miter-clip"
+      | "round"
+      | "inherit"
+      | undefined;
     "stroke-miterlimit"?: number | string | "inherit" | undefined;
     "stroke-opacity"?: number | string | "inherit" | undefined;
     "stroke-width"?: number | string | undefined;
@@ -2284,7 +2528,15 @@ export namespace JSX {
       | undefined;
     "unicode-bidi"?: string | undefined;
     "word-spacing"?: number | string | undefined;
-    "writing-mode"?: "lr-tb" | "rl-tb" | "tb-rl" | "lr" | "rl" | "tb" | "inherit" | undefined;
+    "writing-mode"?:
+      | "lr-tb"
+      | "rl-tb"
+      | "tb-rl"
+      | "lr"
+      | "rl"
+      | "tb"
+      | "inherit"
+      | undefined;
     clip?: string | undefined;
     color?: string | undefined;
     cursor?: string | undefined;
@@ -2450,7 +2702,10 @@ export namespace JSX {
       AnimationTimingSVGAttributes,
       AnimationValueSVGAttributes,
       AnimationAdditionSVGAttributes,
-      Pick<PresentationSVGAttributes, "color-interpolation" | "color-rendering"> {}
+      Pick<
+        PresentationSVGAttributes,
+        "color-interpolation" | "color-rendering"
+      > {}
   interface AnimateMotionSVGAttributes<T>
     extends AnimationElementSVGAttributes<T>,
       AnimationTimingSVGAttributes,
@@ -2495,7 +2750,9 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes {}
-  interface DescSVGAttributes<T> extends CoreSVGAttributes<T>, StylableSVGAttributes {}
+  interface DescSVGAttributes<T>
+    extends CoreSVGAttributes<T>,
+      StylableSVGAttributes {}
   interface EllipseSVGAttributes<T>
     extends GraphicsElementSVGAttributes<T>,
       ShapeElementSVGAttributes<T>,
@@ -2534,7 +2791,14 @@ export namespace JSX {
     k2?: number | string | undefined;
     k3?: number | string | undefined;
     k4?: number | string | undefined;
-    operator?: "over" | "in" | "out" | "atop" | "xor" | "arithmetic" | undefined;
+    operator?:
+      | "over"
+      | "in"
+      | "out"
+      | "atop"
+      | "xor"
+      | "arithmetic"
+      | undefined;
   }
   interface FeConvolveMatrixSVGAttributes<T>
     extends FilterPrimitiveElementSVGAttributes<T>,
@@ -2567,7 +2831,8 @@ export namespace JSX {
     xChannelSelector?: "R" | "G" | "B" | "A" | undefined;
     yChannelSelector?: "R" | "G" | "B" | "A" | undefined;
   }
-  interface FeDistantLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+  interface FeDistantLightSVGAttributes<T>
+    extends LightSourceElementSVGAttributes<T> {
     azimuth?: number | string | undefined;
     elevation?: number | string | undefined;
   }
@@ -2575,7 +2840,10 @@ export namespace JSX {
     extends CoreSVGAttributes<T>,
       FilterPrimitiveElementSVGAttributes<T>,
       StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "flood-color" | "flood-opacity"> {
+      Pick<
+        PresentationSVGAttributes,
+        "color" | "flood-color" | "flood-opacity"
+      > {
     dx?: number | string | undefined;
     dy?: number | string | undefined;
     stdDeviation?: number | string | undefined;
@@ -2583,7 +2851,10 @@ export namespace JSX {
   interface FeFloodSVGAttributes<T>
     extends FilterPrimitiveElementSVGAttributes<T>,
       StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "flood-color" | "flood-opacity"> {}
+      Pick<
+        PresentationSVGAttributes,
+        "color" | "flood-color" | "flood-opacity"
+      > {}
   interface FeFuncSVGAttributes<T> extends CoreSVGAttributes<T> {
     amplitude?: number | string | undefined;
     exponent?: number | string | undefined;
@@ -2626,7 +2897,8 @@ export namespace JSX {
     dx?: number | string | undefined;
     dy?: number | string | undefined;
   }
-  interface FePointLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+  interface FePointLightSVGAttributes<T>
+    extends LightSourceElementSVGAttributes<T> {
     x?: number | string | undefined;
     y?: number | string | undefined;
     z?: number | string | undefined;
@@ -2641,7 +2913,8 @@ export namespace JSX {
     specularExponent?: string | undefined;
     surfaceScale?: string | undefined;
   }
-  interface FeSpotLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+  interface FeSpotLightSVGAttributes<T>
+    extends LightSourceElementSVGAttributes<T> {
     limitingConeAngle?: number | string | undefined;
     pointsAtX?: number | string | undefined;
     pointsAtY?: number | string | undefined;
@@ -2701,7 +2974,10 @@ export namespace JSX {
       ConditionalProcessingSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "color-profile" | "image-rendering"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "color-profile" | "image-rendering"
+      > {
     height?: number | string | undefined;
     href?: string | undefined;
     preserveAspectRatio?: ImagePreserveAspectRatio | undefined;
@@ -2716,13 +2992,17 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+      > {
     x1?: number | string | undefined;
     x2?: number | string | undefined;
     y1?: number | string | undefined;
     y2?: number | string | undefined;
   }
-  interface LinearGradientSVGAttributes<T> extends GradientElementSVGAttributes<T> {
+  interface LinearGradientSVGAttributes<T>
+    extends GradientElementSVGAttributes<T> {
     x1?: number | string | undefined;
     x2?: number | string | undefined;
     y1?: number | string | undefined;
@@ -2763,7 +3043,10 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+      > {
     d?: string | undefined;
     pathLength?: number | string | undefined;
   }
@@ -2790,7 +3073,10 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+      > {
     points?: string | undefined;
   }
   interface PolylineSVGAttributes<T>
@@ -2800,10 +3086,14 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+      > {
     points?: string | undefined;
   }
-  interface RadialGradientSVGAttributes<T> extends GradientElementSVGAttributes<T> {
+  interface RadialGradientSVGAttributes<T>
+    extends GradientElementSVGAttributes<T> {
     cx?: number | string | undefined;
     cy?: number | string | undefined;
     fx?: number | string | undefined;
@@ -2889,7 +3179,10 @@ export namespace JSX {
       ExternalResourceSVGAttributes,
       StylableSVGAttributes,
       TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "writing-mode" | "text-rendering"> {
+      Pick<
+        PresentationSVGAttributes,
+        "clip-path" | "writing-mode" | "text-rendering"
+      > {
     dx?: number | string | undefined;
     dy?: number | string | undefined;
     lengthAdjust?: "spacing" | "spacingAndGlyphs" | undefined;
@@ -2977,7 +3270,8 @@ export namespace JSX {
     /** @deprecated */
     src?: string | undefined;
   }
-  interface MathMLAnnotationXmlElementAttributes<T> extends MathMLAttributes<T> {
+  interface MathMLAnnotationXmlElementAttributes<T>
+    extends MathMLAttributes<T> {
     encoding?: string | undefined;
 
     /** @deprecated */
@@ -3017,7 +3311,8 @@ export namespace JSX {
     mathvariant?: "normal" | undefined;
   }
 
-  interface MathMLMmultiscriptsElementAttributes<T> extends MathMLAttributes<T> {
+  interface MathMLMmultiscriptsElementAttributes<T>
+    extends MathMLAttributes<T> {
     /**
      * @deprecated
      * @non-standard

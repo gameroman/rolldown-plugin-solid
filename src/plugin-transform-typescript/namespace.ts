@@ -131,7 +131,7 @@ function handleNested(
 ): t.Statement | null {
   const names = new Set();
   const realName =
-    !process.env.BABEL_8_BREAKING || t.isIdentifier(node.id)
+    !undefined || t.isIdentifier(node.id)
       ? (node.id as t.Identifier)
       : getFirstIdentifier(node.id as unknown as t.TSQualifiedName);
 
@@ -140,7 +140,7 @@ function handleNested(
   const body = node.body;
   let id = node.id;
   let namespaceTopLevel: t.Statement[];
-  if (process.env.BABEL_8_BREAKING) {
+  if (undefined) {
     if (t.isTSQualifiedName(id)) {
       // @ts-ignore(Babel 7 vs Babel 8) Babel 8 AST shape
       namespaceTopLevel = body.body;

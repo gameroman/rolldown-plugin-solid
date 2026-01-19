@@ -4,7 +4,7 @@ import {
   getConfig,
   getNumberedId,
   getRendererConfig,
-  registerImportMethod
+  registerImportMethod,
 } from "../shared/utils";
 import { setAttr } from "./element";
 
@@ -13,7 +13,11 @@ export function createTemplate(path, result, wrap) {
   if (result.id) {
     registerTemplate(path, result);
     if (
-      !(result.exprs.length || result.dynamics.length || result.postExprs.length) &&
+      !(
+        result.exprs.length ||
+        result.dynamics.length ||
+        result.postExprs.length
+      ) &&
       result.decl.declarations.length === 1
     ) {
       return result.decl.declarations[0].init;
@@ -25,52 +29,58 @@ export function createTemplate(path, result, wrap) {
             result.decl,
             ...result.exprs.concat(
               wrapDynamics(path, result.dynamics) || [],
-              result.postExprs || []
+              result.postExprs || [],
             ),
-            t.returnStatement(result.id)
-          ])
+            t.returnStatement(result.id),
+          ]),
         ),
-        []
+        [],
       );
     }
   }
   if (wrap && result.dynamic && config.memoWrapper) {
-    return t.callExpression(registerImportMethod(path, config.memoWrapper), [result.exprs[0]]);
+    return t.callExpression(registerImportMethod(path, config.memoWrapper), [
+      result.exprs[0],
+    ]);
   }
   return result.exprs[0];
 }
 
 export function appendTemplates(path, templates) {
-  const declarators = templates.map(template => {
+  const declarators = templates.map((template) => {
     const tmpl = {
       cooked: template.template,
-      raw: escapeStringForTemplate(template.template)
+      raw: escapeStringForTemplate(template.template),
     };
 
     const shouldUseImportNode = template.isCE || template.isImportNode;
     const isMathML =
       /^<(math|annotation|annotation-xml|maction|math|merror|mfrac|mi|mmultiscripts|mn|mo|mover|mpadded|mphantom|mprescripts|mroot|mrow|ms|mspace|msqrt|mstyle|msub|msubsup|msup|mtable|mtd|mtext|mtr|munder|munderover|semantics|menclose|mfenced)(\s|>)/.test(
-        template.template
+        template.template,
       );
 
     return t.variableDeclarator(
       template.id,
       t.addComment(
         t.callExpression(
-          registerImportMethod(path, "template", getRendererConfig(path, "dom").moduleName),
+          registerImportMethod(
+            path,
+            "template",
+            getRendererConfig(path, "dom").moduleName,
+          ),
           [t.templateLiteral([t.templateElement(tmpl, true)], [])].concat(
             template.isSVG || shouldUseImportNode || isMathML
               ? [
                   t.booleanLiteral(!!shouldUseImportNode),
                   t.booleanLiteral(template.isSVG),
-                  t.booleanLiteral(isMathML)
+                  t.booleanLiteral(isMathML),
                 ]
-              : []
-          )
+              : [],
+          ),
         ),
         "leading",
-        "#__PURE__"
-      )
+        "#__PURE__",
+      ),
     );
   });
   path.node.body.unshift(t.variableDeclaration("var", declarators));
@@ -85,7 +95,9 @@ function registerTemplate(path, results) {
       const templates =
         path.scope.getProgramParent().data.templates ||
         (path.scope.getProgramParent().data.templates = []);
-      if ((templateDef = templates.find(t => t.template === results.template))) {
+      if (
+        (templateDef = templates.find((t) => t.template === results.template))
+      ) {
         templateId = templateDef.id;
       } else {
         templateId = path.scope.generateUidIdentifier("tmpl$");
@@ -96,7 +108,7 @@ function registerTemplate(path, results) {
           isSVG: results.isSVG,
           isCE: results.hasCustomElement,
           isImportNode: results.isImportNode,
-          renderer: "dom"
+          renderer: "dom",
         });
       }
     }
@@ -104,10 +116,14 @@ function registerTemplate(path, results) {
       results.id,
       hydratable
         ? t.callExpression(
-            registerImportMethod(path, "getNextElement", getRendererConfig(path, "dom").moduleName),
-            templateId ? [templateId] : []
+            registerImportMethod(
+              path,
+              "getNextElement",
+              getRendererConfig(path, "dom").moduleName,
+            ),
+            templateId ? [templateId] : [],
           )
-        : t.callExpression(templateId, [])
+        : t.callExpression(templateId, []),
     );
   }
   results.declarations.unshift(decl);
@@ -129,13 +145,20 @@ function wrapDynamics(path, dynamics) {
         ? t.identifier("_$p")
         : undefined;
     if (dynamicStyle) {
-      dynamics[0].value = t.assignmentExpression("=", prevValue, dynamics[0].value);
+      dynamics[0].value = t.assignmentExpression(
+        "=",
+        prevValue,
+        dynamics[0].value,
+      );
     } else if (
       dynamics[0].key.startsWith("class:") &&
       !t.isBooleanLiteral(dynamics[0].value) &&
       !t.isUnaryExpression(dynamics[0].value)
     ) {
-      dynamics[0].value = t.unaryExpression("!", t.unaryExpression("!", dynamics[0].value));
+      dynamics[0].value = t.unaryExpression(
+        "!",
+        t.unaryExpression("!", dynamics[0].value),
+      );
     }
 
     return t.expressionStatement(
@@ -147,10 +170,10 @@ function wrapDynamics(path, dynamics) {
             isCE: dynamics[0].isCE,
             tagName: dynamics[0].tagName,
             dynamic: true,
-            prevId: prevValue
-          })
-        )
-      ])
+            prevId: prevValue,
+          }),
+        ),
+      ]),
     );
   }
 
@@ -169,7 +192,11 @@ function wrapDynamics(path, dynamics) {
     const propIdent = t.identifier(getNumberedId(index));
     const propMember = t.memberExpression(prevId, propIdent);
 
-    if (key.startsWith("class:") && !t.isBooleanLiteral(value) && !t.isUnaryExpression(value)) {
+    if (
+      key.startsWith("class:") &&
+      !t.isBooleanLiteral(value) &&
+      !t.isUnaryExpression(value)
+    ) {
       value = t.unaryExpression("!", t.unaryExpression("!", value));
     }
 
@@ -187,10 +214,10 @@ function wrapDynamics(path, dynamics) {
               isCE,
               tagName,
               dynamic: true,
-              prevId: propMember
-            })
-          )
-        )
+              prevId: propMember,
+            }),
+          ),
+        ),
       );
     } else {
       const prev = key.startsWith("style:") ? varIdent : undefined;
@@ -199,15 +226,21 @@ function wrapDynamics(path, dynamics) {
           t.logicalExpression(
             "&&",
             t.binaryExpression("!==", varIdent, propMember),
-            setAttr(path, elem, key, t.assignmentExpression("=", propMember, varIdent), {
-              isSVG,
-              isCE,
-              tagName,
-              dynamic: true,
-              prevId: prev
-            })
-          )
-        )
+            setAttr(
+              path,
+              elem,
+              key,
+              t.assignmentExpression("=", propMember, varIdent),
+              {
+                isSVG,
+                isCE,
+                tagName,
+                dynamic: true,
+                prevId: prev,
+              },
+            ),
+          ),
+        ),
       );
     }
   });
@@ -219,10 +252,12 @@ function wrapDynamics(path, dynamics) {
         t.blockStatement([
           t.variableDeclaration("var", declarations),
           ...statements,
-          t.returnStatement(prevId)
-        ])
+          t.returnStatement(prevId),
+        ]),
       ),
-      t.objectExpression(properties.map(id => t.objectProperty(id, t.identifier("undefined"))))
-    ])
+      t.objectExpression(
+        properties.map((id) => t.objectProperty(id, t.identifier("undefined"))),
+      ),
+    ]),
   );
 }

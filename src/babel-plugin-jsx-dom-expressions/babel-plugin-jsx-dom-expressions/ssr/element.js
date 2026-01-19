@@ -1,26 +1,26 @@
 import * as t from "@babel/types";
 import { decode } from "html-entities";
 import {
-  BooleanAttributes,
   Aliases,
+  BooleanAttributes,
   ChildProperties,
-  SVGElements
+  SVGElements,
 } from "../../dom-expressions/constants";
-import VoidElements from "../VoidElements";
+import { getCreateTemplate, transformNode } from "../shared/transform";
 import {
-  getTagName,
-  registerImportMethod,
-  filterChildren,
   checkLength,
+  convertJSXIdentifier,
   escapeHTML,
-  reservedNameSpaces,
+  filterChildren,
   getConfig,
-  trimWhitespace,
-  isDynamic,
+  getTagName,
   isComponent,
-  convertJSXIdentifier
+  isDynamic,
+  registerImportMethod,
+  reservedNameSpaces,
+  trimWhitespace,
 } from "../shared/utils";
-import { transformNode, getCreateTemplate } from "../shared/transform";
+import VoidElements from "../VoidElements";
 import { createTemplate } from "./template";
 
 function appendToTemplate(template, value) {
@@ -38,7 +38,9 @@ export function transformElement(path, info) {
   if (tagName === "script" || tagName === "style") path.doNotEscape = true;
 
   // contains spread attributes
-  if (path.node.openingElement.attributes.some(a => t.isJSXSpreadAttribute(a)))
+  if (
+    path.node.openingElement.attributes.some((a) => t.isJSXSpreadAttribute(a))
+  )
     return createElement(path, { ...info, ...config });
 
   const voidTag = VoidElements.indexOf(tagName) > -1,
@@ -50,7 +52,7 @@ export function transformElement(path, info) {
       dynamics: [],
       tagName,
       wontEscape: path.node.wontEscape,
-      renderer: "ssr"
+      renderer: "ssr",
     };
 
   if (info.topLevel && config.hydratable) {
@@ -68,16 +70,18 @@ export function transformElement(path, info) {
               "get",
               t.identifier("children"),
               [],
-              t.blockStatement([t.returnStatement(createTemplate(path, child))])
-            )
-          ])
-        ])
+              t.blockStatement([
+                t.returnStatement(createTemplate(path, child)),
+              ]),
+            ),
+          ]),
+        ]),
       );
       return results;
     }
     results.template.push("");
     results.templateValues.push(
-      t.callExpression(registerImportMethod(path, "ssrHydrationKey"), [])
+      t.callExpression(registerImportMethod(path, "ssrHydrationKey"), []),
     );
   }
   transformAttributes(path, results, { ...config, ...info });
@@ -98,23 +102,30 @@ function toAttribute(key, isSVG) {
 function setAttr(attribute, results, name, value, isSVG) {
   // strip out namespaces for now, everything at this point is an attribute
   let parts, namespace;
-  if ((parts = name.split(":")) && parts[1] && reservedNameSpaces.has(parts[0])) {
+  if (
+    (parts = name.split(":")) &&
+    parts[1] &&
+    reservedNameSpaces.has(parts[0])
+  ) {
     name = parts[1];
     namespace = parts[0];
   }
 
   name = toAttribute(name, isSVG);
-  const attr = t.callExpression(registerImportMethod(attribute, "ssrAttribute"), [
-    t.stringLiteral(name),
-    value,
-    t.booleanLiteral(false)
-  ]);
+  const attr = t.callExpression(
+    registerImportMethod(attribute, "ssrAttribute"),
+    [t.stringLiteral(name), value, t.booleanLiteral(false)],
+  );
   if (results.template[results.template.length - 1].length) {
     results.template.push("");
     results.templateValues.push(attr);
   } else {
     const last = results.templateValues.length - 1;
-    results.templateValues[last] = t.binaryExpression("+", results.templateValues[last], attr);
+    results.templateValues[last] = t.binaryExpression(
+      "+",
+      results.templateValues[last],
+      attr,
+    );
   }
 }
 
@@ -125,65 +136,117 @@ function escapeExpression(path, expression, attr, escapeLiterals) {
     (t.isTemplateLiteral(expression) && expression.expressions.length === 0)
   ) {
     if (escapeLiterals) {
-      if (t.isStringLiteral(expression)) return t.stringLiteral(escapeHTML(expression.value, attr));
+      if (t.isStringLiteral(expression))
+        return t.stringLiteral(escapeHTML(expression.value, attr));
       else if (t.isTemplateLiteral(expression))
-        return t.stringLiteral(escapeHTML(expression.quasis[0].value.raw, attr));
+        return t.stringLiteral(
+          escapeHTML(expression.quasis[0].value.raw, attr),
+        );
     }
     return expression;
   } else if (t.isFunction(expression)) {
     if (t.isBlockStatement(expression.body)) {
-      expression.body.body = expression.body.body.map(e => {
-        if (t.isReturnStatement(e))
-          e.argument = escapeExpression(path, e.argument, attr, escapeLiterals);
-        return e;
-      });
-    } else expression.body = escapeExpression(path, expression.body, attr, escapeLiterals);
-    return expression;
-  } else if (t.isTemplateLiteral(expression)) {
-    expression.expressions = expression.expressions.map(e =>
-      escapeExpression(path, e, attr, escapeLiterals)
-    );
-    return expression;
-  } else if (t.isUnaryExpression(expression)) {
-    return expression;
-  } else if (t.isBinaryExpression(expression)) {
-    expression.left = escapeExpression(path, expression.left, attr, escapeLiterals);
-    expression.right = escapeExpression(path, expression.right, attr, escapeLiterals);
-    return expression;
-  } else if (t.isConditionalExpression(expression)) {
-    expression.consequent = escapeExpression(path, expression.consequent, attr, escapeLiterals);
-    expression.alternate = escapeExpression(path, expression.alternate, attr, escapeLiterals);
-    return expression;
-  } else if (t.isLogicalExpression(expression)) {
-    expression.right = escapeExpression(path, expression.right, attr, escapeLiterals);
-    if (expression.operator !== "&&") {
-      expression.left = escapeExpression(path, expression.left, attr, escapeLiterals);
-    }
-    return expression;
-  } else if (t.isCallExpression(expression) && t.isFunction(expression.callee)) {
-    if (t.isBlockStatement(expression.callee.body)) {
-      expression.callee.body.body = expression.callee.body.body.map(e => {
+      expression.body.body = expression.body.body.map((e) => {
         if (t.isReturnStatement(e))
           e.argument = escapeExpression(path, e.argument, attr, escapeLiterals);
         return e;
       });
     } else
-      expression.callee.body = escapeExpression(path, expression.callee.body, attr, escapeLiterals);
+      expression.body = escapeExpression(
+        path,
+        expression.body,
+        attr,
+        escapeLiterals,
+      );
     return expression;
-  } else if (t.isJSXElement(expression) && !isComponent(getTagName(expression))) {
+  } else if (t.isTemplateLiteral(expression)) {
+    expression.expressions = expression.expressions.map((e) =>
+      escapeExpression(path, e, attr, escapeLiterals),
+    );
+    return expression;
+  } else if (t.isUnaryExpression(expression)) {
+    return expression;
+  } else if (t.isBinaryExpression(expression)) {
+    expression.left = escapeExpression(
+      path,
+      expression.left,
+      attr,
+      escapeLiterals,
+    );
+    expression.right = escapeExpression(
+      path,
+      expression.right,
+      attr,
+      escapeLiterals,
+    );
+    return expression;
+  } else if (t.isConditionalExpression(expression)) {
+    expression.consequent = escapeExpression(
+      path,
+      expression.consequent,
+      attr,
+      escapeLiterals,
+    );
+    expression.alternate = escapeExpression(
+      path,
+      expression.alternate,
+      attr,
+      escapeLiterals,
+    );
+    return expression;
+  } else if (t.isLogicalExpression(expression)) {
+    expression.right = escapeExpression(
+      path,
+      expression.right,
+      attr,
+      escapeLiterals,
+    );
+    if (expression.operator !== "&&") {
+      expression.left = escapeExpression(
+        path,
+        expression.left,
+        attr,
+        escapeLiterals,
+      );
+    }
+    return expression;
+  } else if (
+    t.isCallExpression(expression) &&
+    t.isFunction(expression.callee)
+  ) {
+    if (t.isBlockStatement(expression.callee.body)) {
+      expression.callee.body.body = expression.callee.body.body.map((e) => {
+        if (t.isReturnStatement(e))
+          e.argument = escapeExpression(path, e.argument, attr, escapeLiterals);
+        return e;
+      });
+    } else
+      expression.callee.body = escapeExpression(
+        path,
+        expression.callee.body,
+        attr,
+        escapeLiterals,
+      );
+    return expression;
+  } else if (
+    t.isJSXElement(expression) &&
+    !isComponent(getTagName(expression))
+  ) {
     expression.wontEscape = true;
     return expression;
   }
 
   return t.callExpression(
     registerImportMethod(path, "escape"),
-    [expression].concat(attr ? [t.booleanLiteral(true)] : [])
+    [expression].concat(attr ? [t.booleanLiteral(true)] : []),
   );
 }
 
 function transformToObject(attrName, attributes, selectedAttributes) {
   const properties = [];
-  const existingAttribute = attributes.find(a => a.node.name.name === attrName);
+  const existingAttribute = attributes.find(
+    (a) => a.node.name.name === attrName,
+  );
   for (let i = 0; i < selectedAttributes.length; i++) {
     const attr = selectedAttributes[i].node;
     const computed = !t.isValidIdentifier(attr.name.name.name);
@@ -193,8 +256,10 @@ function transformToObject(attrName, attributes, selectedAttributes) {
     properties.push(
       t.objectProperty(
         computed ? t.stringLiteral(attr.name.name.name) : attr.name.name,
-        t.isJSXExpressionContainer(attr.value) ? attr.value.expression : attr.value
-      )
+        t.isJSXExpressionContainer(attr.value)
+          ? attr.value.expression
+          : attr.value,
+      ),
     );
     (existingAttribute || i) && attributes.splice(selectedAttributes[i].key, 1);
   }
@@ -207,7 +272,7 @@ function transformToObject(attrName, attributes, selectedAttributes) {
   } else {
     selectedAttributes[0].node = t.jsxAttribute(
       t.jsxIdentifier(attrName),
-      t.jsxExpressionContainer(t.objectExpression(properties))
+      t.jsxExpressionContainer(t.objectExpression(properties)),
     );
   }
 }
@@ -215,19 +280,23 @@ function transformToObject(attrName, attributes, selectedAttributes) {
 function normalizeAttributes(path) {
   const attributes = path.get("openingElement").get("attributes"),
     styleAttributes = attributes.filter(
-      a => t.isJSXNamespacedName(a.node.name) && a.node.name.namespace.name === "style"
+      (a) =>
+        t.isJSXNamespacedName(a.node.name) &&
+        a.node.name.namespace.name === "style",
     ),
     classNamespaceAttributes = attributes.filter(
-      a => t.isJSXNamespacedName(a.node.name) && a.node.name.namespace.name === "class"
+      (a) =>
+        t.isJSXNamespacedName(a.node.name) &&
+        a.node.name.namespace.name === "class",
     );
   if (classNamespaceAttributes.length)
     transformToObject("classList", attributes, classNamespaceAttributes);
   const classAttributes = attributes.filter(
-    a =>
+    (a) =>
       a.node.name &&
       (a.node.name.name === "class" ||
         a.node.name.name === "className" ||
-        a.node.name.name === "classList")
+        a.node.name.name === "classList"),
   );
   // combine class propertoes
   if (classAttributes.length > 1) {
@@ -241,19 +310,27 @@ function normalizeAttributes(path) {
         const prev = quasis.pop();
         quasis.push(
           t.templateElement({
-            raw: (prev ? prev.value.raw : "") + `${attr.value.value}` + (isLast ? "" : " ")
-          })
+            raw:
+              (prev ? prev.value.raw : "") +
+              `${attr.value.value}` +
+              (isLast ? "" : " "),
+          }),
         );
       } else {
         let expr = attr.value.expression;
         if (attr.name.name === "classList") {
-          if (t.isObjectExpression(expr) && !expr.properties.some(p => t.isSpreadElement(p))) {
+          if (
+            t.isObjectExpression(expr) &&
+            !expr.properties.some((p) => t.isSpreadElement(p))
+          ) {
             transformClasslistObject(path, expr, values, quasis);
             if (!isLast) quasis[quasis.length - 1].value.raw += " ";
             i && attributes.splice(attributes.indexOf(classAttributes[i]), 1);
             continue;
           }
-          expr = t.callExpression(registerImportMethod(path, "ssrClassList"), [expr]);
+          expr = t.callExpression(registerImportMethod(path, "ssrClassList"), [
+            expr,
+          ]);
         }
         values.push(t.logicalExpression("||", expr, t.stringLiteral("")));
         quasis.push(t.templateElement({ raw: isLast ? "" : " " }));
@@ -263,7 +340,8 @@ function normalizeAttributes(path) {
     first.name = t.jsxIdentifier("class");
     first.value = t.jsxExpressionContainer(t.templateLiteral(quasis, values));
   }
-  if (styleAttributes.length) transformToObject("style", attributes, styleAttributes);
+  if (styleAttributes.length)
+    transformToObject("style", attributes, styleAttributes);
   return attributes;
 }
 
@@ -274,7 +352,7 @@ function transformAttributes(path, results, info) {
     attributes = normalizeAttributes(path);
   let children;
 
-  attributes.forEach(attribute => {
+  attributes.forEach((attribute) => {
     const node = attribute.node;
 
     let value = node.value,
@@ -282,12 +360,16 @@ function transformAttributes(path, results, info) {
         ? `${node.name.namespace.name}:${node.name.name.name}`
         : node.name.name,
       reservedNameSpace =
-        t.isJSXNamespacedName(node.name) && reservedNameSpaces.has(node.name.namespace.name);
+        t.isJSXNamespacedName(node.name) &&
+        reservedNameSpaces.has(node.name.namespace.name);
     if (
-      ((t.isJSXNamespacedName(node.name) && reservedNameSpace) || ChildProperties.has(key)) &&
+      ((t.isJSXNamespacedName(node.name) && reservedNameSpace) ||
+        ChildProperties.has(key)) &&
       !t.isJSXExpressionContainer(value)
     ) {
-      node.value = value = t.jsxExpressionContainer(value || t.jsxEmptyExpression());
+      node.value = value = t.jsxExpressionContainer(
+        value || t.jsxEmptyExpression(),
+      );
     }
 
     if (
@@ -308,8 +390,17 @@ function transformAttributes(path, results, info) {
       )
         return;
       else if (ChildProperties.has(key)) {
-        if (info.hydratable && key === "textContent" && value && value.expression) {
-          value.expression = t.logicalExpression("||", value.expression, t.stringLiteral(" "));
+        if (
+          info.hydratable &&
+          key === "textContent" &&
+          value &&
+          value.expression
+        ) {
+          value.expression = t.logicalExpression(
+            "||",
+            value.expression,
+            t.stringLiteral(" "),
+          );
         }
         if (key === "innerHTML") path.doNotEscape = true;
         children = value;
@@ -318,11 +409,10 @@ function transformAttributes(path, results, info) {
         if (key.startsWith("attr:")) key = key.replace("attr:", "");
         if (BooleanAttributes.has(key)) {
           results.template.push("");
-          const fn = t.callExpression(registerImportMethod(attribute, "ssrAttribute"), [
-            t.stringLiteral(key),
-            value.expression,
-            t.booleanLiteral(true)
-          ]);
+          const fn = t.callExpression(
+            registerImportMethod(attribute, "ssrAttribute"),
+            [t.stringLiteral(key), value.expression, t.booleanLiteral(true)],
+          );
           results.templateValues.push(fn);
           return;
         }
@@ -330,15 +420,17 @@ function transformAttributes(path, results, info) {
           if (
             t.isJSXExpressionContainer(value) &&
             t.isObjectExpression(value.expression) &&
-            !value.expression.properties.some(p => t.isSpreadElement(p))
+            !value.expression.properties.some((p) => t.isSpreadElement(p))
           ) {
             const props = value.expression.properties.map((p, i) =>
               t.callExpression(registerImportMethod(path, "ssrStyleProperty"), [
                 t.stringLiteral(
-                  (i ? ";" : "") + (t.isIdentifier(p.key) ? p.key.name : p.key.value) + ":"
+                  (i ? ";" : "") +
+                    (t.isIdentifier(p.key) ? p.key.name : p.key.value) +
+                    ":",
                 ),
-                escapeExpression(path, p.value, true, true)
-              ])
+                escapeExpression(path, p.value, true, true),
+              ]),
             );
 
             let res = props[0];
@@ -347,33 +439,41 @@ function transformAttributes(path, results, info) {
             }
             value.expression = res;
           } else {
-            value.expression = t.callExpression(registerImportMethod(path, "ssrStyle"), [
-              value.expression
-            ]);
+            value.expression = t.callExpression(
+              registerImportMethod(path, "ssrStyle"),
+              [value.expression],
+            );
           }
           doEscape = false;
         }
         if (key === "classList") {
           if (
             t.isObjectExpression(value.expression) &&
-            !value.expression.properties.some(p => t.isSpreadElement(p))
+            !value.expression.properties.some((p) => t.isSpreadElement(p))
           ) {
             const values = [],
               quasis = [t.templateElement({ raw: "" })];
             transformClasslistObject(path, value.expression, values, quasis);
-            if (!values.length) value.expression = t.stringLiteral(quasis[0].value.raw);
-            else if (values.length === 1 && !quasis[0].value.raw && !quasis[1].value.raw) {
+            if (!values.length)
+              value.expression = t.stringLiteral(quasis[0].value.raw);
+            else if (
+              values.length === 1 &&
+              !quasis[0].value.raw &&
+              !quasis[1].value.raw
+            ) {
               value.expression = values[0];
             } else value.expression = t.templateLiteral(quasis, values);
           } else {
-            value.expression = t.callExpression(registerImportMethod(path, "ssrClassList"), [
-              value.expression
-            ]);
+            value.expression = t.callExpression(
+              registerImportMethod(path, "ssrClassList"),
+              [value.expression],
+            );
           }
           key = "class";
           doEscape = false;
         }
-        if (doEscape) value.expression = escapeExpression(path, value.expression, true);
+        if (doEscape)
+          value.expression = escapeExpression(path, value.expression, true);
 
         if (!doEscape || t.isLiteral(value.expression)) {
           key = toAttribute(key, isSVG);
@@ -401,7 +501,7 @@ function transformAttributes(path, results, info) {
       appendToTemplate(
         results.template,
         // `String(text)` is needed, as text.length will mess up `attr=10>` becomes `attr>` without it
-        String(text) === "" ? `` : `="${escapeHTML(text, true)}"`
+        String(text) === "" ? `` : `="${escapeHTML(text, true)}"`,
       );
     }
   });
@@ -414,11 +514,12 @@ function transformClasslistObject(path, expr, values, quasis) {
   expr.properties.forEach((prop, i) => {
     const isLast = expr.properties.length - 1 === i;
     let key = prop.key;
-    if (t.isIdentifier(prop.key) && !prop.computed) key = t.stringLiteral(key.name);
+    if (t.isIdentifier(prop.key) && !prop.computed)
+      key = t.stringLiteral(key.name);
     else if (prop.computed) {
       key = t.callExpression(registerImportMethod(path, "escape"), [
         prop.key,
-        t.booleanLiteral(true)
+        t.booleanLiteral(true),
       ]);
     } else key = t.stringLiteral(escapeHTML(prop.key.value));
     if (t.isBooleanLiteral(prop.value)) {
@@ -428,8 +529,11 @@ function transformClasslistObject(path, expr, values, quasis) {
           quasis.push(
             t.templateElement({
               raw:
-                (prev ? prev.value.raw : "") + (i ? " " : "") + `${key.value}` + (isLast ? "" : " ")
-            })
+                (prev ? prev.value.raw : "") +
+                (i ? " " : "") +
+                `${key.value}` +
+                (isLast ? "" : " "),
+            }),
           );
         } else {
           values.push(key);
@@ -437,7 +541,9 @@ function transformClasslistObject(path, expr, values, quasis) {
         }
       }
     } else {
-      values.push(t.conditionalExpression(prop.value, key, t.stringLiteral("")));
+      values.push(
+        t.conditionalExpression(prop.value, key, t.stringLiteral("")),
+      );
       quasis.push(t.templateElement({ raw: isLast ? "" : " " }));
     }
   });
@@ -448,7 +554,7 @@ function transformChildren(path, results, { hydratable }) {
   const filteredChildren = filterChildren(path.get("children"));
   const multi = checkLength(filteredChildren),
     markers = hydratable && multi;
-  filteredChildren.forEach(node => {
+  filteredChildren.forEach((node) => {
     if (t.isJSXElement(node.node) && getTagName(node.node) === "head") {
       const child = transformNode(node, { doNotEscape, hydratable: false });
       registerImportMethod(path, "NoHydration");
@@ -462,17 +568,22 @@ function transformChildren(path, results, { hydratable }) {
               "get",
               t.identifier("children"),
               [],
-              t.blockStatement([t.returnStatement(createTemplate(path, child))])
-            )
-          ])
-        ])
+              t.blockStatement([
+                t.returnStatement(createTemplate(path, child)),
+              ]),
+            ),
+          ]),
+        ]),
       );
       return;
     }
     const child = transformNode(node, { doNotEscape });
     if (!child) return;
     appendToTemplate(results.template, child.template);
-    results.templateValues.push.apply(results.templateValues, child.templateValues || []);
+    results.templateValues.push.apply(
+      results.templateValues,
+      child.templateValues || [],
+    );
     if (child.exprs.length) {
       if (!doNotEscape && !child.spreadElement)
         child.exprs[0] = escapeExpression(path, child.exprs[0]);
@@ -526,7 +637,7 @@ function createElement(path, { topLevel, hydratable }) {
       dynamicSpread = false,
       hasChildren = path.node.children.length > 0;
 
-    attributes.forEach(attribute => {
+    attributes.forEach((attribute) => {
       const node = attribute.node;
       if (t.isJSXSpreadAttribute(node)) {
         if (runningObject.length) {
@@ -535,7 +646,7 @@ function createElement(path, { topLevel, hydratable }) {
         }
         props.push(
           isDynamic(attribute.get("argument"), {
-            checkMember: true
+            checkMember: true,
           }) && (dynamicSpread = true)
             ? t.isCallExpression(node.argument) &&
               !node.argument.arguments.length &&
@@ -543,7 +654,7 @@ function createElement(path, { topLevel, hydratable }) {
               !t.isMemberExpression(node.argument.callee)
               ? node.argument.callee
               : t.arrowFunctionExpression([], node.argument)
-            : node.argument
+            : node.argument,
         );
       } else {
         const value = node.value || t.booleanLiteral(true),
@@ -564,7 +675,7 @@ function createElement(path, { topLevel, hydratable }) {
           if (
             isDynamic(attribute.get("value").get("expression"), {
               checkMember: true,
-              checkTags: true
+              checkTags: true,
             })
           ) {
             let expr = t.arrowFunctionExpression([], value.expression);
@@ -574,18 +685,21 @@ function createElement(path, { topLevel, hydratable }) {
                 id,
                 [],
                 t.blockStatement([t.returnStatement(expr.body)]),
-                !t.isValidIdentifier(key)
-              )
+                !t.isValidIdentifier(key),
+              ),
             );
           } else runningObject.push(t.objectProperty(id, value.expression));
         else runningObject.push(t.objectProperty(id, value));
       }
     });
 
-    if (runningObject.length || !props.length) props.push(t.objectExpression(runningObject));
+    if (runningObject.length || !props.length)
+      props.push(t.objectExpression(runningObject));
 
     if (props.length > 1 || dynamicSpread) {
-      props = [t.callExpression(registerImportMethod(path, "mergeProps"), props)];
+      props = [
+        t.callExpression(registerImportMethod(path, "mergeProps"), props),
+      ];
     }
   }
 
@@ -597,14 +711,16 @@ function createElement(path, { topLevel, hydratable }) {
         ? hydratable
           ? t.arrowFunctionExpression(
               [],
-              childNodes.length === 1 ? childNodes[0] : t.arrayExpression(childNodes)
+              childNodes.length === 1
+                ? childNodes[0]
+                : t.arrayExpression(childNodes),
             )
           : childNodes.length === 1
             ? childNodes[0]
             : t.arrayExpression(childNodes)
         : t.identifier("undefined"),
-      t.booleanLiteral(Boolean(topLevel && config.hydratable))
-    ])
+      t.booleanLiteral(Boolean(topLevel && config.hydratable)),
+    ]),
   ];
   return { exprs, template: "", spreadElement: true };
 }

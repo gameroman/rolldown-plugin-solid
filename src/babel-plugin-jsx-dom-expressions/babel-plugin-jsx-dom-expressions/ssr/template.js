@@ -13,17 +13,18 @@ export function createTemplate(path, result) {
   } else if (result.template.length === 1) {
     template = t.stringLiteral(result.template[0]);
   } else {
-    const strings = result.template.map(tmpl => t.stringLiteral(tmpl));
+    const strings = result.template.map((tmpl) => t.stringLiteral(tmpl));
     template = t.arrayExpression(strings);
   }
 
   const templates =
     path.scope.getProgramParent().data.templates ||
     (path.scope.getProgramParent().data.templates = []);
-  const found = templates.find(tmp => {
+  const found = templates.find((tmp) => {
     if (t.isArrayExpression(tmp.template) && t.isArrayExpression(template)) {
       return tmp.template.elements.every(
-        (el, i) => template.elements[i] && el.value === template.elements[i].value
+        (el, i) =>
+          template.elements[i] && el.value === template.elements[i].value,
       );
     }
     return tmp.template.value === template.value;
@@ -33,13 +34,14 @@ export function createTemplate(path, result) {
     templates.push({
       id,
       template,
-      templateWithClosingTags:template,
-      renderer: "ssr"
+      templateWithClosingTags: template,
+      renderer: "ssr",
     });
   } else id = found.id;
 
   if (result.wontEscape) {
-    if (!Array.isArray(result.template) || result.template.length === 1) return id;
+    if (!Array.isArray(result.template) || result.template.length === 1)
+      return id;
     else if (
       Array.isArray(result.template) &&
       result.template.length === 2 &&
@@ -52,9 +54,9 @@ export function createTemplate(path, result) {
         t.binaryExpression(
           "+",
           t.memberExpression(id, t.numericLiteral(0), true),
-          result.templateValues[0]
+          result.templateValues[0],
         ),
-        t.memberExpression(id, t.numericLiteral(1), true)
+        t.memberExpression(id, t.numericLiteral(1), true),
       );
     }
   }
@@ -62,12 +64,12 @@ export function createTemplate(path, result) {
     registerImportMethod(path, "ssr"),
     Array.isArray(result.template) && result.template.length > 1
       ? [id, ...result.templateValues]
-      : [id]
+      : [id],
   );
 }
 
 export function appendTemplates(path, templates) {
-  const declarators = templates.map(template => {
+  const declarators = templates.map((template) => {
     return t.variableDeclarator(template.id, template.template);
   });
   path.node.body.unshift(t.variableDeclaration("var", declarators));

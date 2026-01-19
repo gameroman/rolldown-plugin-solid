@@ -9,8 +9,8 @@
  * @see https://github.com/ryansolid/dom-expressions/issues/408
  */
 
-import fs from "fs";
 import { execSync as $ } from "child_process";
+import fs from "fs";
 
 process.chdir("packages/dom-expressions/src");
 
@@ -24,7 +24,9 @@ fs.copyFileSync("./jsx-h.d.ts", "./jsx-h.temp.d.ts");
 
 // make each property a one liner in temp file
 
-$(`prettier "./jsx-h.temp.d.ts" --write --no-editorconfig --print-width 100000`);
+$(
+  `prettier "./jsx-h.temp.d.ts" --write --no-editorconfig --print-width 100000`,
+);
 
 // read source
 
@@ -33,15 +35,18 @@ const source = fs.readFileSync("./jsx-h.temp.d.ts").toString().split("\n");
 // remove `-h` types
 
 for (let i = 0; i < source.length; i++) {
-	const line = source[i].trim();
+  const line = source[i].trim();
 
-	if (line.startsWith("type Element")) {
-		// remove `| FunctionElement` from 'type Element'
-		source[i] = line.replace("| FunctionElement", "");
-	} else if (!line.startsWith("type FunctionMaybe") && line.includes("FunctionMaybe")) {
-		// unwrap `FunctionMaybe'
-		source[i] = line.replace(/: FunctionMaybe<([^>]+)>;$/, ": $1");
-	}
+  if (line.startsWith("type Element")) {
+    // remove `| FunctionElement` from 'type Element'
+    source[i] = line.replace("| FunctionElement", "");
+  } else if (
+    !line.startsWith("type FunctionMaybe") &&
+    line.includes("FunctionMaybe")
+  ) {
+    // unwrap `FunctionMaybe'
+    source[i] = line.replace(/: FunctionMaybe<([^>]+)>;$/, ": $1");
+  }
 }
 
 // write result

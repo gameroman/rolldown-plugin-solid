@@ -1,18 +1,23 @@
-import { Aliases, BooleanAttributes, ChildProperties, Properties } from "./constants";
-import { sharedConfig, root } from "rxcore";
+import { root, sharedConfig } from "rxcore";
+import {
+  Aliases,
+  BooleanAttributes,
+  ChildProperties,
+  Properties,
+} from "./constants";
 import { createSerializer, getLocalHeaderScript } from "./serializer";
 
-export { getOwner, createComponent, effect, memo, untrack } from "rxcore";
+export { createComponent, effect, getOwner, memo, untrack } from "rxcore";
 
 export {
-  Properties,
-  ChildProperties,
-  getPropAlias,
   Aliases,
+  ChildProperties,
+  DelegatedEvents,
   DOMElements,
+  getPropAlias,
+  Properties,
   SVGElements,
   SVGNamespace,
-  DelegatedEvents
 } from "./constants.js";
 
 // Based on https://github.com/WebReflection/domtagger/blob/master/esm/sanitizer.js
@@ -32,7 +37,7 @@ export function renderToString(code, options = {}) {
       }
       scripts += script + ";";
     },
-    onError: options.onError
+    onError: options.onError,
   });
   sharedConfig.context = {
     id: renderId || "",
@@ -47,9 +52,9 @@ export function renderToString(code, options = {}) {
     roots: 0,
     nextRoot() {
       return this.renderId + "i-" + this.roots++;
-    }
+    },
   };
-  let html = root(d => {
+  let html = root((d) => {
     setTimeout(d);
     return resolveSSRNode(escape(code()));
   });
@@ -64,9 +69,12 @@ export function renderToStringAsync(code, options = {}) {
   const { timeoutMs = 30000 } = options;
   let timeoutHandle;
   const timeout = new Promise((_, reject) => {
-    timeoutHandle = setTimeout(() => reject("renderToString timed out"), timeoutMs);
+    timeoutHandle = setTimeout(
+      () => reject("renderToString timed out"),
+      timeoutMs,
+    );
   });
-  return Promise.race([renderToStream(code, options), timeout]).then(html => {
+  return Promise.race([renderToStream(code, options), timeout]).then((html) => {
     clearTimeout(timeoutHandle);
     return html;
   });
@@ -76,7 +84,7 @@ export function renderToStream(code, options = {}) {
   let { nonce, onCompleteShell, onCompleteAll, renderId, noScripts } = options;
   let dispose;
   const blockingPromises = [];
-  const pushTask = task => {
+  const pushTask = (task) => {
     if (noScripts) return;
     if (!tasks && !firstFlushed) {
       tasks = getLocalHeaderScript(renderId);
@@ -93,7 +101,7 @@ export function renderToStream(code, options = {}) {
       onCompleteAll({
         write(v) {
           !completed && buffer.write(v);
-        }
+        },
       });
     writable && writable.end();
     completed = true;
@@ -104,7 +112,7 @@ export function renderToStream(code, options = {}) {
     plugins: options.plugins,
     onData: pushTask,
     onDone,
-    onError: options.onError
+    onError: options.onError,
   });
   const flushEnd = () => {
     if (!registry.size) {
@@ -117,7 +125,9 @@ export function renderToStream(code, options = {}) {
   const registry = new Map();
   const writeTasks = () => {
     if (tasks.length && !completed && firstFlushed) {
-      buffer.write(`<script${nonce ? ` nonce="${nonce}"` : ""}>${tasks}</script>`);
+      buffer.write(
+        `<script${nonce ? ` nonce="${nonce}"` : ""}>${tasks}</script>`,
+      );
       tasks = "";
     }
     timer && clearTimeout(timer);
@@ -136,7 +146,7 @@ export function renderToStream(code, options = {}) {
   let buffer = {
     write(payload) {
       tmp += payload;
-    }
+    },
   };
   sharedConfig.context = context = {
     id: renderId || "",
@@ -167,10 +177,10 @@ export function renderToStream(code, options = {}) {
         blockingPromises.push(p);
         !serverOnly &&
           p
-            .then(d => {
+            .then((d) => {
               serializer.write(id, d);
             })
-            .catch(e => {
+            .catch((e) => {
               serializer.write(id, e);
             });
       } else if (!serverOnly) serializer.write(id, p);
@@ -184,13 +194,13 @@ export function renderToStream(code, options = {}) {
         let resolve, reject;
         const p = new Promise((r, rej) => ((resolve = r), (reject = rej)));
         // double queue to ensure that Suspense is last but in same flush
-        registry.set(key, err =>
+        registry.set(key, (err) =>
           queue(() =>
             queue(() => {
               err ? reject(err) : resolve(true);
               queue(flushEnd);
-            })
-          )
+            }),
+          ),
         );
         serializer.write(key, p);
       }
@@ -204,11 +214,22 @@ export function renderToStream(code, options = {}) {
           }
           if (!completed) {
             if (!firstFlushed) {
-              queue(() => (html = replacePlaceholder(html, key, value !== undefined ? value : "")));
+              queue(
+                () =>
+                  (html = replacePlaceholder(
+                    html,
+                    key,
+                    value !== undefined ? value : "",
+                  )),
+              );
               resolve(error);
             } else {
-              buffer.write(`<template id="${key}">${value !== undefined ? value : " "}</template>`);
-              pushTask(`$df("${key}")${!scriptFlushed ? ";" + REPLACE_SCRIPT : ""}`);
+              buffer.write(
+                `<template id="${key}">${value !== undefined ? value : " "}</template>`,
+              );
+              pushTask(
+                `$df("${key}")${!scriptFlushed ? ";" + REPLACE_SCRIPT : ""}`,
+              );
               resolve(error);
               scriptFlushed = true;
             }
@@ -216,10 +237,10 @@ export function renderToStream(code, options = {}) {
         }
         return firstFlushed;
       };
-    }
+    },
   };
 
-  let html = root(d => {
+  let html = root((d) => {
     dispose = d;
     return resolveSSRNode(escape(code()));
   });
@@ -235,7 +256,7 @@ export function renderToStream(code, options = {}) {
       onCompleteShell({
         write(v) {
           !completed && buffer.write(v);
-        }
+        },
       });
     shellCompleted = true;
   }
@@ -247,7 +268,7 @@ export function renderToStream(code, options = {}) {
       }
       if (onCompleteAll) {
         let ogComplete = onCompleteAll;
-        onCompleteAll = options => {
+        onCompleteAll = (options) => {
           ogComplete(options);
           complete();
         };
@@ -271,7 +292,7 @@ export function renderToStream(code, options = {}) {
     pipeTo(w) {
       return allSettled(blockingPromises).then(() => {
         let resolve;
-        const p = new Promise(r => (resolve = r));
+        const p = new Promise((r) => (resolve = r));
         setTimeout(() => {
           doShell();
           const encoder = new TextEncoder();
@@ -281,12 +302,12 @@ export function renderToStream(code, options = {}) {
               writer.releaseLock();
               w.close();
               resolve();
-            }
+            },
           };
           buffer = {
             write(payload) {
               writer.write(encoder.encode(payload));
-            }
+            },
           };
           buffer.write(tmp);
           firstFlushed = true;
@@ -297,7 +318,7 @@ export function renderToStream(code, options = {}) {
         });
         return p;
       });
-    }
+    },
   };
 }
 
@@ -380,12 +401,19 @@ export function ssrElement(tag, props, children, needsId) {
     const value = props[prop];
     if (prop === "style") {
       result += `style="${ssrStyle(value)}"`;
-    } else if (prop === "class" || prop === "className" || prop === "classList") {
+    } else if (
+      prop === "class" ||
+      prop === "className" ||
+      prop === "classList"
+    ) {
       if (classResolved) continue;
       let n;
       result += `class="${
-        escape(((n = props.class) ? n + " " : "") + ((n = props.className) ? n + " " : ""), true) +
-        ssrClassList(props.classList)
+        escape(
+          ((n = props.class) ? n + " " : "") +
+            ((n = props.className) ? n + " " : ""),
+          true,
+        ) + ssrClassList(props.classList)
       }"`;
       classResolved = true;
     } else if (BooleanAttributes.has(prop)) {
@@ -415,7 +443,13 @@ export function ssrElement(tag, props, children, needsId) {
 }
 
 export function ssrAttribute(key, value, isBoolean) {
-  return isBoolean ? (value ? " " + key : "") : value != null ? ` ${key}="${value}"` : "";
+  return isBoolean
+    ? value
+      ? " " + key
+      : ""
+    : value != null
+      ? ` ${key}="${value}"`
+      : "";
 }
 
 export function ssrHydrationKey() {
@@ -485,7 +519,8 @@ export function resolveSSRNode(node, top) {
     let prev = {};
     let mapped = "";
     for (let i = 0, len = node.length; i < len; i++) {
-      if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += `<!--!$-->`;
+      if (!top && typeof prev !== "object" && typeof node[i] !== "object")
+        mapped += `<!--!$-->`;
       mapped += resolveSSRNode((prev = node[i]));
     }
     return mapped;
@@ -511,7 +546,7 @@ export function mergeProps(...sources) {
               const v = (sources[i] || {})[key];
               if (v !== undefined) return v;
             }
-          }
+          },
         });
       }
     }
@@ -535,11 +570,14 @@ export function getAssets() {
   return out;
 }
 
-export function generateHydrationScript({ eventNames = ["click", "input"], nonce } = {}) {
+export function generateHydrationScript({
+  eventNames = ["click", "input"],
+  nonce,
+} = {}) {
   return `<script${
     nonce ? ` nonce="${nonce}"` : ""
   }>window._$HY||(e=>{let t=e=>e&&e.hasAttribute&&(e.hasAttribute("data-hk")?e:t(e.host&&e.host.nodeType?e.host:e.parentNode));["${eventNames.join(
-    '", "'
+    '", "',
   )}"].forEach((o=>document.addEventListener(o,(o=>{if(!e.events)return;let s=t(o.composedPath&&o.composedPath()[0]||o.target);s&&!e.completed.has(s)&&e.events.push([s,o])}))))})(_$HY={events:[],completed:new WeakSet,r:{},fe(){}});</script><!--xs-->`;
 }
 
@@ -550,7 +588,7 @@ export function Hydration(props) {
     ...context,
     count: 0,
     id: sharedConfig.getNextContextId(),
-    noHydrate: false
+    noHydrate: false,
   };
   const res = props.children;
   sharedConfig.context = context;
@@ -618,7 +656,7 @@ export function getRequestEvent() {
     ? globalThis[RequestContext].getStore() ||
         (sharedConfig.context && sharedConfig.context.event) ||
         console.log(
-          "RequestEvent is missing. This is most likely due to accessing `getRequestEvent` non-managed async scope in a partially polyfilled environment. Try moving it above all `await` calls."
+          "RequestEvent is missing. This is most likely due to accessing `getRequestEvent` non-managed async scope in a partially polyfilled environment. Try moving it above all `await` calls.",
         )
     : undefined;
 }
@@ -637,7 +675,7 @@ export function pipeToNodeWritable(code, writable, options = {}) {
         write,
         startWriting() {
           stream.pipe(writable);
-        }
+        },
       });
     };
   }
@@ -654,7 +692,7 @@ export function pipeToWritable(code, writable, options = {}) {
         write,
         startWriting() {
           stream.pipeTo(writable);
-        }
+        },
       });
     };
   }
@@ -673,13 +711,18 @@ export function ssrSpread(props, isSVG, skipChildren) {
   for (let i = 0; i < keys.length; i++) {
     let prop = keys[i];
     if (prop === "children") {
-      !skipChildren && console.warn(`SSR currently does not support spread children.`);
+      !skipChildren &&
+        console.warn(`SSR currently does not support spread children.`);
       continue;
     }
     const value = props[prop];
     if (prop === "style") {
       result += `style="${ssrStyle(value)}"`;
-    } else if (prop === "class" || prop === "className" || prop === "classList") {
+    } else if (
+      prop === "class" ||
+      prop === "className" ||
+      prop === "classList"
+    ) {
       if (classResolved) continue;
       let n;
       result += `class="${(n = props.class) ? n + " " : ""}${
@@ -730,11 +773,11 @@ export {
   notSup as getNextElement,
   notSup as getNextMatch,
   notSup as getNextMarker,
-  notSup as runHydrationEvents
+  notSup as runHydrationEvents,
 };
 
 function notSup() {
   throw new Error(
-    "Client-only API called on the server side. Run client-only code in onMount, or conditionally run client-only component with <Show>."
+    "Client-only API called on the server side. Run client-only code in onMount, or conditionally run client-only component with <Show>.",
   );
 }

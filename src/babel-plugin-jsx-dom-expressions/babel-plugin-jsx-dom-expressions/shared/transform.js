@@ -5,18 +5,18 @@ import { transformElement as transformElementSSR } from "../ssr/element";
 import { createTemplate as createTemplateSSR } from "../ssr/template";
 import { transformElement as transformElementUniversal } from "../universal/element";
 import { createTemplate as createTemplateUniversal } from "../universal/template";
+import transformComponent from "./component";
+import transformFragmentChildren from "./fragment";
 import {
+  escapeHTML,
+  getConfig,
+  getStaticExpression,
   getTagName,
   isComponent,
   isDynamic,
-  trimWhitespace,
   transformCondition,
-  getStaticExpression,
-  escapeHTML,
-  getConfig
+  trimWhitespace,
 } from "./utils";
-import transformComponent from "./component";
-import transformFragmentChildren from "./fragment";
 
 export function transformJSX(path, state) {
   if (state.skip) return;
@@ -30,8 +30,8 @@ export function transformJSX(path, state) {
       ? {}
       : {
           topLevel: true,
-          lastElement: true
-        }
+          lastElement: true,
+        },
   );
 
   const template = getCreateTemplate(config, path, result);
@@ -47,7 +47,7 @@ export function transformJSX(path, state) {
       ) {
         path.node.leadingComments.shift();
       }
-    }
+    },
   });
 }
 
@@ -86,28 +86,31 @@ export function transformThis(path) {
           }
         }
       }
-    }
+    },
   });
-  return node => {
+  return (node) => {
     if (thisId) {
       if (!parent || parent.block.type === "ClassMethod") {
         const decl = t.variableDeclaration("const", [
-          t.variableDeclarator(thisId, t.thisExpression())
+          t.variableDeclarator(thisId, t.thisExpression()),
         ]);
         if (parent) {
           const stmt = path.getStatementParent();
           stmt.insertBefore(decl);
         } else {
           return t.callExpression(
-            t.arrowFunctionExpression([], t.blockStatement([decl, t.returnStatement(node)])),
-            []
+            t.arrowFunctionExpression(
+              [],
+              t.blockStatement([decl, t.returnStatement(node)]),
+            ),
+            [],
           );
         }
       } else {
         parent.push({
           id: thisId,
           init: t.thisExpression(),
-          kind: "const"
+          kind: "const",
         });
       }
     }
@@ -126,7 +129,10 @@ export function transformNode(path, info = {}) {
     // <><div /><Component /></>
     transformFragmentChildren(path.get("children"), results, config);
     return results;
-  } else if (t.isJSXText(node) || (staticValue = getStaticExpression(path)) !== false) {
+  } else if (
+    t.isJSXText(node) ||
+    (staticValue = getStaticExpression(path)) !== false
+  ) {
     const text =
       staticValue !== undefined
         ? info.doNotEscape
@@ -140,7 +146,7 @@ export function transformNode(path, info = {}) {
       exprs: [],
       dynamics: [],
       postExprs: [],
-      text: true
+      text: true,
     };
     if (!info.skipId && config.generate !== "ssr")
       results.id = path.scope.generateUidIdentifier("el$");
@@ -151,7 +157,7 @@ export function transformNode(path, info = {}) {
       !isDynamic(path.get("expression"), {
         checkMember: true,
         checkTags: !!info.componentChild,
-        native: !info.componentChild
+        native: !info.componentChild,
       })
     ) {
       return { exprs: [node.expression], template: "" };
@@ -159,8 +165,12 @@ export function transformNode(path, info = {}) {
     const expr =
       config.wrapConditionals &&
       config.generate !== "ssr" &&
-      (t.isLogicalExpression(node.expression) || t.isConditionalExpression(node.expression))
-        ? transformCondition(path.get("expression"), info.componentChild || info.fragmentChild)
+      (t.isLogicalExpression(node.expression) ||
+        t.isConditionalExpression(node.expression))
+        ? transformCondition(
+            path.get("expression"),
+            info.componentChild || info.fragmentChild,
+          )
         : !info.componentChild &&
             (config.generate !== "ssr" || info.fragmentChild) &&
             t.isCallExpression(node.expression) &&
@@ -176,20 +186,20 @@ export function transformNode(path, info = {}) {
               t.callExpression(
                 t.arrowFunctionExpression(
                   [],
-                  t.blockStatement([expr[0], t.returnStatement(expr[1])])
+                  t.blockStatement([expr[0], t.returnStatement(expr[1])]),
                 ),
-                []
-              )
+                [],
+              ),
             ]
           : [expr],
       template: "",
-      dynamic: true
+      dynamic: true,
     };
   } else if (t.isJSXSpreadChild(node)) {
     if (
       !isDynamic(path.get("expression"), {
         checkMember: true,
-        native: !info.componentChild
+        native: !info.componentChild,
       })
     )
       return { exprs: [node.expression], template: "" };
@@ -197,13 +207,16 @@ export function transformNode(path, info = {}) {
     return {
       exprs: [expr],
       template: "",
-      dynamic: true
+      dynamic: true,
     };
   }
 }
 
 export function getCreateTemplate(config, path, result) {
-  if ((result.tagName && result.renderer === "dom") || config.generate === "dom") {
+  if (
+    (result.tagName && result.renderer === "dom") ||
+    config.generate === "dom"
+  ) {
     return createTemplateDOM;
   }
 
@@ -223,8 +236,8 @@ export function transformElement(config, path, info = {}) {
   // <div ...></div>
   // const element = getTransformElemet(config, path, tagName);
 
-  const tagRenderer = (config.renderers ?? []).find(renderer =>
-    renderer.elements.includes(tagName)
+  const tagRenderer = (config.renderers ?? []).find((renderer) =>
+    renderer.elements.includes(tagName),
   );
 
   if (tagRenderer?.name === "dom" || getConfig(path).generate === "dom") {

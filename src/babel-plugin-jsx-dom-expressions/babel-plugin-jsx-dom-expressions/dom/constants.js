@@ -51,7 +51,7 @@ export const InlineElements = [
   "u",
   "tt",
   "var",
-  "video"
+  "video",
 ];
 
 export const BlockElements = [
@@ -88,5 +88,5 @@ export const BlockElements = [
   "pre",
   "section",
   "table",
-  "ul"
+  "ul",
 ];
