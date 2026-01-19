@@ -28,12 +28,6 @@ export interface CommonJSHook {
   ): string | null;
 }
 
-export function defineCommonJSHook(file: File, hook: CommonJSHook) {
-  let hooks = file.get(commonJSHooksKey);
-  if (!hooks) file.set(commonJSHooksKey, (hooks = []));
-  hooks.push(hook);
-}
-
 function findMap<T, U>(arr: T[] | null, cb: (el: T) => U): U | null {
   if (arr) {
     for (const el of arr) {

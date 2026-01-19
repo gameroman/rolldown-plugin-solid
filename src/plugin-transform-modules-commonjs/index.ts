@@ -14,11 +14,10 @@ import {
 import { declare } from "@babel/helper-plugin-utils";
 
 import { transformDynamicImport } from "./dynamic-import";
-import { defineCommonJSHook, makeInvokers } from "./hooks";
+import { makeInvokers } from "./hooks";
 import { lazyImportsHook } from "./lazy";
-export { defineCommonJSHook };
 
-export interface Options extends PluginOptions {
+interface Options extends PluginOptions {
   allowCommonJSExports?: boolean;
   allowTopLevelThis?: boolean;
   importInterop?: RewriteModuleStatementsAndPrepareHeaderOptions["importInterop"];
