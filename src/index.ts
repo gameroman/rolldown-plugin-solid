@@ -35,9 +35,7 @@ function solidPreset(_context: unknown, options = {}) {
   return { plugins };
 }
 
-// These options are partly taken from vite-plugin-solid:
-
-/** Configuration options for esbuild-plugin-solid */
+/** Configuration options */
 export interface Options {
   /**
    * Pass any additional [babel-plugin-jsx-dom-expressions](https://github.com/ryansolid/dom-expressions/tree/main/packages/babel-plugin-jsx-dom-expressions#plugin-options).
