@@ -1,5 +1,5 @@
-import * as t from "@babel/types";
 import { addNamed } from "@babel/helper-module-imports";
+import * as t from "@babel/types";
 
 export const reservedNameSpaces = new Set([
   "class",
@@ -9,10 +9,17 @@ export const reservedNameSpaces = new Set([
   "use",
   "prop",
   "attr",
-  "bool"
+  "bool",
 ]);
 
-export const nonSpreadNameSpaces = new Set(["class", "style", "use", "prop", "attr", "bool"]);
+export const nonSpreadNameSpaces = new Set([
+  "class",
+  "style",
+  "use",
+  "prop",
+  "attr",
+  "bool",
+]);
 
 export function getConfig(path) {
   return path.hub.file.metadata.config;
@@ -20,7 +27,7 @@ export function getConfig(path) {
 
 export const getRendererConfig = (path, renderer) => {
   const config = getConfig(path);
-  return config?.renderers?.find(r => r.name === renderer) ?? config;
+  return config?.renderers?.find((r) => r.name === renderer) ?? config;
 };
 
 export function registerImportMethod(path, name, moduleName) {
@@ -30,7 +37,7 @@ export function registerImportMethod(path, name, moduleName) {
   moduleName = moduleName || getConfig(path).moduleName;
   if (!imports.has(`${moduleName}:${name}`)) {
     let id = addNamed(path, name, moduleName, {
-      nameHint: `_$${name}`
+      nameHint: `_$${name}`,
     });
     imports.set(`${moduleName}:${name}`, id);
     return id;
@@ -88,7 +95,10 @@ export function hasStaticMarker(object, path) {
   if (object.expression) return hasStaticMarker(object.expression, path);
 }
 
-export function isDynamic(path, { checkMember, checkTags, checkCallExpressions = true, native }) {
+export function isDynamic(
+  path,
+  { checkMember, checkTags, checkCallExpressions = true, native },
+) {
   const config = getConfig(path);
   if (config.generate === "ssr" && native) {
     checkMember = false;
@@ -104,7 +114,12 @@ export function isDynamic(path, { checkMember, checkTags, checkCallExpressions =
     return false;
   }
 
-  if (checkCallExpressions && (t.isCallExpression(expr) || t.isOptionalCallExpression(expr) || t.isTaggedTemplateExpression(expr))) {
+  if (
+    checkCallExpressions &&
+    (t.isCallExpression(expr) ||
+      t.isOptionalCallExpression(expr) ||
+      t.isTaggedTemplateExpression(expr))
+  ) {
     return true;
   }
 
@@ -119,7 +134,7 @@ export function isDynamic(path, { checkMember, checkTags, checkCallExpressions =
           checkMember,
           checkTags,
           checkCallExpressions,
-          native
+          native,
         }))
     ) {
       const binding = path.scope.getBinding(object.name);
@@ -141,7 +156,10 @@ export function isDynamic(path, { checkMember, checkTags, checkCallExpressions =
     return true;
   }
 
-  if (checkTags && (t.isJSXElement(expr) || (t.isJSXFragment(expr) && expr.children.length))) {
+  if (
+    checkTags &&
+    (t.isJSXElement(expr) || (t.isJSXFragment(expr) && expr.children.length))
+  ) {
     return true;
   }
 
@@ -149,7 +167,12 @@ export function isDynamic(path, { checkMember, checkTags, checkCallExpressions =
   path.traverse({
     Function(p) {
       if (t.isObjectMethod(p.node) && p.node.computed) {
-        dynamic = isDynamic(p.get("key"), { checkMember, checkTags, checkCallExpressions, native });
+        dynamic = isDynamic(p.get("key"), {
+          checkMember,
+          checkTags,
+          checkCallExpressions,
+          native,
+        });
       }
       p.skip();
     },
@@ -175,8 +198,10 @@ export function isDynamic(path, { checkMember, checkTags, checkCallExpressions =
       checkTags ? (dynamic = true) && p.stop() : p.skip();
     },
     JSXFragment(p) {
-      checkTags && p.node.children.length ? (dynamic = true) && p.stop() : p.skip();
-    }
+      checkTags && p.node.children.length
+        ? (dynamic = true) && p.stop()
+        : p.skip();
+    },
   });
   return dynamic;
 }
@@ -199,17 +224,25 @@ export function getStaticExpression(path) {
 export function filterChildren(children) {
   return children.filter(
     ({ node: child }) =>
-      !(t.isJSXExpressionContainer(child) && t.isJSXEmptyExpression(child.expression)) &&
-      (!t.isJSXText(child) || !/^[\r\n]\s*$/.test(child.extra.raw))
+      !(
+        t.isJSXExpressionContainer(child) &&
+        t.isJSXEmptyExpression(child.expression)
+      ) &&
+      (!t.isJSXText(child) || !/^[\r\n]\s*$/.test(child.extra.raw)),
   );
 }
 
 export function checkLength(children) {
   let i = 0;
-  children.forEach(path => {
+  children.forEach((path) => {
     const child = path.node;
-    !(t.isJSXExpressionContainer(child) && t.isJSXEmptyExpression(child.expression)) &&
-      (!t.isJSXText(child) || !/^\s*$/.test(child.extra.raw) || /^ *$/.test(child.extra.raw)) &&
+    !(
+      t.isJSXExpressionContainer(child) &&
+      t.isJSXEmptyExpression(child.expression)
+    ) &&
+      (!t.isJSXText(child) ||
+        !/^\s*$/.test(child.extra.raw) ||
+        /^ *$/.test(child.extra.raw)) &&
       i++;
   });
   return i > 1;
@@ -221,7 +254,7 @@ export function trimWhitespace(text) {
     text = text
       .split("\n")
       .map((t, i) => (i ? t.replace(/^\s*/g, "") : t))
-      .filter(s => !/^\s*$/.test(s))
+      .filter((s) => !/^\s*$/.test(s))
       .join(" ");
   }
   return text.replace(/\s+/g, " ");
@@ -232,7 +265,7 @@ export function toEventName(name) {
 }
 
 export function toAttributeName(name) {
-  return name.replace(/([A-Z])/g, g => `-${g[0].toLowerCase()}`);
+  return name.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 }
 
 export function toPropertyName(name) {
@@ -271,7 +304,7 @@ export function transformCondition(path, inline, deep) {
     t.isConditionalExpression(expr) &&
     (isDynamic(path.get("consequent"), {
       checkTags: true,
-      checkMember: true
+      checkMember: true,
     }) ||
       isDynamic(path.get("alternate"), { checkTags: true, checkMember: true }))
   ) {
@@ -284,23 +317,39 @@ export function transformCondition(path, inline, deep) {
         ? t.callExpression(memo, [t.arrowFunctionExpression([], cond)])
         : path.scope.generateUidIdentifier("_c$");
       expr.test = t.callExpression(id, []);
-      if (t.isConditionalExpression(expr.consequent) || t.isLogicalExpression(expr.consequent)) {
-        expr.consequent = transformCondition(path.get("consequent"), true, true);
+      if (
+        t.isConditionalExpression(expr.consequent) ||
+        t.isLogicalExpression(expr.consequent)
+      ) {
+        expr.consequent = transformCondition(
+          path.get("consequent"),
+          true,
+          true,
+        );
       }
-      if (t.isConditionalExpression(expr.alternate) || t.isLogicalExpression(expr.alternate)) {
+      if (
+        t.isConditionalExpression(expr.alternate) ||
+        t.isLogicalExpression(expr.alternate)
+      ) {
         expr.alternate = transformCondition(path.get("alternate"), true, true);
       }
     }
   } else if (t.isLogicalExpression(expr)) {
     let nextPath = path;
     // handle top-level or, ie cond && <A/> || <B/>
-    while (nextPath.node.operator !== "&&" && t.isLogicalExpression(nextPath.node.left)) {
+    while (
+      nextPath.node.operator !== "&&" &&
+      t.isLogicalExpression(nextPath.node.left)
+    ) {
       nextPath = nextPath.get("left");
     }
     nextPath.node.operator === "&&" &&
-      isDynamic(nextPath.get("right"), { checkTags: true, checkMember: true }) &&
+      isDynamic(nextPath.get("right"), {
+        checkTags: true,
+        checkMember: true,
+      }) &&
       (dTest = isDynamic(nextPath.get("left"), {
-        checkMember: true
+        checkMember: true,
       }));
     if (dTest) {
       cond = nextPath.node.left;
@@ -319,18 +368,18 @@ export function transformCondition(path, inline, deep) {
           id,
           config.memoWrapper
             ? t.callExpression(memo, [t.arrowFunctionExpression([], cond)])
-            : t.arrowFunctionExpression([], cond)
-        )
+            : t.arrowFunctionExpression([], cond),
+        ),
       ]),
-      t.arrowFunctionExpression([], expr)
+      t.arrowFunctionExpression([], expr),
     ];
     return deep
       ? t.callExpression(
           t.arrowFunctionExpression(
             [],
-            t.blockStatement([statements[0], t.returnStatement(statements[1])])
+            t.blockStatement([statements[0], t.returnStatement(statements[1])]),
           ),
-          []
+          [],
         )
       : statements;
   }
@@ -392,7 +441,7 @@ export function convertJSXIdentifier(node) {
   } else if (t.isJSXMemberExpression(node)) {
     return t.memberExpression(
       convertJSXIdentifier(node.object),
-      convertJSXIdentifier(node.property)
+      convertJSXIdentifier(node.property),
     );
   } else if (t.isJSXNamespacedName(node)) {
     return t.stringLiteral(`${node.namespace.name}:${node.name.name}`);
@@ -402,7 +451,11 @@ export function convertJSXIdentifier(node) {
 }
 
 export function canNativeSpread(key, { checkNameSpaces } = {}) {
-  if (checkNameSpaces && key.includes(":") && nonSpreadNameSpaces.has(key.split(":")[0]))
+  if (
+    checkNameSpaces &&
+    key.includes(":") &&
+    nonSpreadNameSpaces.has(key.split(":")[0])
+  )
     return false;
   // TODO: figure out how to detect definitely function ref
   if (key === "ref") return false;
@@ -426,7 +479,9 @@ export function getNumberedId(num) {
 }
 
 export function escapeStringForTemplate(str) {
-  return str.replace(/[{\\`\n\t\b\f\v\r\u2028\u2029]/g, ch => templateEscapes.get(ch));
+  return str.replace(/[{\\`\n\t\b\f\v\r\u2028\u2029]/g, (ch) =>
+    templateEscapes.get(ch),
+  );
 }
 
 const templateEscapes = new Map([
@@ -440,5 +495,5 @@ const templateEscapes = new Map([
   ["\v", "\\v"],
   ["\r", "\\r"],
   ["\u2028", "\\u2028"],
-  ["\u2029", "\\u2029"]
+  ["\u2029", "\\u2029"],
 ]);

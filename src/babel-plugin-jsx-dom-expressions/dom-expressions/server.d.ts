@@ -8,7 +8,12 @@ export const SVGElements: Set<string>;
 export const SVGNamespace: Record<string, string>;
 export function getPropAlias(prop: string, tagName: string): string | undefined;
 
-type MountableElement = Element | Document | ShadowRoot | DocumentFragment | Node;
+type MountableElement =
+  | Element
+  | Document
+  | ShadowRoot
+  | DocumentFragment
+  | Node;
 
 export function renderToString<T>(
   fn: () => T,
@@ -16,7 +21,7 @@ export function renderToString<T>(
     nonce?: string;
     renderId?: string;
     onError?: (err: any) => void;
-  }
+  },
 ): string;
 export function renderToStringAsync<T>(
   fn: () => T,
@@ -26,7 +31,7 @@ export function renderToStringAsync<T>(
     renderId?: string;
     noScripts?: boolean;
     onError?: (err: any) => void;
-  }
+  },
 ): Promise<string>;
 export function renderToStream<T>(
   fn: () => T,
@@ -36,23 +41,33 @@ export function renderToStream<T>(
     onCompleteShell?: (info: { write: (v: string) => void }) => void;
     onCompleteAll?: (info: { write: (v: string) => void }) => void;
     onError?: (err: any) => void;
-  }
+  },
 ): {
   pipe: (writable: { write: (v: string) => void }) => void;
   pipeTo: (writable: WritableStream) => Promise<void>;
 };
 
-export function HydrationScript(props: { nonce?: string; eventNames?: string[] }): JSX.Element;
-export function ssr(template: string[] | string, ...nodes: any[]): { t: string };
+export function HydrationScript(props: {
+  nonce?: string;
+  eventNames?: string[];
+}): JSX.Element;
+export function ssr(
+  template: string[] | string,
+  ...nodes: any[]
+): { t: string };
 export function ssrElement(
   name: string,
   props: any,
   children: any,
-  needsId: boolean
+  needsId: boolean,
 ): { t: string };
 export function ssrClassList(value: { [k: string]: boolean }): string;
 export function ssrStyle(value: { [k: string]: string }): string;
-export function ssrAttribute(key: string, value: any, isBoolean: boolean): string;
+export function ssrAttribute(
+  key: string,
+  value: any,
+  isBoolean: boolean,
+): string;
 export function ssrHydrationKey(): string;
 export function resolveSSRNode(node: any): string;
 export function escape(html: string): string;
@@ -61,10 +76,16 @@ export function getAssets(): string;
 export function getHydrationKey(): string;
 export function effect<T>(fn: (prev?: T) => T, init?: T): void;
 export function memo<T>(fn: () => T, equal: boolean): () => T;
-export function createComponent<T>(Comp: (props: T) => JSX.Element, props: T): JSX.Element;
+export function createComponent<T>(
+  Comp: (props: T) => JSX.Element,
+  props: T,
+): JSX.Element;
 export function mergeProps(...sources: unknown[]): unknown;
 export function getOwner(): unknown;
-export function generateHydrationScript(options: { nonce?: string; eventNames?: string[] }): string;
+export function generateHydrationScript(options: {
+  nonce?: string;
+  eventNames?: string[];
+}): string;
 export declare const RequestContext: unique symbol;
 export interface RequestEvent {
   request: Request;
@@ -88,7 +109,7 @@ export function pipeToWritable<T>(
     nonce?: string;
     onReady?: (res: LegacyResults) => void;
     onCompleteAll?: () => void;
-  }
+  },
 ): void;
 export function pipeToNodeWritable<T>(
   fn: () => T,
@@ -97,7 +118,7 @@ export function pipeToNodeWritable<T>(
     nonce?: string;
     onReady?: (res: LegacyResults) => void;
     onCompleteAll?: () => void;
-  }
+  },
 ): void;
 
 export function untrack<T>(fn: () => T): T;
@@ -108,14 +129,14 @@ export function untrack<T>(fn: () => T): T;
 export function classList(
   node: Element,
   value: { [k: string]: boolean },
-  prev?: { [k: string]: boolean }
+  prev?: { [k: string]: boolean },
 ): { [k: string]: boolean };
 
 /** @deprecated not supported on the server side */
 export function style(
   node: Element,
   value: { [k: string]: string },
-  prev?: { [k: string]: string }
+  prev?: { [k: string]: string },
 ): void;
 
 /** @deprecated not supported on the server side */
@@ -123,7 +144,7 @@ export function insert<T>(
   parent: MountableElement,
   accessor: (() => T) | T,
   marker?: Node | null,
-  init?: JSX.Element
+  init?: JSX.Element,
 ): JSX.Element;
 
 /** @deprecated not supported on the server side */
@@ -131,7 +152,7 @@ export function spread<T>(
   node: Element,
   accessor: T,
   isSVG?: Boolean,
-  skipChildren?: Boolean
+  skipChildren?: Boolean,
 ): void;
 
 /** @deprecated not supported on the server side */
@@ -141,32 +162,49 @@ export function dynamicProperty(props: unknown, key: string): unknown;
 /** @deprecated not supported on the server side */
 export function setAttribute(node: Element, name: string, value: string): void;
 /** @deprecated not supported on the server side */
-export function setAttributeNS(node: Element, namespace: string, name: string, value: string): void;
+export function setAttributeNS(
+  node: Element,
+  namespace: string,
+  name: string,
+  value: string,
+): void;
 
 /** @deprecated not supported on the server side */
 export function addEventListener(
   node: Element,
   name: string,
   handler: () => void,
-  delegate: boolean
+  delegate: boolean,
 ): void;
 
 /** @deprecated not supported on the server side */
-export function render(code: () => JSX.Element, element: MountableElement): () => void;
+export function render(
+  code: () => JSX.Element,
+  element: MountableElement,
+): () => void;
 /** @deprecated not supported on the server side */
-export function template(html: string, isCE?: boolean, isSVG?: boolean): () => Element;
+export function template(
+  html: string,
+  isCE?: boolean,
+  isSVG?: boolean,
+): () => Element;
 /** @deprecated not supported on the server side */
 export function setProperty(node: Element, name: string, value: any): void;
 /** @deprecated not supported on the server side */
 export function className(node: Element, value: string): void;
 /** @deprecated not supported on the server side */
-export function assign(node: Element, props: any, isSVG?: Boolean, skipChildren?: Boolean): void;
+export function assign(
+  node: Element,
+  props: any,
+  isSVG?: Boolean,
+  skipChildren?: Boolean,
+): void;
 
 /** @deprecated not supported on the server side */
 export function hydrate(
   fn: () => JSX.Element,
   node: MountableElement,
-  options?: { renderId?: string; owner?: unknown }
+  options?: { renderId?: string; owner?: unknown },
 ): () => void;
 
 /** @deprecated not supported on the server side */

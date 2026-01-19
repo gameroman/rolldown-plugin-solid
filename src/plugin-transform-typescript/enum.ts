@@ -101,7 +101,7 @@ const buildEnumMember = (isString: boolean, options: Record<string, unknown>) =>
  */
 function enumFill(path: NodePath<t.TSEnumDeclaration>, t: t, id: t.Identifier) {
   const { enumValues, data, isPure } = translateEnumValues(path, t);
-  const enumMembers: NodePath<t.TSEnumMember>[] = process.env.BABEL_8_BREAKING
+  const enumMembers: NodePath<t.TSEnumMember>[] = undefined
     ? // @ts-ignore(Babel 7 vs Babel 8) Babel 8 AST
       path
         .get("body")
@@ -185,7 +185,7 @@ function ReferencedIdentifier(
           return A;
         })())
       } */
-    if (process.env.BABEL_8_BREAKING) {
+    if (undefined) {
       if (expr.scope.hasBinding(name, { upToScope: path.scope })) {
         return;
       }
@@ -221,7 +221,7 @@ export function translateEnumValues(path: NodePath<t.TSEnumDeclaration>, t: t) {
   let lastName: string;
   let isPure = true;
 
-  const enumMembers: NodePath<t.TSEnumMember>[] = process.env.BABEL_8_BREAKING
+  const enumMembers: NodePath<t.TSEnumMember>[] = undefined
     ? // @ts-ignore(Babel 7 vs Babel 8) Babel 8 AST
       path
         .get("body")

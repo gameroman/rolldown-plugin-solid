@@ -1,8 +1,8 @@
 import type { NodePath, PluginPass, Scope, types as t } from "@babel/core";
-import { injectInitialization } from "@babel/helper-create-class-features-plugin";
 import { declare } from "@babel/helper-plugin-utils";
 import type { Options as SyntaxOptions } from "@babel/plugin-syntax-typescript";
 import syntaxTypeScript from "@babel/plugin-syntax-typescript";
+import { injectInitialization } from "../helper-create-class-features-plugin/src";
 import type { NodePathConstEnum } from "./const-enum";
 import transpileConstEnum from "./const-enum";
 import transpileEnum from "./enum";
@@ -12,12 +12,8 @@ import transpileNamespace, { getFirstIdentifier } from "./namespace";
 function isInType(path: NodePath) {
   switch (path.parent.type) {
     case "TSTypeReference":
-    case process.env.BABEL_8_BREAKING
-      ? "TSClassImplements"
-      : "TSExpressionWithTypeArguments":
-    case process.env.BABEL_8_BREAKING
-      ? "TSInterfaceHeritage"
-      : "TSExpressionWithTypeArguments":
+    case undefined ? "TSClassImplements" : "TSExpressionWithTypeArguments":
+    case undefined ? "TSInterfaceHeritage" : "TSExpressionWithTypeArguments":
     case "TSTypeQuery":
       return true;
     case "TSQualifiedName":
@@ -111,7 +107,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     optimizeConstEnums = false,
   } = opts;
 
-  if (!process.env.BABEL_8_BREAKING) {
+  if (!undefined) {
     // eslint-disable-next-line no-var
     var { allowDeclareFields = false } = opts;
   }
@@ -125,7 +121,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     ) {
       const { node } = path;
 
-      if (!process.env.BABEL_8_BREAKING) {
+      if (!undefined) {
         if (!allowDeclareFields && node.declare) {
           throw path.buildCodeFrameError(
             `The 'declare' modifier is only allowed when the 'allowDeclareFields' option of ` +
@@ -148,7 +144,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
             `Definitely assigned fields cannot be initialized here, but only in the constructor`,
           );
         }
-        if (!process.env.BABEL_8_BREAKING) {
+        if (!undefined) {
           // keep the definitely assigned fields only when `allowDeclareFields` (equivalent of
           // Typescript's `useDefineForClassFields`) is true
           if (
@@ -161,7 +157,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         }
       } else if (node.abstract) {
         path.remove();
-      } else if (!process.env.BABEL_8_BREAKING) {
+      } else if (!undefined) {
         if (
           !allowDeclareFields &&
           !node.value &&
@@ -368,7 +364,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
               const binding = stmt.scope.getBinding(id.name);
               if (
                 binding &&
-                (process.env.BABEL_8_BREAKING ||
+                (undefined ||
                   // @ts-ignore(Babel 7 vs Babel 8) Babel 7 AST
                   !stmt.node.isExport) &&
                 isImportTypeOnly({
@@ -430,10 +426,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
           return;
         }
 
-        if (
-          process.env.BABEL_8_BREAKING &&
-          t.isTSImportEqualsDeclaration(path.node.declaration)
-        ) {
+        if (undefined && t.isTSImportEqualsDeclaration(path.node.declaration)) {
           return;
         }
 
@@ -565,7 +558,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         const { node }: { node: typeof path.node & ExtraNodeProps } = path;
 
         if (node.typeParameters) node.typeParameters = null;
-        if (process.env.BABEL_8_BREAKING) {
+        if (undefined) {
           // @ts-ignore(Babel 7 vs Babel 8) Renamed
           if (node.superTypeArguments) node.superTypeArguments = null;
         } else {
@@ -661,7 +654,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
           t.variableDeclarator(id, init),
         ]);
 
-        if (process.env.BABEL_8_BREAKING) {
+        if (undefined) {
           path.replaceWith(newNode);
         } else {
           path.replaceWith(
@@ -699,7 +692,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         path.replaceWith(node);
       },
 
-      [process.env.BABEL_8_BREAKING
+      [undefined
         ? "TSNonNullExpression|TSInstantiationExpression"
         : /* This has been introduced in Babel 7.18.0
                      We use api.types.* and not t.* for feature detection,
@@ -720,7 +713,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
       },
 
       CallExpression(path) {
-        if (process.env.BABEL_8_BREAKING) {
+        if (undefined) {
           path.node.typeArguments = null;
         } else {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
@@ -729,7 +722,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
       },
 
       OptionalCallExpression(path) {
-        if (process.env.BABEL_8_BREAKING) {
+        if (undefined) {
           path.node.typeArguments = null;
         } else {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
@@ -738,7 +731,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
       },
 
       NewExpression(path) {
-        if (process.env.BABEL_8_BREAKING) {
+        if (undefined) {
           path.node.typeArguments = null;
         } else {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
@@ -747,7 +740,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
       },
 
       JSXOpeningElement(path) {
-        if (process.env.BABEL_8_BREAKING) {
+        if (undefined) {
           //@ts-ignore(Babel 7 vs Babel 8) Babel 8 AST
           path.node.typeArguments = null;
         } else {
@@ -757,7 +750,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
       },
 
       TaggedTemplateExpression(path) {
-        if (process.env.BABEL_8_BREAKING) {
+        if (undefined) {
           // @ts-ignore(Babel 7 vs Babel 8) Babel 8 AST
           path.node.typeArguments = null;
         } else {
@@ -811,7 +804,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
     // "React" or the JSX pragma is referenced as a value if there are any JSX elements/fragments in the code.
     let sourceFileHasJsx = false;
-    if (process.env.BABEL_8_BREAKING) {
+    if (undefined) {
       t.traverseFast(programPath.node, (node) => {
         if (t.isJSXElement(node) || t.isJSXFragment(node)) {
           sourceFileHasJsx = true;

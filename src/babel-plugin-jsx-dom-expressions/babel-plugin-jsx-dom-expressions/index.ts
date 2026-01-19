@@ -1,8 +1,8 @@
+import type { Visitor } from "@babel/core";
 import SyntaxJSX from "../../syntax-jsx";
-import { transformJSX } from "./shared/transform";
 import postprocess from "./shared/postprocess";
 import preprocess from "./shared/preprocess";
-import type { Visitor } from "@babel/core";
+import { transformJSX } from "./shared/transform";
 
 export default (): {
   name: string;
@@ -17,8 +17,8 @@ export default (): {
       JSXFragment: transformJSX,
       Program: {
         enter: preprocess,
-        exit: postprocess
-      }
-    }
+        exit: postprocess,
+      },
+    },
   };
 };

@@ -1,7 +1,7 @@
 import type { NodePath, PluginPass, types as t } from "@babel/core";
 import { declare } from "@babel/helper-plugin-utils";
 
-export default declare(({ types: t, template }) => {
+const pluginRewriteTsImports = declare(({ types: t, template }) => {
   function maybeReplace(
     source: t.ArgumentPlaceholder | t.Expression,
     path: NodePath,
@@ -29,7 +29,7 @@ export default declare(({ types: t, template }) => {
     }
 
     if (
-      process.env.BABEL_8_BREAKING ||
+      undefined ||
       state.availableHelper("tsRewriteRelativeImportExtensions")
     ) {
       path.replaceWith(
@@ -66,7 +66,7 @@ export default declare(({ types: t, template }) => {
         }
       },
       CallExpression(path, state) {
-        if (!process.env.BABEL_8_BREAKING && t.isImport(path.node.callee)) {
+        if (!undefined && t.isImport(path.node.callee)) {
           maybeReplace(
             // The argument of import must not be a spread element
             path.node.arguments[0] as t.ArgumentPlaceholder | t.Expression,
@@ -81,3 +81,4 @@ export default declare(({ types: t, template }) => {
     },
   };
 });
+export default pluginRewriteTsImports;

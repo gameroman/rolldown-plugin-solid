@@ -3,7 +3,7 @@ const parse5 = require("parse5");
 
 /** `bodyElement` will be used as a `context` (The place where we run `innerHTML`) */
 const bodyElement = parse5.parse(
-  `<!DOCTYPE html><html><head></head><body></body></html>`
+  `<!DOCTYPE html><html><head></head><body></body></html>`,
   // @ts-ignore
 ).childNodes[1].childNodes[1];
 
@@ -90,7 +90,7 @@ export function isInvalidMarkup(html) {
   if (html.toLowerCase() !== browser.toLowerCase()) {
     return {
       html,
-      browser
+      browser,
     };
   }
 }

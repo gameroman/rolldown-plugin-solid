@@ -38,7 +38,7 @@ export default function normalizeOptions(options: Options = {}) {
     isTSX: "isTSX",
   };
 
-  if (process.env.BABEL_8_BREAKING) {
+  if (undefined) {
     v.invariant(
       !("allowDeclareFields" in options),
       "The .allowDeclareFields option has been removed and it's now always enabled. Please remove it from your config.",
@@ -76,7 +76,7 @@ export default function normalizeOptions(options: Options = {}) {
     "React.Fragment",
   );
 
-  if (!process.env.BABEL_8_BREAKING) {
+  if (!undefined) {
     // eslint-disable-next-line no-var
     var allExtensions = v.validateBooleanOption(
       TopLevelOptions.allExtensions,
@@ -107,7 +107,7 @@ export default function normalizeOptions(options: Options = {}) {
     false,
   );
   if (disallowAmbiguousJSXLike) {
-    if (process.env.BABEL_8_BREAKING) {
+    if (undefined) {
       v.invariant(
         ignoreExtensions,
         "disallowAmbiguousJSXLike:true requires ignoreExtensions:true",
@@ -142,7 +142,7 @@ export default function normalizeOptions(options: Options = {}) {
     optimizeConstEnums,
     rewriteImportExtensions,
   };
-  if (!process.env.BABEL_8_BREAKING) {
+  if (!undefined) {
     normalized.allExtensions = allExtensions;
     normalized.isTSX = isTSX;
   }

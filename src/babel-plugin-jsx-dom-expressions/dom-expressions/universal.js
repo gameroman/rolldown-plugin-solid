@@ -1,4 +1,11 @@
-import { root, effect, memo, createComponent, untrack, mergeProps } from "rxcore";
+import {
+  createComponent,
+  effect,
+  memo,
+  mergeProps,
+  root,
+  untrack,
+} from "rxcore";
 
 export function createRenderer({
   createElement,
@@ -10,12 +17,16 @@ export function createRenderer({
   setProperty,
   getParentNode,
   getFirstChild,
-  getNextSibling
+  getNextSibling,
 }) {
   function insert(parent, accessor, marker, initial) {
     if (marker !== undefined && !initial) initial = [];
-    if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-    effect(current => insertExpression(parent, accessor(), current, marker), initial);
+    if (typeof accessor !== "function")
+      return insertExpression(parent, accessor, initial, marker);
+    effect(
+      (current) => insertExpression(parent, accessor(), current, marker),
+      initial,
+    );
   }
 
   function insertExpression(parent, value, current, marker, unwrapArray) {
@@ -52,7 +63,10 @@ export function createRenderer({
     } else if (Array.isArray(value)) {
       const array = [];
       if (normalizeIncomingArray(array, value, unwrapArray)) {
-        effect(() => (current = insertExpression(parent, array, current, marker, true)));
+        effect(
+          () =>
+            (current = insertExpression(parent, array, current, marker, true)),
+        );
         return () => current;
       }
       if (array.length === 0) {
@@ -66,13 +80,18 @@ export function createRenderer({
         } else if (current == null || current === "") {
           appendNodes(parent, array);
         } else {
-          reconcileArrays(parent, (multi && current) || [getFirstChild(parent)], array);
+          reconcileArrays(
+            parent,
+            (multi && current) || [getFirstChild(parent)],
+            array,
+          );
         }
       }
       current = array;
     } else {
       if (Array.isArray(current)) {
-        if (multi) return (current = cleanChildren(parent, current, marker, value));
+        if (multi)
+          return (current = cleanChildren(parent, current, marker, value));
         cleanChildren(parent, current, null, value);
       } else if (current == null || current === "" || !getFirstChild(parent)) {
         insertNode(parent, value);
@@ -99,7 +118,10 @@ export function createRenderer({
         if (unwrap) {
           while (typeof item === "function") item = item();
           dynamic =
-            normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+            normalizeIncomingArray(
+              normalized,
+              Array.isArray(item) ? item : [item],
+            ) || dynamic;
         } else {
           normalized.push(item);
           dynamic = true;
@@ -133,7 +155,11 @@ export function createRenderer({
       // append
       if (aEnd === aStart) {
         const node =
-          bEnd < bLength ? (bStart ? getNextSibling(b[bStart - 1]) : b[bEnd - bStart]) : after;
+          bEnd < bLength
+            ? bStart
+              ? getNextSibling(b[bStart - 1])
+              : b[bEnd - bStart]
+            : after;
 
         while (bStart < bEnd) insertNode(parentNode, b[bStart++], node);
         // remove
@@ -195,7 +221,9 @@ export function createRenderer({
         if (node !== el) {
           const isParent = getParentNode(el) === parent;
           if (!inserted && !i)
-            isParent ? replaceNode(parent, node, el) : insertNode(parent, node, marker);
+            isParent
+              ? replaceNode(parent, node, el)
+              : insertNode(parent, node, marker);
           else isParent && removeNode(parent, el);
         } else inserted = true;
       }
@@ -204,7 +232,8 @@ export function createRenderer({
   }
 
   function appendNodes(parent, array, marker) {
-    for (let i = 0, len = array.length; i < len; i++) insertNode(parent, array[i], marker);
+    for (let i = 0, len = array.length; i < len; i++)
+      insertNode(parent, array[i], marker);
   }
 
   function replaceNode(parent, newNode, oldNode) {
@@ -215,7 +244,14 @@ export function createRenderer({
   function spreadExpression(node, props, prevProps = {}, skipChildren) {
     props || (props = {});
     if (!skipChildren) {
-      effect(() => (prevProps.children = insertExpression(node, props.children, prevProps.children)));
+      effect(
+        () =>
+          (prevProps.children = insertExpression(
+            node,
+            props.children,
+            prevProps.children,
+          )),
+      );
     }
     effect(() => props.ref && props.ref(node));
     effect(() => {
@@ -233,7 +269,7 @@ export function createRenderer({
   return {
     render(code, element) {
       let disposer;
-      root(dispose => {
+      root((dispose) => {
         disposer = dispose;
         insert(element, code());
       });
@@ -242,7 +278,9 @@ export function createRenderer({
     insert,
     spread(node, accessor, skipChildren) {
       if (typeof accessor === "function") {
-        effect(current => spreadExpression(node, accessor(), current, skipChildren));
+        effect((current) =>
+          spreadExpression(node, accessor(), current, skipChildren),
+        );
       } else spreadExpression(node, accessor, undefined, skipChildren);
     },
     createElement,
@@ -258,6 +296,6 @@ export function createRenderer({
     createComponent,
     use(fn, element, arg) {
       return untrack(() => fn(element, arg));
-    }
+    },
   };
 }

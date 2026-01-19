@@ -1,31 +1,32 @@
 import {
-  Properties,
-  ChildProperties,
-  Aliases,
-  getPropAlias,
-  SVGNamespace,
-  DelegatedEvents
-} from "./constants";
-import {
-  root,
-  effect,
-  memo,
-  getOwner,
   createComponent,
+  effect,
+  getOwner,
+  memo,
+  mergeProps,
+  root,
   sharedConfig,
   untrack,
-  mergeProps
 } from "rxcore";
-import reconcileArrays from "./reconcile";
-export {
-  Properties,
-  ChildProperties,
-  getPropAlias,
+import {
   Aliases,
+  ChildProperties,
+  DelegatedEvents,
+  getPropAlias,
+  Properties,
+  SVGNamespace,
+} from "./constants";
+import reconcileArrays from "./reconcile";
+
+export {
+  Aliases,
+  ChildProperties,
+  DelegatedEvents,
   DOMElements,
+  getPropAlias,
+  Properties,
   SVGElements,
   SVGNamespace,
-  DelegatedEvents
 } from "./constants";
 
 const $$EVENTS = "_$DX_DELEGATE";
@@ -42,17 +43,17 @@ export {
   voidFn as Assets,
   voidFn as generateHydrationScript,
   voidFn as HydrationScript,
-  voidFn as getRequestEvent
+  voidFn as getRequestEvent,
 };
 
 export function render(code, element, init, options = {}) {
   if ("_DX_DEV_" && !element) {
     throw new Error(
-      "The `element` passed to `render(..., element)` doesn't exist. Make sure `element` exists in the document."
+      "The `element` passed to `render(..., element)` doesn't exist. Make sure `element` exists in the document.",
     );
   }
   let disposer;
-  root(dispose => {
+  root((dispose) => {
     disposer = dispose;
     element === document
       ? code()
@@ -69,15 +70,22 @@ export function template(html, isImportNode, isSVG, isMathML) {
   const create = () => {
     if ("_DX_DEV_" && isHydrating())
       throw new Error(
-        "Failed attempt to create new DOM elements during hydration. Check that the libraries you are using support hydration."
+        "Failed attempt to create new DOM elements during hydration. Check that the libraries you are using support hydration.",
       );
 
     const t = isMathML
-      ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template")
+      ? document.createElementNS(
+          "http://www.w3.org/1998/Math/MathML",
+          "template",
+        )
       : document.createElement("template");
     t.innerHTML = html;
 
-    return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
+    return isSVG
+      ? t.content.firstChild.firstChild
+      : isMathML
+        ? t.firstChild
+        : t.content.firstChild;
   };
   // backwards compatible with older builds
   const fn = isImportNode
@@ -100,7 +108,8 @@ export function delegateEvents(eventNames, document = window.document) {
 
 export function clearDelegatedEvents(document = window.document) {
   if (document[$$EVENTS]) {
-    for (let name of document[$$EVENTS].keys()) document.removeEventListener(name, eventHandler);
+    for (let name of document[$$EVENTS].keys())
+      document.removeEventListener(name, eventHandler);
     delete document[$$EVENTS];
   }
 }
@@ -141,8 +150,16 @@ export function addEventListener(node, name, handler, delegate) {
     } else node[`$$${name}`] = handler;
   } else if (Array.isArray(handler)) {
     const handlerFn = handler[0];
-    node.addEventListener(name, (handler[0] = e => handlerFn.call(node, handler[1], e)));
-  } else node.addEventListener(name, handler, typeof handler !== "function" && handler);
+    node.addEventListener(
+      name,
+      (handler[0] = (e) => handlerFn.call(node, handler[1], e)),
+    );
+  } else
+    node.addEventListener(
+      name,
+      handler,
+      typeof handler !== "function" && handler,
+    );
 }
 
 export function classList(node, value, prev = {}) {
@@ -158,7 +175,8 @@ export function classList(node, value, prev = {}) {
   for (i = 0, len = classKeys.length; i < len; i++) {
     const key = classKeys[i],
       classValue = !!value[key];
-    if (!key || key === "undefined" || prev[key] === classValue || !classValue) continue;
+    if (!key || key === "undefined" || prev[key] === classValue || !classValue)
+      continue;
     toggleClassKey(node, key, true);
     prev[key] = classValue;
   }
@@ -188,13 +206,22 @@ export function style(node, value, prev) {
 }
 
 export function setStyleProperty(node, name, value) {
-  value != null ? node.style.setProperty(name, value) : node.style.removeProperty(name);
+  value != null
+    ? node.style.setProperty(name, value)
+    : node.style.removeProperty(name);
 }
 
 export function spread(node, props = {}, isSVG, skipChildren) {
   const prevProps = {};
   if (!skipChildren) {
-    effect(() => (prevProps.children = insertExpression(node, props.children, prevProps.children)));
+    effect(
+      () =>
+        (prevProps.children = insertExpression(
+          node,
+          props.children,
+          prevProps.children,
+        )),
+    );
   }
   effect(() => typeof props.ref === "function" && use(props.ref, node));
   effect(() => assign(node, props, isSVG, true, prevProps, true));
@@ -207,7 +234,7 @@ export function dynamicProperty(props, key) {
     get() {
       return src();
     },
-    enumerable: true
+    enumerable: true,
   });
   return props;
 }
@@ -218,16 +245,35 @@ export function use(fn, element, arg) {
 
 export function insert(parent, accessor, marker, initial) {
   if (marker !== undefined && !initial) initial = [];
-  if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
-  effect(current => insertExpression(parent, accessor(), current, marker), initial);
+  if (typeof accessor !== "function")
+    return insertExpression(parent, accessor, initial, marker);
+  effect(
+    (current) => insertExpression(parent, accessor(), current, marker),
+    initial,
+  );
 }
 
-export function assign(node, props, isSVG, skipChildren, prevProps = {}, skipRef = false) {
+export function assign(
+  node,
+  props,
+  isSVG,
+  skipChildren,
+  prevProps = {},
+  skipRef = false,
+) {
   props || (props = {});
   for (const prop in prevProps) {
     if (!(prop in props)) {
       if (prop === "children") continue;
-      prevProps[prop] = assignProp(node, prop, null, prevProps[prop], isSVG, skipRef, props);
+      prevProps[prop] = assignProp(
+        node,
+        prop,
+        null,
+        prevProps[prop],
+        isSVG,
+        skipRef,
+        props,
+      );
     }
   }
   for (const prop in props) {
@@ -236,22 +282,31 @@ export function assign(node, props, isSVG, skipChildren, prevProps = {}, skipRef
       continue;
     }
     const value = props[prop];
-    prevProps[prop] = assignProp(node, prop, value, prevProps[prop], isSVG, skipRef, props);
+    prevProps[prop] = assignProp(
+      node,
+      prop,
+      value,
+      prevProps[prop],
+      isSVG,
+      skipRef,
+      props,
+    );
   }
 }
 
 // Hydrate
 export function hydrate(code, element, options = {}) {
-  if (globalThis._$HY.done) return render(code, element, [...element.childNodes], options);
+  if (globalThis._$HY.done)
+    return render(code, element, [...element.childNodes], options);
   sharedConfig.completed = globalThis._$HY.completed;
   sharedConfig.events = globalThis._$HY.events;
-  sharedConfig.load = id => globalThis._$HY.r[id];
-  sharedConfig.has = id => id in globalThis._$HY.r;
-  sharedConfig.gather = root => gatherHydratable(element, root);
+  sharedConfig.load = (id) => globalThis._$HY.r[id];
+  sharedConfig.has = (id) => id in globalThis._$HY.r;
+  sharedConfig.gather = (root) => gatherHydratable(element, root);
   sharedConfig.registry = new Map();
   sharedConfig.context = {
     id: options.renderId || "",
-    count: 0
+    count: 0,
   };
   try {
     gatherHydratable(element, options.renderId);
@@ -265,11 +320,14 @@ export function getNextElement(template) {
   let node,
     key,
     hydrating = isHydrating();
-  if (!hydrating || !(node = sharedConfig.registry.get((key = getHydrationKey())))) {
+  if (
+    !hydrating ||
+    !(node = sharedConfig.registry.get((key = getHydrationKey())))
+  ) {
     if ("_DX_DEV_" && hydrating) {
       sharedConfig.done = true;
       throw new Error(
-        `Hydration Mismatch. Unable to find DOM nodes for hydration key: ${key}\n${template ? template().outerHTML : ""}`
+        `Hydration Mismatch. Unable to find DOM nodes for hydration key: ${key}\n${template ? template().outerHTML : ""}`,
       );
     }
     return template();
@@ -328,7 +386,9 @@ export function runHydrationEvents() {
 
 // Internal Functions
 function isHydrating(node) {
-  return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
+  return (
+    !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected)
+  );
 }
 
 function toPropertyName(name) {
@@ -350,8 +410,10 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
     if (!skipRef) value(node);
   } else if (prop.slice(0, 3) === "on:") {
     const e = prop.slice(3);
-    prev && node.removeEventListener(e, prev, typeof prev !== "function" && prev);
-    value && node.addEventListener(e, value, typeof value !== "function" && value);
+    prev &&
+      node.removeEventListener(e, prev, typeof prev !== "function" && prev);
+    value &&
+      node.addEventListener(e, value, typeof value !== "function" && value);
   } else if (prop.slice(0, 10) === "oncapture:") {
     const e = prop.slice(10);
     prev && node.removeEventListener(e, prev, true);
@@ -375,7 +437,8 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
     (forceProp = prop.slice(0, 5) === "prop:") ||
     (isChildProp = ChildProperties.has(prop)) ||
     (!isSVG &&
-      ((propAlias = getPropAlias(prop, node.tagName)) || (isProp = Properties.has(prop)))) ||
+      ((propAlias = getPropAlias(prop, node.tagName)) ||
+        (isProp = Properties.has(prop)))) ||
     (isCE = node.nodeName.includes("-") || "is" in props)
   ) {
     if (forceProp) {
@@ -383,10 +446,12 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
       isProp = true;
     } else if (isHydrating(node)) return value;
     if (prop === "class" || prop === "className") className(node, value);
-    else if (isCE && !isProp && !isChildProp) node[toPropertyName(prop)] = value;
+    else if (isCE && !isProp && !isChildProp)
+      node[toPropertyName(prop)] = value;
     else node[propAlias || prop] = value;
   } else {
-    const ns = isSVG && prop.indexOf(":") > -1 && SVGNamespace[prop.split(":")[0]];
+    const ns =
+      isSVG && prop.indexOf(":") > -1 && SVGNamespace[prop.split(":")[0]];
     if (ns) setAttributeNS(node, ns, prop, value);
     else setAttribute(node, Aliases[prop] || prop, value);
   }
@@ -402,10 +467,10 @@ function eventHandler(e) {
   const key = `$$${e.type}`;
   const oriTarget = e.target;
   const oriCurrentTarget = e.currentTarget;
-  const retarget = value =>
+  const retarget = (value) =>
     Object.defineProperty(e, "target", {
       configurable: true,
-      value
+      value,
     });
   const handleNode = () => {
     const handler = node[key];
@@ -422,7 +487,10 @@ function eventHandler(e) {
     return true;
   };
   const walkUpTree = () => {
-    while (handleNode() && (node = node._$host || node.parentNode || node.host));
+    while (
+      handleNode() &&
+      (node = node._$host || node.parentNode || node.host)
+    );
   };
 
   // simulate currentTarget
@@ -430,10 +498,11 @@ function eventHandler(e) {
     configurable: true,
     get() {
       return node || document;
-    }
+    },
   });
   // cancel hydration
-  if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
+  if (sharedConfig.registry && !sharedConfig.done)
+    sharedConfig.done = _$HY.done = true;
 
   if (e.composedPath) {
     const path = e.composedPath();
@@ -507,7 +576,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
     const array = [];
     const currentArray = current && Array.isArray(current);
     if (normalizeIncomingArray(array, value, current, unwrapArray)) {
-      effect(() => (current = insertExpression(parent, array, current, marker, true)));
+      effect(
+        () =>
+          (current = insertExpression(parent, array, current, marker, true)),
+      );
       return () => current;
     }
     if (hydrating) {
@@ -532,15 +604,18 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
     }
     current = array;
   } else if (value.nodeType) {
-    if (hydrating && value.parentNode) return (current = multi ? [value] : value);
+    if (hydrating && value.parentNode)
+      return (current = multi ? [value] : value);
     if (Array.isArray(current)) {
-      if (multi) return (current = cleanChildren(parent, current, marker, value));
+      if (multi)
+        return (current = cleanChildren(parent, current, marker, value));
       cleanChildren(parent, current, null, value);
     } else if (current == null || current === "" || !parent.firstChild) {
       parent.appendChild(value);
     } else parent.replaceChild(value, parent.firstChild);
     current = value;
-  } else if ("_DX_DEV_") console.warn(`Unrecognized value. Skipped inserting`, value);
+  } else if ("_DX_DEV_")
+    console.warn(`Unrecognized value. Skipped inserting`, value);
 
   return current;
 }
@@ -565,7 +640,7 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
           normalizeIncomingArray(
             normalized,
             Array.isArray(item) ? item : [item],
-            Array.isArray(prev) ? prev : [prev]
+            Array.isArray(prev) ? prev : [prev],
           ) || dynamic;
       } else {
         normalized.push(item);
@@ -573,7 +648,8 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
       }
     } else {
       const value = String(item);
-      if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
+      if (prev && prev.nodeType === 3 && prev.data === value)
+        normalized.push(prev);
       else normalized.push(document.createTextNode(value));
     }
   }
@@ -581,7 +657,8 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 }
 
 function appendNodes(parent, array, marker = null) {
-  for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
+  for (let i = 0, len = array.length; i < len; i++)
+    parent.insertBefore(array[i], marker);
 }
 
 function cleanChildren(parent, current, marker, replacement) {
@@ -594,7 +671,9 @@ function cleanChildren(parent, current, marker, replacement) {
       if (node !== el) {
         const isParent = el.parentNode === parent;
         if (!inserted && !i)
-          isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
+          isParent
+            ? parent.replaceChild(node, el)
+            : parent.insertBefore(node, marker);
         else isParent && el.remove();
       } else inserted = true;
     }

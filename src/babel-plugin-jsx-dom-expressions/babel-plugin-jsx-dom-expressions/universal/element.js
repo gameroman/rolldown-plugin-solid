@@ -1,18 +1,18 @@
 import * as t from "@babel/types";
+import { transformNode } from "../shared/transform";
 import {
+  canNativeSpread,
+  checkLength,
+  convertJSXIdentifier,
+  escapeStringForTemplate,
+  filterChildren,
+  getConfig,
+  getRendererConfig,
   getTagName,
   isDynamic,
   registerImportMethod,
-  filterChildren,
-  checkLength,
-  getConfig,
-  getRendererConfig,
-  convertJSXIdentifier,
-  canNativeSpread,
   transformCondition,
-  escapeStringForTemplate
 } from "../shared/utils";
-import { transformNode } from "../shared/transform";
 
 export function transformElement(path, info) {
   let tagName = getTagName(path.node),
@@ -23,7 +23,7 @@ export function transformElement(path, info) {
       dynamics: [],
       postExprs: [],
       tagName,
-      renderer: "universal"
+      renderer: "universal",
     };
 
   results.declarations.push(
@@ -33,11 +33,11 @@ export function transformElement(path, info) {
         registerImportMethod(
           path,
           "createElement",
-          getRendererConfig(path, "universal").moduleName
+          getRendererConfig(path, "universal").moduleName,
         ),
-        [t.stringLiteral(tagName)]
-      )
-    )
+        [t.stringLiteral(tagName)],
+      ),
+    ),
   );
 
   transformAttributes(path, results);
@@ -54,35 +54,39 @@ function transformAttributes(path, results) {
     config = getConfig(path);
 
   // preprocess spreads
-  if (attributes.some(attribute => t.isJSXSpreadAttribute(attribute.node))) {
+  if (attributes.some((attribute) => t.isJSXSpreadAttribute(attribute.node))) {
     [attributes, spreadExpr] = processSpreads(path, attributes, {
       elem,
       hasChildren,
-      wrapConditionals: config.wrapConditionals
+      wrapConditionals: config.wrapConditionals,
     });
     path.get("openingElement").set(
       "attributes",
-      attributes.map(a => a.node)
+      attributes.map((a) => a.node),
     );
   }
 
   path
     .get("openingElement")
     .get("attributes")
-    .forEach(attribute => {
+    .forEach((attribute) => {
       const node = attribute.node;
 
       let value = node.value,
         key = t.isJSXNamespacedName(node.name)
           ? `${node.name.namespace.name}:${node.name.name.name}`
           : node.name.name,
-        reservedNameSpace = t.isJSXNamespacedName(node.name) && node.name.namespace.name === "use";
+        reservedNameSpace =
+          t.isJSXNamespacedName(node.name) &&
+          node.name.namespace.name === "use";
       if (
         t.isJSXNamespacedName(node.name) &&
         reservedNameSpace &&
         !t.isJSXExpressionContainer(value)
       ) {
-        node.value = value = t.jsxExpressionContainer(value || t.jsxEmptyExpression());
+        node.value = value = t.jsxExpressionContainer(
+          value || t.jsxEmptyExpression(),
+        );
       }
       if (t.isJSXExpressionContainer(value)) {
         if (key === "ref") {
@@ -102,26 +106,26 @@ function transformAttributes(path, results) {
             const refIdentifier = path.scope.generateUidIdentifier("_ref$");
             results.exprs.unshift(
               t.variableDeclaration("var", [
-                t.variableDeclarator(refIdentifier, value.expression)
+                t.variableDeclarator(refIdentifier, value.expression),
               ]),
               t.expressionStatement(
                 t.conditionalExpression(
                   t.binaryExpression(
                     "===",
                     t.unaryExpression("typeof", refIdentifier),
-                    t.stringLiteral("function")
+                    t.stringLiteral("function"),
                   ),
                   t.callExpression(
                     registerImportMethod(
                       path,
                       "use",
-                      getRendererConfig(path, "universal").moduleName
+                      getRendererConfig(path, "universal").moduleName,
                     ),
-                    [refIdentifier, elem]
+                    [refIdentifier, elem],
                   ),
-                  t.assignmentExpression("=", value.expression, elem)
-                )
-              )
+                  t.assignmentExpression("=", value.expression, elem),
+                ),
+              ),
             );
           } else if (isConstant || t.isFunction(value.expression)) {
             results.exprs.unshift(
@@ -130,17 +134,17 @@ function transformAttributes(path, results) {
                   registerImportMethod(
                     path,
                     "use",
-                    getRendererConfig(path, "universal").moduleName
+                    getRendererConfig(path, "universal").moduleName,
                   ),
-                  [value.expression, elem]
-                )
-              )
+                  [value.expression, elem],
+                ),
+              ),
             );
           } else {
             const refIdentifier = path.scope.generateUidIdentifier("_ref$");
             results.exprs.unshift(
               t.variableDeclaration("var", [
-                t.variableDeclarator(refIdentifier, value.expression)
+                t.variableDeclarator(refIdentifier, value.expression),
               ]),
               t.expressionStatement(
                 t.logicalExpression(
@@ -148,18 +152,18 @@ function transformAttributes(path, results) {
                   t.binaryExpression(
                     "===",
                     t.unaryExpression("typeof", refIdentifier),
-                    t.stringLiteral("function")
+                    t.stringLiteral("function"),
                   ),
                   t.callExpression(
                     registerImportMethod(
                       path,
                       "use",
-                      getRendererConfig(path, "universal").moduleName
+                      getRendererConfig(path, "universal").moduleName,
                     ),
-                    [refIdentifier, elem]
-                  )
-                )
-              )
+                    [refIdentifier, elem],
+                  ),
+                ),
+              ),
             );
           }
         } else if (key.startsWith("use:")) {
@@ -168,7 +172,11 @@ function transformAttributes(path, results) {
           results.exprs.unshift(
             t.expressionStatement(
               t.callExpression(
-                registerImportMethod(path, "use", getRendererConfig(path, "universal").moduleName),
+                registerImportMethod(
+                  path,
+                  "use",
+                  getRendererConfig(path, "universal").moduleName,
+                ),
                 [
                   node.name.name,
                   elem,
@@ -176,28 +184,32 @@ function transformAttributes(path, results) {
                     [],
                     t.isJSXEmptyExpression(value.expression)
                       ? t.booleanLiteral(true)
-                      : value.expression
-                  )
-                ]
-              )
-            )
+                      : value.expression,
+                  ),
+                ],
+              ),
+            ),
           );
         } else if (key === "children") {
           children = value;
         } else if (
           config.effectWrapper &&
           isDynamic(attribute.get("value").get("expression"), {
-            checkMember: true
+            checkMember: true,
           })
         ) {
           results.dynamics.push({ elem, key, value: value.expression });
         } else {
           results.exprs.push(
-            t.expressionStatement(setAttr(attribute, elem, key, value.expression))
+            t.expressionStatement(
+              setAttr(attribute, elem, key, value.expression),
+            ),
           );
         }
       } else {
-        results.exprs.push(t.expressionStatement(setAttr(attribute, elem, key, value)));
+        results.exprs.push(
+          t.expressionStatement(setAttr(attribute, elem, key, value)),
+        );
       }
     });
   if (spreadExpr) results.exprs.push(spreadExpr);
@@ -209,8 +221,14 @@ function transformAttributes(path, results) {
 export function setAttr(path, elem, name, value, { prevId } = {}) {
   if (!value) value = t.booleanLiteral(true);
   return t.callExpression(
-    registerImportMethod(path, "setProp", getRendererConfig(path, "universal").moduleName),
-    prevId ? [elem, t.stringLiteral(name), value, prevId] : [elem, t.stringLiteral(name), value]
+    registerImportMethod(
+      path,
+      "setProp",
+      getRendererConfig(path, "universal").moduleName,
+    ),
+    prevId
+      ? [elem, t.stringLiteral(name), value, prevId]
+      : [elem, t.stringLiteral(name), value],
   );
 }
 
@@ -222,7 +240,8 @@ function transformChildren(path, results) {
       const i = memo.length;
       if (child.text && i && memo[i - 1].text) {
         memo[i - 1].template += child.template;
-        memo[i - 1].templateWithClosingTags += child.templateWithClosingTags || child.template;
+        memo[i - 1].templateWithClosingTags +=
+          child.templateWithClosingTags || child.template;
       } else memo.push(child);
       return memo;
     }, []);
@@ -238,30 +257,48 @@ function transformChildren(path, results) {
       let insertNode = registerImportMethod(
         path,
         "insertNode",
-        getRendererConfig(path, "universal").moduleName
+        getRendererConfig(path, "universal").moduleName,
       );
       let insert = child.id;
       if (child.text) {
         let createTextNode = registerImportMethod(
           path,
           "createTextNode",
-          getRendererConfig(path, "universal").moduleName
+          getRendererConfig(path, "universal").moduleName,
         );
         if (multi) {
           results.declarations.push(
             t.variableDeclarator(
               child.id,
               t.callExpression(createTextNode, [
-                t.templateLiteral([t.templateElement({ raw: escapeStringForTemplate(child.template) })], [])
-              ])
-            )
+                t.templateLiteral(
+                  [
+                    t.templateElement({
+                      raw: escapeStringForTemplate(child.template),
+                    }),
+                  ],
+                  [],
+                ),
+              ]),
+            ),
           );
         } else
           insert = t.callExpression(createTextNode, [
-            t.templateLiteral([t.templateElement({ raw: escapeStringForTemplate(child.template) })], [])
+            t.templateLiteral(
+              [
+                t.templateElement({
+                  raw: escapeStringForTemplate(child.template),
+                }),
+              ],
+              [],
+            ),
           ]);
       }
-      appends.push(t.expressionStatement(t.callExpression(insertNode, [results.id, insert])));
+      appends.push(
+        t.expressionStatement(
+          t.callExpression(insertNode, [results.id, insert]),
+        ),
+      );
       results.declarations.push(...child.declarations);
       results.exprs.push(...child.exprs);
       results.dynamics.push(...child.dynamics);
@@ -269,7 +306,7 @@ function transformChildren(path, results) {
       let insert = registerImportMethod(
         path,
         "insert",
-        getRendererConfig(path, "universal").moduleName
+        getRendererConfig(path, "universal").moduleName,
       );
       if (multi) {
         results.exprs.push(
@@ -277,13 +314,15 @@ function transformChildren(path, results) {
             t.callExpression(insert, [
               results.id,
               child.exprs[0],
-              nextChild(childNodes, index) || t.nullLiteral()
-            ])
-          )
+              nextChild(childNodes, index) || t.nullLiteral(),
+            ]),
+          ),
         );
       } else {
         results.exprs.push(
-          t.expressionStatement(t.callExpression(insert, [results.id, child.exprs[0]]))
+          t.expressionStatement(
+            t.callExpression(insert, [results.id, child.exprs[0]]),
+          ),
         );
       }
     }
@@ -292,17 +331,24 @@ function transformChildren(path, results) {
 }
 
 function nextChild(children, index) {
-  return children[index + 1] && (children[index + 1].id || nextChild(children, index + 1));
+  return (
+    children[index + 1] &&
+    (children[index + 1].id || nextChild(children, index + 1))
+  );
 }
 
-function processSpreads(path, attributes, { elem, hasChildren, wrapConditionals }) {
+function processSpreads(
+  path,
+  attributes,
+  { elem, hasChildren, wrapConditionals },
+) {
   // TODO: skip but collect the names of any properties after the last spread to not overwrite them
   const filteredAttributes = [];
   const spreadArgs = [];
   let runningObject = [];
   let dynamicSpread = false;
   let firstSpread = false;
-  attributes.forEach(attribute => {
+  attributes.forEach((attribute) => {
     const node = attribute.node;
     const key =
       !t.isJSXSpreadAttribute(node) &&
@@ -317,7 +363,7 @@ function processSpreads(path, attributes, { elem, hasChildren, wrapConditionals 
       }
       spreadArgs.push(
         isDynamic(attribute.get("argument"), {
-          checkMember: true
+          checkMember: true,
         }) && (dynamicSpread = true)
           ? t.isCallExpression(node.argument) &&
             !node.argument.arguments.length &&
@@ -325,17 +371,22 @@ function processSpreads(path, attributes, { elem, hasChildren, wrapConditionals 
             !t.isMemberExpression(node.argument.callee)
             ? node.argument.callee
             : t.arrowFunctionExpression([], node.argument)
-          : node.argument
+          : node.argument,
       );
     } else if (
       (firstSpread ||
         (t.isJSXExpressionContainer(node.value) &&
-          isDynamic(attribute.get("value").get("expression"), { checkMember: true }))) &&
+          isDynamic(attribute.get("value").get("expression"), {
+            checkMember: true,
+          }))) &&
       canNativeSpread(key, { checkNameSpaces: true })
     ) {
       const isContainer = t.isJSXExpressionContainer(node.value);
       const dynamic =
-        isContainer && isDynamic(attribute.get("value").get("expression"), { checkMember: true });
+        isContainer &&
+        isDynamic(attribute.get("value").get("expression"), {
+          checkMember: true,
+        });
       if (dynamic) {
         const id = convertJSXIdentifier(node.name);
         let expr =
@@ -350,15 +401,17 @@ function processSpreads(path, attributes, { elem, hasChildren, wrapConditionals 
             id,
             [],
             t.blockStatement([t.returnStatement(expr.body)]),
-            !t.isValidIdentifier(key)
-          )
+            !t.isValidIdentifier(key),
+          ),
         );
       } else {
         runningObject.push(
           t.objectProperty(
             t.stringLiteral(key),
-            isContainer ? node.value.expression : node.value || t.booleanLiteral(true)
-          )
+            isContainer
+              ? node.value.expression
+              : node.value || t.booleanLiteral(true),
+          ),
         );
       }
     } else filteredAttributes.push(attribute);
@@ -377,9 +430,13 @@ function processSpreads(path, attributes, { elem, hasChildren, wrapConditionals 
     filteredAttributes,
     t.expressionStatement(
       t.callExpression(
-        registerImportMethod(path, "spread", getRendererConfig(path, "universal").moduleName),
-        [elem, props, t.booleanLiteral(hasChildren)]
-      )
-    )
+        registerImportMethod(
+          path,
+          "spread",
+          getRendererConfig(path, "universal").moduleName,
+        ),
+        [elem, props, t.booleanLiteral(hasChildren)],
+      ),
+    ),
   ];
 }

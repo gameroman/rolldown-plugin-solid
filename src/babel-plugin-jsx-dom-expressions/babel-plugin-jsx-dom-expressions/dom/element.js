@@ -2,37 +2,37 @@ import * as t from "@babel/types";
 
 import {
   Aliases,
+  ChildProperties,
+  DelegatedEvents,
   getPropAlias,
   Properties,
-  ChildProperties,
+  SVGElements,
   SVGNamespace,
-  DelegatedEvents,
-  SVGElements
 } from "../../dom-expressions/constants";
-import VoidElements from "../VoidElements";
+import { transformNode } from "../shared/transform";
 import {
-  getTagName,
-  isDynamic,
-  isComponent,
-  registerImportMethod,
+  canNativeSpread,
+  checkLength,
+  convertJSXIdentifier,
+  escapeHTML,
   filterChildren,
+  getConfig,
+  getRendererConfig,
+  getStaticExpression,
+  getTagName,
+  hasStaticMarker,
+  isComponent,
+  isDynamic,
+  registerImportMethod,
+  reservedNameSpaces,
   toEventName,
   toPropertyName,
-  checkLength,
-  getStaticExpression,
-  reservedNameSpaces,
-  wrappedByText,
-  getRendererConfig,
-  getConfig,
-  escapeHTML,
-  convertJSXIdentifier,
-  canNativeSpread,
   transformCondition,
   trimWhitespace,
-  hasStaticMarker
+  wrappedByText,
 } from "../shared/utils";
-import { transformNode } from "../shared/transform";
-import { InlineElements, BlockElements } from "./constants";
+import VoidElements from "../VoidElements";
+import { BlockElements, InlineElements } from "./constants";
 
 const alwaysClose = [
   "title",
@@ -55,7 +55,7 @@ const alwaysClose = [
   "script",
   "noscript",
   "template",
-  "fieldset"
+  "fieldset",
 ];
 
 export function transformElement(path, info) {
@@ -68,13 +68,13 @@ export function transformElement(path, info) {
       path
         .get("openingElement")
         .get("attributes")
-        .some(a => a.node?.name?.name === "is" || a.name?.name === "is"),
+        .some((a) => a.node?.name?.name === "is" || a.name?.name === "is"),
     isImportNode =
       (tagName === "img" || tagName === "iframe") &&
       path
         .get("openingElement")
         .get("attributes")
-        .some(a => a.node.name?.name === "loading"),
+        .some((a) => a.node.name?.name === "loading"),
     results = {
       template: `<${tagName}`,
       templateWithClosingTags: `<${tagName}`,
@@ -87,13 +87,13 @@ export function transformElement(path, info) {
       isImportNode,
       tagName,
       renderer: "dom",
-      skipTemplate: false
+      skipTemplate: false,
     };
 
   path
     .get("openingElement")
     .get("attributes")
-    .some(a => {
+    .some((a) => {
       if (a.node.name?.name === "data-hk") {
         a.remove();
         let filename = "";
@@ -105,29 +105,35 @@ export function transformElement(path, info) {
           "\n" +
             path
               .buildCodeFrameError(
-                `"data-hk" attribute found in template, which could potentially cause hydration miss-matches. Usually happens when copying and pasting Solid SSRed code into JSX. Please remove the attribute from the JSX. \n\n${filename}\n`
+                `"data-hk" attribute found in template, which could potentially cause hydration miss-matches. Usually happens when copying and pasting Solid SSRed code into JSX. Please remove the attribute from the JSX. \n\n${filename}\n`,
               )
-              .toString()
+              .toString(),
         );
       }
     });
-  if (config.hydratable && (tagName === "html" || tagName === "head" || tagName === "body")) {
+  if (
+    config.hydratable &&
+    (tagName === "html" || tagName === "head" || tagName === "body")
+  ) {
     results.skipTemplate = true;
     if (tagName === "head" && info.topLevel) {
       const createComponent = registerImportMethod(
         path,
         "createComponent",
-        getRendererConfig(path, "dom").moduleName
+        getRendererConfig(path, "dom").moduleName,
       );
       const NoHydration = registerImportMethod(
         path,
         "NoHydration",
-        getRendererConfig(path, "dom").moduleName
+        getRendererConfig(path, "dom").moduleName,
       );
       results.exprs.push(
         t.expressionStatement(
-          t.callExpression(createComponent, [NoHydration, t.objectExpression([])])
-        )
+          t.callExpression(createComponent, [
+            NoHydration,
+            t.objectExpression([]),
+          ]),
+        ),
       );
       return results;
     }
@@ -140,7 +146,10 @@ export function transformElement(path, info) {
     results.id = path.scope.generateUidIdentifier("el$");
   }
   transformAttributes(path, results);
-  if (config.contextToCustomElements && (tagName === "slot" || isCustomElement)) {
+  if (
+    config.contextToCustomElements &&
+    (tagName === "slot" || isCustomElement)
+  ) {
     contextToCustomElement(path, results);
   }
   results.template += ">";
@@ -150,11 +159,13 @@ export function transformElement(path, info) {
     const toBeClosed =
       !info.lastElement ||
       !config.omitLastClosingTag ||
-      (info.toBeClosed && (!config.omitNestedClosingTags || info.toBeClosed.has(tagName)));
+      (info.toBeClosed &&
+        (!config.omitNestedClosingTags || info.toBeClosed.has(tagName)));
     if (toBeClosed) {
       results.toBeClosed = new Set(info.toBeClosed || alwaysClose);
       results.toBeClosed.add(tagName);
-      if (InlineElements.includes(tagName)) BlockElements.forEach(i => results.toBeClosed.add(i));
+      if (InlineElements.includes(tagName))
+        BlockElements.forEach((i) => results.toBeClosed.add(i));
     } else results.toBeClosed = info.toBeClosed;
     if (tagName !== "noscript") transformChildren(path, results, config);
     if (toBeClosed) results.template += `</${tagName}>`;
@@ -164,9 +175,11 @@ export function transformElement(path, info) {
     let runHydrationEvents = registerImportMethod(
       path,
       "runHydrationEvents",
-      getRendererConfig(path, "dom").moduleName
+      getRendererConfig(path, "dom").moduleName,
     );
-    results.postExprs.push(t.expressionStatement(t.callExpression(runHydrationEvents, [])));
+    results.postExprs.push(
+      t.expressionStatement(t.callExpression(runHydrationEvents, [])),
+    );
   }
   if (wrapSVG) {
     results.template += "</svg>";
@@ -175,11 +188,21 @@ export function transformElement(path, info) {
   return results;
 }
 
-export function setAttr(path, elem, name, value, { isSVG, dynamic, prevId, isCE, tagName }) {
+export function setAttr(
+  path,
+  elem,
+  name,
+  value,
+  { isSVG, dynamic, prevId, isCE, tagName },
+) {
   // pull out namespace
   const config = getConfig(path);
   let parts, namespace;
-  if ((parts = name.split(":")) && parts[1] && reservedNameSpaces.has(parts[0])) {
+  if (
+    (parts = name.split(":")) &&
+    parts[1] &&
+    reservedNameSpaces.has(parts[0])
+  ) {
     name = parts[1];
     namespace = parts[0];
   }
@@ -188,13 +211,15 @@ export function setAttr(path, elem, name, value, { isSVG, dynamic, prevId, isCE,
     const setStyleProperty = registerImportMethod(
       path,
       "setStyleProperty",
-      getRendererConfig(path, "dom").moduleName
+      getRendererConfig(path, "dom").moduleName,
     );
 
     return t.callExpression(setStyleProperty, [
       elem,
       t.stringLiteral(name),
-      t.isAssignmentExpression(value) && t.isIdentifier(value.left) ? value.right : value
+      t.isAssignmentExpression(value) && t.isIdentifier(value.left)
+        ? value.right
+        : value,
     ]);
   }
 
@@ -202,33 +227,45 @@ export function setAttr(path, elem, name, value, { isSVG, dynamic, prevId, isCE,
     return t.callExpression(
       t.memberExpression(
         t.memberExpression(elem, t.identifier("classList")),
-        t.identifier("toggle")
+        t.identifier("toggle"),
       ),
       [
         t.stringLiteral(name),
-        dynamic ? value : t.unaryExpression("!", t.unaryExpression("!", value))
-      ]
+        dynamic ? value : t.unaryExpression("!", t.unaryExpression("!", value)),
+      ],
     );
   }
 
   if (name === "style") {
     return t.callExpression(
-      registerImportMethod(path, "style", getRendererConfig(path, "dom").moduleName),
-      prevId ? [elem, value, prevId] : [elem, value]
+      registerImportMethod(
+        path,
+        "style",
+        getRendererConfig(path, "dom").moduleName,
+      ),
+      prevId ? [elem, value, prevId] : [elem, value],
     );
   }
 
   if (!isSVG && name === "class") {
     return t.callExpression(
-      registerImportMethod(path, "className", getRendererConfig(path, "dom").moduleName),
-      [elem, value]
+      registerImportMethod(
+        path,
+        "className",
+        getRendererConfig(path, "dom").moduleName,
+      ),
+      [elem, value],
     );
   }
 
   if (name === "classList") {
     return t.callExpression(
-      registerImportMethod(path, "classList", getRendererConfig(path, "dom").moduleName),
-      prevId ? [elem, value, prevId] : [elem, value]
+      registerImportMethod(
+        path,
+        "classList",
+        getRendererConfig(path, "dom").moduleName,
+      ),
+      prevId ? [elem, value, prevId] : [elem, value],
     );
   }
 
@@ -237,35 +274,47 @@ export function setAttr(path, elem, name, value, { isSVG, dynamic, prevId, isCE,
       return t.callExpression(registerImportMethod(path, "setProperty"), [
         elem,
         t.stringLiteral("data"),
-        value
+        value,
       ]);
     }
-    return t.assignmentExpression("=", t.memberExpression(elem, t.identifier("data")), value);
+    return t.assignmentExpression(
+      "=",
+      t.memberExpression(elem, t.identifier("data")),
+      value,
+    );
   }
 
   if (namespace === "bool") {
     return t.callExpression(
-      registerImportMethod(path, "setBoolAttribute", getRendererConfig(path, "dom").moduleName),
-      [elem, t.stringLiteral(name), value]
+      registerImportMethod(
+        path,
+        "setBoolAttribute",
+        getRendererConfig(path, "dom").moduleName,
+      ),
+      [elem, t.stringLiteral(name), value],
     );
   }
 
   const isChildProp = ChildProperties.has(name);
   const isProp = Properties.has(name);
   const alias = getPropAlias(name, tagName.toUpperCase());
-  if (namespace !== "attr" && (isChildProp || (!isSVG && isProp) || isCE || namespace === "prop")) {
-    if (isCE && !isChildProp && !isProp && namespace !== "prop") name = toPropertyName(name);
+  if (
+    namespace !== "attr" &&
+    (isChildProp || (!isSVG && isProp) || isCE || namespace === "prop")
+  ) {
+    if (isCE && !isChildProp && !isProp && namespace !== "prop")
+      name = toPropertyName(name);
     if (config.hydratable && namespace !== "prop") {
       return t.callExpression(registerImportMethod(path, "setProperty"), [
         elem,
         t.stringLiteral(alias || name),
-        value
+        value,
       ]);
     }
     return t.assignmentExpression(
       "=",
       t.memberExpression(elem, t.identifier(alias || name)),
-      value
+      value,
     );
   }
 
@@ -275,13 +324,21 @@ export function setAttr(path, elem, name, value, { isSVG, dynamic, prevId, isCE,
   const ns = isNameSpaced && SVGNamespace[name.split(":")[0]];
   if (ns) {
     return t.callExpression(
-      registerImportMethod(path, "setAttributeNS", getRendererConfig(path, "dom").moduleName),
-      [elem, t.stringLiteral(ns), t.stringLiteral(name), value]
+      registerImportMethod(
+        path,
+        "setAttributeNS",
+        getRendererConfig(path, "dom").moduleName,
+      ),
+      [elem, t.stringLiteral(ns), t.stringLiteral(name), value],
     );
   } else {
     return t.callExpression(
-      registerImportMethod(path, "setAttribute", getRendererConfig(path, "dom").moduleName),
-      [elem, t.stringLiteral(name), value]
+      registerImportMethod(
+        path,
+        "setAttribute",
+        getRendererConfig(path, "dom").moduleName,
+      ),
+      [elem, t.stringLiteral(name), value],
     );
   }
 }
@@ -308,21 +365,23 @@ function transformAttributes(path, results) {
     attributes = path.get("openingElement").get("attributes");
   const tagName = getTagName(path.node),
     isSVG = SVGElements.has(tagName),
-    isCE = tagName.includes("-") || attributes.some(a => a.node.name?.name === "is"),
+    isCE =
+      tagName.includes("-") ||
+      attributes.some((a) => a.node.name?.name === "is"),
     hasChildren = path.node.children.length > 0,
     config = getConfig(path);
 
   // preprocess spreads
-  if (attributes.some(attribute => t.isJSXSpreadAttribute(attribute.node))) {
+  if (attributes.some((attribute) => t.isJSXSpreadAttribute(attribute.node))) {
     [attributes, spreadExpr] = processSpreads(path, attributes, {
       elem,
       isSVG,
       hasChildren,
-      wrapConditionals: config.wrapConditionals
+      wrapConditionals: config.wrapConditionals,
     });
     path.get("openingElement").set(
       "attributes",
-      attributes.map(a => a.node)
+      attributes.map((a) => a.node),
     );
     //NOTE: can't be checked at compile time so add to compiled output
     hasHydratableEvent = true;
@@ -341,7 +400,9 @@ function transformAttributes(path, results) {
 
   attributes = path.get("openingElement").get("attributes");
 
-  const styleAttributes = attributes.filter(a => a.node.name && a.node.name.name === "style");
+  const styleAttributes = attributes.filter(
+    (a) => a.node.name && a.node.name.name === "style",
+  );
   if (styleAttributes.length > 0) {
     let inlinedStyle = "";
 
@@ -367,26 +428,41 @@ function transformAttributes(path, results) {
           if (property.computed) {
             /* { [computed]: `${1+1}px` } => { [computed]: `2px` } */
             const r = propertiesNode[i].get("value").evaluate();
-            if (r.confident && (typeof r.value === "string" || typeof r.value === "number")) {
-              property.value = t.inherits(t.stringLiteral(`${r.value}`), property.value);
+            if (
+              r.confident &&
+              (typeof r.value === "string" || typeof r.value === "number")
+            ) {
+              property.value = t.inherits(
+                t.stringLiteral(`${r.value}`),
+                property.value,
+              );
             }
             // computed cannot be inlined - maybe can be evaluated but this is pretty rare
             continue;
           }
 
           if (t.isObjectProperty(property)) {
-            const key = t.isIdentifier(property.key) ? property.key.name : property.key.value;
-            if (t.isStringLiteral(property.value) || t.isNumericLiteral(property.value)) {
+            const key = t.isIdentifier(property.key)
+              ? property.key.name
+              : property.key.value;
+            if (
+              t.isStringLiteral(property.value) ||
+              t.isNumericLiteral(property.value)
+            ) {
               inlinedStyle += `${key}:${property.value.value};`;
               toRemoveProperty.push(property);
             } else if (
-              (t.isIdentifier(property.value) && property.value.name === "undefined") ||
+              (t.isIdentifier(property.value) &&
+                property.value.name === "undefined") ||
               t.isNullLiteral(property.value)
             ) {
               toRemoveProperty.push(property);
             } else {
               const r = propertiesNode[i].get("value").evaluate();
-              if (r.confident && (typeof r.value === "string" || typeof r.value === "number")) {
+              if (
+                r.confident &&
+                (typeof r.value === "string" || typeof r.value === "number")
+              ) {
                 inlinedStyle += `${key}:${r.value};`;
                 toRemoveProperty.push(property);
               }
@@ -405,7 +481,7 @@ function transformAttributes(path, results) {
     if (inlinedStyle !== "") {
       const styleAttribute = t.jsxAttribute(
         t.jsxIdentifier("style"),
-        t.stringLiteral(inlinedStyle.replace(/;$/, ""))
+        t.stringLiteral(inlinedStyle.replace(/;$/, "")),
       );
       path.get("openingElement").node.attributes.push(styleAttribute);
     }
@@ -416,35 +492,42 @@ function transformAttributes(path, results) {
     .get("openingElement")
     .get("attributes")
     .find(
-      a =>
+      (a) =>
         a.node.name &&
         a.node.name.name === "style" &&
         t.isJSXExpressionContainer(a.node.value) &&
         t.isObjectExpression(a.node.value.expression) &&
-        !a.node.value.expression.properties.some(p => t.isSpreadElement(p))
+        !a.node.value.expression.properties.some((p) => t.isSpreadElement(p)),
     );
   if (styleAttribute) {
     let i = 0,
       leading = styleAttribute.node.value.expression.leadingComments;
-    styleAttribute.node.value.expression.properties.slice().forEach((p, index) => {
-      if (!p.computed) {
-        if (leading) p.value.leadingComments = leading;
-        path
-          .get("openingElement")
-          .node.attributes.splice(
-            styleAttribute.key + ++i,
-            0,
-            t.jsxAttribute(
-              t.jsxNamespacedName(
-                t.jsxIdentifier("style"),
-                t.jsxIdentifier(t.isIdentifier(p.key) ? p.key.name : p.key.value)
+    styleAttribute.node.value.expression.properties
+      .slice()
+      .forEach((p, index) => {
+        if (!p.computed) {
+          if (leading) p.value.leadingComments = leading;
+          path
+            .get("openingElement")
+            .node.attributes.splice(
+              styleAttribute.key + ++i,
+              0,
+              t.jsxAttribute(
+                t.jsxNamespacedName(
+                  t.jsxIdentifier("style"),
+                  t.jsxIdentifier(
+                    t.isIdentifier(p.key) ? p.key.name : p.key.value,
+                  ),
+                ),
+                t.jsxExpressionContainer(p.value),
               ),
-              t.jsxExpressionContainer(p.value)
-            )
+            );
+          styleAttribute.node.value.expression.properties.splice(
+            index - i - 1,
+            1,
           );
-        styleAttribute.node.value.expression.properties.splice(index - i - 1, 1);
-      }
-    });
+        }
+      });
     if (!styleAttribute.node.value.expression.properties.length)
       path.get("openingElement").node.attributes.splice(styleAttribute.key, 1);
   }
@@ -452,22 +535,26 @@ function transformAttributes(path, results) {
   // preprocess classList
   attributes = path.get("openingElement").get("attributes");
   const classListAttribute = attributes.find(
-    a =>
+    (a) =>
       a.node.name &&
       a.node.name.name === "classList" &&
       t.isJSXExpressionContainer(a.node.value) &&
       t.isObjectExpression(a.node.value.expression) &&
       !a.node.value.expression.properties.some(
-        p =>
+        (p) =>
           t.isSpreadElement(p) ||
           p.computed ||
-          (t.isStringLiteral(p.key) && (p.key.value.includes(" ") || p.key.value.includes(":")))
-      )
+          (t.isStringLiteral(p.key) &&
+            (p.key.value.includes(" ") || p.key.value.includes(":"))),
+      ),
   );
   if (classListAttribute) {
     let i = 0,
       leading = classListAttribute.node.value.expression.leadingComments,
-      classListProperties = classListAttribute.get("value").get("expression").get("properties");
+      classListProperties = classListAttribute
+        .get("value")
+        .get("expression")
+        .get("properties");
     classListProperties.slice().forEach((propPath, index) => {
       const p = propPath.node;
       const { confident, value: computed } = propPath.get("value").evaluate();
@@ -481,10 +568,12 @@ function transformAttributes(path, results) {
             t.jsxAttribute(
               t.jsxNamespacedName(
                 t.jsxIdentifier("class"),
-                t.jsxIdentifier(t.isIdentifier(p.key) ? p.key.name : p.key.value)
+                t.jsxIdentifier(
+                  t.isIdentifier(p.key) ? p.key.name : p.key.value,
+                ),
               ),
-              t.jsxExpressionContainer(p.value)
-            )
+              t.jsxExpressionContainer(p.value),
+            ),
           );
       } else if (computed) {
         path
@@ -494,20 +583,24 @@ function transformAttributes(path, results) {
             0,
             t.jsxAttribute(
               t.jsxIdentifier("class"),
-              t.stringLiteral(t.isIdentifier(p.key) ? p.key.name : p.key.value)
-            )
+              t.stringLiteral(t.isIdentifier(p.key) ? p.key.name : p.key.value),
+            ),
           );
       }
       classListProperties.splice(index - i - 1, 1);
     });
     if (!classListProperties.length)
-      path.get("openingElement").node.attributes.splice(classListAttribute.key, 1);
+      path
+        .get("openingElement")
+        .node.attributes.splice(classListAttribute.key, 1);
   }
 
   // combine class properties
   attributes = path.get("openingElement").get("attributes");
   const classAttributes = attributes.filter(
-    a => a.node.name && (a.node.name.name === "class" || a.node.name.name === "className")
+    (a) =>
+      a.node.name &&
+      (a.node.name.name === "class" || a.node.name.name === "className"),
   );
   if (classAttributes.length > 1) {
     const first = classAttributes[0].node,
@@ -520,21 +613,27 @@ function transformAttributes(path, results) {
         const prev = quasis.pop();
         quasis.push(
           t.templateElement({
-            raw: (prev ? prev.value.raw : "") + `${attr.value.value}` + (isLast ? "" : " ")
-          })
+            raw:
+              (prev ? prev.value.raw : "") +
+              `${attr.value.value}` +
+              (isLast ? "" : " "),
+          }),
         );
       } else {
-        values.push(t.logicalExpression("||", attr.value.expression, t.stringLiteral("")));
+        values.push(
+          t.logicalExpression("||", attr.value.expression, t.stringLiteral("")),
+        );
         quasis.push(t.templateElement({ raw: isLast ? "" : " " }));
       }
       i && attributes.splice(attributes.indexOf(classAttributes[i]), 1);
     }
-    if (values.length) first.value = t.jsxExpressionContainer(t.templateLiteral(quasis, values));
+    if (values.length)
+      first.value = t.jsxExpressionContainer(t.templateLiteral(quasis, values));
     else first.value = t.stringLiteral(quasis[0].value.raw);
   }
   path.get("openingElement").set(
     "attributes",
-    attributes.map(a => a.node)
+    attributes.map((a) => a.node),
   );
 
   let needsSpacing = true;
@@ -597,22 +696,29 @@ function transformAttributes(path, results) {
   path
     .get("openingElement")
     .get("attributes")
-    .forEach(attribute => {
+    .forEach((attribute) => {
       const node = attribute.node;
       let value = node.value,
         key = t.isJSXNamespacedName(node.name)
           ? `${node.name.namespace.name}:${node.name.name.name}`
           : node.name.name,
         reservedNameSpace =
-          t.isJSXNamespacedName(node.name) && reservedNameSpaces.has(node.name.namespace.name);
+          t.isJSXNamespacedName(node.name) &&
+          reservedNameSpaces.has(node.name.namespace.name);
       if (t.isJSXExpressionContainer(value) && !key.startsWith("use:")) {
-        const evaluated = attribute.get("value").get("expression").evaluate().value;
+        const evaluated = attribute
+          .get("value")
+          .get("expression")
+          .evaluate().value;
         let type;
         if (
           evaluated !== undefined &&
           ((type = typeof evaluated) === "string" || type === "number")
         ) {
-          if (type === "number" && (Properties.has(key) || key.startsWith("prop:"))) {
+          if (
+            type === "number" &&
+            (Properties.has(key) || key.startsWith("prop:"))
+          ) {
             value = t.jsxExpressionContainer(t.numericLiteral(evaluated));
           } else value = t.stringLiteral(String(evaluated));
         }
@@ -622,12 +728,17 @@ function transformAttributes(path, results) {
         reservedNameSpace &&
         !t.isJSXExpressionContainer(value)
       ) {
-        node.value = value = t.jsxExpressionContainer(value || t.jsxEmptyExpression());
+        node.value = value = t.jsxExpressionContainer(
+          value || t.jsxEmptyExpression(),
+        );
       }
       if (
         t.isJSXExpressionContainer(value) &&
         (reservedNameSpace ||
-          !(t.isStringLiteral(value.expression) || t.isNumericLiteral(value.expression)))
+          !(
+            t.isStringLiteral(value.expression) ||
+            t.isNumericLiteral(value.expression)
+          ))
       ) {
         if (key === "ref") {
           // Normalize expressions for non-null and type-as
@@ -645,49 +756,65 @@ function transformAttributes(path, results) {
           if (!isConstant && t.isLVal(value.expression)) {
             const refIdentifier = path.scope.generateUidIdentifier("_ref$");
             results.exprs.unshift(
-              t.variableDeclaration("var", [t.variableDeclarator(refIdentifier, value.expression)]),
+              t.variableDeclaration("var", [
+                t.variableDeclarator(refIdentifier, value.expression),
+              ]),
               t.expressionStatement(
                 t.conditionalExpression(
                   t.binaryExpression(
                     "===",
                     t.unaryExpression("typeof", refIdentifier),
-                    t.stringLiteral("function")
+                    t.stringLiteral("function"),
                   ),
                   t.callExpression(
-                    registerImportMethod(path, "use", getRendererConfig(path, "dom").moduleName),
-                    [refIdentifier, elem]
+                    registerImportMethod(
+                      path,
+                      "use",
+                      getRendererConfig(path, "dom").moduleName,
+                    ),
+                    [refIdentifier, elem],
                   ),
-                  t.assignmentExpression("=", value.expression, elem)
-                )
-              )
+                  t.assignmentExpression("=", value.expression, elem),
+                ),
+              ),
             );
           } else if (isConstant || t.isFunction(value.expression)) {
             results.exprs.unshift(
               t.expressionStatement(
                 t.callExpression(
-                  registerImportMethod(path, "use", getRendererConfig(path, "dom").moduleName),
-                  [value.expression, elem]
-                )
-              )
+                  registerImportMethod(
+                    path,
+                    "use",
+                    getRendererConfig(path, "dom").moduleName,
+                  ),
+                  [value.expression, elem],
+                ),
+              ),
             );
           } else {
             const refIdentifier = path.scope.generateUidIdentifier("_ref$");
             results.exprs.unshift(
-              t.variableDeclaration("var", [t.variableDeclarator(refIdentifier, value.expression)]),
+              t.variableDeclaration("var", [
+                t.variableDeclarator(refIdentifier, value.expression),
+              ]),
               t.expressionStatement(
                 t.logicalExpression(
                   "&&",
                   t.binaryExpression(
                     "===",
                     t.unaryExpression("typeof", refIdentifier),
-                    t.stringLiteral("function")
+                    t.stringLiteral("function"),
                   ),
                   t.callExpression(
-                    registerImportMethod(path, "use", getRendererConfig(path, "dom").moduleName),
-                    [refIdentifier, elem]
-                  )
-                )
-              )
+                    registerImportMethod(
+                      path,
+                      "use",
+                      getRendererConfig(path, "dom").moduleName,
+                    ),
+                    [refIdentifier, elem],
+                  ),
+                ),
+              ),
             );
           }
         } else if (key.startsWith("use:")) {
@@ -696,7 +823,11 @@ function transformAttributes(path, results) {
           results.exprs.unshift(
             t.expressionStatement(
               t.callExpression(
-                registerImportMethod(path, "use", getRendererConfig(path, "dom").moduleName),
+                registerImportMethod(
+                  path,
+                  "use",
+                  getRendererConfig(path, "dom").moduleName,
+                ),
                 [
                   node.name.name,
                   elem,
@@ -704,18 +835,22 @@ function transformAttributes(path, results) {
                     [],
                     t.isJSXEmptyExpression(value.expression)
                       ? t.booleanLiteral(true)
-                      : value.expression
-                  )
-                ]
-              )
-            )
+                      : value.expression,
+                  ),
+                ],
+              ),
+            ),
           );
         } else if (key === "children") {
           children = value;
         } else if (key.startsWith("on")) {
           const ev = toEventName(key);
           if (key.startsWith("on:")) {
-            const args = [elem, t.stringLiteral(key.split(":")[1]), value.expression];
+            const args = [
+              elem,
+              t.stringLiteral(key.split(":")[1]),
+              value.expression,
+            ];
 
             results.exprs.unshift(
               t.expressionStatement(
@@ -723,27 +858,31 @@ function transformAttributes(path, results) {
                   registerImportMethod(
                     path,
                     "addEventListener",
-                    getRendererConfig(path, "dom").moduleName
+                    getRendererConfig(path, "dom").moduleName,
                   ),
-                  args
-                )
-              )
+                  args,
+                ),
+              ),
             );
           } else if (key.startsWith("oncapture:")) {
             // deprecated see above condition
             const args = [
               t.stringLiteral(key.split(":")[1]),
               value.expression,
-              t.booleanLiteral(true)
+              t.booleanLiteral(true),
             ];
             results.exprs.push(
               t.expressionStatement(
-                t.callExpression(t.memberExpression(elem, t.identifier("addEventListener")), args)
-              )
+                t.callExpression(
+                  t.memberExpression(elem, t.identifier("addEventListener")),
+                  args,
+                ),
+              ),
             );
           } else if (
             config.delegateEvents &&
-            (DelegatedEvents.has(ev) || config.delegatedEvents.indexOf(ev) !== -1)
+            (DelegatedEvents.has(ev) ||
+              config.delegatedEvents.indexOf(ev) !== -1)
           ) {
             // can only hydrate delegated events
             hasHydratableEvent = true;
@@ -752,7 +891,10 @@ function transformAttributes(path, results) {
               (attribute.scope.getProgramParent().data.events = new Set());
             events.add(ev);
             let handler = value.expression;
-            const resolveable = detectResolvableEventHandler(attribute, handler);
+            const resolveable = detectResolvableEventHandler(
+              attribute,
+              handler,
+            );
             if (t.isArrayExpression(handler)) {
               if (handler.elements.length > 1) {
                 results.exprs.unshift(
@@ -760,9 +902,9 @@ function transformAttributes(path, results) {
                     t.assignmentExpression(
                       "=",
                       t.memberExpression(elem, t.identifier(`$$${ev}Data`)),
-                      handler.elements[1]
-                    )
-                  )
+                      handler.elements[1],
+                    ),
+                  ),
                 );
               }
               handler = handler.elements[0];
@@ -771,9 +913,9 @@ function transformAttributes(path, results) {
                   t.assignmentExpression(
                     "=",
                     t.memberExpression(elem, t.identifier(`$$${ev}`)),
-                    handler
-                  )
-                )
+                    handler,
+                  ),
+                ),
               );
             } else if (t.isFunction(handler) || resolveable) {
               results.exprs.unshift(
@@ -781,9 +923,9 @@ function transformAttributes(path, results) {
                   t.assignmentExpression(
                     "=",
                     t.memberExpression(elem, t.identifier(`$$${ev}`)),
-                    handler
-                  )
-                )
+                    handler,
+                  ),
+                ),
               );
             } else {
               results.exprs.unshift(
@@ -792,39 +934,50 @@ function transformAttributes(path, results) {
                     registerImportMethod(
                       path,
                       "addEventListener",
-                      getRendererConfig(path, "dom").moduleName
+                      getRendererConfig(path, "dom").moduleName,
                     ),
-                    [elem, t.stringLiteral(ev), handler, t.booleanLiteral(true)]
-                  )
-                )
+                    [
+                      elem,
+                      t.stringLiteral(ev),
+                      handler,
+                      t.booleanLiteral(true),
+                    ],
+                  ),
+                ),
               );
             }
           } else {
             let handler = value.expression;
-            const resolveable = detectResolvableEventHandler(attribute, handler);
+            const resolveable = detectResolvableEventHandler(
+              attribute,
+              handler,
+            );
             if (t.isArrayExpression(handler)) {
               if (handler.elements.length > 1) {
                 handler = t.arrowFunctionExpression(
                   [t.identifier("e")],
-                  t.callExpression(handler.elements[0], [handler.elements[1], t.identifier("e")])
+                  t.callExpression(handler.elements[0], [
+                    handler.elements[1],
+                    t.identifier("e"),
+                  ]),
                 );
               } else handler = handler.elements[0];
               results.exprs.unshift(
                 t.expressionStatement(
-                  t.callExpression(t.memberExpression(elem, t.identifier("addEventListener")), [
-                    t.stringLiteral(ev),
-                    handler
-                  ])
-                )
+                  t.callExpression(
+                    t.memberExpression(elem, t.identifier("addEventListener")),
+                    [t.stringLiteral(ev), handler],
+                  ),
+                ),
               );
             } else if (t.isFunction(handler) || resolveable) {
               results.exprs.unshift(
                 t.expressionStatement(
-                  t.callExpression(t.memberExpression(elem, t.identifier("addEventListener")), [
-                    t.stringLiteral(ev),
-                    handler
-                  ])
-                )
+                  t.callExpression(
+                    t.memberExpression(elem, t.identifier("addEventListener")),
+                    [t.stringLiteral(ev), handler],
+                  ),
+                ),
               );
             } else {
               results.exprs.unshift(
@@ -833,18 +986,18 @@ function transformAttributes(path, results) {
                     registerImportMethod(
                       path,
                       "addEventListener",
-                      getRendererConfig(path, "dom").moduleName
+                      getRendererConfig(path, "dom").moduleName,
                     ),
-                    [elem, t.stringLiteral(ev), handler]
-                  )
-                )
+                    [elem, t.stringLiteral(ev), handler],
+                  ),
+                ),
               );
             }
           }
         } else if (
           config.effectWrapper &&
           (isDynamic(attribute.get("value").get("expression"), {
-            checkMember: true
+            checkMember: true,
           }) ||
             ((key === "classList" || key === "style") &&
               !attribute.get("value").get("expression").evaluate().confident &&
@@ -864,7 +1017,10 @@ function transformAttributes(path, results) {
            */
           let nextElem = elem;
           if (key === "value" || key === "checked") {
-            const effectWrapperId = registerImportMethod(path, config.effectWrapper);
+            const effectWrapperId = registerImportMethod(
+              path,
+              config.effectWrapper,
+            );
             results.postExprs.push(
               t.expressionStatement(
                 t.callExpression(effectWrapperId, [
@@ -873,11 +1029,11 @@ function transformAttributes(path, results) {
                     setAttr(path, elem, key, value.expression, {
                       tagName,
                       isSVG,
-                      isCE
-                    })
-                  )
-                ])
-              )
+                      isCE,
+                    }),
+                  ),
+                ]),
+              ),
             );
             return;
           }
@@ -886,7 +1042,10 @@ function transformAttributes(path, results) {
             children = t.jsxText(" ");
             children.extra = { raw: " ", rawValue: " " };
             results.declarations.push(
-              t.variableDeclarator(nextElem, t.memberExpression(elem, t.identifier("firstChild")))
+              t.variableDeclarator(
+                nextElem,
+                t.memberExpression(elem, t.identifier("firstChild")),
+              ),
             );
           }
           results.dynamics.push({
@@ -895,7 +1054,7 @@ function transformAttributes(path, results) {
             value: value.expression,
             isSVG,
             isCE,
-            tagName
+            tagName,
           });
         } else if (key.slice(0, 5) === "attr:") {
           if (t.isJSXExpressionContainer(value)) value = value.expression;
@@ -906,7 +1065,9 @@ function transformAttributes(path, results) {
           } else {
             // dynamic "attr:"
             results.exprs.push(
-              t.expressionStatement(setAttr(attribute, elem, key, value, { isSVG, isCE, tagName }))
+              t.expressionStatement(
+                setAttr(attribute, elem, key, value, { isSVG, isCE, tagName }),
+              ),
             );
           }
         } else if (key.slice(0, 5) === "bool:") {
@@ -952,15 +1113,19 @@ function transformAttributes(path, results) {
                 elem,
                 key,
                 t.isJSXExpressionContainer(value) ? value.expression : value,
-                { isSVG, isCE, tagName }
-              )
-            )
+                { isSVG, isCE, tagName },
+              ),
+            ),
           );
         } else {
           results.exprs.push(
             t.expressionStatement(
-              setAttr(attribute, elem, key, value.expression, { isSVG, isCE, tagName })
-            )
+              setAttr(attribute, elem, key, value.expression, {
+                isSVG,
+                isCE,
+                tagName,
+              }),
+            ),
           );
         }
       } else {
@@ -974,7 +1139,9 @@ function transformAttributes(path, results) {
         key = Aliases[key] || key;
         if (value && ChildProperties.has(key)) {
           results.exprs.push(
-            t.expressionStatement(setAttr(attribute, elem, key, value, { isSVG, isCE, tagName }))
+            t.expressionStatement(
+              setAttr(attribute, elem, key, value, { isSVG, isCE, tagName }),
+            ),
           );
         } else {
           inlineAttributeOnTemplate(isSVG, key, results, value);
@@ -998,7 +1165,9 @@ function findLastElement(children, hydratable) {
       hydratable ||
       t.isJSXText(node) ||
       getStaticExpression(children[i]) !== false ||
-      (t.isJSXElement(node) && (tagName = getTagName(node)) && !isComponent(tagName))
+      (t.isJSXElement(node) &&
+        (tagName = getTagName(node)) &&
+        !isComponent(tagName))
     ) {
       lastElement = i;
       break;
@@ -1018,13 +1187,14 @@ function transformChildren(path, results, config) {
     childNodes = filteredChildren.reduce((memo, child, index) => {
       if (child.isJSXFragment()) {
         throw new Error(
-          `Fragments can only be used top level in JSX. Not used under a <${tagName}>.`
+          `Fragments can only be used top level in JSX. Not used under a <${tagName}>.`,
         );
       }
       const transformed = transformNode(child, {
         toBeClosed: results.toBeClosed,
         lastElement: index === lastElement,
-        skipId: !results.id || !detectExpressions(filteredChildren, index, config)
+        skipId:
+          !results.id || !detectExpressions(filteredChildren, index, config),
       });
       if (!transformed) return memo;
       const i = memo.length;
@@ -1044,7 +1214,8 @@ function transformChildren(path, results, config) {
     }
 
     results.template += child.template;
-    results.templateWithClosingTags += child.templateWithClosingTags || child.template;
+    results.templateWithClosingTags +=
+      child.templateWithClosingTags || child.template;
     results.isImportNode = results.isImportNode || child.isImportNode;
 
     if (child.id) {
@@ -1053,17 +1224,20 @@ function transformChildren(path, results, config) {
           const createComponent = registerImportMethod(
             path,
             "createComponent",
-            getRendererConfig(path, "dom").moduleName
+            getRendererConfig(path, "dom").moduleName,
           );
           const NoHydration = registerImportMethod(
             path,
             "NoHydration",
-            getRendererConfig(path, "dom").moduleName
+            getRendererConfig(path, "dom").moduleName,
           );
           results.exprs.push(
             t.expressionStatement(
-              t.callExpression(createComponent, [NoHydration, t.objectExpression([])])
-            )
+              t.callExpression(createComponent, [
+                NoHydration,
+                t.objectExpression([]),
+              ]),
+            ),
           );
         }
         return;
@@ -1074,43 +1248,60 @@ function transformChildren(path, results, config) {
         getNextMatch = registerImportMethod(
           path,
           "getNextMatch",
-          getRendererConfig(path, "dom").moduleName
+          getRendererConfig(path, "dom").moduleName,
         );
       }
       const walk = t.memberExpression(
         t.identifier(tempPath),
-        t.identifier(i === 0 ? "firstChild" : "nextSibling")
+        t.identifier(i === 0 ? "firstChild" : "nextSibling"),
       );
       results.declarations.push(
         t.variableDeclarator(
           child.id,
           config.hydratable && tagName === "html"
-            ? t.callExpression(getNextMatch, [walk, t.stringLiteral(child.tagName)])
-            : walk
-        )
+            ? t.callExpression(getNextMatch, [
+                walk,
+                t.stringLiteral(child.tagName),
+              ])
+            : walk,
+        ),
       );
       results.declarations.push(...child.declarations);
       results.exprs.push(...child.exprs);
       results.dynamics.push(...child.dynamics);
       childPostExprs.push(...child.postExprs);
-      results.hasHydratableEvent = results.hasHydratableEvent || child.hasHydratableEvent;
-      results.hasCustomElement = results.hasCustomElement || child.hasCustomElement;
+      results.hasHydratableEvent =
+        results.hasHydratableEvent || child.hasHydratableEvent;
+      results.hasCustomElement =
+        results.hasCustomElement || child.hasCustomElement;
       results.isImportNode = results.isImportNode || child.isImportNode;
       tempPath = child.id.name;
       nextPlaceholder = null;
       i++;
     } else if (child.exprs.length) {
-      let insert = registerImportMethod(path, "insert", getRendererConfig(path, "dom").moduleName);
+      let insert = registerImportMethod(
+        path,
+        "insert",
+        getRendererConfig(path, "dom").moduleName,
+      );
       const multi = checkLength(filteredChildren),
         markers = config.hydratable && multi;
       // boxed by textNodes
       if (markers || wrappedByText(childNodes, index)) {
         let exprId, contentId;
-        if (markers) tempPath = createPlaceholder(path, results, tempPath, i++, "$")[0].name;
+        if (markers)
+          tempPath = createPlaceholder(path, results, tempPath, i++, "$")[0]
+            .name;
         if (nextPlaceholder) {
           exprId = nextPlaceholder;
         } else {
-          [exprId, contentId] = createPlaceholder(path, results, tempPath, i++, markers ? "/" : "");
+          [exprId, contentId] = createPlaceholder(
+            path,
+            results,
+            tempPath,
+            i++,
+            markers ? "/" : "",
+          );
         }
         if (!markers) nextPlaceholder = exprId;
         results.exprs.push(
@@ -1119,9 +1310,9 @@ function transformChildren(path, results, config) {
               insert,
               contentId
                 ? [results.id, child.exprs[0], exprId, contentId]
-                : [results.id, child.exprs[0], exprId]
-            )
-          )
+                : [results.id, child.exprs[0], exprId],
+            ),
+          ),
         );
         tempPath = exprId.name;
       } else if (multi) {
@@ -1130,13 +1321,15 @@ function transformChildren(path, results, config) {
             t.callExpression(insert, [
               results.id,
               child.exprs[0],
-              nextChild(childNodes, index) || t.nullLiteral()
-            ])
-          )
+              nextChild(childNodes, index) || t.nullLiteral(),
+            ]),
+          ),
         );
       } else {
         results.exprs.push(
-          t.expressionStatement(t.callExpression(insert, [results.id, child.exprs[0]]))
+          t.expressionStatement(
+            t.callExpression(insert, [results.id, child.exprs[0]]),
+          ),
         );
       }
     } else nextPlaceholder = null;
@@ -1156,10 +1349,19 @@ function createPlaceholder(path, results, tempPath, i, char) {
       t.variableDeclarator(
         t.arrayPattern([exprId, contentId]),
         t.callExpression(
-          registerImportMethod(path, "getNextMarker", getRendererConfig(path, "dom").moduleName),
-          [t.memberExpression(t.identifier(tempPath), t.identifier("nextSibling"))]
-        )
-      )
+          registerImportMethod(
+            path,
+            "getNextMarker",
+            getRendererConfig(path, "dom").moduleName,
+          ),
+          [
+            t.memberExpression(
+              t.identifier(tempPath),
+              t.identifier("nextSibling"),
+            ),
+          ],
+        ),
+      ),
     );
   } else
     results.declarations.push(
@@ -1167,15 +1369,18 @@ function createPlaceholder(path, results, tempPath, i, char) {
         exprId,
         t.memberExpression(
           t.identifier(tempPath),
-          t.identifier(i === 0 ? "firstChild" : "nextSibling")
-        )
-      )
+          t.identifier(i === 0 ? "firstChild" : "nextSibling"),
+        ),
+      ),
     );
   return [exprId, contentId];
 }
 
 function nextChild(children, index) {
-  return children[index + 1] && (children[index + 1].id || nextChild(children, index + 1));
+  return (
+    children[index + 1] &&
+    (children[index + 1].id || nextChild(children, index + 1))
+  );
 }
 
 // reduce unnecessary refs
@@ -1189,12 +1394,20 @@ function detectExpressions(children, index, config) {
     )
       return true;
     let tagName;
-    if (t.isJSXElement(node) && (tagName = getTagName(node)) && isComponent(tagName)) return true;
+    if (
+      t.isJSXElement(node) &&
+      (tagName = getTagName(node)) &&
+      isComponent(tagName)
+    )
+      return true;
   }
   for (let i = index; i < children.length; i++) {
     const child = children[i].node;
     if (t.isJSXExpressionContainer(child)) {
-      if (!t.isJSXEmptyExpression(child.expression) && getStaticExpression(children[i]) === false)
+      if (
+        !t.isJSXEmptyExpression(child.expression) &&
+        getStaticExpression(children[i]) === false
+      )
         return true;
     } else if (t.isJSXElement(child)) {
       const tagName = getTagName(child);
@@ -1203,26 +1416,30 @@ function detectExpressions(children, index, config) {
         config.contextToCustomElements &&
         (tagName === "slot" ||
           tagName.indexOf("-") > -1 ||
-          child.openingElement.attributes.some(a => a.name?.name === "is"))
+          child.openingElement.attributes.some((a) => a.name?.name === "is"))
       )
         return true;
       if (
         child.openingElement.attributes.some(
-          attr =>
+          (attr) =>
             t.isJSXSpreadAttribute(attr) ||
-            ["textContent", "innerHTML", "innerText"].includes(attr.name.name) ||
+            ["textContent", "innerHTML", "innerText"].includes(
+              attr.name.name,
+            ) ||
             (attr.name.namespace &&
-              (attr.name.namespace.name === "use" || attr.name.namespace.name === "prop")) ||
+              (attr.name.namespace.name === "use" ||
+                attr.name.namespace.name === "prop")) ||
             (t.isJSXExpressionContainer(attr.value) &&
               !(
                 t.isStringLiteral(attr.value.expression) ||
                 t.isNumericLiteral(attr.value.expression)
-              ))
+              )),
         )
       )
         return true;
       const nextChildren = filterChildren(children[i].get("children"));
-      if (nextChildren.length) if (detectExpressions(nextChildren, 0, config)) return true;
+      if (nextChildren.length)
+        if (detectExpressions(nextChildren, 0, config)) return true;
     }
   }
 }
@@ -1234,15 +1451,23 @@ function contextToCustomElement(path, results) {
         "=",
         t.memberExpression(results.id, t.identifier("_$owner")),
         t.callExpression(
-          registerImportMethod(path, "getOwner", getRendererConfig(path, "dom").moduleName),
-          []
-        )
-      )
-    )
+          registerImportMethod(
+            path,
+            "getOwner",
+            getRendererConfig(path, "dom").moduleName,
+          ),
+          [],
+        ),
+      ),
+    ),
   );
 }
 
-function processSpreads(path, attributes, { elem, isSVG, hasChildren, wrapConditionals }) {
+function processSpreads(
+  path,
+  attributes,
+  { elem, isSVG, hasChildren, wrapConditionals },
+) {
   const config = getConfig(path);
   // TODO: skip but collect the names of any properties after the last spread to not overwrite them
   const filteredAttributes = [];
@@ -1250,7 +1475,7 @@ function processSpreads(path, attributes, { elem, isSVG, hasChildren, wrapCondit
   let runningObject = [];
   let dynamicSpread = false;
   let firstSpread = false;
-  attributes.forEach(attribute => {
+  attributes.forEach((attribute) => {
     const node = attribute.node;
     const key =
       !t.isJSXSpreadAttribute(node) &&
@@ -1271,7 +1496,7 @@ function processSpreads(path, attributes, { elem, isSVG, hasChildren, wrapCondit
 
       const s =
         isDynamic(attribute.get("argument"), {
-          checkMember: true
+          checkMember: true,
         }) && (dynamicSpread = true)
           ? t.isCallExpression(node.argument) &&
             !node.argument.arguments.length &&
@@ -1285,12 +1510,17 @@ function processSpreads(path, attributes, { elem, isSVG, hasChildren, wrapCondit
     } else if (
       (firstSpread ||
         (t.isJSXExpressionContainer(node.value) &&
-          isDynamic(attribute.get("value").get("expression"), { checkMember: true }))) &&
+          isDynamic(attribute.get("value").get("expression"), {
+            checkMember: true,
+          }))) &&
       canNativeSpread(key, { checkNameSpaces: true })
     ) {
       const isContainer = t.isJSXExpressionContainer(node.value);
       const dynamic =
-        isContainer && isDynamic(attribute.get("value").get("expression"), { checkMember: true });
+        isContainer &&
+        isDynamic(attribute.get("value").get("expression"), {
+          checkMember: true,
+        });
       if (dynamic) {
         const id = convertJSXIdentifier(node.name);
         let expr =
@@ -1305,8 +1535,8 @@ function processSpreads(path, attributes, { elem, isSVG, hasChildren, wrapCondit
             id,
             [],
             t.blockStatement([t.returnStatement(expr.body)]),
-            !t.isValidIdentifier(key)
-          )
+            !t.isValidIdentifier(key),
+          ),
         );
       } else {
         runningObject.push(
@@ -1314,8 +1544,11 @@ function processSpreads(path, attributes, { elem, isSVG, hasChildren, wrapCondit
             t.stringLiteral(key),
             isContainer
               ? node.value.expression
-              : node.value || (Properties.has(key) ? t.booleanLiteral(true) : t.stringLiteral(""))
-          )
+              : node.value ||
+                  (Properties.has(key)
+                    ? t.booleanLiteral(true)
+                    : t.stringLiteral("")),
+          ),
         );
       }
     } else filteredAttributes.push(attribute);
@@ -1334,9 +1567,13 @@ function processSpreads(path, attributes, { elem, isSVG, hasChildren, wrapCondit
     filteredAttributes,
     t.expressionStatement(
       t.callExpression(
-        registerImportMethod(path, "spread", getRendererConfig(path, "dom").moduleName),
-        [elem, props, t.booleanLiteral(isSVG), t.booleanLiteral(hasChildren)]
-      )
-    )
+        registerImportMethod(
+          path,
+          "spread",
+          getRendererConfig(path, "dom").moduleName,
+        ),
+        [elem, props, t.booleanLiteral(isSVG), t.booleanLiteral(hasChildren)],
+      ),
+    ),
   ];
 }

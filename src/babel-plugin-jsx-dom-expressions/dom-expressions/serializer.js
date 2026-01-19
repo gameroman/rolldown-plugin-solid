@@ -1,4 +1,4 @@
-import { Feature, Serializer, getCrossReferenceHeader } from "seroval";
+import { Feature, getCrossReferenceHeader, Serializer } from "seroval";
 import {
   AbortSignalPlugin,
   CustomEventPlugin,
@@ -11,15 +11,21 @@ import {
   ResponsePlugin,
   URLPlugin,
   URLSearchParamsPlugin,
-} from 'seroval-plugins/web';
+} from "seroval-plugins/web";
 
 const ES2017FLAG =
-  Feature.AggregateError // ES2021
-  | Feature.BigIntTypedArray // ES2020;
+  Feature.AggregateError | // ES2021
+  Feature.BigIntTypedArray; // ES2020;
 
-const GLOBAL_IDENTIFIER = '_$HY.r'; // TODO this is a pending name
+const GLOBAL_IDENTIFIER = "_$HY.r"; // TODO this is a pending name
 
-export function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
+export function createSerializer({
+  onData,
+  onDone,
+  scopeId,
+  onError,
+  plugins: customPlugins,
+}) {
   const defaultPlugins = [
     AbortSignalPlugin,
     // BlobPlugin,
@@ -36,7 +42,9 @@ export function createSerializer({ onData, onDone, scopeId, onError, plugins: cu
     URLPlugin,
   ];
 
-  const allPlugins = customPlugins ? [...customPlugins, ...defaultPlugins] : defaultPlugins
+  const allPlugins = customPlugins
+    ? [...customPlugins, ...defaultPlugins]
+    : defaultPlugins;
 
   return new Serializer({
     scopeId,
@@ -50,5 +58,5 @@ export function createSerializer({ onData, onDone, scopeId, onError, plugins: cu
 }
 
 export function getLocalHeaderScript(id) {
-  return getCrossReferenceHeader(id) + ';';
+  return getCrossReferenceHeader(id) + ";";
 }

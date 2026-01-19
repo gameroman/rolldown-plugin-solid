@@ -1,5 +1,9 @@
 import * as t from "@babel/types";
-import { getConfig, getNumberedId, registerImportMethod } from "../shared/utils";
+import {
+  getConfig,
+  getNumberedId,
+  registerImportMethod,
+} from "../shared/utils";
 import { setAttr } from "./element";
 
 export function createTemplate(path, result, wrap) {
@@ -7,7 +11,11 @@ export function createTemplate(path, result, wrap) {
   if (result.id) {
     result.decl = t.variableDeclaration("var", result.declarations);
     if (
-      !(result.exprs.length || result.dynamics.length || result.postExprs.length) &&
+      !(
+        result.exprs.length ||
+        result.dynamics.length ||
+        result.postExprs.length
+      ) &&
       result.decl.declarations.length === 1
     ) {
       return result.decl.declarations[0].init;
@@ -19,17 +27,19 @@ export function createTemplate(path, result, wrap) {
             result.decl,
             ...result.exprs.concat(
               wrapDynamics(path, result.dynamics) || [],
-              result.postExprs || []
+              result.postExprs || [],
             ),
-            t.returnStatement(result.id)
-          ])
+            t.returnStatement(result.id),
+          ]),
         ),
-        []
+        [],
       );
     }
   }
   if (wrap && result.dynamic && config.memoWrapper) {
-    return t.callExpression(registerImportMethod(path, config.memoWrapper), [result.exprs[0]]);
+    return t.callExpression(registerImportMethod(path, config.memoWrapper), [
+      result.exprs[0],
+    ]);
   }
   return result.exprs[0];
 }
@@ -49,10 +59,10 @@ function wrapDynamics(path, dynamics) {
           [prevValue],
           setAttr(path, dynamics[0].elem, dynamics[0].key, dynamics[0].value, {
             dynamic: true,
-            prevId: prevValue
-          })
-        )
-      ])
+            prevId: prevValue,
+          }),
+        ),
+      ]),
     );
   }
 
@@ -82,7 +92,10 @@ function wrapDynamics(path, dynamics) {
           t.assignmentExpression(
             "=",
             propMember,
-            setAttr(path, elem, key, varIdent, { dynamic: true, prevId: propMember }),
+            setAttr(path, elem, key, varIdent, {
+              dynamic: true,
+              prevId: propMember,
+            }),
           ),
         ),
       ),
