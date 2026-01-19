@@ -1,5 +1,3 @@
-import type { NodePath } from "@babel/traverse";
-
 import type * as t from "@babel/types";
 import {
   isParenthesizedExpression,
@@ -10,7 +8,7 @@ import {
   isTypeCastExpression,
 } from "@babel/types";
 
-export type TransparentExprWrapper =
+type TransparentExprWrapper =
   | t.TSAsExpression
   | t.TSSatisfiesExpression
   | t.TSTypeAssertion
@@ -23,7 +21,7 @@ export type TransparentExprWrapper =
 // includes expressions used for types, and extra parenthesis. For example, in
 // (a as any)(), this helper can be used to skip the TSAsExpression when
 // determining the callee.
-export function isTransparentExprWrapper(
+function isTransparentExprWrapper(
   node: t.Node,
 ): node is TransparentExprWrapper {
   return (
@@ -34,15 +32,6 @@ export function isTransparentExprWrapper(
     isTypeCastExpression(node) ||
     isParenthesizedExpression(node)
   );
-}
-
-export function skipTransparentExprWrappers(
-  path: NodePath<t.Expression>,
-): NodePath<t.Expression> {
-  while (isTransparentExprWrapper(path.node)) {
-    path = path.get("expression");
-  }
-  return path;
 }
 
 export function skipTransparentExprWrapperNodes(
