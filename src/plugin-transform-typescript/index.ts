@@ -1,7 +1,7 @@
 import type { NodePath, PluginPass, Scope, types as t } from "@babel/core";
 import { declare } from "@babel/helper-plugin-utils";
-import type { Options as SyntaxOptions } from "@babel/plugin-syntax-typescript";
 import { injectInitialization } from "../helper-create-class-features-plugin";
+import type { Options as SyntaxOptions } from "../plugin-syntax-typescript";
 import syntaxTypeScript from "../plugin-syntax-typescript";
 import type { NodePathConstEnum } from "./const-enum";
 import transpileConstEnum from "./const-enum";
