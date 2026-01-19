@@ -72,7 +72,7 @@ function assertCjsTransformEnabled(
   }
 }
 
-export interface Options extends SyntaxOptions {
+interface Options extends SyntaxOptions {
   /** @default true */
   allowNamespaces?: boolean;
   /** @default "React.createElement" */
@@ -107,7 +107,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     optimizeConstEnums = false,
   } = opts;
 
-  if (!undefined) {
+  if (true) {
     // eslint-disable-next-line no-var
     var { allowDeclareFields = false } = opts;
   }
@@ -121,7 +121,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     ) {
       const { node } = path;
 
-      if (!undefined) {
+      if (true) {
         if (!allowDeclareFields && node.declare) {
           throw path.buildCodeFrameError(
             `The 'declare' modifier is only allowed when the 'allowDeclareFields' option of ` +
@@ -144,7 +144,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
             `Definitely assigned fields cannot be initialized here, but only in the constructor`,
           );
         }
-        if (!undefined) {
+        if (true) {
           // keep the definitely assigned fields only when `allowDeclareFields` (equivalent of
           // Typescript's `useDefineForClassFields`) is true
           if (
@@ -157,7 +157,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         }
       } else if (node.abstract) {
         path.remove();
-      } else if (!undefined) {
+      } else if (true) {
         if (
           !allowDeclareFields &&
           !node.value &&

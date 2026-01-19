@@ -38,61 +38,27 @@ export default function normalizeOptions(options: Options = {}) {
     isTSX: "isTSX",
   };
 
-  if (undefined) {
-    v.invariant(
-      !("allowDeclareFields" in options),
-      "The .allowDeclareFields option has been removed and it's now always enabled. Please remove it from your config.",
-    );
-    v.invariant(
-      !("allExtensions" in options) && !("isTSX" in options),
-      "The .allExtensions and .isTSX options have been removed.\n" +
-        "If you want to disable JSX detection based on file extensions, " +
-        "you can set the .ignoreExtensions option to true.\n" +
-        "If you want to force JSX parsing, you can enable the " +
-        "@babel/plugin-syntax-jsx plugin.",
-    );
-
-    v.validateTopLevelOptions(options, TopLevelOptions);
-    allowNamespaces = v.validateBooleanOption(
-      TopLevelOptions.allowNamespaces,
-      options.allowNamespaces,
-      true,
-    );
-    jsxPragma = v.validateStringOption(
-      TopLevelOptions.jsxPragma,
-      options.jsxPragma,
-      "React",
-    );
-    onlyRemoveTypeImports = v.validateBooleanOption(
-      TopLevelOptions.onlyRemoveTypeImports,
-      options.onlyRemoveTypeImports,
-      true,
-    );
-  }
-
   const jsxPragmaFrag = v.validateStringOption(
     TopLevelOptions.jsxPragmaFrag,
     options.jsxPragmaFrag,
     "React.Fragment",
   );
 
-  if (!undefined) {
-    // eslint-disable-next-line no-var
-    var allExtensions = v.validateBooleanOption(
-      TopLevelOptions.allExtensions,
-      options.allExtensions,
-      false,
-    );
+  // eslint-disable-next-line no-var
+  var allExtensions = v.validateBooleanOption(
+    TopLevelOptions.allExtensions,
+    options.allExtensions,
+    false,
+  );
 
-    // eslint-disable-next-line no-var
-    var isTSX = v.validateBooleanOption(
-      TopLevelOptions.isTSX,
-      options.isTSX,
-      false,
-    );
-    if (isTSX) {
-      v.invariant(allExtensions, "isTSX:true requires allExtensions:true");
-    }
+  // eslint-disable-next-line no-var
+  var isTSX = v.validateBooleanOption(
+    TopLevelOptions.isTSX,
+    options.isTSX,
+    false,
+  );
+  if (isTSX) {
+    v.invariant(allExtensions, "isTSX:true requires allExtensions:true");
   }
 
   const ignoreExtensions = v.validateBooleanOption(
@@ -142,7 +108,7 @@ export default function normalizeOptions(options: Options = {}) {
     optimizeConstEnums,
     rewriteImportExtensions,
   };
-  if (!undefined) {
+  if (true) {
     normalized.allExtensions = allExtensions;
     normalized.isTSX = isTSX;
   }

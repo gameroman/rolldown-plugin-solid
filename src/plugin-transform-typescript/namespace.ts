@@ -131,7 +131,7 @@ function handleNested(
 ): t.Statement | null {
   const names = new Set();
   const realName =
-    !undefined || t.isIdentifier(node.id)
+    true || t.isIdentifier(node.id)
       ? (node.id as t.Identifier)
       : getFirstIdentifier(node.id as unknown as t.TSQualifiedName);
 
