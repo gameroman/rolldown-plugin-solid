@@ -59,7 +59,7 @@ function getTargetFunctionParent(path, parent) {
   return current;
 }
 
-export function transformThis(path) {
+function transformThis(path) {
   const parent = path.scope.getFunctionParent();
   let thisId;
   path.traverse({
@@ -227,7 +227,7 @@ export function getCreateTemplate(config, path, result) {
   return createTemplateUniversal;
 }
 
-export function transformElement(config, path, info = {}) {
+function transformElement(config, path, info = {}) {
   const node = path.node;
   let tagName = getTagName(node);
   // <Component ...></Component>

@@ -1,13 +1,12 @@
-// import parse5 from "parse5";
-const parse5 = require("parse5");
+import * as parse5 from "parse5";
 
 /** `bodyElement` will be used as a `context` (The place where we run `innerHTML`) */
 const bodyElement = parse5.parse(
   `<!DOCTYPE html><html><head></head><body></body></html>`,
   // @ts-ignore
-).childNodes[1].childNodes[1];
+).childNodes[1]!.childNodes[1];
 
-function innerHTML(htmlFragment) {
+function innerHTML(htmlFragment: string) {
   /** `htmlFragment` will be parsed as if it was set to the `bodyElement`'s `innerHTML` property. */
   const parsedFragment = parse5.parseFragment(bodyElement, htmlFragment);
 
@@ -24,7 +23,7 @@ function innerHTML(htmlFragment) {
  *   browser: string; // what the browser returned from evaluating `html`
  * } | null}
  */
-export function isInvalidMarkup(html) {
+export function isInvalidMarkup(html: string) {
   html = html
 
     // normalize dom-expressions comments, so comments location are also validated

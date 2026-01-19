@@ -12,7 +12,7 @@ export const reservedNameSpaces = new Set([
   "bool",
 ]);
 
-export const nonSpreadNameSpaces = new Set([
+const nonSpreadNameSpaces = new Set([
   "class",
   "style",
   "use",
@@ -60,7 +60,7 @@ function jsxElementNameToString(node) {
   return `${node.namespace.name}:${node.name.name}`;
 }
 
-export function tagNameToIdentifier(name) {
+function tagNameToIdentifier(name) {
   const parts = name.split(".");
   if (parts.length === 1) return t.identifier(name);
   let part;
@@ -264,7 +264,7 @@ export function toEventName(name) {
   return name.slice(2).toLowerCase();
 }
 
-export function toAttributeName(name) {
+function toAttributeName(name) {
   return name.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 }
 
@@ -478,7 +478,7 @@ export function getNumberedId(num) {
   return out;
 }
 
-export function escapeStringForTemplate(str) {
+export function escapeStringForTemplate(str: string) {
   return str.replace(/[{\\`\n\t\b\f\v\r\u2028\u2029]/g, (ch) =>
     templateEscapes.get(ch),
   );
