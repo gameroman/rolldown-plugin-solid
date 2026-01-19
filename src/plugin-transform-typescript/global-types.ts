@@ -1,15 +1,11 @@
-"use strict";
+import type { NodePath, Scope } from "@babel/core";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true,
-});
-exports.GLOBAL_TYPES = void 0;
-exports.isGlobalType = isGlobalType;
-exports.registerGlobalType = registerGlobalType;
-const GLOBAL_TYPES = (exports.GLOBAL_TYPES = new WeakMap());
-function isGlobalType({ scope }, name) {
+export const GLOBAL_TYPES = new WeakMap<Scope, Set<string>>();
+
+export function isGlobalType({ scope }: NodePath, name: string) {
   if (scope.hasBinding(name)) return false;
   if (GLOBAL_TYPES.get(scope).has(name)) return true;
+
   console.warn(
     `The exported identifier "${name}" is not declared in Babel's scope tracker\n` +
       `as a JavaScript value binding, and "@babel/plugin-transform-typescript"\n` +
@@ -19,10 +15,10 @@ function isGlobalType({ scope }, name) {
       `"${name}" without registering it in the scope tracker. If you are the author\n` +
       ` of that plugin, please use "scope.registerDeclaration(declarationPath)".`,
   );
+
   return false;
 }
-function registerGlobalType(programScope, name) {
+
+export function registerGlobalType(programScope: Scope, name: string) {
   GLOBAL_TYPES.get(programScope).add(name);
 }
-
-//# sourceMappingURL=global-types.js.map

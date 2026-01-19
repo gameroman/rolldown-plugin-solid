@@ -1,15 +1,17 @@
-"use strict";
+import type { NodePath, types as t } from "@babel/core";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true,
-});
-exports.EXPORTED_CONST_ENUMS_IN_NAMESPACE = void 0;
-exports.default = transpileConstEnum;
-var _enum = require("./enum.js");
-const EXPORTED_CONST_ENUMS_IN_NAMESPACE =
-  (exports.EXPORTED_CONST_ENUMS_IN_NAMESPACE = new WeakSet());
-function transpileConstEnum(path, t) {
+import { translateEnumValues } from "./enum";
+
+export const EXPORTED_CONST_ENUMS_IN_NAMESPACE =
+  new WeakSet<t.TSEnumDeclaration>();
+
+export type NodePathConstEnum = NodePath<t.TSEnumDeclaration & { const: true }>;
+export default function transpileConstEnum(
+  path: NodePathConstEnum,
+  t: typeof import("@babel/types"),
+) {
   const { name } = path.node.id;
+
   const parentIsExport = path.parentPath.isExportNamedDeclaration();
   let isExported = parentIsExport;
   if (!isExported && t.isProgram(path.parent)) {
@@ -26,7 +28,9 @@ function transpileConstEnum(path, t) {
         ),
     );
   }
-  const { enumValues: entries } = (0, _enum.translateEnumValues)(path, t);
+
+  const { enumValues: entries } = translateEnumValues(path, t);
+
   if (isExported || EXPORTED_CONST_ENUMS_IN_NAMESPACE.has(path.node)) {
     const obj = t.objectExpression(
       entries.map(([name, value]) =>
@@ -38,6 +42,7 @@ function transpileConstEnum(path, t) {
         ),
       ),
     );
+
     if (path.scope.hasOwnBinding(name)) {
       (parentIsExport ? path.parentPath : path).replaceWith(
         t.expressionStatement(
@@ -49,25 +54,29 @@ function transpileConstEnum(path, t) {
       );
     } else {
       path.replaceWith(
-        t.variableDeclaration("var", [t.variableDeclarator(path.node.id, obj)]),
+        t.variableDeclaration(process.env.BABEL_8_BREAKING ? "const" : "var", [
+          t.variableDeclarator(path.node.id, obj),
+        ]),
       );
       path.scope.registerDeclaration(path);
     }
+
     return;
   }
+
   const entriesMap = new Map(entries);
+
+  // TODO: After fixing https://github.com/babel/babel/pull/11065, we can
+  // use path.scope.getBinding(name).referencePaths rather than doing
+  // a full traversal.
   path.scope.path.traverse({
     Scope(path) {
       if (path.scope.hasOwnBinding(name)) path.skip();
     },
     MemberExpression(path) {
-      if (
-        !t.isIdentifier(path.node.object, {
-          name,
-        })
-      )
-        return;
-      let key;
+      if (!t.isIdentifier(path.node.object, { name })) return;
+
+      let key: string;
       if (path.node.computed) {
         if (t.isStringLiteral(path.node.property)) {
           key = path.node.property.value;
@@ -80,10 +89,10 @@ function transpileConstEnum(path, t) {
         return;
       }
       if (!entriesMap.has(key)) return;
+
       path.replaceWith(t.cloneNode(entriesMap.get(key)));
     },
   });
+
   path.remove();
 }
-
-//# sourceMappingURL=const-enum.js.map
