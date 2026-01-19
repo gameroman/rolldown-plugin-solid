@@ -2,20 +2,6 @@ import { describe } from "bun:test";
 import { createFixtureTest } from "./helpers";
 
 describe("rolldown-plugin-solid", () => {
-  createFixtureTest("SSR component", "ssr.tsx", {
-    platform: "node",
-    plugin: { solid: { generate: "ssr" } },
-  });
-
-  createFixtureTest("component with hydratable option", "basic.tsx", {
-    plugin: { solid: { hydratable: true } },
-  });
-
-  createFixtureTest("SSR with hydratable option", "ssr.tsx", {
-    platform: "node",
-    plugin: { solid: { generate: "ssr", hydratable: true } },
-  });
-
   createFixtureTest("standalone component", "component.tsx");
   createFixtureTest("component with props", "props.tsx");
   createFixtureTest("component with children", "children.tsx");

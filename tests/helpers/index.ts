@@ -2,9 +2,9 @@ import { expect, it } from "bun:test";
 
 import { resolve } from "node:path";
 import { build } from "rolldown";
-import solidPlugin from "../../../dist/index.mjs";
+import solidPlugin from "../../dist/index.mjs";
 
-const testDir = resolve(import.meta.dir, "../../fixtures");
+const testDir = resolve(import.meta.dir, "../fixtures");
 
 interface FixtureOptions {
   platform?: "browser" | "node";

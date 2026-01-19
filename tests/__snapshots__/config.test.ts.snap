@@ -1,0 +1,4030 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`rolldown-plugin-solid configuration should transform custom builtIns configuration 1`] = `
+"//#region node_modules/solid-js/dist/solid.js
+const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+const equalFn = (a, b) => a === b;
+const signalOptions = { equals: equalFn };
+let ERROR = null;
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+const NO_INIT = {};
+var Owner = null;
+let Transition = null;
+let Scheduler = null;
+let ExternalSourceConfig = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value$1) => {
+		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
+		else value$1 = value$1(s.value);
+		return writeSignal(s, value$1);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createComputed(fn, value, options) {
+	const c = createComputation(fn, value, true, STALE);
+	if (Scheduler && Transition && Transition.running) Updates.push(c);
+	else updateComputation(c);
+}
+function createRenderEffect(fn, value, options) {
+	const c = createComputation(fn, value, false, STALE);
+	if (Scheduler && Transition && Transition.running) Updates.push(c);
+	else updateComputation(c);
+}
+function createMemo(fn, value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const c = createComputation(fn, value, true, 0);
+	c.observers = null;
+	c.observerSlots = null;
+	c.comparator = options.equals || void 0;
+	if (Scheduler && Transition && Transition.running) {
+		c.tState = STALE;
+		Updates.push(c);
+	} else updateComputation(c);
+	return readSignal.bind(c);
+}
+function isPromise(v) {
+	return v && typeof v === "object" && "then" in v;
+}
+function createResource(pSource, pFetcher, pOptions) {
+	let source;
+	let fetcher;
+	let options;
+	if (typeof pFetcher === "function") {
+		source = pSource;
+		fetcher = pFetcher;
+		options = pOptions || {};
+	} else {
+		source = true;
+		fetcher = pSource;
+		options = pFetcher || {};
+	}
+	let pr = null, initP = NO_INIT, id = null, loadedUnderTransition = false, scheduled = false, resolved = "initialValue" in options, dynamic = typeof source === "function" && createMemo(source);
+	const contexts = /* @__PURE__ */ new Set(), [value, setValue] = (options.storage || createSignal)(options.initialValue), [error, setError] = createSignal(void 0), [track, trigger] = createSignal(void 0, { equals: false }), [state, setState] = createSignal(resolved ? "ready" : "unresolved");
+	if (sharedConfig.context) {
+		id = sharedConfig.getNextContextId();
+		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
+		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
+	}
+	function loadEnd(p, v, error$1, key) {
+		if (pr === p) {
+			pr = null;
+			key !== void 0 && (resolved = true);
+			if ((p === initP || v === initP) && options.onHydrated) queueMicrotask(() => options.onHydrated(key, { value: v }));
+			initP = NO_INIT;
+			if (Transition && p && loadedUnderTransition) {
+				Transition.promises.delete(p);
+				loadedUnderTransition = false;
+				runUpdates(() => {
+					Transition.running = true;
+					completeLoad(v, error$1);
+				}, false);
+			} else completeLoad(v, error$1);
+		}
+		return v;
+	}
+	function completeLoad(v, err) {
+		runUpdates(() => {
+			if (err === void 0) setValue(() => v);
+			setState(err !== void 0 ? "errored" : resolved ? "ready" : "unresolved");
+			setError(err);
+			for (const c of contexts.keys()) c.decrement();
+			contexts.clear();
+		}, false);
+	}
+	function read() {
+		const c = SuspenseContext && useContext(SuspenseContext), v = value(), err = error();
+		if (err !== void 0 && !pr) throw err;
+		if (Listener && !Listener.user && c) createComputed(() => {
+			track();
+			if (pr) {
+				if (c.resolved && Transition && loadedUnderTransition) Transition.promises.add(pr);
+				else if (!contexts.has(c)) {
+					c.increment();
+					contexts.add(c);
+				}
+			}
+		});
+		return v;
+	}
+	function load(refetching = true) {
+		if (refetching !== false && scheduled) return;
+		scheduled = false;
+		const lookup = dynamic ? dynamic() : source;
+		loadedUnderTransition = Transition && Transition.running;
+		if (lookup == null || lookup === false) {
+			loadEnd(pr, untrack(value));
+			return;
+		}
+		if (Transition && pr) Transition.promises.delete(pr);
+		let error$1;
+		const p = initP !== NO_INIT ? initP : untrack(() => {
+			try {
+				return fetcher(lookup, {
+					value: value(),
+					refetching
+				});
+			} catch (fetcherError) {
+				error$1 = fetcherError;
+			}
+		});
+		if (error$1 !== void 0) {
+			loadEnd(pr, void 0, castError(error$1), lookup);
+			return;
+		} else if (!isPromise(p)) {
+			loadEnd(pr, p, void 0, lookup);
+			return p;
+		}
+		pr = p;
+		if ("v" in p) {
+			if (p.s === 1) loadEnd(pr, p.v, void 0, lookup);
+			else loadEnd(pr, void 0, castError(p.v), lookup);
+			return p;
+		}
+		scheduled = true;
+		queueMicrotask(() => scheduled = false);
+		runUpdates(() => {
+			setState(resolved ? "refreshing" : "pending");
+			trigger();
+		}, false);
+		return p.then((v) => loadEnd(p, v, void 0, lookup), (e) => loadEnd(p, void 0, castError(e), lookup));
+	}
+	Object.defineProperties(read, {
+		state: { get: () => state() },
+		error: { get: () => error() },
+		loading: { get() {
+			const s = state();
+			return s === "pending" || s === "refreshing";
+		} },
+		latest: { get() {
+			if (!resolved) return read();
+			const err = error();
+			if (err && !pr) throw err;
+			return value();
+		} }
+	});
+	let owner = Owner;
+	if (dynamic) createComputed(() => (owner = Owner, load(false)));
+	else load(false);
+	return [read, {
+		refetch: (info) => runWithOwner(owner, () => load(info)),
+		mutate: setValue
+	}];
+}
+function untrack(fn) {
+	if (!ExternalSourceConfig && Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+function onCleanup(fn) {
+	if (Owner === null);
+	else if (Owner.cleanups === null) Owner.cleanups = [fn];
+	else Owner.cleanups.push(fn);
+	return fn;
+}
+function runWithOwner(o, fn) {
+	const prev = Owner;
+	const prevListener = Listener;
+	Owner = o;
+	Listener = null;
+	try {
+		return runUpdates(fn, true);
+	} catch (err) {
+		handleError(err);
+	} finally {
+		Owner = prev;
+		Listener = prevListener;
+	}
+}
+function startTransition(fn) {
+	if (Transition && Transition.running) {
+		fn();
+		return Transition.done;
+	}
+	const l = Listener;
+	const o = Owner;
+	return Promise.resolve().then(() => {
+		Listener = l;
+		Owner = o;
+		let t;
+		if (Scheduler || SuspenseContext) {
+			t = Transition || (Transition = {
+				sources: /* @__PURE__ */ new Set(),
+				effects: [],
+				promises: /* @__PURE__ */ new Set(),
+				disposed: /* @__PURE__ */ new Set(),
+				queue: /* @__PURE__ */ new Set(),
+				running: true
+			});
+			t.done || (t.done = new Promise((res) => t.resolve = res));
+			t.running = true;
+		}
+		runUpdates(fn, false);
+		Listener = Owner = null;
+		return t ? t.done : void 0;
+	});
+}
+const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+function useContext(context) {
+	let value;
+	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
+}
+let SuspenseContext;
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+	else {
+		const updates = Updates;
+		Updates = null;
+		runUpdates(() => lookUpstream(this), false);
+		Updates = updates;
+	}
+	if (Listener) {
+		const sSlot = this.observers ? this.observers.length : 0;
+		if (!Listener.sources) {
+			Listener.sources = [this];
+			Listener.sourceSlots = [sSlot];
+		} else {
+			Listener.sources.push(this);
+			Listener.sourceSlots.push(sSlot);
+		}
+		if (!this.observers) {
+			this.observers = [Listener];
+			this.observerSlots = [Listener.sources.length - 1];
+		} else {
+			this.observers.push(Listener);
+			this.observerSlots.push(Listener.sources.length - 1);
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) if (Transition && Transition.running) {
+			node.tState = STALE;
+			node.tOwned && node.tOwned.forEach(cleanNode);
+			node.tOwned = void 0;
+		} else {
+			node.state = STALE;
+			node.owned && node.owned.forEach(cleanNode);
+			node.owned = null;
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
+	else Owner.tOwned.push(c);
+	else if (!Owner.owned) Owner.owned = [c];
+	else Owner.owned.push(c);
+	if (ExternalSourceConfig && c.fn) {
+		const [track, trigger] = createSignal(void 0, { equals: false });
+		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
+		onCleanup(() => ordinary.dispose());
+		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
+		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
+		c.fn = (x) => {
+			track();
+			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
+		};
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
+		else runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e$1 of Effects) {
+				"tState" in e$1 && (e$1.state = e$1.tState);
+				delete e$1.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function scheduleQueue(queue) {
+	for (let i = 0; i < queue.length; i++) {
+		const item = queue[i];
+		const tasks = Transition.queue;
+		if (!tasks.has(item)) {
+			tasks.add(item);
+			Scheduler(() => {
+				tasks.delete(item);
+				runUpdates(() => {
+					Transition.running = true;
+					runTop(item);
+				}, false);
+				Transition && (Transition.running = false);
+			});
+		}
+	}
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function runErrors(err, fns, owner) {
+	try {
+		for (const f of fns) f(err);
+	} catch (e) {
+		handleError(e, owner && owner.owner || null);
+	}
+}
+function handleError(err, owner = Owner) {
+	const fns = ERROR && owner && owner.context && owner.context[ERROR];
+	const error = castError(err);
+	if (!fns) throw error;
+	if (Effects) Effects.push({
+		fn() {
+			runErrors(error, fns, owner);
+		},
+		state: STALE
+	});
+	else runErrors(error, fns, owner);
+}
+
+//#endregion
+//#region node_modules/solid-js/web/dist/web.js
+const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	className: "class",
+	htmlFor: "for"
+});
+const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	class: "className",
+	novalidate: {
+		$: "noValidate",
+		FORM: 1
+	},
+	formnovalidate: {
+		$: "formNoValidate",
+		BUTTON: 1,
+		INPUT: 1
+	},
+	ismap: {
+		$: "isMap",
+		IMG: 1
+	},
+	nomodule: {
+		$: "noModule",
+		SCRIPT: 1
+	},
+	playsinline: {
+		$: "playsInline",
+		VIDEO: 1
+	},
+	readonly: {
+		$: "readOnly",
+		INPUT: 1,
+		TEXTAREA: 1
+	},
+	adauctionheaders: {
+		$: "adAuctionHeaders",
+		IFRAME: 1
+	},
+	allowfullscreen: {
+		$: "allowFullscreen",
+		IFRAME: 1
+	},
+	browsingtopics: {
+		$: "browsingTopics",
+		IMG: 1
+	},
+	defaultchecked: {
+		$: "defaultChecked",
+		INPUT: 1
+	},
+	defaultmuted: {
+		$: "defaultMuted",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	defaultselected: {
+		$: "defaultSelected",
+		OPTION: 1
+	},
+	disablepictureinpicture: {
+		$: "disablePictureInPicture",
+		VIDEO: 1
+	},
+	disableremoteplayback: {
+		$: "disableRemotePlayback",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	preservespitch: {
+		$: "preservesPitch",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	shadowrootclonable: {
+		$: "shadowRootClonable",
+		TEMPLATE: 1
+	},
+	shadowrootdelegatesfocus: {
+		$: "shadowRootDelegatesFocus",
+		TEMPLATE: 1
+	},
+	shadowrootserializable: {
+		$: "shadowRootSerializable",
+		TEMPLATE: 1
+	},
+	sharedstoragewritable: {
+		$: "sharedStorageWritable",
+		IFRAME: 1,
+		IMG: 1
+	}
+});
+const memo = (fn) => createMemo(() => fn());
+function reconcileArrays(parentNode, a, b) {
+	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
+	while (aStart < aEnd || bStart < bEnd) {
+		if (a[aStart] === b[bStart]) {
+			aStart++;
+			bStart++;
+			continue;
+		}
+		while (a[aEnd - 1] === b[bEnd - 1]) {
+			aEnd--;
+			bEnd--;
+		}
+		if (aEnd === aStart) {
+			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
+			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
+		} else if (bEnd === bStart) while (aStart < aEnd) {
+			if (!map || !map.has(a[aStart])) a[aStart].remove();
+			aStart++;
+		}
+		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+			const node = a[--aEnd].nextSibling;
+			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
+			parentNode.insertBefore(b[--bEnd], node);
+			a[aEnd] = b[bEnd];
+		} else {
+			if (!map) {
+				map = /* @__PURE__ */ new Map();
+				let i = bStart;
+				while (i < bEnd) map.set(b[i], i++);
+			}
+			const index = map.get(a[aStart]);
+			if (index != null) if (bStart < index && index < bEnd) {
+				let i = aStart, sequence = 1, t;
+				while (++i < aEnd && i < bEnd) {
+					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+					sequence++;
+				}
+				if (sequence > index - bStart) {
+					const node = a[aStart];
+					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+			} else aStart++;
+			else a[aStart++].remove();
+		}
+	}
+}
+function template(html, isImportNode, isSVG, isMathML) {
+	let node;
+	const create = () => {
+		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
+		t.innerHTML = html;
+		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
+	};
+	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
+	fn.cloneNode = fn;
+	return fn;
+}
+function insert(parent, accessor, marker, initial) {
+	if (marker !== void 0 && !initial) initial = [];
+	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+}
+function isHydrating(node) {
+	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
+}
+function insertExpression(parent, value, current, marker, unwrapArray) {
+	const hydrating = isHydrating(parent);
+	if (hydrating) {
+		!current && (current = [...parent.childNodes]);
+		let cleaned = [];
+		for (let i = 0; i < current.length; i++) {
+			const node = current[i];
+			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
+			else cleaned.push(node);
+		}
+		current = cleaned;
+	}
+	while (typeof current === "function") current = current();
+	if (value === current) return current;
+	const t = typeof value, multi = marker !== void 0;
+	parent = multi && current[0] && current[0].parentNode || parent;
+	if (t === "string" || t === "number") {
+		if (hydrating) return current;
+		if (t === "number") {
+			value = value.toString();
+			if (value === current) return current;
+		}
+		if (multi) {
+			let node = current[0];
+			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
+			else node = document.createTextNode(value);
+			current = cleanChildren(parent, current, marker, node);
+		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
+		else current = parent.textContent = value;
+	} else if (value == null || t === "boolean") {
+		if (hydrating) return current;
+		current = cleanChildren(parent, current, marker);
+	} else if (t === "function") {
+		createRenderEffect(() => {
+			let v = value();
+			while (typeof v === "function") v = v();
+			current = insertExpression(parent, v, current, marker);
+		});
+		return () => current;
+	} else if (Array.isArray(value)) {
+		const array = [];
+		const currentArray = current && Array.isArray(current);
+		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
+			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+			return () => current;
+		}
+		if (hydrating) {
+			if (!array.length) return current;
+			if (marker === void 0) return current = [...parent.childNodes];
+			let node = array[0];
+			if (node.parentNode !== parent) return current;
+			const nodes = [node];
+			while ((node = node.nextSibling) !== marker) nodes.push(node);
+			return current = nodes;
+		}
+		if (array.length === 0) {
+			current = cleanChildren(parent, current, marker);
+			if (multi) return current;
+		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
+		else reconcileArrays(parent, current, array);
+		else {
+			current && cleanChildren(parent);
+			appendNodes(parent, array);
+		}
+		current = array;
+	} else if (value.nodeType) {
+		if (hydrating && value.parentNode) return current = multi ? [value] : value;
+		if (Array.isArray(current)) {
+			if (multi) return current = cleanChildren(parent, current, marker, value);
+			cleanChildren(parent, current, null, value);
+		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
+		else parent.replaceChild(value, parent.firstChild);
+		current = value;
+	}
+	return current;
+}
+function normalizeIncomingArray(normalized, array, current, unwrap) {
+	let dynamic = false;
+	for (let i = 0, len = array.length; i < len; i++) {
+		let item = array[i], prev = current && current[normalized.length], t;
+		if (item == null || item === true || item === false);
+		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
+		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
+		else if (t === "function") if (unwrap) {
+			while (typeof item === "function") item = item();
+			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		} else {
+			normalized.push(item);
+			dynamic = true;
+		}
+		else {
+			const value = String(item);
+			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
+			else normalized.push(document.createTextNode(value));
+		}
+	}
+	return dynamic;
+}
+function appendNodes(parent, array, marker = null) {
+	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
+}
+function cleanChildren(parent, current, marker, replacement) {
+	if (marker === void 0) return parent.textContent = "";
+	const node = replacement || document.createTextNode("");
+	if (current.length) {
+		let inserted = false;
+		for (let i = current.length - 1; i >= 0; i--) {
+			const el = current[i];
+			if (node !== el) {
+				const isParent = el.parentNode === parent;
+				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
+				else isParent && el.remove();
+			} else inserted = true;
+		}
+	} else parent.insertBefore(node, marker);
+	return [node];
+}
+
+//#endregion
+//#region tests/fixtures/config-test.tsx
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: \`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!>!\`);
+const asyncFetchUser = async (id) => {
+	await new Promise((resolve) => setTimeout(resolve, 1e3));
+	return {
+		id,
+		name: \`User \${id}\`
+	};
+};
+const App = () => {
+	const [userId] = createSignal(1);
+	const [user] = createResource(userId, asyncFetchUser);
+	return (() => {
+		var _el$ = _tmpl$();
+		_el$.firstChild;
+		insert(_el$, (() => {
+			var _c$ = memo(() => !!user.loading);
+			return () => _c$() && _tmpl$2();
+		})(), null);
+		insert(_el$, (() => {
+			var _c$2 = memo(() => !!user.error);
+			return () => _c$2() && (() => {
+				var _el$4 = _tmpl$3();
+				_el$4.firstChild;
+				insert(_el$4, () => user.error.message, null);
+				return _el$4;
+			})();
+		})(), null);
+		insert(_el$, (() => {
+			var _c$3 = memo(() => !!user());
+			return () => _c$3() && (() => {
+				var _el$6 = _tmpl$4(), _el$9 = _el$6.firstChild.nextSibling;
+				_el$9.nextSibling;
+				insert(_el$6, () => user()?.name, _el$9);
+				return _el$6;
+			})();
+		})(), null);
+		return _el$;
+	})();
+};
+var config_test_default = App;
+
+//#endregion
+export { config_test_default as default };"
+`;
+
+exports[`rolldown-plugin-solid configuration should transform SSR generate mode 1`] = `
+"//#region node_modules/solid-js/dist/server.js
+const ERROR = Symbol("error");
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function handleError(err, owner = Owner) {
+	const fns = owner && owner.context && owner.context[ERROR];
+	const error = castError(err);
+	if (!fns) throw error;
+	try {
+		for (const f$1 of fns) f$1(error);
+	} catch (e) {
+		handleError(e, owner && owner.owner || null);
+	}
+}
+let Owner = null;
+function createOwner() {
+	const o$1 = {
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		owned: null,
+		cleanups: null
+	};
+	if (Owner) if (!Owner.owned) Owner.owned = [o$1];
+	else Owner.owned.push(o$1);
+	return o$1;
+}
+function createSignal(value, options) {
+	return [() => value, (v) => {
+		return value = typeof v === "function" ? v(value) : v;
+	}];
+}
+function createMemo(fn, value) {
+	Owner = createOwner();
+	let v;
+	try {
+		v = fn(value);
+	} catch (err) {
+		handleError(err);
+	} finally {
+		Owner = Owner.owner;
+	}
+	return () => v;
+}
+function createContext(defaultValue) {
+	const id = Symbol("context");
+	return {
+		id,
+		Provider: createProvider(id),
+		defaultValue
+	};
+}
+function useContext(context) {
+	return Owner && Owner.context && Owner.context[context.id] !== void 0 ? Owner.context[context.id] : context.defaultValue;
+}
+function children(fn) {
+	const memo = createMemo(() => resolveChildren(fn()));
+	memo.toArray = () => {
+		const c$1 = memo();
+		return Array.isArray(c$1) ? c$1 : c$1 != null ? [c$1] : [];
+	};
+	return memo;
+}
+function resolveChildren(children$1) {
+	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
+	if (Array.isArray(children$1)) {
+		const results = [];
+		for (let i$1 = 0; i$1 < children$1.length; i$1++) {
+			const result = resolveChildren(children$1[i$1]);
+			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+		}
+		return results;
+	}
+	return children$1;
+}
+function createProvider(id) {
+	return function provider(props) {
+		return createMemo(() => {
+			Owner.context = {
+				...Owner.context,
+				[id]: props.value
+			};
+			return children(() => props.children);
+		});
+	};
+}
+const sharedConfig = {
+	context: void 0,
+	getContextId() {
+		if (!this.context) throw new Error(\`getContextId cannot be used under non-hydrating context\`);
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		if (!this.context) throw new Error(\`getNextContextId cannot be used under non-hydrating context\`);
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+const SuspenseContext = createContext();
+let resourceContext = null;
+function createResource(source, fetcher, options = {}) {
+	if (typeof fetcher !== "function") {
+		options = fetcher || {};
+		fetcher = source;
+		source = true;
+	}
+	const contexts = /* @__PURE__ */ new Set();
+	const id = sharedConfig.getNextContextId();
+	let resource = {};
+	let value = options.storage ? options.storage(options.initialValue)[0]() : options.initialValue;
+	let p$1;
+	let error;
+	if (sharedConfig.context.async && options.ssrLoadFrom !== "initial") {
+		resource = sharedConfig.context.resources[id] || (sharedConfig.context.resources[id] = {});
+		if (resource.ref) {
+			if (!resource.data && !resource.ref[0]._loading && !resource.ref[0].error) resource.ref[1].refetch();
+			return resource.ref;
+		}
+	}
+	const prepareResource = () => {
+		if (error) throw error;
+		const resolved = options.ssrLoadFrom !== "initial" && sharedConfig.context.async && "data" in sharedConfig.context.resources[id];
+		if (!resolved && resourceContext) resourceContext.push(id);
+		if (!resolved && read._loading) {
+			const ctx = useContext(SuspenseContext);
+			if (ctx) {
+				ctx.resources.set(id, read);
+				contexts.add(ctx);
+			}
+		}
+		return resolved;
+	};
+	const read = () => {
+		return prepareResource() ? sharedConfig.context.resources[id].data : value;
+	};
+	const loading = () => {
+		prepareResource();
+		return read._loading;
+	};
+	read._loading = false;
+	read.error = void 0;
+	read.state = "initialValue" in options ? "ready" : "unresolved";
+	Object.defineProperties(read, {
+		latest: { get() {
+			return read();
+		} },
+		loading: { get() {
+			return loading();
+		} }
+	});
+	function load() {
+		const ctx = sharedConfig.context;
+		if (!ctx.async) return read._loading = !!(typeof source === "function" ? source() : source);
+		if (ctx.resources && id in ctx.resources && "data" in ctx.resources[id]) {
+			value = ctx.resources[id].data;
+			return;
+		}
+		let lookup;
+		try {
+			resourceContext = [];
+			lookup = typeof source === "function" ? source() : source;
+			if (resourceContext.length) return;
+		} finally {
+			resourceContext = null;
+		}
+		if (!p$1) {
+			if (lookup == null || lookup === false) return;
+			p$1 = fetcher(lookup, { value });
+		}
+		if (p$1 != void 0 && typeof p$1 === "object" && "then" in p$1) {
+			read._loading = true;
+			read.state = "pending";
+			p$1 = p$1.then((res) => {
+				read._loading = false;
+				read.state = "ready";
+				ctx.resources[id].data = res;
+				p$1 = null;
+				notifySuspense(contexts);
+				return res;
+			}).catch((err) => {
+				read._loading = false;
+				read.state = "errored";
+				read.error = error = castError(err);
+				p$1 = null;
+				notifySuspense(contexts);
+				throw error;
+			});
+			if (ctx.serialize) ctx.serialize(id, p$1, options.deferStream);
+			return p$1;
+		}
+		ctx.resources[id].data = p$1;
+		if (ctx.serialize) ctx.serialize(id, p$1);
+		p$1 = null;
+		return ctx.resources[id].data;
+	}
+	if (options.ssrLoadFrom !== "initial") load();
+	const ref = [read, {
+		refetch: load,
+		mutate: (v) => value = v
+	}];
+	if (p$1) resource.ref = ref;
+	return ref;
+}
+function suspenseComplete(c$1) {
+	for (const r of c$1.resources.values()) if (r._loading) return false;
+	return true;
+}
+function notifySuspense(contexts) {
+	for (const c$1 of contexts) {
+		if (!suspenseComplete(c$1)) continue;
+		c$1.completed();
+		contexts.delete(c$1);
+	}
+}
+
+//#endregion
+//#region node_modules/seroval/dist/esm/production/index.mjs
+var R = ((a) => (a[a.AggregateError = 1] = "AggregateError", a[a.ArrowFunction = 2] = "ArrowFunction", a[a.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", a[a.ObjectAssign = 8] = "ObjectAssign", a[a.BigIntTypedArray = 16] = "BigIntTypedArray", a))(R || {});
+var O$1 = "__SEROVAL_REFS__", Q = "$R", ae = \`self.\${Q}\`;
+var Be = /* @__PURE__ */ new Map(), C$1 = /* @__PURE__ */ new Map();
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, O$1, {
+	value: C$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof window != "undefined" ? Object.defineProperty(window, O$1, {
+	value: C$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof self != "undefined" ? Object.defineProperty(self, O$1, {
+	value: C$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof global != "undefined" && Object.defineProperty(global, O$1, {
+	value: C$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+});
+function Hr(o$1) {
+	return o$1;
+}
+var $e = {
+	0: "Symbol.asyncIterator",
+	1: "Symbol.hasInstance",
+	2: "Symbol.isConcatSpreadable",
+	3: "Symbol.iterator",
+	4: "Symbol.match",
+	5: "Symbol.matchAll",
+	6: "Symbol.replace",
+	7: "Symbol.search",
+	8: "Symbol.species",
+	9: "Symbol.split",
+	10: "Symbol.toPrimitive",
+	11: "Symbol.toStringTag",
+	12: "Symbol.unscopables"
+}, ce = {
+	[Symbol.asyncIterator]: 0,
+	[Symbol.hasInstance]: 1,
+	[Symbol.isConcatSpreadable]: 2,
+	[Symbol.iterator]: 3,
+	[Symbol.match]: 4,
+	[Symbol.matchAll]: 5,
+	[Symbol.replace]: 6,
+	[Symbol.search]: 7,
+	[Symbol.species]: 8,
+	[Symbol.split]: 9,
+	[Symbol.toPrimitive]: 10,
+	[Symbol.toStringTag]: 11,
+	[Symbol.unscopables]: 12
+}, Ge = {
+	0: Symbol.asyncIterator,
+	1: Symbol.hasInstance,
+	2: Symbol.isConcatSpreadable,
+	3: Symbol.iterator,
+	4: Symbol.match,
+	5: Symbol.matchAll,
+	6: Symbol.replace,
+	7: Symbol.search,
+	8: Symbol.species,
+	9: Symbol.split,
+	10: Symbol.toPrimitive,
+	11: Symbol.toStringTag,
+	12: Symbol.unscopables
+}, qe = {
+	2: "!0",
+	3: "!1",
+	1: "void 0",
+	0: "null",
+	4: "-0",
+	5: "1/0",
+	6: "-1/0",
+	7: "0/0"
+}, He = {
+	2: !0,
+	3: !1,
+	1: void 0,
+	0: null,
+	4: -0,
+	5: Number.POSITIVE_INFINITY,
+	6: Number.NEGATIVE_INFINITY,
+	7: NaN
+};
+var ue$1 = {
+	0: "Error",
+	1: "EvalError",
+	2: "RangeError",
+	3: "ReferenceError",
+	4: "SyntaxError",
+	5: "TypeError",
+	6: "URIError"
+}, Ze = {
+	0: Error,
+	1: EvalError,
+	2: RangeError,
+	3: ReferenceError,
+	4: SyntaxError,
+	5: TypeError,
+	6: URIError
+}, s$1 = void 0;
+function u$1(o$1, e, r, t, n, a, i$1, l$1, c$1, p$1, h$1, X) {
+	return {
+		t: o$1,
+		i: e,
+		s: r,
+		l: t,
+		c: n,
+		m: a,
+		p: i$1,
+		e: l$1,
+		a: c$1,
+		f: p$1,
+		b: h$1,
+		o: X
+	};
+}
+function x$1(o$1) {
+	return u$1(2, s$1, o$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1);
+}
+var I = x$1(2), A$1 = x$1(3), pe = x$1(1), de = x$1(0), Xe = x$1(4), Qe = x$1(5), er = x$1(6), rr = x$1(7);
+var { toString: _e } = Object.prototype;
+function K$1() {
+	let o$1 = /* @__PURE__ */ new Set(), e = [], r = !0, t = !0;
+	function n(l$1) {
+		for (let c$1 of o$1.keys()) c$1.next(l$1);
+	}
+	function a(l$1) {
+		for (let c$1 of o$1.keys()) c$1.throw(l$1);
+	}
+	function i$1(l$1) {
+		for (let c$1 of o$1.keys()) c$1.return(l$1);
+	}
+	return {
+		__SEROVAL_STREAM__: !0,
+		on(l$1) {
+			r && o$1.add(l$1);
+			for (let c$1 = 0, p$1 = e.length; c$1 < p$1; c$1++) {
+				let h$1 = e[c$1];
+				c$1 === p$1 - 1 && !r ? t ? l$1.return(h$1) : l$1.throw(h$1) : l$1.next(h$1);
+			}
+			return () => {
+				r && o$1.delete(l$1);
+			};
+		},
+		next(l$1) {
+			r && (e.push(l$1), n(l$1));
+		},
+		throw(l$1) {
+			r && (e.push(l$1), a(l$1), r = !1, t = !1, o$1.clear());
+		},
+		return(l$1) {
+			r && (e.push(l$1), i$1(l$1), r = !1, t = !0, o$1.clear());
+		}
+	};
+}
+var yr = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Sr = yr.length, vr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", hr = vr.length;
+
+//#endregion
+//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
+function h(e) {
+	e(this.reason);
+}
+function A(e) {
+	this.addEventListener("abort", h.bind(this, e), { once: !0 });
+}
+function E(e) {
+	return new Promise(A.bind(e));
+}
+var o = class {
+	constructor() {
+		this.controller = new AbortController();
+	}
+}, F = Hr({
+	tag: "seroval-plugins/web/AbortSignalController",
+	test(e) {
+		return e instanceof o;
+	},
+	parse: { stream() {} },
+	serialize(e) {
+		return "new AbortController";
+	},
+	deserialize(e) {
+		return new o();
+	}
+}), s = class {
+	constructor(r, a) {
+		this.controller = r;
+		this.reason = a;
+	}
+};
+var C = Hr({
+	tag: "seroval-plugins/web/AbortSignal",
+	extends: [Hr({
+		extends: [F],
+		tag: "seroval-plugins/web/AbortSignalAbort",
+		test(e) {
+			return e instanceof s;
+		},
+		parse: { stream(e, r) {
+			return {
+				controller: r.parse(e.controller),
+				reason: r.parse(e.reason)
+			};
+		} },
+		serialize(e, r) {
+			return r.serialize(e.controller) + ".abort(" + r.serialize(e.reason) + ")";
+		},
+		deserialize(e, r) {
+			let a = r.deserialize(e.controller), t = r.deserialize(e.reason);
+			return a.controller.abort(t), new s(a, t);
+		}
+	})],
+	test(e) {
+		return typeof AbortSignal == "undefined" ? !1 : e instanceof AbortSignal;
+	},
+	parse: {
+		sync(e, r) {
+			return e.aborted ? {
+				type: 1,
+				reason: r.parse(e.reason)
+			} : { type: 0 };
+		},
+		async async(e, r) {
+			if (e.aborted) return {
+				type: 1,
+				reason: await r.parse(e.reason)
+			};
+			let a = await E(e);
+			return {
+				type: 1,
+				reason: await r.parse(a)
+			};
+		},
+		stream(e, r) {
+			if (e.aborted) return {
+				type: 1,
+				reason: r.parse(e.reason)
+			};
+			let a = new o();
+			return r.pushPendingState(), e.addEventListener("abort", () => {
+				let t = r.parseWithError(new s(a, e.reason));
+				t && r.onParse(t), r.popPendingState();
+			}, { once: !0 }), {
+				type: 2,
+				controller: r.parse(a)
+			};
+		}
+	},
+	serialize(e, r) {
+		return e.type === 0 ? "(new AbortController).signal" : e.type === 1 ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : "(" + r.serialize(e.controller) + ").signal";
+	},
+	deserialize(e, r) {
+		return e.type === 0 ? new AbortController().signal : e.type === 1 ? AbortSignal.abort(r.deserialize(e.reason)) : r.deserialize(e.controller).controller.signal;
+	}
+});
+var O = Hr({
+	tag: "seroval-plugins/web/Blob",
+	test(e) {
+		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
+	},
+	parse: { async async(e, r) {
+		return {
+			type: await r.parse(e.type),
+			buffer: await r.parse(await e.arrayBuffer())
+		};
+	} },
+	serialize(e, r) {
+		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
+	},
+	deserialize(e, r) {
+		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
+	}
+});
+function f(e) {
+	return {
+		detail: e.detail,
+		bubbles: e.bubbles,
+		cancelable: e.cancelable,
+		composed: e.composed
+	};
+}
+var H = Hr({
+	tag: "seroval-plugins/web/CustomEvent",
+	test(e) {
+		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
+	},
+	parse: {
+		sync(e, r) {
+			return {
+				type: r.parse(e.type),
+				options: r.parse(f(e))
+			};
+		},
+		async async(e, r) {
+			return {
+				type: await r.parse(e.type),
+				options: await r.parse(f(e))
+			};
+		},
+		stream(e, r) {
+			return {
+				type: r.parse(e.type),
+				options: r.parse(f(e))
+			};
+		}
+	},
+	serialize(e, r) {
+		return "new CustomEvent(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
+	},
+	deserialize(e, r) {
+		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
+	}
+});
+var _ = Hr({
+	tag: "seroval-plugins/web/DOMException",
+	test(e) {
+		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
+	},
+	parse: {
+		sync(e, r) {
+			return {
+				name: r.parse(e.name),
+				message: r.parse(e.message)
+			};
+		},
+		async async(e, r) {
+			return {
+				name: await r.parse(e.name),
+				message: await r.parse(e.message)
+			};
+		},
+		stream(e, r) {
+			return {
+				name: r.parse(e.name),
+				message: r.parse(e.message)
+			};
+		}
+	},
+	serialize(e, r) {
+		return "new DOMException(" + r.serialize(e.message) + "," + r.serialize(e.name) + ")";
+	},
+	deserialize(e, r) {
+		return new DOMException(r.deserialize(e.message), r.deserialize(e.name));
+	}
+});
+function m(e) {
+	return {
+		bubbles: e.bubbles,
+		cancelable: e.cancelable,
+		composed: e.composed
+	};
+}
+var Y = Hr({
+	tag: "seroval-plugins/web/Event",
+	test(e) {
+		return typeof Event == "undefined" ? !1 : e instanceof Event;
+	},
+	parse: {
+		sync(e, r) {
+			return {
+				type: r.parse(e.type),
+				options: r.parse(m(e))
+			};
+		},
+		async async(e, r) {
+			return {
+				type: await r.parse(e.type),
+				options: await r.parse(m(e))
+			};
+		},
+		stream(e, r) {
+			return {
+				type: r.parse(e.type),
+				options: r.parse(m(e))
+			};
+		}
+	},
+	serialize(e, r) {
+		return "new Event(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
+	},
+	deserialize(e, r) {
+		return new Event(r.deserialize(e.type), r.deserialize(e.options));
+	}
+});
+var c = Hr({
+	tag: "seroval-plugins/web/File",
+	test(e) {
+		return typeof File == "undefined" ? !1 : e instanceof File;
+	},
+	parse: { async async(e, r) {
+		return {
+			name: await r.parse(e.name),
+			options: await r.parse({
+				type: e.type,
+				lastModified: e.lastModified
+			}),
+			buffer: await r.parse(await e.arrayBuffer())
+		};
+	} },
+	serialize(e, r) {
+		return "new File([" + r.serialize(e.buffer) + "]," + r.serialize(e.name) + "," + r.serialize(e.options) + ")";
+	},
+	deserialize(e, r) {
+		return new File([r.deserialize(e.buffer)], r.deserialize(e.name), r.deserialize(e.options));
+	}
+});
+function g(e) {
+	let r = [];
+	return e.forEach((a, t) => {
+		r.push([t, a]);
+	}), r;
+}
+var i = {}, K = Hr({
+	tag: "seroval-plugins/web/FormData",
+	extends: [c, Hr({
+		tag: "seroval-plugins/web/FormDataFactory",
+		test(e) {
+			return e === i;
+		},
+		parse: {
+			sync() {},
+			async async() {
+				return await Promise.resolve(void 0);
+			},
+			stream() {}
+		},
+		serialize(e, r) {
+			return r.createEffectfulFunction([
+				"e",
+				"f",
+				"i",
+				"s",
+				"t"
+			], "f=new FormData;for(i=0,s=e.length;i<s;i++)f.append((t=e[i])[0],t[1]);return f");
+		},
+		deserialize() {
+			return i;
+		}
+	})],
+	test(e) {
+		return typeof FormData == "undefined" ? !1 : e instanceof FormData;
+	},
+	parse: {
+		sync(e, r) {
+			return {
+				factory: r.parse(i),
+				entries: r.parse(g(e))
+			};
+		},
+		async async(e, r) {
+			return {
+				factory: await r.parse(i),
+				entries: await r.parse(g(e))
+			};
+		},
+		stream(e, r) {
+			return {
+				factory: r.parse(i),
+				entries: r.parse(g(e))
+			};
+		}
+	},
+	serialize(e, r) {
+		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.entries) + ")";
+	},
+	deserialize(e, r) {
+		let a = new FormData(), t = r.deserialize(e.entries);
+		for (let n = 0, R$1 = t.length; n < R$1; n++) {
+			let b = t[n];
+			a.append(b[0], b[1]);
+		}
+		return a;
+	}
+});
+function y(e) {
+	let r = [];
+	return e.forEach((a, t) => {
+		r.push([t, a]);
+	}), r;
+}
+var l = Hr({
+	tag: "seroval-plugins/web/Headers",
+	test(e) {
+		return typeof Headers == "undefined" ? !1 : e instanceof Headers;
+	},
+	parse: {
+		sync(e, r) {
+			return r.parse(y(e));
+		},
+		async async(e, r) {
+			return await r.parse(y(e));
+		},
+		stream(e, r) {
+			return r.parse(y(e));
+		}
+	},
+	serialize(e, r) {
+		return "new Headers(" + r.serialize(e) + ")";
+	},
+	deserialize(e, r) {
+		return new Headers(r.deserialize(e));
+	}
+});
+var x = Hr({
+	tag: "seroval-plugins/web/ImageData",
+	test(e) {
+		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
+	},
+	parse: {
+		sync(e, r) {
+			return {
+				data: r.parse(e.data),
+				width: r.parse(e.width),
+				height: r.parse(e.height),
+				options: r.parse({ colorSpace: e.colorSpace })
+			};
+		},
+		async async(e, r) {
+			return {
+				data: await r.parse(e.data),
+				width: await r.parse(e.width),
+				height: await r.parse(e.height),
+				options: await r.parse({ colorSpace: e.colorSpace })
+			};
+		},
+		stream(e, r) {
+			return {
+				data: r.parse(e.data),
+				width: r.parse(e.width),
+				height: r.parse(e.height),
+				options: r.parse({ colorSpace: e.colorSpace })
+			};
+		}
+	},
+	serialize(e, r) {
+		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
+	},
+	deserialize(e, r) {
+		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
+	}
+});
+var p = {}, ee = Hr({
+	tag: "seroval-plugins/web/ReadableStreamFactory",
+	test(e) {
+		return e === p;
+	},
+	parse: {
+		sync() {},
+		async async() {
+			return await Promise.resolve(void 0);
+		},
+		stream() {}
+	},
+	serialize(e, r) {
+		return r.createFunction(["d"], "new ReadableStream({start:" + r.createEffectfulFunction(["c"], "d.on({next:" + r.createEffectfulFunction(["v"], "c.enqueue(v)") + ",throw:" + r.createEffectfulFunction(["v"], "c.error(v)") + ",return:" + r.createEffectfulFunction([], "c.close()") + "})") + "})");
+	},
+	deserialize() {
+		return p;
+	}
+});
+function w(e) {
+	let r = K$1(), a = e.getReader();
+	async function t() {
+		try {
+			let n = await a.read();
+			n.done ? r.return(n.value) : (r.next(n.value), await t());
+		} catch (n) {
+			r.throw(n);
+		}
+	}
+	return t().catch(() => {}), r;
+}
+var u = Hr({
+	tag: "seroval/plugins/web/ReadableStream",
+	extends: [ee],
+	test(e) {
+		return typeof ReadableStream == "undefined" ? !1 : e instanceof ReadableStream;
+	},
+	parse: {
+		sync(e, r) {
+			return {
+				factory: r.parse(p),
+				stream: r.parse(K$1())
+			};
+		},
+		async async(e, r) {
+			return {
+				factory: await r.parse(p),
+				stream: await r.parse(w(e))
+			};
+		},
+		stream(e, r) {
+			return {
+				factory: r.parse(p),
+				stream: r.parse(w(e))
+			};
+		}
+	},
+	serialize(e, r) {
+		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.stream) + ")";
+	},
+	deserialize(e, r) {
+		let a = r.deserialize(e.stream);
+		return new ReadableStream({ start(t) {
+			a.on({
+				next(n) {
+					t.enqueue(n);
+				},
+				throw(n) {
+					t.error(n);
+				},
+				return() {
+					t.close();
+				}
+			});
+		} });
+	}
+});
+function P(e, r) {
+	return {
+		body: r,
+		cache: e.cache,
+		credentials: e.credentials,
+		headers: e.headers,
+		integrity: e.integrity,
+		keepalive: e.keepalive,
+		method: e.method,
+		mode: e.mode,
+		redirect: e.redirect,
+		referrer: e.referrer,
+		referrerPolicy: e.referrerPolicy
+	};
+}
+var ne = Hr({
+	tag: "seroval-plugins/web/Request",
+	extends: [u, l],
+	test(e) {
+		return typeof Request == "undefined" ? !1 : e instanceof Request;
+	},
+	parse: {
+		async async(e, r) {
+			return {
+				url: await r.parse(e.url),
+				options: await r.parse(P(e, e.body ? await e.clone().arrayBuffer() : null))
+			};
+		},
+		stream(e, r) {
+			return {
+				url: r.parse(e.url),
+				options: r.parse(P(e, e.clone().body))
+			};
+		}
+	},
+	serialize(e, r) {
+		return "new Request(" + r.serialize(e.url) + "," + r.serialize(e.options) + ")";
+	},
+	deserialize(e, r) {
+		return new Request(r.deserialize(e.url), r.deserialize(e.options));
+	}
+});
+function N(e) {
+	return {
+		headers: e.headers,
+		status: e.status,
+		statusText: e.statusText
+	};
+}
+var ie = Hr({
+	tag: "seroval-plugins/web/Response",
+	extends: [u, l],
+	test(e) {
+		return typeof Response == "undefined" ? !1 : e instanceof Response;
+	},
+	parse: {
+		async async(e, r) {
+			return {
+				body: await r.parse(e.body ? await e.clone().arrayBuffer() : null),
+				options: await r.parse(N(e))
+			};
+		},
+		stream(e, r) {
+			return {
+				body: r.parse(e.clone().body),
+				options: r.parse(N(e))
+			};
+		}
+	},
+	serialize(e, r) {
+		return "new Response(" + r.serialize(e.body) + "," + r.serialize(e.options) + ")";
+	},
+	deserialize(e, r) {
+		return new Response(r.deserialize(e.body), r.deserialize(e.options));
+	}
+});
+var ue = Hr({
+	tag: "seroval-plugins/web/URL",
+	test(e) {
+		return typeof URL == "undefined" ? !1 : e instanceof URL;
+	},
+	parse: {
+		sync(e, r) {
+			return r.parse(e.href);
+		},
+		async async(e, r) {
+			return await r.parse(e.href);
+		},
+		stream(e, r) {
+			return r.parse(e.href);
+		}
+	},
+	serialize(e, r) {
+		return "new URL(" + r.serialize(e) + ")";
+	},
+	deserialize(e, r) {
+		return new URL(r.deserialize(e));
+	}
+});
+var me = Hr({
+	tag: "seroval-plugins/web/URLSearchParams",
+	test(e) {
+		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
+	},
+	parse: {
+		sync(e, r) {
+			return r.parse(e.toString());
+		},
+		async async(e, r) {
+			return await r.parse(e.toString());
+		},
+		stream(e, r) {
+			return r.parse(e.toString());
+		}
+	},
+	serialize(e, r) {
+		return "new URLSearchParams(" + r.serialize(e) + ")";
+	},
+	deserialize(e, r) {
+		return new URLSearchParams(r.deserialize(e));
+	}
+});
+
+//#endregion
+//#region node_modules/solid-js/web/dist/server.js
+const booleans = [
+	"allowfullscreen",
+	"async",
+	"alpha",
+	"autofocus",
+	"autoplay",
+	"checked",
+	"controls",
+	"default",
+	"disabled",
+	"formnovalidate",
+	"hidden",
+	"indeterminate",
+	"inert",
+	"ismap",
+	"loop",
+	"multiple",
+	"muted",
+	"nomodule",
+	"novalidate",
+	"open",
+	"playsinline",
+	"readonly",
+	"required",
+	"reversed",
+	"seamless",
+	"selected",
+	"adauctionheaders",
+	"browsingtopics",
+	"credentialless",
+	"defaultchecked",
+	"defaultmuted",
+	"defaultselected",
+	"defer",
+	"disablepictureinpicture",
+	"disableremoteplayback",
+	"preservespitch",
+	"shadowrootclonable",
+	"shadowrootcustomelementregistry",
+	"shadowrootdelegatesfocus",
+	"shadowrootserializable",
+	"sharedstoragewritable"
+];
+const Properties = /* @__PURE__ */ new Set([
+	"className",
+	"value",
+	"readOnly",
+	"noValidate",
+	"formNoValidate",
+	"isMap",
+	"noModule",
+	"playsInline",
+	"adAuctionHeaders",
+	"allowFullscreen",
+	"browsingTopics",
+	"defaultChecked",
+	"defaultMuted",
+	"defaultSelected",
+	"disablePictureInPicture",
+	"disableRemotePlayback",
+	"preservesPitch",
+	"shadowRootClonable",
+	"shadowRootCustomElementRegistry",
+	"shadowRootDelegatesFocus",
+	"shadowRootSerializable",
+	"sharedStorageWritable",
+	...booleans
+]);
+const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	className: "class",
+	htmlFor: "for"
+});
+const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	class: "className",
+	novalidate: {
+		$: "noValidate",
+		FORM: 1
+	},
+	formnovalidate: {
+		$: "formNoValidate",
+		BUTTON: 1,
+		INPUT: 1
+	},
+	ismap: {
+		$: "isMap",
+		IMG: 1
+	},
+	nomodule: {
+		$: "noModule",
+		SCRIPT: 1
+	},
+	playsinline: {
+		$: "playsInline",
+		VIDEO: 1
+	},
+	readonly: {
+		$: "readOnly",
+		INPUT: 1,
+		TEXTAREA: 1
+	},
+	adauctionheaders: {
+		$: "adAuctionHeaders",
+		IFRAME: 1
+	},
+	allowfullscreen: {
+		$: "allowFullscreen",
+		IFRAME: 1
+	},
+	browsingtopics: {
+		$: "browsingTopics",
+		IMG: 1
+	},
+	defaultchecked: {
+		$: "defaultChecked",
+		INPUT: 1
+	},
+	defaultmuted: {
+		$: "defaultMuted",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	defaultselected: {
+		$: "defaultSelected",
+		OPTION: 1
+	},
+	disablepictureinpicture: {
+		$: "disablePictureInPicture",
+		VIDEO: 1
+	},
+	disableremoteplayback: {
+		$: "disableRemotePlayback",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	preservespitch: {
+		$: "preservesPitch",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	shadowrootclonable: {
+		$: "shadowRootClonable",
+		TEMPLATE: 1
+	},
+	shadowrootdelegatesfocus: {
+		$: "shadowRootDelegatesFocus",
+		TEMPLATE: 1
+	},
+	shadowrootserializable: {
+		$: "shadowRootSerializable",
+		TEMPLATE: 1
+	},
+	sharedstoragewritable: {
+		$: "sharedStorageWritable",
+		IFRAME: 1,
+		IMG: 1
+	}
+});
+const ES2017FLAG = R.AggregateError | R.BigIntTypedArray;
+function ssr(t, ...nodes) {
+	if (nodes.length) {
+		let result = "";
+		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
+			result += t[i$1];
+			const node = nodes[i$1];
+			if (node !== void 0) result += resolveSSRNode(node);
+		}
+		t = result + t[nodes.length];
+	}
+	return { t };
+}
+function escape(s$2, attr) {
+	const t = typeof s$2;
+	if (t !== "string") {
+		if (!attr && t === "function") return escape(s$2());
+		if (!attr && Array.isArray(s$2)) {
+			s$2 = s$2.slice();
+			for (let i$1 = 0; i$1 < s$2.length; i$1++) s$2[i$1] = escape(s$2[i$1]);
+			return s$2;
+		}
+		if (attr && t === "boolean") return String(s$2);
+		return s$2;
+	}
+	const delim = attr ? "\\"" : "<";
+	const escDelim = attr ? "&quot;" : "&lt;";
+	let iDelim = s$2.indexOf(delim);
+	let iAmp = s$2.indexOf("&");
+	if (iDelim < 0 && iAmp < 0) return s$2;
+	let left = 0, out = "";
+	while (iDelim >= 0 && iAmp >= 0) if (iDelim < iAmp) {
+		if (left < iDelim) out += s$2.substring(left, iDelim);
+		out += escDelim;
+		left = iDelim + 1;
+		iDelim = s$2.indexOf(delim, left);
+	} else {
+		if (left < iAmp) out += s$2.substring(left, iAmp);
+		out += "&amp;";
+		left = iAmp + 1;
+		iAmp = s$2.indexOf("&", left);
+	}
+	if (iDelim >= 0) do {
+		if (left < iDelim) out += s$2.substring(left, iDelim);
+		out += escDelim;
+		left = iDelim + 1;
+		iDelim = s$2.indexOf(delim, left);
+	} while (iDelim >= 0);
+	else while (iAmp >= 0) {
+		if (left < iAmp) out += s$2.substring(left, iAmp);
+		out += "&amp;";
+		left = iAmp + 1;
+		iAmp = s$2.indexOf("&", left);
+	}
+	return left < s$2.length ? out + s$2.substring(left) : out;
+}
+function resolveSSRNode(node, top) {
+	const t = typeof node;
+	if (t === "string") return node;
+	if (node == null || t === "boolean") return "";
+	if (Array.isArray(node)) {
+		let prev = {};
+		let mapped = "";
+		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
+			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i$1]);
+		}
+		return mapped;
+	}
+	if (t === "object") return node.t;
+	if (t === "function") return resolveSSRNode(node());
+	return String(node);
+}
+
+//#endregion
+//#region tests/fixtures/config-test.tsx
+var _tmpl$ = [
+	"<div><h1>Config Test</h1>",
+	"",
+	"",
+	"</div>"
+], _tmpl$2 = "<p>Loading...</p>", _tmpl$3 = ["<p>Error: ", "</p>"], _tmpl$4 = ["<p>Hello, ", "!</p>"];
+const asyncFetchUser = async (id) => {
+	await new Promise((resolve) => setTimeout(resolve, 1e3));
+	return {
+		id,
+		name: \`User \${id}\`
+	};
+};
+const App = () => {
+	const [userId] = createSignal(1);
+	const [user] = createResource(userId, asyncFetchUser);
+	return ssr(_tmpl$, user.loading && _tmpl$2, user.error && ssr(_tmpl$3, escape(user.error.message)), user() && ssr(_tmpl$4, escape(user()?.name)));
+};
+var config_test_default = App;
+
+//#endregion
+export { config_test_default as default };"
+`;
+
+exports[`rolldown-plugin-solid configuration should transform custom generated with hydratable 1`] = `
+"//#region node_modules/solid-js/dist/solid.js
+const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+const equalFn = (a, b) => a === b;
+const signalOptions = { equals: equalFn };
+let ERROR = null;
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+const NO_INIT = {};
+var Owner = null;
+let Transition = null;
+let Scheduler = null;
+let ExternalSourceConfig = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value$1) => {
+		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
+		else value$1 = value$1(s.value);
+		return writeSignal(s, value$1);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createComputed(fn, value, options) {
+	const c = createComputation(fn, value, true, STALE);
+	if (Scheduler && Transition && Transition.running) Updates.push(c);
+	else updateComputation(c);
+}
+function createRenderEffect(fn, value, options) {
+	const c = createComputation(fn, value, false, STALE);
+	if (Scheduler && Transition && Transition.running) Updates.push(c);
+	else updateComputation(c);
+}
+function createMemo(fn, value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const c = createComputation(fn, value, true, 0);
+	c.observers = null;
+	c.observerSlots = null;
+	c.comparator = options.equals || void 0;
+	if (Scheduler && Transition && Transition.running) {
+		c.tState = STALE;
+		Updates.push(c);
+	} else updateComputation(c);
+	return readSignal.bind(c);
+}
+function isPromise(v) {
+	return v && typeof v === "object" && "then" in v;
+}
+function createResource(pSource, pFetcher, pOptions) {
+	let source;
+	let fetcher;
+	let options;
+	if (typeof pFetcher === "function") {
+		source = pSource;
+		fetcher = pFetcher;
+		options = pOptions || {};
+	} else {
+		source = true;
+		fetcher = pSource;
+		options = pFetcher || {};
+	}
+	let pr = null, initP = NO_INIT, id = null, loadedUnderTransition = false, scheduled = false, resolved = "initialValue" in options, dynamic = typeof source === "function" && createMemo(source);
+	const contexts = /* @__PURE__ */ new Set(), [value, setValue] = (options.storage || createSignal)(options.initialValue), [error, setError] = createSignal(void 0), [track, trigger] = createSignal(void 0, { equals: false }), [state, setState] = createSignal(resolved ? "ready" : "unresolved");
+	if (sharedConfig.context) {
+		id = sharedConfig.getNextContextId();
+		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
+		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
+	}
+	function loadEnd(p, v, error$1, key) {
+		if (pr === p) {
+			pr = null;
+			key !== void 0 && (resolved = true);
+			if ((p === initP || v === initP) && options.onHydrated) queueMicrotask(() => options.onHydrated(key, { value: v }));
+			initP = NO_INIT;
+			if (Transition && p && loadedUnderTransition) {
+				Transition.promises.delete(p);
+				loadedUnderTransition = false;
+				runUpdates(() => {
+					Transition.running = true;
+					completeLoad(v, error$1);
+				}, false);
+			} else completeLoad(v, error$1);
+		}
+		return v;
+	}
+	function completeLoad(v, err) {
+		runUpdates(() => {
+			if (err === void 0) setValue(() => v);
+			setState(err !== void 0 ? "errored" : resolved ? "ready" : "unresolved");
+			setError(err);
+			for (const c of contexts.keys()) c.decrement();
+			contexts.clear();
+		}, false);
+	}
+	function read() {
+		const c = SuspenseContext && useContext(SuspenseContext), v = value(), err = error();
+		if (err !== void 0 && !pr) throw err;
+		if (Listener && !Listener.user && c) createComputed(() => {
+			track();
+			if (pr) {
+				if (c.resolved && Transition && loadedUnderTransition) Transition.promises.add(pr);
+				else if (!contexts.has(c)) {
+					c.increment();
+					contexts.add(c);
+				}
+			}
+		});
+		return v;
+	}
+	function load(refetching = true) {
+		if (refetching !== false && scheduled) return;
+		scheduled = false;
+		const lookup = dynamic ? dynamic() : source;
+		loadedUnderTransition = Transition && Transition.running;
+		if (lookup == null || lookup === false) {
+			loadEnd(pr, untrack(value));
+			return;
+		}
+		if (Transition && pr) Transition.promises.delete(pr);
+		let error$1;
+		const p = initP !== NO_INIT ? initP : untrack(() => {
+			try {
+				return fetcher(lookup, {
+					value: value(),
+					refetching
+				});
+			} catch (fetcherError) {
+				error$1 = fetcherError;
+			}
+		});
+		if (error$1 !== void 0) {
+			loadEnd(pr, void 0, castError(error$1), lookup);
+			return;
+		} else if (!isPromise(p)) {
+			loadEnd(pr, p, void 0, lookup);
+			return p;
+		}
+		pr = p;
+		if ("v" in p) {
+			if (p.s === 1) loadEnd(pr, p.v, void 0, lookup);
+			else loadEnd(pr, void 0, castError(p.v), lookup);
+			return p;
+		}
+		scheduled = true;
+		queueMicrotask(() => scheduled = false);
+		runUpdates(() => {
+			setState(resolved ? "refreshing" : "pending");
+			trigger();
+		}, false);
+		return p.then((v) => loadEnd(p, v, void 0, lookup), (e) => loadEnd(p, void 0, castError(e), lookup));
+	}
+	Object.defineProperties(read, {
+		state: { get: () => state() },
+		error: { get: () => error() },
+		loading: { get() {
+			const s = state();
+			return s === "pending" || s === "refreshing";
+		} },
+		latest: { get() {
+			if (!resolved) return read();
+			const err = error();
+			if (err && !pr) throw err;
+			return value();
+		} }
+	});
+	let owner = Owner;
+	if (dynamic) createComputed(() => (owner = Owner, load(false)));
+	else load(false);
+	return [read, {
+		refetch: (info) => runWithOwner(owner, () => load(info)),
+		mutate: setValue
+	}];
+}
+function untrack(fn) {
+	if (!ExternalSourceConfig && Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+function onCleanup(fn) {
+	if (Owner === null);
+	else if (Owner.cleanups === null) Owner.cleanups = [fn];
+	else Owner.cleanups.push(fn);
+	return fn;
+}
+function runWithOwner(o, fn) {
+	const prev = Owner;
+	const prevListener = Listener;
+	Owner = o;
+	Listener = null;
+	try {
+		return runUpdates(fn, true);
+	} catch (err) {
+		handleError(err);
+	} finally {
+		Owner = prev;
+		Listener = prevListener;
+	}
+}
+function startTransition(fn) {
+	if (Transition && Transition.running) {
+		fn();
+		return Transition.done;
+	}
+	const l = Listener;
+	const o = Owner;
+	return Promise.resolve().then(() => {
+		Listener = l;
+		Owner = o;
+		let t;
+		if (Scheduler || SuspenseContext) {
+			t = Transition || (Transition = {
+				sources: /* @__PURE__ */ new Set(),
+				effects: [],
+				promises: /* @__PURE__ */ new Set(),
+				disposed: /* @__PURE__ */ new Set(),
+				queue: /* @__PURE__ */ new Set(),
+				running: true
+			});
+			t.done || (t.done = new Promise((res) => t.resolve = res));
+			t.running = true;
+		}
+		runUpdates(fn, false);
+		Listener = Owner = null;
+		return t ? t.done : void 0;
+	});
+}
+const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+function useContext(context) {
+	let value;
+	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
+}
+let SuspenseContext;
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+	else {
+		const updates = Updates;
+		Updates = null;
+		runUpdates(() => lookUpstream(this), false);
+		Updates = updates;
+	}
+	if (Listener) {
+		const sSlot = this.observers ? this.observers.length : 0;
+		if (!Listener.sources) {
+			Listener.sources = [this];
+			Listener.sourceSlots = [sSlot];
+		} else {
+			Listener.sources.push(this);
+			Listener.sourceSlots.push(sSlot);
+		}
+		if (!this.observers) {
+			this.observers = [Listener];
+			this.observerSlots = [Listener.sources.length - 1];
+		} else {
+			this.observers.push(Listener);
+			this.observerSlots.push(Listener.sources.length - 1);
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) if (Transition && Transition.running) {
+			node.tState = STALE;
+			node.tOwned && node.tOwned.forEach(cleanNode);
+			node.tOwned = void 0;
+		} else {
+			node.state = STALE;
+			node.owned && node.owned.forEach(cleanNode);
+			node.owned = null;
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
+	else Owner.tOwned.push(c);
+	else if (!Owner.owned) Owner.owned = [c];
+	else Owner.owned.push(c);
+	if (ExternalSourceConfig && c.fn) {
+		const [track, trigger] = createSignal(void 0, { equals: false });
+		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
+		onCleanup(() => ordinary.dispose());
+		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
+		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
+		c.fn = (x) => {
+			track();
+			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
+		};
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
+		else runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e$1 of Effects) {
+				"tState" in e$1 && (e$1.state = e$1.tState);
+				delete e$1.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function scheduleQueue(queue) {
+	for (let i = 0; i < queue.length; i++) {
+		const item = queue[i];
+		const tasks = Transition.queue;
+		if (!tasks.has(item)) {
+			tasks.add(item);
+			Scheduler(() => {
+				tasks.delete(item);
+				runUpdates(() => {
+					Transition.running = true;
+					runTop(item);
+				}, false);
+				Transition && (Transition.running = false);
+			});
+		}
+	}
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function runErrors(err, fns, owner) {
+	try {
+		for (const f of fns) f(err);
+	} catch (e) {
+		handleError(e, owner && owner.owner || null);
+	}
+}
+function handleError(err, owner = Owner) {
+	const fns = ERROR && owner && owner.context && owner.context[ERROR];
+	const error = castError(err);
+	if (!fns) throw error;
+	if (Effects) Effects.push({
+		fn() {
+			runErrors(error, fns, owner);
+		},
+		state: STALE
+	});
+	else runErrors(error, fns, owner);
+}
+
+//#endregion
+//#region node_modules/solid-js/web/dist/web.js
+const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	className: "class",
+	htmlFor: "for"
+});
+const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	class: "className",
+	novalidate: {
+		$: "noValidate",
+		FORM: 1
+	},
+	formnovalidate: {
+		$: "formNoValidate",
+		BUTTON: 1,
+		INPUT: 1
+	},
+	ismap: {
+		$: "isMap",
+		IMG: 1
+	},
+	nomodule: {
+		$: "noModule",
+		SCRIPT: 1
+	},
+	playsinline: {
+		$: "playsInline",
+		VIDEO: 1
+	},
+	readonly: {
+		$: "readOnly",
+		INPUT: 1,
+		TEXTAREA: 1
+	},
+	adauctionheaders: {
+		$: "adAuctionHeaders",
+		IFRAME: 1
+	},
+	allowfullscreen: {
+		$: "allowFullscreen",
+		IFRAME: 1
+	},
+	browsingtopics: {
+		$: "browsingTopics",
+		IMG: 1
+	},
+	defaultchecked: {
+		$: "defaultChecked",
+		INPUT: 1
+	},
+	defaultmuted: {
+		$: "defaultMuted",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	defaultselected: {
+		$: "defaultSelected",
+		OPTION: 1
+	},
+	disablepictureinpicture: {
+		$: "disablePictureInPicture",
+		VIDEO: 1
+	},
+	disableremoteplayback: {
+		$: "disableRemotePlayback",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	preservespitch: {
+		$: "preservesPitch",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	shadowrootclonable: {
+		$: "shadowRootClonable",
+		TEMPLATE: 1
+	},
+	shadowrootdelegatesfocus: {
+		$: "shadowRootDelegatesFocus",
+		TEMPLATE: 1
+	},
+	shadowrootserializable: {
+		$: "shadowRootSerializable",
+		TEMPLATE: 1
+	},
+	sharedstoragewritable: {
+		$: "sharedStorageWritable",
+		IFRAME: 1,
+		IMG: 1
+	}
+});
+const memo = (fn) => createMemo(() => fn());
+function reconcileArrays(parentNode, a, b) {
+	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
+	while (aStart < aEnd || bStart < bEnd) {
+		if (a[aStart] === b[bStart]) {
+			aStart++;
+			bStart++;
+			continue;
+		}
+		while (a[aEnd - 1] === b[bEnd - 1]) {
+			aEnd--;
+			bEnd--;
+		}
+		if (aEnd === aStart) {
+			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
+			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
+		} else if (bEnd === bStart) while (aStart < aEnd) {
+			if (!map || !map.has(a[aStart])) a[aStart].remove();
+			aStart++;
+		}
+		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+			const node = a[--aEnd].nextSibling;
+			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
+			parentNode.insertBefore(b[--bEnd], node);
+			a[aEnd] = b[bEnd];
+		} else {
+			if (!map) {
+				map = /* @__PURE__ */ new Map();
+				let i = bStart;
+				while (i < bEnd) map.set(b[i], i++);
+			}
+			const index = map.get(a[aStart]);
+			if (index != null) if (bStart < index && index < bEnd) {
+				let i = aStart, sequence = 1, t;
+				while (++i < aEnd && i < bEnd) {
+					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+					sequence++;
+				}
+				if (sequence > index - bStart) {
+					const node = a[aStart];
+					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+			} else aStart++;
+			else a[aStart++].remove();
+		}
+	}
+}
+function template(html, isImportNode, isSVG, isMathML) {
+	let node;
+	const create = () => {
+		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
+		t.innerHTML = html;
+		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
+	};
+	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
+	fn.cloneNode = fn;
+	return fn;
+}
+function insert(parent, accessor, marker, initial) {
+	if (marker !== void 0 && !initial) initial = [];
+	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+}
+function getNextElement(template$1) {
+	let node, key;
+	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template$1();
+	if (sharedConfig.completed) sharedConfig.completed.add(node);
+	sharedConfig.registry.delete(key);
+	return node;
+}
+function getNextMarker(start) {
+	let end = start, count = 0, current = [];
+	if (isHydrating(start)) while (end) {
+		if (end.nodeType === 8) {
+			const v = end.nodeValue;
+			if (v === "$") count++;
+			else if (v === "/") {
+				if (count === 0) return [end, current];
+				count--;
+			}
+		}
+		current.push(end);
+		end = end.nextSibling;
+	}
+	return [end, current];
+}
+function isHydrating(node) {
+	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
+}
+function insertExpression(parent, value, current, marker, unwrapArray) {
+	const hydrating = isHydrating(parent);
+	if (hydrating) {
+		!current && (current = [...parent.childNodes]);
+		let cleaned = [];
+		for (let i = 0; i < current.length; i++) {
+			const node = current[i];
+			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
+			else cleaned.push(node);
+		}
+		current = cleaned;
+	}
+	while (typeof current === "function") current = current();
+	if (value === current) return current;
+	const t = typeof value, multi = marker !== void 0;
+	parent = multi && current[0] && current[0].parentNode || parent;
+	if (t === "string" || t === "number") {
+		if (hydrating) return current;
+		if (t === "number") {
+			value = value.toString();
+			if (value === current) return current;
+		}
+		if (multi) {
+			let node = current[0];
+			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
+			else node = document.createTextNode(value);
+			current = cleanChildren(parent, current, marker, node);
+		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
+		else current = parent.textContent = value;
+	} else if (value == null || t === "boolean") {
+		if (hydrating) return current;
+		current = cleanChildren(parent, current, marker);
+	} else if (t === "function") {
+		createRenderEffect(() => {
+			let v = value();
+			while (typeof v === "function") v = v();
+			current = insertExpression(parent, v, current, marker);
+		});
+		return () => current;
+	} else if (Array.isArray(value)) {
+		const array = [];
+		const currentArray = current && Array.isArray(current);
+		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
+			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+			return () => current;
+		}
+		if (hydrating) {
+			if (!array.length) return current;
+			if (marker === void 0) return current = [...parent.childNodes];
+			let node = array[0];
+			if (node.parentNode !== parent) return current;
+			const nodes = [node];
+			while ((node = node.nextSibling) !== marker) nodes.push(node);
+			return current = nodes;
+		}
+		if (array.length === 0) {
+			current = cleanChildren(parent, current, marker);
+			if (multi) return current;
+		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
+		else reconcileArrays(parent, current, array);
+		else {
+			current && cleanChildren(parent);
+			appendNodes(parent, array);
+		}
+		current = array;
+	} else if (value.nodeType) {
+		if (hydrating && value.parentNode) return current = multi ? [value] : value;
+		if (Array.isArray(current)) {
+			if (multi) return current = cleanChildren(parent, current, marker, value);
+			cleanChildren(parent, current, null, value);
+		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
+		else parent.replaceChild(value, parent.firstChild);
+		current = value;
+	}
+	return current;
+}
+function normalizeIncomingArray(normalized, array, current, unwrap) {
+	let dynamic = false;
+	for (let i = 0, len = array.length; i < len; i++) {
+		let item = array[i], prev = current && current[normalized.length], t;
+		if (item == null || item === true || item === false);
+		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
+		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
+		else if (t === "function") if (unwrap) {
+			while (typeof item === "function") item = item();
+			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		} else {
+			normalized.push(item);
+			dynamic = true;
+		}
+		else {
+			const value = String(item);
+			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
+			else normalized.push(document.createTextNode(value));
+		}
+	}
+	return dynamic;
+}
+function appendNodes(parent, array, marker = null) {
+	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
+}
+function cleanChildren(parent, current, marker, replacement) {
+	if (marker === void 0) return parent.textContent = "";
+	const node = replacement || document.createTextNode("");
+	if (current.length) {
+		let inserted = false;
+		for (let i = current.length - 1; i >= 0; i--) {
+			const el = current[i];
+			if (node !== el) {
+				const isParent = el.parentNode === parent;
+				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
+				else isParent && el.remove();
+			} else inserted = true;
+		}
+	} else parent.insertBefore(node, marker);
+	return [node];
+}
+function getHydrationKey() {
+	return sharedConfig.getNextContextId();
+}
+
+//#endregion
+//#region tests/fixtures/config-test.tsx
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test</h1><!$><!/><!$><!/><!$><!/>\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: <!$><!/>\`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!$><!/>!\`);
+const asyncFetchUser = async (id) => {
+	await new Promise((resolve) => setTimeout(resolve, 1e3));
+	return {
+		id,
+		name: \`User \${id}\`
+	};
+};
+const App = () => {
+	const [userId] = createSignal(1);
+	const [user] = createResource(userId, asyncFetchUser);
+	return (() => {
+		var _el$ = getNextElement(_tmpl$), _el$3 = _el$.firstChild.nextSibling, [_el$4, _co$] = getNextMarker(_el$3.nextSibling), _el$5 = _el$4.nextSibling, [_el$6, _co$2] = getNextMarker(_el$5.nextSibling), _el$7 = _el$6.nextSibling, [_el$8, _co$3] = getNextMarker(_el$7.nextSibling);
+		insert(_el$, (() => {
+			var _c$ = memo(() => !!user.loading);
+			return () => _c$() && getNextElement(_tmpl$2);
+		})(), _el$4, _co$);
+		insert(_el$, (() => {
+			var _c$2 = memo(() => !!user.error);
+			return () => _c$2() && (() => {
+				var _el$0 = getNextElement(_tmpl$3), _el$10 = _el$0.firstChild.nextSibling, [_el$11, _co$4] = getNextMarker(_el$10.nextSibling);
+				insert(_el$0, () => user.error.message, _el$11, _co$4);
+				return _el$0;
+			})();
+		})(), _el$6, _co$2);
+		insert(_el$, (() => {
+			var _c$3 = memo(() => !!user());
+			return () => _c$3() && (() => {
+				var _el$12 = getNextElement(_tmpl$4), _el$15 = _el$12.firstChild.nextSibling, [_el$16, _co$5] = getNextMarker(_el$15.nextSibling);
+				_el$16.nextSibling;
+				insert(_el$12, () => user()?.name, _el$16, _co$5);
+				return _el$12;
+			})();
+		})(), _el$8, _co$3);
+		return _el$;
+	})();
+};
+var config_test_default = App;
+
+//#endregion
+export { config_test_default as default };"
+`;
+
+exports[`rolldown-plugin-solid configuration should transform minimal builtIns 1`] = `
+"//#region node_modules/solid-js/dist/solid.js
+const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+const equalFn = (a, b) => a === b;
+const signalOptions = { equals: equalFn };
+let ERROR = null;
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+const NO_INIT = {};
+var Owner = null;
+let Transition = null;
+let Scheduler = null;
+let ExternalSourceConfig = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value$1) => {
+		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
+		else value$1 = value$1(s.value);
+		return writeSignal(s, value$1);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createComputed(fn, value, options) {
+	const c = createComputation(fn, value, true, STALE);
+	if (Scheduler && Transition && Transition.running) Updates.push(c);
+	else updateComputation(c);
+}
+function createRenderEffect(fn, value, options) {
+	const c = createComputation(fn, value, false, STALE);
+	if (Scheduler && Transition && Transition.running) Updates.push(c);
+	else updateComputation(c);
+}
+function createMemo(fn, value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const c = createComputation(fn, value, true, 0);
+	c.observers = null;
+	c.observerSlots = null;
+	c.comparator = options.equals || void 0;
+	if (Scheduler && Transition && Transition.running) {
+		c.tState = STALE;
+		Updates.push(c);
+	} else updateComputation(c);
+	return readSignal.bind(c);
+}
+function isPromise(v) {
+	return v && typeof v === "object" && "then" in v;
+}
+function createResource(pSource, pFetcher, pOptions) {
+	let source;
+	let fetcher;
+	let options;
+	if (typeof pFetcher === "function") {
+		source = pSource;
+		fetcher = pFetcher;
+		options = pOptions || {};
+	} else {
+		source = true;
+		fetcher = pSource;
+		options = pFetcher || {};
+	}
+	let pr = null, initP = NO_INIT, id = null, loadedUnderTransition = false, scheduled = false, resolved = "initialValue" in options, dynamic = typeof source === "function" && createMemo(source);
+	const contexts = /* @__PURE__ */ new Set(), [value, setValue] = (options.storage || createSignal)(options.initialValue), [error, setError] = createSignal(void 0), [track, trigger] = createSignal(void 0, { equals: false }), [state, setState] = createSignal(resolved ? "ready" : "unresolved");
+	if (sharedConfig.context) {
+		id = sharedConfig.getNextContextId();
+		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
+		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
+	}
+	function loadEnd(p, v, error$1, key) {
+		if (pr === p) {
+			pr = null;
+			key !== void 0 && (resolved = true);
+			if ((p === initP || v === initP) && options.onHydrated) queueMicrotask(() => options.onHydrated(key, { value: v }));
+			initP = NO_INIT;
+			if (Transition && p && loadedUnderTransition) {
+				Transition.promises.delete(p);
+				loadedUnderTransition = false;
+				runUpdates(() => {
+					Transition.running = true;
+					completeLoad(v, error$1);
+				}, false);
+			} else completeLoad(v, error$1);
+		}
+		return v;
+	}
+	function completeLoad(v, err) {
+		runUpdates(() => {
+			if (err === void 0) setValue(() => v);
+			setState(err !== void 0 ? "errored" : resolved ? "ready" : "unresolved");
+			setError(err);
+			for (const c of contexts.keys()) c.decrement();
+			contexts.clear();
+		}, false);
+	}
+	function read() {
+		const c = SuspenseContext && useContext(SuspenseContext), v = value(), err = error();
+		if (err !== void 0 && !pr) throw err;
+		if (Listener && !Listener.user && c) createComputed(() => {
+			track();
+			if (pr) {
+				if (c.resolved && Transition && loadedUnderTransition) Transition.promises.add(pr);
+				else if (!contexts.has(c)) {
+					c.increment();
+					contexts.add(c);
+				}
+			}
+		});
+		return v;
+	}
+	function load(refetching = true) {
+		if (refetching !== false && scheduled) return;
+		scheduled = false;
+		const lookup = dynamic ? dynamic() : source;
+		loadedUnderTransition = Transition && Transition.running;
+		if (lookup == null || lookup === false) {
+			loadEnd(pr, untrack(value));
+			return;
+		}
+		if (Transition && pr) Transition.promises.delete(pr);
+		let error$1;
+		const p = initP !== NO_INIT ? initP : untrack(() => {
+			try {
+				return fetcher(lookup, {
+					value: value(),
+					refetching
+				});
+			} catch (fetcherError) {
+				error$1 = fetcherError;
+			}
+		});
+		if (error$1 !== void 0) {
+			loadEnd(pr, void 0, castError(error$1), lookup);
+			return;
+		} else if (!isPromise(p)) {
+			loadEnd(pr, p, void 0, lookup);
+			return p;
+		}
+		pr = p;
+		if ("v" in p) {
+			if (p.s === 1) loadEnd(pr, p.v, void 0, lookup);
+			else loadEnd(pr, void 0, castError(p.v), lookup);
+			return p;
+		}
+		scheduled = true;
+		queueMicrotask(() => scheduled = false);
+		runUpdates(() => {
+			setState(resolved ? "refreshing" : "pending");
+			trigger();
+		}, false);
+		return p.then((v) => loadEnd(p, v, void 0, lookup), (e) => loadEnd(p, void 0, castError(e), lookup));
+	}
+	Object.defineProperties(read, {
+		state: { get: () => state() },
+		error: { get: () => error() },
+		loading: { get() {
+			const s = state();
+			return s === "pending" || s === "refreshing";
+		} },
+		latest: { get() {
+			if (!resolved) return read();
+			const err = error();
+			if (err && !pr) throw err;
+			return value();
+		} }
+	});
+	let owner = Owner;
+	if (dynamic) createComputed(() => (owner = Owner, load(false)));
+	else load(false);
+	return [read, {
+		refetch: (info) => runWithOwner(owner, () => load(info)),
+		mutate: setValue
+	}];
+}
+function untrack(fn) {
+	if (!ExternalSourceConfig && Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+function onCleanup(fn) {
+	if (Owner === null);
+	else if (Owner.cleanups === null) Owner.cleanups = [fn];
+	else Owner.cleanups.push(fn);
+	return fn;
+}
+function runWithOwner(o, fn) {
+	const prev = Owner;
+	const prevListener = Listener;
+	Owner = o;
+	Listener = null;
+	try {
+		return runUpdates(fn, true);
+	} catch (err) {
+		handleError(err);
+	} finally {
+		Owner = prev;
+		Listener = prevListener;
+	}
+}
+function startTransition(fn) {
+	if (Transition && Transition.running) {
+		fn();
+		return Transition.done;
+	}
+	const l = Listener;
+	const o = Owner;
+	return Promise.resolve().then(() => {
+		Listener = l;
+		Owner = o;
+		let t;
+		if (Scheduler || SuspenseContext) {
+			t = Transition || (Transition = {
+				sources: /* @__PURE__ */ new Set(),
+				effects: [],
+				promises: /* @__PURE__ */ new Set(),
+				disposed: /* @__PURE__ */ new Set(),
+				queue: /* @__PURE__ */ new Set(),
+				running: true
+			});
+			t.done || (t.done = new Promise((res) => t.resolve = res));
+			t.running = true;
+		}
+		runUpdates(fn, false);
+		Listener = Owner = null;
+		return t ? t.done : void 0;
+	});
+}
+const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+function useContext(context) {
+	let value;
+	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
+}
+let SuspenseContext;
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+	else {
+		const updates = Updates;
+		Updates = null;
+		runUpdates(() => lookUpstream(this), false);
+		Updates = updates;
+	}
+	if (Listener) {
+		const sSlot = this.observers ? this.observers.length : 0;
+		if (!Listener.sources) {
+			Listener.sources = [this];
+			Listener.sourceSlots = [sSlot];
+		} else {
+			Listener.sources.push(this);
+			Listener.sourceSlots.push(sSlot);
+		}
+		if (!this.observers) {
+			this.observers = [Listener];
+			this.observerSlots = [Listener.sources.length - 1];
+		} else {
+			this.observers.push(Listener);
+			this.observerSlots.push(Listener.sources.length - 1);
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) if (Transition && Transition.running) {
+			node.tState = STALE;
+			node.tOwned && node.tOwned.forEach(cleanNode);
+			node.tOwned = void 0;
+		} else {
+			node.state = STALE;
+			node.owned && node.owned.forEach(cleanNode);
+			node.owned = null;
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
+	else Owner.tOwned.push(c);
+	else if (!Owner.owned) Owner.owned = [c];
+	else Owner.owned.push(c);
+	if (ExternalSourceConfig && c.fn) {
+		const [track, trigger] = createSignal(void 0, { equals: false });
+		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
+		onCleanup(() => ordinary.dispose());
+		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
+		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
+		c.fn = (x) => {
+			track();
+			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
+		};
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
+		else runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e$1 of Effects) {
+				"tState" in e$1 && (e$1.state = e$1.tState);
+				delete e$1.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function scheduleQueue(queue) {
+	for (let i = 0; i < queue.length; i++) {
+		const item = queue[i];
+		const tasks = Transition.queue;
+		if (!tasks.has(item)) {
+			tasks.add(item);
+			Scheduler(() => {
+				tasks.delete(item);
+				runUpdates(() => {
+					Transition.running = true;
+					runTop(item);
+				}, false);
+				Transition && (Transition.running = false);
+			});
+		}
+	}
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function runErrors(err, fns, owner) {
+	try {
+		for (const f of fns) f(err);
+	} catch (e) {
+		handleError(e, owner && owner.owner || null);
+	}
+}
+function handleError(err, owner = Owner) {
+	const fns = ERROR && owner && owner.context && owner.context[ERROR];
+	const error = castError(err);
+	if (!fns) throw error;
+	if (Effects) Effects.push({
+		fn() {
+			runErrors(error, fns, owner);
+		},
+		state: STALE
+	});
+	else runErrors(error, fns, owner);
+}
+
+//#endregion
+//#region node_modules/solid-js/web/dist/web.js
+const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	className: "class",
+	htmlFor: "for"
+});
+const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	class: "className",
+	novalidate: {
+		$: "noValidate",
+		FORM: 1
+	},
+	formnovalidate: {
+		$: "formNoValidate",
+		BUTTON: 1,
+		INPUT: 1
+	},
+	ismap: {
+		$: "isMap",
+		IMG: 1
+	},
+	nomodule: {
+		$: "noModule",
+		SCRIPT: 1
+	},
+	playsinline: {
+		$: "playsInline",
+		VIDEO: 1
+	},
+	readonly: {
+		$: "readOnly",
+		INPUT: 1,
+		TEXTAREA: 1
+	},
+	adauctionheaders: {
+		$: "adAuctionHeaders",
+		IFRAME: 1
+	},
+	allowfullscreen: {
+		$: "allowFullscreen",
+		IFRAME: 1
+	},
+	browsingtopics: {
+		$: "browsingTopics",
+		IMG: 1
+	},
+	defaultchecked: {
+		$: "defaultChecked",
+		INPUT: 1
+	},
+	defaultmuted: {
+		$: "defaultMuted",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	defaultselected: {
+		$: "defaultSelected",
+		OPTION: 1
+	},
+	disablepictureinpicture: {
+		$: "disablePictureInPicture",
+		VIDEO: 1
+	},
+	disableremoteplayback: {
+		$: "disableRemotePlayback",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	preservespitch: {
+		$: "preservesPitch",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	shadowrootclonable: {
+		$: "shadowRootClonable",
+		TEMPLATE: 1
+	},
+	shadowrootdelegatesfocus: {
+		$: "shadowRootDelegatesFocus",
+		TEMPLATE: 1
+	},
+	shadowrootserializable: {
+		$: "shadowRootSerializable",
+		TEMPLATE: 1
+	},
+	sharedstoragewritable: {
+		$: "sharedStorageWritable",
+		IFRAME: 1,
+		IMG: 1
+	}
+});
+const memo = (fn) => createMemo(() => fn());
+function reconcileArrays(parentNode, a, b) {
+	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
+	while (aStart < aEnd || bStart < bEnd) {
+		if (a[aStart] === b[bStart]) {
+			aStart++;
+			bStart++;
+			continue;
+		}
+		while (a[aEnd - 1] === b[bEnd - 1]) {
+			aEnd--;
+			bEnd--;
+		}
+		if (aEnd === aStart) {
+			const node = bEnd < bLength ? bStart ? b[bStart - 1].nextSibling : b[bEnd - bStart] : after;
+			while (bStart < bEnd) parentNode.insertBefore(b[bStart++], node);
+		} else if (bEnd === bStart) while (aStart < aEnd) {
+			if (!map || !map.has(a[aStart])) a[aStart].remove();
+			aStart++;
+		}
+		else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+			const node = a[--aEnd].nextSibling;
+			parentNode.insertBefore(b[bStart++], a[aStart++].nextSibling);
+			parentNode.insertBefore(b[--bEnd], node);
+			a[aEnd] = b[bEnd];
+		} else {
+			if (!map) {
+				map = /* @__PURE__ */ new Map();
+				let i = bStart;
+				while (i < bEnd) map.set(b[i], i++);
+			}
+			const index = map.get(a[aStart]);
+			if (index != null) if (bStart < index && index < bEnd) {
+				let i = aStart, sequence = 1, t;
+				while (++i < aEnd && i < bEnd) {
+					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+					sequence++;
+				}
+				if (sequence > index - bStart) {
+					const node = a[aStart];
+					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+			} else aStart++;
+			else a[aStart++].remove();
+		}
+	}
+}
+function template(html, isImportNode, isSVG, isMathML) {
+	let node;
+	const create = () => {
+		const t = isMathML ? document.createElementNS("http://www.w3.org/1998/Math/MathML", "template") : document.createElement("template");
+		t.innerHTML = html;
+		return isSVG ? t.content.firstChild.firstChild : isMathML ? t.firstChild : t.content.firstChild;
+	};
+	const fn = isImportNode ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
+	fn.cloneNode = fn;
+	return fn;
+}
+function insert(parent, accessor, marker, initial) {
+	if (marker !== void 0 && !initial) initial = [];
+	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+}
+function isHydrating(node) {
+	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
+}
+function insertExpression(parent, value, current, marker, unwrapArray) {
+	const hydrating = isHydrating(parent);
+	if (hydrating) {
+		!current && (current = [...parent.childNodes]);
+		let cleaned = [];
+		for (let i = 0; i < current.length; i++) {
+			const node = current[i];
+			if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();
+			else cleaned.push(node);
+		}
+		current = cleaned;
+	}
+	while (typeof current === "function") current = current();
+	if (value === current) return current;
+	const t = typeof value, multi = marker !== void 0;
+	parent = multi && current[0] && current[0].parentNode || parent;
+	if (t === "string" || t === "number") {
+		if (hydrating) return current;
+		if (t === "number") {
+			value = value.toString();
+			if (value === current) return current;
+		}
+		if (multi) {
+			let node = current[0];
+			if (node && node.nodeType === 3) node.data !== value && (node.data = value);
+			else node = document.createTextNode(value);
+			current = cleanChildren(parent, current, marker, node);
+		} else if (current !== "" && typeof current === "string") current = parent.firstChild.data = value;
+		else current = parent.textContent = value;
+	} else if (value == null || t === "boolean") {
+		if (hydrating) return current;
+		current = cleanChildren(parent, current, marker);
+	} else if (t === "function") {
+		createRenderEffect(() => {
+			let v = value();
+			while (typeof v === "function") v = v();
+			current = insertExpression(parent, v, current, marker);
+		});
+		return () => current;
+	} else if (Array.isArray(value)) {
+		const array = [];
+		const currentArray = current && Array.isArray(current);
+		if (normalizeIncomingArray(array, value, current, unwrapArray)) {
+			createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+			return () => current;
+		}
+		if (hydrating) {
+			if (!array.length) return current;
+			if (marker === void 0) return current = [...parent.childNodes];
+			let node = array[0];
+			if (node.parentNode !== parent) return current;
+			const nodes = [node];
+			while ((node = node.nextSibling) !== marker) nodes.push(node);
+			return current = nodes;
+		}
+		if (array.length === 0) {
+			current = cleanChildren(parent, current, marker);
+			if (multi) return current;
+		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
+		else reconcileArrays(parent, current, array);
+		else {
+			current && cleanChildren(parent);
+			appendNodes(parent, array);
+		}
+		current = array;
+	} else if (value.nodeType) {
+		if (hydrating && value.parentNode) return current = multi ? [value] : value;
+		if (Array.isArray(current)) {
+			if (multi) return current = cleanChildren(parent, current, marker, value);
+			cleanChildren(parent, current, null, value);
+		} else if (current == null || current === "" || !parent.firstChild) parent.appendChild(value);
+		else parent.replaceChild(value, parent.firstChild);
+		current = value;
+	}
+	return current;
+}
+function normalizeIncomingArray(normalized, array, current, unwrap) {
+	let dynamic = false;
+	for (let i = 0, len = array.length; i < len; i++) {
+		let item = array[i], prev = current && current[normalized.length], t;
+		if (item == null || item === true || item === false);
+		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
+		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
+		else if (t === "function") if (unwrap) {
+			while (typeof item === "function") item = item();
+			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		} else {
+			normalized.push(item);
+			dynamic = true;
+		}
+		else {
+			const value = String(item);
+			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
+			else normalized.push(document.createTextNode(value));
+		}
+	}
+	return dynamic;
+}
+function appendNodes(parent, array, marker = null) {
+	for (let i = 0, len = array.length; i < len; i++) parent.insertBefore(array[i], marker);
+}
+function cleanChildren(parent, current, marker, replacement) {
+	if (marker === void 0) return parent.textContent = "";
+	const node = replacement || document.createTextNode("");
+	if (current.length) {
+		let inserted = false;
+		for (let i = current.length - 1; i >= 0; i--) {
+			const el = current[i];
+			if (node !== el) {
+				const isParent = el.parentNode === parent;
+				if (!inserted && !i) isParent ? parent.replaceChild(node, el) : parent.insertBefore(node, marker);
+				else isParent && el.remove();
+			} else inserted = true;
+		}
+	} else parent.insertBefore(node, marker);
+	return [node];
+}
+
+//#endregion
+//#region tests/fixtures/config-test.tsx
+var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: \`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!>!\`);
+const asyncFetchUser = async (id) => {
+	await new Promise((resolve) => setTimeout(resolve, 1e3));
+	return {
+		id,
+		name: \`User \${id}\`
+	};
+};
+const App = () => {
+	const [userId] = createSignal(1);
+	const [user] = createResource(userId, asyncFetchUser);
+	return (() => {
+		var _el$ = _tmpl$();
+		_el$.firstChild;
+		insert(_el$, (() => {
+			var _c$ = memo(() => !!user.loading);
+			return () => _c$() && _tmpl$2();
+		})(), null);
+		insert(_el$, (() => {
+			var _c$2 = memo(() => !!user.error);
+			return () => _c$2() && (() => {
+				var _el$4 = _tmpl$3();
+				_el$4.firstChild;
+				insert(_el$4, () => user.error.message, null);
+				return _el$4;
+			})();
+		})(), null);
+		insert(_el$, (() => {
+			var _c$3 = memo(() => !!user());
+			return () => _c$3() && (() => {
+				var _el$6 = _tmpl$4(), _el$9 = _el$6.firstChild.nextSibling;
+				_el$9.nextSibling;
+				insert(_el$6, () => user()?.name, _el$9);
+				return _el$6;
+			})();
+		})(), null);
+		return _el$;
+	})();
+};
+var config_test_default = App;
+
+//#endregion
+export { config_test_default as default };"
+`;
