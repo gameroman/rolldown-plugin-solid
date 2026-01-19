@@ -6,228 +6,64 @@ import solidPlugin from "../dist/index.mjs";
 describe("rolldown-plugin-solid", () => {
   const testDir = resolve(import.meta.dir, "fixtures");
 
-  it("should transform basic SolidJS component", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "basic.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
+  interface FixtureOptions {
+    platform?: "browser" | "node";
+    plugin?: Parameters<typeof solidPlugin>[0];
+  }
 
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
+  const createFixtureTest = (
+    name: string,
+    fixture: string,
+    options?: FixtureOptions,
+  ) => {
+    it(`should transform ${name}`, async () => {
+      const result = await build({
+        platform: options?.platform ?? "browser",
+        input: resolve(testDir, fixture),
+        plugins: options?.plugin
+          ? [solidPlugin(options.plugin)]
+          : [solidPlugin()],
+        output: {
+          format: "esm",
+        },
+        write: false,
+      });
+
+      const code = result.output[0].code;
+      expect(code).toMatchSnapshot();
+    });
+  };
+
+  createFixtureTest("basic SolidJS component", "basic.tsx");
+
+  createFixtureTest("SSR component", "ssr.tsx", {
+    platform: "node",
+    plugin: { solid: { generate: "ssr" } },
   });
 
-  it("should transform SSR component", async () => {
-    const result = await build({
-      platform: "node",
-      input: resolve(testDir, "ssr.tsx"),
-      plugins: [solidPlugin({ solid: { generate: "ssr" } })],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
+  createFixtureTest("component with hydratable option", "basic.tsx", {
+    plugin: { solid: { hydratable: true } },
   });
 
-  it("should transform with hydratable option", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "basic.tsx"),
-      plugins: [solidPlugin({ solid: { hydratable: true } })],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
+  createFixtureTest("SSR with hydratable option", "ssr.tsx", {
+    platform: "node",
+    plugin: { solid: { generate: "ssr", hydratable: true } },
   });
 
-  it("should transform SSR with hydratable option", async () => {
-    const result = await build({
-      platform: "node",
-      input: resolve(testDir, "ssr.tsx"),
-      plugins: [solidPlugin({ solid: { generate: "ssr", hydratable: true } })],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform standalone component", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "component.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with props", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "props.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with children", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "children.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with effects", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "effects.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with conditional rendering", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "conditional.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with list rendering", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "list.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with Suspense", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "suspense.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with ErrorBoundary", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "error-boundary.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with Context", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "context.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with Resource", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "resource.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
-
-  it("should transform component with Memo", async () => {
-    const result = await build({
-      platform: "browser",
-      input: resolve(testDir, "memo.tsx"),
-      plugins: [solidPlugin()],
-      output: {
-        format: "esm",
-      },
-      write: false,
-    });
-
-    const code = result.output[0].code;
-    expect(code).toMatchSnapshot();
-  });
+  createFixtureTest("standalone component", "component.tsx");
+  createFixtureTest("component with props", "props.tsx");
+  createFixtureTest("component with children", "children.tsx");
+  createFixtureTest("component with effects", "effects.tsx");
+  createFixtureTest("component with conditional rendering", "conditional.tsx");
+  createFixtureTest("component with list rendering", "list.tsx");
+  createFixtureTest("component with Suspense", "suspense.tsx");
+  createFixtureTest("component with ErrorBoundary", "error-boundary.tsx");
+  createFixtureTest("component with Context", "context.tsx");
+  createFixtureTest("component with Resource", "resource.tsx");
+  createFixtureTest("component with Memo", "memo.tsx");
+  createFixtureTest("component with createRoot", "create-root.tsx");
+  createFixtureTest("component with Portal", "portal.tsx");
+  createFixtureTest("component with Dynamic", "dynamic.tsx");
+  createFixtureTest("component with batch", "batch.tsx");
+  createFixtureTest("component with onMount", "onmount.tsx");
 });
