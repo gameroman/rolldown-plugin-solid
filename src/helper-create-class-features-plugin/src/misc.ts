@@ -51,13 +51,6 @@ function handleClassTDZ(
   }
 }
 
-const classFieldDefinitionEvaluationTDZVisitor: Visitor<HandleClassTDZState> = {
-  ReferencedIdentifier: handleClassTDZ,
-  "TSTypeAnnotation|TypeAnnotation"(path) {
-    path.skip();
-  },
-};
-
 interface RenamerState {
   scope: Scope;
 }
@@ -119,87 +112,4 @@ export function injectInitialization(
   } else {
     constructor.get("body").unshiftContainer("body", nodes);
   }
-}
-
-type ComputedKeyAssignmentExpression = t.AssignmentExpression & {
-  left: t.Identifier;
-};
-
-/**
- * Try to memoise a computed key.
- * It returns undefined when the computed key is an uid reference, otherwise
- * an assignment expression `memoiserId = computed key`
- * @export
- * @param {t.Expression} keyNode Computed key
- * @param {Scope} scope The scope where memoiser id should be registered
- * @param {string} hint The memoiser id hint
- * @returns {(ComputedKeyAssignmentExpression | undefined)}
- */
-export function memoiseComputedKey(
-  keyNode: t.Expression,
-  scope: Scope,
-  hint: string,
-): ComputedKeyAssignmentExpression | undefined {
-  const isUidReference = t.isIdentifier(keyNode) && scope.hasUid(keyNode.name);
-  if (isUidReference) {
-    return;
-  }
-  const isMemoiseAssignment =
-    t.isAssignmentExpression(keyNode, { operator: "=" }) &&
-    t.isIdentifier(keyNode.left) &&
-    scope.hasUid(keyNode.left.name);
-  if (isMemoiseAssignment) {
-    return t.cloneNode(keyNode as ComputedKeyAssignmentExpression);
-  } else {
-    const ident = t.identifier(hint);
-    // Declaring in the same block scope
-    // Ref: https://github.com/babel/babel/pull/10029/files#diff-fbbdd83e7a9c998721c1484529c2ce92
-    scope.push({
-      id: ident,
-      kind: "let",
-    });
-    return t.assignmentExpression(
-      "=",
-      t.cloneNode(ident),
-      keyNode,
-    ) as ComputedKeyAssignmentExpression;
-  }
-}
-
-export function extractComputedKeys(
-  path: NodePath<t.Class>,
-  computedPaths: NodePath<t.ClassProperty | t.ClassMethod>[],
-  file: File,
-) {
-  const { scope } = path;
-  const declarations: t.ExpressionStatement[] = [];
-  const state = {
-    classBinding: path.node.id && scope.getBinding(path.node.id.name),
-    file,
-  };
-  for (const computedPath of computedPaths) {
-    const computedKey = computedPath.get("key");
-    if (computedKey.isReferencedIdentifier()) {
-      handleClassTDZ(computedKey, state);
-    } else {
-      computedKey.traverse(classFieldDefinitionEvaluationTDZVisitor, state);
-    }
-
-    const computedNode = computedPath.node;
-    // Make sure computed property names are only evaluated once (upon class definition)
-    // and in the right order in combination with static properties
-    if (!computedKey.isConstantExpression()) {
-      const assignment = memoiseComputedKey(
-        computedKey.node,
-        scope,
-        scope.generateUidBasedOnNode(computedKey.node),
-      );
-      if (assignment) {
-        declarations.push(t.expressionStatement(assignment));
-        computedNode.key = t.cloneNode(assignment.left);
-      }
-    }
-  }
-
-  return declarations;
 }
