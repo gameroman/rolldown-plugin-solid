@@ -1,22 +1,20 @@
 import { declare } from "@babel/helper-plugin-utils";
 
-if (true) {
-  // eslint-disable-next-line no-var
-  var removePlugin = function (plugins: any[], name: string) {
-    const indices: number[] = [];
-    plugins.forEach((plugin, i) => {
-      const n = Array.isArray(plugin) ? plugin[0] : plugin;
+// eslint-disable-next-line no-var
+var removePlugin = function (plugins: any[], name: string) {
+  const indices: number[] = [];
+  plugins.forEach((plugin, i) => {
+    const n = Array.isArray(plugin) ? plugin[0] : plugin;
 
-      if (n === name) {
-        indices.unshift(i);
-      }
-    });
-
-    for (const i of indices) {
-      plugins.splice(i, 1);
+    if (n === name) {
+      indices.unshift(i);
     }
-  };
-}
+  });
+
+  for (const i of indices) {
+    plugins.splice(i, 1);
+  }
+};
 
 export interface Options {
   disallowAmbiguousJSXLike?: boolean;
@@ -27,10 +25,8 @@ export interface Options {
 const syntaxTypeScript = declare((api, opts: Options) => {
   const { disallowAmbiguousJSXLike, dts } = opts;
 
-  if (true) {
-    // eslint-disable-next-line no-var
-    var { isTSX } = opts;
-  }
+  // eslint-disable-next-line no-var
+  var { isTSX } = opts;
 
   return {
     name: "syntax-typescript",
@@ -46,12 +42,10 @@ const syntaxTypeScript = declare((api, opts: Options) => {
         // in TS depends on the extensions, and is purely dependent on 'isTSX'.
         removePlugin(plugins, "jsx");
 
-        if (true) {
-          // These are now enabled by default in @babel/parser, but we push
-          // them for compat with older versions.
-          // @ts-ignore(Babel 7 vs Babel 8) These plugins have been removed
-          plugins.push("objectRestSpread", "classProperties");
-        }
+        // These are now enabled by default in @babel/parser, but we push
+        // them for compat with older versions.
+        // @ts-ignore(Babel 7 vs Babel 8) These plugins have been removed
+        plugins.push("objectRestSpread", "classProperties");
 
         if (isTSX) {
           plugins.push("jsx");

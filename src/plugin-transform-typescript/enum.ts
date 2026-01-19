@@ -1,7 +1,23 @@
 import assert from "node:assert";
 import { type NodePath, types as t, template } from "@babel/core";
-import annotateAsPure from "../helper-annotate-as-pure";
+import { addComment, type Node } from "@babel/types";
 import { skipTransparentExprWrapperNodes } from "../helper-skip-transparent-expression-wrappers";
+
+const PURE_ANNOTATION = "#__PURE__";
+
+const isPureAnnotated = ({ leadingComments }: Node): boolean =>
+  !!leadingComments &&
+  leadingComments.some((comment) => /[@#]__PURE__/.test(comment.value));
+
+function annotateAsPure(pathOrNode: Node | { node: Node }): void {
+  const node =
+    // @ts-expect-error Node will not have `node` property
+    (pathOrNode.node || pathOrNode) as Node;
+  if (isPureAnnotated(node)) {
+    return;
+  }
+  addComment(node, "leading", PURE_ANNOTATION);
+}
 
 type t = typeof t;
 
