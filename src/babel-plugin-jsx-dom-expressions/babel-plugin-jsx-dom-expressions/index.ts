@@ -4,14 +4,14 @@ import postprocess from "./shared/postprocess";
 import preprocess from "./shared/preprocess";
 import { transformJSX } from "./shared/transform";
 
-export default (): {
+const jsxTransform = (): {
   name: string;
   inherits: any;
   visitor: Visitor<{ opts: any }>;
 } => {
   return {
     name: "JSX DOM Expressions",
-    inherits: SyntaxJSX.default,
+    inherits: SyntaxJSX,
     visitor: {
       JSXElement: transformJSX,
       JSXFragment: transformJSX,
@@ -22,3 +22,5 @@ export default (): {
     },
   };
 };
+
+export default jsxTransform;
