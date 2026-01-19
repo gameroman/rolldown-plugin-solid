@@ -1,4 +1,4 @@
-import type { File, NodePath, Scope, Visitor } from "@babel/core";
+import type { NodePath, Scope, Visitor } from "@babel/core";
 import { types as t, template } from "@babel/core";
 import { visitors } from "@babel/traverse";
 
@@ -27,29 +27,6 @@ const referenceVisitor: Visitor<{ scope: Scope }> = {
     }
   },
 };
-
-type HandleClassTDZState = {
-  classBinding: Scope.Binding;
-  file: File;
-};
-
-function handleClassTDZ(
-  path: NodePath<t.Identifier>,
-  state: HandleClassTDZState,
-) {
-  if (
-    state.classBinding &&
-    state.classBinding === path.scope.getBinding(path.node.name)
-  ) {
-    const classNameTDZError = state.file.addHelper("classNameTDZError");
-    const throwNode = t.callExpression(classNameTDZError, [
-      t.stringLiteral(path.node.name),
-    ]);
-
-    path.replaceWith(t.sequenceExpression([throwNode, path.node]));
-    path.skip();
-  }
-}
 
 interface RenamerState {
   scope: Scope;
