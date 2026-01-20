@@ -69,15 +69,13 @@ export default function normalizeOptions(options: Options = {}): Options {
     "React.Fragment",
   );
 
-  // eslint-disable-next-line no-var
-  var allExtensions = v.validateBooleanOption(
+  const allExtensions = v.validateBooleanOption(
     TopLevelOptions.allExtensions,
     options.allExtensions,
     false,
   );
 
-  // eslint-disable-next-line no-var
-  var isTSX = v.validateBooleanOption(
+  const isTSX = v.validateBooleanOption(
     TopLevelOptions.isTSX,
     options.isTSX,
     false,
@@ -125,10 +123,9 @@ export default function normalizeOptions(options: Options = {}): Options {
     onlyRemoveTypeImports,
     optimizeConstEnums,
     rewriteImportExtensions,
+    allExtensions,
+    isTSX,
   };
-  if (true) {
-    normalized.allExtensions = allExtensions;
-    normalized.isTSX = isTSX;
-  }
+
   return normalized;
 }
