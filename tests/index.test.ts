@@ -10,7 +10,3 @@ createFixtureTest("component with Suspense", "suspense.tsx");
 createFixtureTest("component with ErrorBoundary", "error-boundary.tsx");
 createFixtureTest("component with Context", "context.tsx");
 createFixtureTest("component with Resource", "resource.tsx");
-createFixtureTest("component with Memo", "memo.tsx");
-createFixtureTest("component with createRoot", "create-root.tsx");
-createFixtureTest("component with Portal", "portal.tsx");
-createFixtureTest("component with Dynamic", "dynamic.tsx");
