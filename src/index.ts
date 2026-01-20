@@ -2,7 +2,9 @@ import { parse } from "node:path";
 import { transformAsync } from "@babel/core";
 import type { RolldownPlugin } from "rolldown";
 import jsxTransform from "./babel-plugin-jsx-dom-expressions";
-import typescriptPreset from "./preset-typescript";
+import typescriptPreset, {
+  type PresetTypescriptOptions,
+} from "./preset-typescript";
 
 function solidPreset(_context: unknown, options = {}) {
   const plugins = [
@@ -37,6 +39,9 @@ function solidPreset(_context: unknown, options = {}) {
 
 /** Configuration options */
 export interface Options {
+  /** The options to use for @babel/preset-typescript @default {} */
+  typescript?: PresetTypescriptOptions;
+
   /**
    * Pass any additional [babel-plugin-jsx-dom-expressions](https://github.com/ryansolid/dom-expressions/tree/main/packages/babel-plugin-jsx-dom-expressions#plugin-options).
    * They will be merged with the defaults sets by [babel-preset-solid](https://github.com/solidjs/solid/blob/main/packages/babel-preset-solid/index.js#L8-L25).
@@ -114,7 +119,10 @@ const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
         const filename = name + ext;
 
         const result = await transformAsync(code, {
-          presets: [[solidPreset, options?.solid ?? {}], [typescriptPreset]],
+          presets: [
+            [solidPreset, options?.solid ?? {}],
+            [typescriptPreset, options?.typescript ?? {}],
+          ],
           filename,
           sourceMaps: "inline",
         });

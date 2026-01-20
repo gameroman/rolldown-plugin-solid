@@ -1,6 +1,31 @@
+// @ts-expect-error: Babel types are not installed
 import { OptionValidator } from "@babel/helper-validator-option";
 
-const v = new OptionValidator("@babel/preset-typescript");
+interface BabelOptionValidator {
+  validateBooleanOption<T extends boolean>(
+    name: string,
+    value?: boolean,
+    defaultValue?: T,
+  ): boolean | T;
+
+  validateStringOption<T extends string>(
+    name: string,
+    value?: string,
+    defaultValue?: T,
+  ): string | T;
+
+  /**
+   * A helper interface copied from the `invariant` npm package.
+   * It throws given `message` when `condition` is not met
+   *
+   * @param {boolean} condition
+   * @param {string} message
+   * @memberof OptionValidator
+   */
+  invariant(condition: boolean, message: string): void;
+}
+
+const v: BabelOptionValidator = new OptionValidator("preset-typescript");
 
 export interface Options {
   ignoreExtensions?: boolean;
@@ -18,8 +43,8 @@ export interface Options {
   isTSX?: boolean;
 }
 
-export default function normalizeOptions(options: Options = {}) {
-  let { allowNamespaces = true, jsxPragma, onlyRemoveTypeImports } = options;
+export default function normalizeOptions(options: Options = {}): Options {
+  const { allowNamespaces = true, jsxPragma, onlyRemoveTypeImports } = options;
 
   const TopLevelOptions: {
     [Key in keyof Omit<Options, "allowDeclareFields">]-?: Key;

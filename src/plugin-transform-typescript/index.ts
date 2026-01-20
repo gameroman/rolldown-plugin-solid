@@ -1,4 +1,5 @@
 import type { NodePath, PluginPass, Scope, types as t } from "@babel/core";
+// @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
 import type { Options as SyntaxOptions } from "../plugin-syntax-typescript";
 import syntaxTypeScript from "../plugin-syntax-typescript";
