@@ -1,14 +1,14 @@
 import type { NodePath, PluginPass, Scope, types as t } from "@babel/core";
 // @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
-import type { Options as SyntaxOptions } from "../plugin-syntax-typescript";
-import syntaxTypeScript from "../plugin-syntax-typescript";
 import type { NodePathConstEnum } from "./const-enum";
 import transpileConstEnum from "./const-enum";
 import { injectInitialization } from "./create-class-features-plugin";
 import transpileEnum from "./enum";
 import { GLOBAL_TYPES, isGlobalType, registerGlobalType } from "./global-types";
 import transpileNamespace, { getFirstIdentifier } from "./namespace";
+import type { Options as SyntaxOptions } from "./plugin-syntax-typescript";
+import syntaxTypeScript from "./plugin-syntax-typescript";
 
 function isInType(path: NodePath) {
   switch (path.parent.type) {
