@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`rolldown-plugin-solid src should transform component with createStore 1`] = `
+exports[`rolldown-plugin-solid src should transform component with onMount 1`] = `
 "//#region node_modules/solid-js/dist/solid.js
 const sharedConfig = {
 	context: void 0,
@@ -21,9 +21,14 @@ function getContextId(count) {
 function setHydrateContext(context) {
 	sharedConfig.context = context;
 }
+function nextHydrateContext() {
+	return {
+		...sharedConfig.context,
+		id: sharedConfig.getNextContextId(),
+		count: 0
+	};
+}
 const equalFn = (a, b) => a === b;
-const $PROXY = Symbol("solid-proxy");
-const $TRACK = Symbol("solid-track");
 const signalOptions = { equals: equalFn };
 let ERROR = null;
 let runEffects = runQueue;
@@ -82,9 +87,6 @@ function createMemo(fn, value, options) {
 	} else updateComputation(c);
 	return readSignal.bind(c);
 }
-function batch(fn) {
-	return runUpdates(fn, false);
-}
 function untrack(fn) {
 	if (!ExternalSourceConfig && Listener === null) return fn();
 	const listener = Listener;
@@ -96,14 +98,14 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
+function onMount(fn) {
+	createEffect(() => untrack(fn));
+}
 function onCleanup(fn) {
 	if (Owner === null);
 	else if (Owner.cleanups === null) Owner.cleanups = [fn];
 	else Owner.cleanups.push(fn);
 	return fn;
-}
-function getListener() {
-	return Listener;
 }
 function startTransition(fn) {
 	if (Transition && Transition.running) {
@@ -495,6 +497,19 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
+let hydrationEnabled = false;
+function createComponent(Comp, props) {
+	if (hydrationEnabled) {
+		if (sharedConfig.context) {
+			const c = sharedConfig.context;
+			setHydrateContext(nextHydrateContext());
+			const r = untrack(() => Comp(props || {}));
+			setHydrateContext(c);
+			return r;
+		}
+	}
+	return untrack(() => Comp(props || {}));
+}
 
 //#endregion
 //#region node_modules/solid-js/web/dist/web.js
@@ -634,7 +649,6 @@ function reconcileArrays(parentNode, a, b) {
 		}
 	}
 }
-const $$EVENTS = "_$DX_DELEGATE";
 function template(html, isImportNode, isSVG, isMathML) {
 	let node;
 	const create = () => {
@@ -646,42 +660,6 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document$1.addEventListener(name, eventHandler);
-		}
-	}
-}
-function setAttribute(node, name, value) {
-	if (isHydrating(node)) return;
-	if (value == null) node.removeAttribute(name);
-	else node.setAttribute(name, value);
-}
-function style(node, value, prev) {
-	if (!value) return prev ? setAttribute(node, "style") : value;
-	const nodeStyle = node.style;
-	if (typeof value === "string") return nodeStyle.cssText = value;
-	typeof prev === "string" && (nodeStyle.cssText = prev = void 0);
-	prev || (prev = {});
-	value || (value = {});
-	let v, s;
-	for (s in prev) {
-		value[s] ?? nodeStyle.removeProperty(s);
-		delete prev[s];
-	}
-	for (s in value) {
-		v = value[s];
-		if (v !== prev[s]) {
-			nodeStyle.setProperty(s, v);
-			prev[s] = v;
-		}
-	}
-	return prev;
-}
 function insert(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
@@ -689,54 +667,6 @@ function insert(parent, accessor, marker, initial) {
 }
 function isHydrating(node) {
 	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
 	const hydrating = isHydrating(parent);
@@ -814,14 +744,14 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 	}
 	return current;
 }
-function normalizeIncomingArray(normalized, array, current, unwrap$1) {
+function normalizeIncomingArray(normalized, array, current, unwrap) {
 	let dynamic = false;
 	for (let i = 0, len = array.length; i < len; i++) {
 		let item = array[i], prev = current && current[normalized.length], t;
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap$1) {
+		else if (t === "function") if (unwrap) {
 			while (typeof item === "function") item = item();
 			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
 		} else {
@@ -857,366 +787,120 @@ function cleanChildren(parent, current, marker, replacement) {
 }
 
 //#endregion
-//#region node_modules/solid-js/store/dist/store.js
-const $RAW = Symbol("store-raw"), $NODE = Symbol("store-node"), $HAS = Symbol("store-has"), $SELF = Symbol("store-self");
-function wrap$1(value) {
-	let p = value[$PROXY];
-	if (!p) {
-		Object.defineProperty(value, $PROXY, { value: p = new Proxy(value, proxyTraps$1) });
-		if (!Array.isArray(value)) {
-			const keys = Object.keys(value), desc = Object.getOwnPropertyDescriptors(value);
-			for (let i = 0, l = keys.length; i < l; i++) {
-				const prop = keys[i];
-				if (desc[prop].get) Object.defineProperty(value, prop, {
-					enumerable: desc[prop].enumerable,
-					get: desc[prop].get.bind(p)
-				});
-			}
-		}
-	}
-	return p;
-}
-function isWrappable(obj) {
-	let proto;
-	return obj != null && typeof obj === "object" && (obj[$PROXY] || !(proto = Object.getPrototypeOf(obj)) || proto === Object.prototype || Array.isArray(obj));
-}
-function unwrap(item, set = /* @__PURE__ */ new Set()) {
-	let result, unwrapped, v, prop;
-	if (result = item != null && item[$RAW]) return result;
-	if (!isWrappable(item) || set.has(item)) return item;
-	if (Array.isArray(item)) {
-		if (Object.isFrozen(item)) item = item.slice(0);
-		else set.add(item);
-		for (let i = 0, l = item.length; i < l; i++) {
-			v = item[i];
-			if ((unwrapped = unwrap(v, set)) !== v) item[i] = unwrapped;
-		}
-	} else {
-		if (Object.isFrozen(item)) item = Object.assign({}, item);
-		else set.add(item);
-		const keys = Object.keys(item), desc = Object.getOwnPropertyDescriptors(item);
-		for (let i = 0, l = keys.length; i < l; i++) {
-			prop = keys[i];
-			if (desc[prop].get) continue;
-			v = item[prop];
-			if ((unwrapped = unwrap(v, set)) !== v) item[prop] = unwrapped;
-		}
-	}
-	return item;
-}
-function getNodes(target, symbol) {
-	let nodes = target[symbol];
-	if (!nodes) Object.defineProperty(target, symbol, { value: nodes = Object.create(null) });
-	return nodes;
-}
-function getNode(nodes, property, value) {
-	if (nodes[property]) return nodes[property];
-	const [s, set] = createSignal(value, {
-		equals: false,
-		internal: true
-	});
-	s.$ = set;
-	return nodes[property] = s;
-}
-function proxyDescriptor$1(target, property) {
-	const desc = Reflect.getOwnPropertyDescriptor(target, property);
-	if (!desc || desc.get || !desc.configurable || property === $PROXY || property === $NODE) return desc;
-	delete desc.value;
-	delete desc.writable;
-	desc.get = () => target[$PROXY][property];
-	return desc;
-}
-function trackSelf(target) {
-	getListener() && getNode(getNodes(target, $NODE), $SELF)();
-}
-function ownKeys(target) {
-	trackSelf(target);
-	return Reflect.ownKeys(target);
-}
-const proxyTraps$1 = {
-	get(target, property, receiver) {
-		if (property === $RAW) return target;
-		if (property === $PROXY) return receiver;
-		if (property === $TRACK) {
-			trackSelf(target);
-			return receiver;
-		}
-		const nodes = getNodes(target, $NODE);
-		const tracked = nodes[property];
-		let value = tracked ? tracked() : target[property];
-		if (property === $NODE || property === $HAS || property === "__proto__") return value;
-		if (!tracked) {
-			const desc = Object.getOwnPropertyDescriptor(target, property);
-			if (getListener() && (typeof value !== "function" || target.hasOwnProperty(property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
-		}
-		return isWrappable(value) ? wrap$1(value) : value;
-	},
-	has(target, property) {
-		if (property === $RAW || property === $PROXY || property === $TRACK || property === $NODE || property === $HAS || property === "__proto__") return true;
-		getListener() && getNode(getNodes(target, $HAS), property)();
-		return property in target;
-	},
-	set() {
-		return true;
-	},
-	deleteProperty() {
-		return true;
-	},
-	ownKeys,
-	getOwnPropertyDescriptor: proxyDescriptor$1
-};
-function setProperty(state, property, value, deleting = false) {
-	if (!deleting && state[property] === value) return;
-	const prev = state[property], len = state.length;
-	if (value === void 0) {
-		delete state[property];
-		if (state[$HAS] && state[$HAS][property] && prev !== void 0) state[$HAS][property].$();
-	} else {
-		state[property] = value;
-		if (state[$HAS] && state[$HAS][property] && prev === void 0) state[$HAS][property].$();
-	}
-	let nodes = getNodes(state, $NODE), node;
-	if (node = getNode(nodes, property, prev)) node.$(() => value);
-	if (Array.isArray(state) && state.length !== len) {
-		for (let i = state.length; i < len; i++) (node = nodes[i]) && node.$();
-		(node = getNode(nodes, "length", len)) && node.$(state.length);
-	}
-	(node = nodes[$SELF]) && node.$();
-}
-function mergeStoreNode(state, value) {
-	const keys = Object.keys(value);
-	for (let i = 0; i < keys.length; i += 1) {
-		const key = keys[i];
-		setProperty(state, key, value[key]);
-	}
-}
-function updateArray(current, next) {
-	if (typeof next === "function") next = next(current);
-	next = unwrap(next);
-	if (Array.isArray(next)) {
-		if (current === next) return;
-		let i = 0, len = next.length;
-		for (; i < len; i++) {
-			const value = next[i];
-			if (current[i] !== value) setProperty(current, i, value);
-		}
-		setProperty(current, "length", len);
-	} else mergeStoreNode(current, next);
-}
-function updatePath(current, path, traversed = []) {
-	let part, prev = current;
-	if (path.length > 1) {
-		part = path.shift();
-		const partType = typeof part, isArray = Array.isArray(current);
-		if (Array.isArray(part)) {
-			for (let i = 0; i < part.length; i++) updatePath(current, [part[i]].concat(path), traversed);
-			return;
-		} else if (isArray && partType === "function") {
-			for (let i = 0; i < current.length; i++) if (part(current[i], i)) updatePath(current, [i].concat(path), traversed);
-			return;
-		} else if (isArray && partType === "object") {
-			const { from = 0, to = current.length - 1, by = 1 } = part;
-			for (let i = from; i <= to; i += by) updatePath(current, [i].concat(path), traversed);
-			return;
-		} else if (path.length > 1) {
-			updatePath(current[part], path, [part].concat(traversed));
-			return;
-		}
-		prev = current[part];
-		traversed = [part].concat(traversed);
-	}
-	let value = path[0];
-	if (typeof value === "function") {
-		value = value(prev, traversed);
-		if (value === prev) return;
-	}
-	if (part === void 0 && value == void 0) return;
-	value = unwrap(value);
-	if (part === void 0 || isWrappable(prev) && isWrappable(value) && !Array.isArray(value)) mergeStoreNode(prev, value);
-	else setProperty(current, part, value);
-}
-function createStore(...[store, options]) {
-	const unwrappedStore = unwrap(store || {});
-	const isArray = Array.isArray(unwrappedStore);
-	const wrappedStore = wrap$1(unwrappedStore);
-	function setStore(...args) {
-		batch(() => {
-			isArray && args.length === 1 ? updateArray(unwrappedStore, args[0]) : updatePath(unwrappedStore, args);
+//#region tests/fixtures/onmount.tsx
+var _tmpl$ = /* @__PURE__ */ template(\`<div class=data-loader><h3>Data Loader Component\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading posts...\`), _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div class=timer-component><h4>Timer: <!>s\`), _tmpl$6 = /* @__PURE__ */ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`), _tmpl$7 = /* @__PURE__ */ template(\`<p class=error>Error: \`), _tmpl$8 = /* @__PURE__ */ template(\`<pre>\`), _tmpl$9 = /* @__PURE__ */ template(\`<p>Loading data...\`);
+const OnMountExample = () => {
+	const [mountedTime, setMountedTime] = createSignal("");
+	const [elapsed, setElapsed] = createSignal(0);
+	const [data, setData] = createSignal(null);
+	const [error, setError] = createSignal(null);
+	let intervalId;
+	onMount(() => {
+		console.log("Component mounted!");
+		setMountedTime((/* @__PURE__ */ new Date()).toLocaleTimeString());
+		intervalId = window.setInterval(() => {
+			setElapsed((e) => e + 1);
+		}, 1e3);
+		fetch("https://jsonplaceholder.typicode.com/todos/1").then((response) => response.json()).then((todo) => {
+			setData(JSON.stringify(todo, null, 2));
+			setError(null);
+		}).catch((err) => {
+			setError(err.message);
+			setData(null);
 		});
-	}
-	return [wrappedStore, setStore];
-}
-
-//#endregion
-//#region tests/fixtures/create-store.tsx
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Users List\`), _tmpl$3 = /* @__PURE__ */ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
-const StoreExample = () => {
-	const [store, setStore] = createStore({
-		currentUser: null,
-		users: [],
-		isLoading: false,
-		error: null
-	});
-	const [selectedUserId, setSelectedUserId] = createSignal(null);
-	const addUser = (user) => {
-		const newUser = {
-			...user,
-			id: Date.now()
+		const handleResize = () => {
+			console.log("Window resized:", window.innerWidth, "x", window.innerHeight);
 		};
-		setStore("users", (users) => [...users, newUser]);
-	};
-	const updateNestedPreference = (id, preferenceType, value) => {
-		setStore("users", (user) => user.id === id, "preferences", "notifications", preferenceType, value);
-	};
-	const setCurrentUser = (user) => {
-		setStore("currentUser", user);
-	};
-	const updateCurrentAddress = (field, value) => {
-		setStore("currentUser", "address", field, value);
-	};
-	createEffect(() => {
-		if (store.users.length > 0) console.log("Users updated:", store.users.length);
+		window.addEventListener("resize", handleResize);
+		onCleanup(() => {
+			console.log("Component will unmount - cleaning up!");
+			if (intervalId) clearInterval(intervalId);
+			window.removeEventListener("resize", handleResize);
+		});
 	});
-	createEffect(() => {
-		if (store.currentUser) console.log("Current user theme:", store.currentUser.preferences.theme);
-	});
-	const handleAddSampleUsers = () => {
-		addUser({
-			name: "Alice Johnson",
-			email: "alice@example.com",
-			address: {
-				street: "123 Main St",
-				city: "San Francisco",
-				zipCode: "94102"
-			},
-			preferences: {
-				theme: "light",
-				notifications: {
-					email: true,
-					push: false,
-					marketing: true
-				}
+	const DataLoader = () => {
+		const [loading, setLoading] = createSignal(true);
+		const [posts, setPosts] = createSignal([]);
+		onMount(async () => {
+			try {
+				setLoading(true);
+				setPosts(await (await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")).json());
+			} catch (err) {
+				console.error("Failed to load posts:", err);
+			} finally {
+				setLoading(false);
 			}
 		});
-		addUser({
-			name: "Bob Smith",
-			email: "bob@example.com",
-			address: {
-				street: "456 Oak Ave",
-				city: "New York",
-				zipCode: "10001"
-			},
-			preferences: {
-				theme: "dark",
-				notifications: {
-					email: false,
-					push: true,
-					marketing: false
-				}
-			}
+		return (() => {
+			var _el$ = _tmpl$();
+			_el$.firstChild;
+			insert(_el$, (() => {
+				var _c$ = memo(() => !!loading());
+				return () => _c$() ? _tmpl$2() : (() => {
+					var _el$4 = _tmpl$3();
+					insert(_el$4, () => posts().map((post) => (() => {
+						var _el$5 = _tmpl$4();
+						insert(_el$5, () => post.title);
+						return _el$5;
+					})()));
+					return _el$4;
+				})();
+			})(), null);
+			return _el$;
+		})();
+	};
+	const TimerComponent = () => {
+		const [seconds, setSeconds] = createSignal(0);
+		onMount(() => {
+			const timer = setInterval(() => {
+				setSeconds((s) => s + 1);
+			}, 1e3);
+			onCleanup(() => {
+				clearInterval(timer);
+			});
 		});
-	};
-	const handleSelectUser = (id) => {
-		setSelectedUserId(id);
-		setCurrentUser(store.users.find((u) => u.id === id) || null);
-	};
-	const handleToggleTheme = () => {
-		if (store.currentUser) setStore("currentUser", "preferences", "theme", store.currentUser.preferences.theme === "light" ? "dark" : "light");
-	};
-	const handleUpdateAddress = () => {
-		if (store.currentUser) updateCurrentAddress("city", "Updated City");
-	};
-	const handleToggleNotification = (type) => {
-		if (store.currentUser) {
-			const currentValue = store.currentUser.preferences.notifications[type];
-			setStore("currentUser", "preferences", "notifications", type, !currentValue);
-		}
+		return (() => {
+			var _el$6 = _tmpl$5(), _el$7 = _el$6.firstChild, _el$0 = _el$7.firstChild.nextSibling;
+			_el$0.nextSibling;
+			insert(_el$7, seconds, _el$0);
+			return _el$6;
+		})();
 	};
 	return (() => {
-		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.firstChild, _el$5 = _el$4.nextSibling;
-		_el$5.firstChild;
-		var _el$7 = _el$3.nextSibling, _el$9 = _el$7.firstChild.nextSibling;
-		_el$9.firstChild;
-		var _el$1 = _el$9.nextSibling;
-		_el$1.firstChild;
-		var _el$11 = _el$1.nextSibling;
-		_el$11.firstChild;
-		_el$4.$$click = handleAddSampleUsers;
-		insert(_el$5, () => store.users.length, null);
-		insert(_el$, (() => {
-			var _c$ = memo(() => store.users.length > 0);
-			return () => _c$() && (() => {
-				var _el$13 = _tmpl$2();
-				_el$13.firstChild;
-				insert(_el$13, () => store.users.map((user) => (() => {
-					var _el$15 = _tmpl$3(), _el$16 = _el$15.firstChild, _el$17 = _el$16.firstChild, _el$20 = _el$17.nextSibling.nextSibling;
-					_el$20.nextSibling;
-					var _el$21 = _el$16.nextSibling;
-					_el$21.firstChild;
-					var _el$23 = _el$21.nextSibling;
-					_el$23.firstChild;
-					var _el$25 = _el$23.nextSibling, _el$28 = _el$25.firstChild.nextSibling;
-					_el$28.nextSibling;
-					var _el$29 = _el$25.nextSibling, _el$30 = _el$29.nextSibling;
-					insert(_el$17, () => user.name);
-					insert(_el$16, () => user.email, _el$20);
-					insert(_el$21, () => user.address.city, null);
-					insert(_el$23, () => user.preferences.theme, null);
-					insert(_el$25, () => user.preferences.notifications.email ? "✓" : "✗", _el$28);
-					insert(_el$25, () => user.preferences.notifications.push ? "✓" : "✗", null);
-					_el$29.$$click = () => handleSelectUser(user.id);
-					_el$30.$$click = () => updateNestedPreference(user.id, "email", !user.preferences.notifications.email);
-					return _el$15;
-				})()), null);
-				return _el$13;
-			})();
-		})(), _el$7);
-		insert(_el$, (() => {
-			var _c$2 = memo(() => !!store.currentUser);
-			return () => _c$2() && (() => {
-				var _el$31 = _tmpl$4(), _el$32 = _el$31.firstChild;
-				_el$32.firstChild;
-				var _el$34 = _el$32.nextSibling;
-				_el$34.firstChild;
-				var _el$36 = _el$34.nextSibling, _el$42 = _el$36.firstChild.nextSibling, _el$43 = _el$42.nextSibling.nextSibling;
-				_el$43.nextSibling;
-				var _el$44 = _el$36.nextSibling, _el$46 = _el$44.firstChild.nextSibling, _el$47 = _el$46.nextSibling, _el$48 = _el$47.nextSibling, _el$49 = _el$48.nextSibling, _el$50 = _el$49.nextSibling, _el$53 = _el$44.nextSibling.firstChild.nextSibling;
-				_el$53.firstChild;
-				var _el$56 = _el$53.nextSibling;
-				_el$56.firstChild;
-				var _el$59 = _el$56.nextSibling;
-				_el$59.firstChild;
-				insert(_el$32, () => store.currentUser.name, null);
-				insert(_el$34, () => store.currentUser.preferences.theme, null);
-				insert(_el$36, () => store.currentUser.address.street, _el$42);
-				insert(_el$36, () => store.currentUser.address.city, _el$43);
-				insert(_el$36, () => store.currentUser.address.zipCode, null);
-				_el$46.$$click = handleToggleTheme;
-				_el$47.$$click = handleUpdateAddress;
-				_el$48.$$click = () => handleToggleNotification("email");
-				_el$49.$$click = () => handleToggleNotification("push");
-				_el$50.$$click = () => handleToggleNotification("marketing");
-				insert(_el$53, () => store.currentUser.preferences.notifications.email ? "Enabled" : "Disabled", null);
-				insert(_el$56, () => store.currentUser.preferences.notifications.push ? "Enabled" : "Disabled", null);
-				insert(_el$59, () => store.currentUser.preferences.notifications.marketing ? "Enabled" : "Disabled", null);
-				createRenderEffect((_$p) => style(_el$31, \`background: \${store.currentUser.preferences.theme === "dark" ? "#333" : "#f5f5f5"}; color: \${store.currentUser.preferences.theme === "dark" ? "#fff" : "#000"}; padding: 15px; margin: 10px;\`, _$p));
-				return _el$31;
-			})();
-		})(), _el$7);
-		insert(_el$9, () => store.isLoading ? "Yes" : "No", null);
-		insert(_el$1, () => store.error || "None", null);
-		insert(_el$11, () => selectedUserId() || "None", null);
-		return _el$;
+		var _el$1 = _tmpl$6(), _el$11 = _el$1.firstChild.nextSibling, _el$12 = _el$11.firstChild;
+		_el$12.firstChild;
+		var _el$14 = _el$12.nextSibling, _el$17 = _el$14.firstChild.nextSibling;
+		_el$17.nextSibling;
+		var _el$18 = _el$11.nextSibling;
+		_el$18.firstChild;
+		var _el$20 = _el$18.nextSibling;
+		insert(_el$12, mountedTime, null);
+		insert(_el$14, elapsed, _el$17);
+		insert(_el$18, (() => {
+			var _c$2 = memo(() => !!error());
+			return () => _c$2() ? (() => {
+				var _el$21 = _tmpl$7();
+				_el$21.firstChild;
+				insert(_el$21, error, null);
+				return _el$21;
+			})() : memo(() => !!data())() ? (() => {
+				var _el$23 = _tmpl$8();
+				insert(_el$23, data);
+				return _el$23;
+			})() : _tmpl$9();
+		})(), null);
+		insert(_el$1, createComponent(DataLoader, {}), _el$20);
+		insert(_el$1, createComponent(TimerComponent, {}), _el$20);
+		return _el$1;
 	})();
 };
-var create_store_default = StoreExample;
-delegateEvents(["click"]);
+var onmount_default = OnMountExample;
 
 //#endregion
-export { create_store_default as default };"
+export { onmount_default as default };"
 `;
 
-exports[`rolldown-plugin-solid dist should transform component with createStore 1`] = `
+exports[`rolldown-plugin-solid dist should transform component with onMount 1`] = `
 "//#region node_modules/solid-js/dist/solid.js
 const sharedConfig = {
 	context: void 0,
@@ -1237,9 +921,14 @@ function getContextId(count) {
 function setHydrateContext(context) {
 	sharedConfig.context = context;
 }
+function nextHydrateContext() {
+	return {
+		...sharedConfig.context,
+		id: sharedConfig.getNextContextId(),
+		count: 0
+	};
+}
 const equalFn = (a, b) => a === b;
-const $PROXY = Symbol("solid-proxy");
-const $TRACK = Symbol("solid-track");
 const signalOptions = { equals: equalFn };
 let ERROR = null;
 let runEffects = runQueue;
@@ -1298,9 +987,6 @@ function createMemo(fn, value, options) {
 	} else updateComputation(c);
 	return readSignal.bind(c);
 }
-function batch(fn) {
-	return runUpdates(fn, false);
-}
 function untrack(fn) {
 	if (!ExternalSourceConfig && Listener === null) return fn();
 	const listener = Listener;
@@ -1312,14 +998,14 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
+function onMount(fn) {
+	createEffect(() => untrack(fn));
+}
 function onCleanup(fn) {
 	if (Owner === null);
 	else if (Owner.cleanups === null) Owner.cleanups = [fn];
 	else Owner.cleanups.push(fn);
 	return fn;
-}
-function getListener() {
-	return Listener;
 }
 function startTransition(fn) {
 	if (Transition && Transition.running) {
@@ -1711,6 +1397,19 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
+let hydrationEnabled = false;
+function createComponent(Comp, props) {
+	if (hydrationEnabled) {
+		if (sharedConfig.context) {
+			const c = sharedConfig.context;
+			setHydrateContext(nextHydrateContext());
+			const r = untrack(() => Comp(props || {}));
+			setHydrateContext(c);
+			return r;
+		}
+	}
+	return untrack(() => Comp(props || {}));
+}
 
 //#endregion
 //#region node_modules/solid-js/web/dist/web.js
@@ -1850,7 +1549,6 @@ function reconcileArrays(parentNode, a, b) {
 		}
 	}
 }
-const $$EVENTS = "_$DX_DELEGATE";
 function template(html, isImportNode, isSVG, isMathML) {
 	let node;
 	const create = () => {
@@ -1862,42 +1560,6 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
-	for (let i = 0, l = eventNames.length; i < l; i++) {
-		const name = eventNames[i];
-		if (!e.has(name)) {
-			e.add(name);
-			document$1.addEventListener(name, eventHandler);
-		}
-	}
-}
-function setAttribute(node, name, value) {
-	if (isHydrating(node)) return;
-	if (value == null) node.removeAttribute(name);
-	else node.setAttribute(name, value);
-}
-function style(node, value, prev) {
-	if (!value) return prev ? setAttribute(node, "style") : value;
-	const nodeStyle = node.style;
-	if (typeof value === "string") return nodeStyle.cssText = value;
-	typeof prev === "string" && (nodeStyle.cssText = prev = void 0);
-	prev || (prev = {});
-	value || (value = {});
-	let v, s;
-	for (s in prev) {
-		value[s] ?? nodeStyle.removeProperty(s);
-		delete prev[s];
-	}
-	for (s in value) {
-		v = value[s];
-		if (v !== prev[s]) {
-			nodeStyle.setProperty(s, v);
-			prev[s] = v;
-		}
-	}
-	return prev;
-}
 function insert(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
@@ -1905,54 +1567,6 @@ function insert(parent, accessor, marker, initial) {
 }
 function isHydrating(node) {
 	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
-}
-function eventHandler(e) {
-	if (sharedConfig.registry && sharedConfig.events) {
-		if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-	}
-	let node = e.target;
-	const key = \`$$\${e.type}\`;
-	const oriTarget = e.target;
-	const oriCurrentTarget = e.currentTarget;
-	const retarget = (value) => Object.defineProperty(e, "target", {
-		configurable: true,
-		value
-	});
-	const handleNode = () => {
-		const handler = node[key];
-		if (handler && !node.disabled) {
-			const data = node[\`\${key}Data\`];
-			data !== void 0 ? handler.call(node, data, e) : handler.call(node, e);
-			if (e.cancelBubble) return;
-		}
-		node.host && typeof node.host !== "string" && !node.host._$host && node.contains(e.target) && retarget(node.host);
-		return true;
-	};
-	const walkUpTree = () => {
-		while (handleNode() && (node = node._$host || node.parentNode || node.host));
-	};
-	Object.defineProperty(e, "currentTarget", {
-		configurable: true,
-		get() {
-			return node || document;
-		}
-	});
-	if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
-	if (e.composedPath) {
-		const path = e.composedPath();
-		retarget(path[0]);
-		for (let i = 0; i < path.length - 2; i++) {
-			node = path[i];
-			if (!handleNode()) break;
-			if (node._$host) {
-				node = node._$host;
-				walkUpTree();
-				break;
-			}
-			if (node.parentNode === oriCurrentTarget) break;
-		}
-	} else walkUpTree();
-	retarget(oriTarget);
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
 	const hydrating = isHydrating(parent);
@@ -2030,14 +1644,14 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 	}
 	return current;
 }
-function normalizeIncomingArray(normalized, array, current, unwrap$1) {
+function normalizeIncomingArray(normalized, array, current, unwrap) {
 	let dynamic = false;
 	for (let i = 0, len = array.length; i < len; i++) {
 		let item = array[i], prev = current && current[normalized.length], t;
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap$1) {
+		else if (t === "function") if (unwrap) {
 			while (typeof item === "function") item = item();
 			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
 		} else {
@@ -2073,361 +1687,115 @@ function cleanChildren(parent, current, marker, replacement) {
 }
 
 //#endregion
-//#region node_modules/solid-js/store/dist/store.js
-const $RAW = Symbol("store-raw"), $NODE = Symbol("store-node"), $HAS = Symbol("store-has"), $SELF = Symbol("store-self");
-function wrap$1(value) {
-	let p = value[$PROXY];
-	if (!p) {
-		Object.defineProperty(value, $PROXY, { value: p = new Proxy(value, proxyTraps$1) });
-		if (!Array.isArray(value)) {
-			const keys = Object.keys(value), desc = Object.getOwnPropertyDescriptors(value);
-			for (let i = 0, l = keys.length; i < l; i++) {
-				const prop = keys[i];
-				if (desc[prop].get) Object.defineProperty(value, prop, {
-					enumerable: desc[prop].enumerable,
-					get: desc[prop].get.bind(p)
-				});
-			}
-		}
-	}
-	return p;
-}
-function isWrappable(obj) {
-	let proto;
-	return obj != null && typeof obj === "object" && (obj[$PROXY] || !(proto = Object.getPrototypeOf(obj)) || proto === Object.prototype || Array.isArray(obj));
-}
-function unwrap(item, set = /* @__PURE__ */ new Set()) {
-	let result, unwrapped, v, prop;
-	if (result = item != null && item[$RAW]) return result;
-	if (!isWrappable(item) || set.has(item)) return item;
-	if (Array.isArray(item)) {
-		if (Object.isFrozen(item)) item = item.slice(0);
-		else set.add(item);
-		for (let i = 0, l = item.length; i < l; i++) {
-			v = item[i];
-			if ((unwrapped = unwrap(v, set)) !== v) item[i] = unwrapped;
-		}
-	} else {
-		if (Object.isFrozen(item)) item = Object.assign({}, item);
-		else set.add(item);
-		const keys = Object.keys(item), desc = Object.getOwnPropertyDescriptors(item);
-		for (let i = 0, l = keys.length; i < l; i++) {
-			prop = keys[i];
-			if (desc[prop].get) continue;
-			v = item[prop];
-			if ((unwrapped = unwrap(v, set)) !== v) item[prop] = unwrapped;
-		}
-	}
-	return item;
-}
-function getNodes(target, symbol) {
-	let nodes = target[symbol];
-	if (!nodes) Object.defineProperty(target, symbol, { value: nodes = Object.create(null) });
-	return nodes;
-}
-function getNode(nodes, property, value) {
-	if (nodes[property]) return nodes[property];
-	const [s, set] = createSignal(value, {
-		equals: false,
-		internal: true
-	});
-	s.$ = set;
-	return nodes[property] = s;
-}
-function proxyDescriptor$1(target, property) {
-	const desc = Reflect.getOwnPropertyDescriptor(target, property);
-	if (!desc || desc.get || !desc.configurable || property === $PROXY || property === $NODE) return desc;
-	delete desc.value;
-	delete desc.writable;
-	desc.get = () => target[$PROXY][property];
-	return desc;
-}
-function trackSelf(target) {
-	getListener() && getNode(getNodes(target, $NODE), $SELF)();
-}
-function ownKeys(target) {
-	trackSelf(target);
-	return Reflect.ownKeys(target);
-}
-const proxyTraps$1 = {
-	get(target, property, receiver) {
-		if (property === $RAW) return target;
-		if (property === $PROXY) return receiver;
-		if (property === $TRACK) {
-			trackSelf(target);
-			return receiver;
-		}
-		const nodes = getNodes(target, $NODE);
-		const tracked = nodes[property];
-		let value = tracked ? tracked() : target[property];
-		if (property === $NODE || property === $HAS || property === "__proto__") return value;
-		if (!tracked) {
-			const desc = Object.getOwnPropertyDescriptor(target, property);
-			if (getListener() && (typeof value !== "function" || target.hasOwnProperty(property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
-		}
-		return isWrappable(value) ? wrap$1(value) : value;
-	},
-	has(target, property) {
-		if (property === $RAW || property === $PROXY || property === $TRACK || property === $NODE || property === $HAS || property === "__proto__") return true;
-		getListener() && getNode(getNodes(target, $HAS), property)();
-		return property in target;
-	},
-	set() {
-		return true;
-	},
-	deleteProperty() {
-		return true;
-	},
-	ownKeys,
-	getOwnPropertyDescriptor: proxyDescriptor$1
-};
-function setProperty(state, property, value, deleting = false) {
-	if (!deleting && state[property] === value) return;
-	const prev = state[property], len = state.length;
-	if (value === void 0) {
-		delete state[property];
-		if (state[$HAS] && state[$HAS][property] && prev !== void 0) state[$HAS][property].$();
-	} else {
-		state[property] = value;
-		if (state[$HAS] && state[$HAS][property] && prev === void 0) state[$HAS][property].$();
-	}
-	let nodes = getNodes(state, $NODE), node;
-	if (node = getNode(nodes, property, prev)) node.$(() => value);
-	if (Array.isArray(state) && state.length !== len) {
-		for (let i = state.length; i < len; i++) (node = nodes[i]) && node.$();
-		(node = getNode(nodes, "length", len)) && node.$(state.length);
-	}
-	(node = nodes[$SELF]) && node.$();
-}
-function mergeStoreNode(state, value) {
-	const keys = Object.keys(value);
-	for (let i = 0; i < keys.length; i += 1) {
-		const key = keys[i];
-		setProperty(state, key, value[key]);
-	}
-}
-function updateArray(current, next) {
-	if (typeof next === "function") next = next(current);
-	next = unwrap(next);
-	if (Array.isArray(next)) {
-		if (current === next) return;
-		let i = 0, len = next.length;
-		for (; i < len; i++) {
-			const value = next[i];
-			if (current[i] !== value) setProperty(current, i, value);
-		}
-		setProperty(current, "length", len);
-	} else mergeStoreNode(current, next);
-}
-function updatePath(current, path, traversed = []) {
-	let part, prev = current;
-	if (path.length > 1) {
-		part = path.shift();
-		const partType = typeof part, isArray = Array.isArray(current);
-		if (Array.isArray(part)) {
-			for (let i = 0; i < part.length; i++) updatePath(current, [part[i]].concat(path), traversed);
-			return;
-		} else if (isArray && partType === "function") {
-			for (let i = 0; i < current.length; i++) if (part(current[i], i)) updatePath(current, [i].concat(path), traversed);
-			return;
-		} else if (isArray && partType === "object") {
-			const { from = 0, to = current.length - 1, by = 1 } = part;
-			for (let i = from; i <= to; i += by) updatePath(current, [i].concat(path), traversed);
-			return;
-		} else if (path.length > 1) {
-			updatePath(current[part], path, [part].concat(traversed));
-			return;
-		}
-		prev = current[part];
-		traversed = [part].concat(traversed);
-	}
-	let value = path[0];
-	if (typeof value === "function") {
-		value = value(prev, traversed);
-		if (value === prev) return;
-	}
-	if (part === void 0 && value == void 0) return;
-	value = unwrap(value);
-	if (part === void 0 || isWrappable(prev) && isWrappable(value) && !Array.isArray(value)) mergeStoreNode(prev, value);
-	else setProperty(current, part, value);
-}
-function createStore(...[store, options]) {
-	const unwrappedStore = unwrap(store || {});
-	const isArray = Array.isArray(unwrappedStore);
-	const wrappedStore = wrap$1(unwrappedStore);
-	function setStore(...args) {
-		batch(() => {
-			isArray && args.length === 1 ? updateArray(unwrappedStore, args[0]) : updatePath(unwrappedStore, args);
+//#region tests/fixtures/onmount.tsx
+var _tmpl$ = /* @__PURE__ */ template(\`<div class=data-loader><h3>Data Loader Component\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading posts...\`), _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div class=timer-component><h4>Timer: <!>s\`), _tmpl$6 = /* @__PURE__ */ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`), _tmpl$7 = /* @__PURE__ */ template(\`<p class=error>Error: \`), _tmpl$8 = /* @__PURE__ */ template(\`<pre>\`), _tmpl$9 = /* @__PURE__ */ template(\`<p>Loading data...\`);
+const OnMountExample = () => {
+	const [mountedTime, setMountedTime] = createSignal("");
+	const [elapsed, setElapsed] = createSignal(0);
+	const [data, setData] = createSignal(null);
+	const [error, setError] = createSignal(null);
+	let intervalId;
+	onMount(() => {
+		console.log("Component mounted!");
+		setMountedTime((/* @__PURE__ */ new Date()).toLocaleTimeString());
+		intervalId = window.setInterval(() => {
+			setElapsed((e) => e + 1);
+		}, 1e3);
+		fetch("https://jsonplaceholder.typicode.com/todos/1").then((response) => response.json()).then((todo) => {
+			setData(JSON.stringify(todo, null, 2));
+			setError(null);
+		}).catch((err) => {
+			setError(err.message);
+			setData(null);
 		});
-	}
-	return [wrappedStore, setStore];
-}
-
-//#endregion
-//#region tests/fixtures/create-store.tsx
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Users List\`), _tmpl$3 = /* @__PURE__ */ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
-const StoreExample = () => {
-	const [store, setStore] = createStore({
-		currentUser: null,
-		users: [],
-		isLoading: false,
-		error: null
-	});
-	const [selectedUserId, setSelectedUserId] = createSignal(null);
-	const addUser = (user) => {
-		const newUser = {
-			...user,
-			id: Date.now()
+		const handleResize = () => {
+			console.log("Window resized:", window.innerWidth, "x", window.innerHeight);
 		};
-		setStore("users", (users) => [...users, newUser]);
-	};
-	const updateNestedPreference = (id, preferenceType, value) => {
-		setStore("users", (user) => user.id === id, "preferences", "notifications", preferenceType, value);
-	};
-	const setCurrentUser = (user) => {
-		setStore("currentUser", user);
-	};
-	const updateCurrentAddress = (field, value) => {
-		setStore("currentUser", "address", field, value);
-	};
-	createEffect(() => {
-		if (store.users.length > 0) console.log("Users updated:", store.users.length);
+		window.addEventListener("resize", handleResize);
+		onCleanup(() => {
+			console.log("Component will unmount - cleaning up!");
+			if (intervalId) clearInterval(intervalId);
+			window.removeEventListener("resize", handleResize);
+		});
 	});
-	createEffect(() => {
-		if (store.currentUser) console.log("Current user theme:", store.currentUser.preferences.theme);
-	});
-	const handleAddSampleUsers = () => {
-		addUser({
-			name: "Alice Johnson",
-			email: "alice@example.com",
-			address: {
-				street: "123 Main St",
-				city: "San Francisco",
-				zipCode: "94102"
-			},
-			preferences: {
-				theme: "light",
-				notifications: {
-					email: true,
-					push: false,
-					marketing: true
-				}
+	const DataLoader = () => {
+		const [loading, setLoading] = createSignal(true);
+		const [posts, setPosts] = createSignal([]);
+		onMount(async () => {
+			try {
+				setLoading(true);
+				setPosts(await (await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")).json());
+			} catch (err) {
+				console.error("Failed to load posts:", err);
+			} finally {
+				setLoading(false);
 			}
 		});
-		addUser({
-			name: "Bob Smith",
-			email: "bob@example.com",
-			address: {
-				street: "456 Oak Ave",
-				city: "New York",
-				zipCode: "10001"
-			},
-			preferences: {
-				theme: "dark",
-				notifications: {
-					email: false,
-					push: true,
-					marketing: false
-				}
-			}
+		return (() => {
+			var _el$ = _tmpl$();
+			_el$.firstChild;
+			insert(_el$, (() => {
+				var _c$ = memo(() => !!loading());
+				return () => _c$() ? _tmpl$2() : (() => {
+					var _el$4 = _tmpl$3();
+					insert(_el$4, () => posts().map((post) => (() => {
+						var _el$5 = _tmpl$4();
+						insert(_el$5, () => post.title);
+						return _el$5;
+					})()));
+					return _el$4;
+				})();
+			})(), null);
+			return _el$;
+		})();
+	};
+	const TimerComponent = () => {
+		const [seconds, setSeconds] = createSignal(0);
+		onMount(() => {
+			const timer = setInterval(() => {
+				setSeconds((s) => s + 1);
+			}, 1e3);
+			onCleanup(() => {
+				clearInterval(timer);
+			});
 		});
-	};
-	const handleSelectUser = (id) => {
-		setSelectedUserId(id);
-		setCurrentUser(store.users.find((u) => u.id === id) || null);
-	};
-	const handleToggleTheme = () => {
-		if (store.currentUser) setStore("currentUser", "preferences", "theme", store.currentUser.preferences.theme === "light" ? "dark" : "light");
-	};
-	const handleUpdateAddress = () => {
-		if (store.currentUser) updateCurrentAddress("city", "Updated City");
-	};
-	const handleToggleNotification = (type) => {
-		if (store.currentUser) {
-			const currentValue = store.currentUser.preferences.notifications[type];
-			setStore("currentUser", "preferences", "notifications", type, !currentValue);
-		}
+		return (() => {
+			var _el$6 = _tmpl$5(), _el$7 = _el$6.firstChild, _el$0 = _el$7.firstChild.nextSibling;
+			_el$0.nextSibling;
+			insert(_el$7, seconds, _el$0);
+			return _el$6;
+		})();
 	};
 	return (() => {
-		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.firstChild, _el$5 = _el$4.nextSibling;
-		_el$5.firstChild;
-		var _el$7 = _el$3.nextSibling, _el$9 = _el$7.firstChild.nextSibling;
-		_el$9.firstChild;
-		var _el$1 = _el$9.nextSibling;
-		_el$1.firstChild;
-		var _el$11 = _el$1.nextSibling;
-		_el$11.firstChild;
-		_el$4.$$click = handleAddSampleUsers;
-		insert(_el$5, () => store.users.length, null);
-		insert(_el$, (() => {
-			var _c$ = memo(() => store.users.length > 0);
-			return () => _c$() && (() => {
-				var _el$13 = _tmpl$2();
-				_el$13.firstChild;
-				insert(_el$13, () => store.users.map((user) => (() => {
-					var _el$15 = _tmpl$3(), _el$16 = _el$15.firstChild, _el$17 = _el$16.firstChild, _el$20 = _el$17.nextSibling.nextSibling;
-					_el$20.nextSibling;
-					var _el$21 = _el$16.nextSibling;
-					_el$21.firstChild;
-					var _el$23 = _el$21.nextSibling;
-					_el$23.firstChild;
-					var _el$25 = _el$23.nextSibling, _el$28 = _el$25.firstChild.nextSibling;
-					_el$28.nextSibling;
-					var _el$29 = _el$25.nextSibling, _el$30 = _el$29.nextSibling;
-					insert(_el$17, () => user.name);
-					insert(_el$16, () => user.email, _el$20);
-					insert(_el$21, () => user.address.city, null);
-					insert(_el$23, () => user.preferences.theme, null);
-					insert(_el$25, () => user.preferences.notifications.email ? "✓" : "✗", _el$28);
-					insert(_el$25, () => user.preferences.notifications.push ? "✓" : "✗", null);
-					_el$29.$$click = () => handleSelectUser(user.id);
-					_el$30.$$click = () => updateNestedPreference(user.id, "email", !user.preferences.notifications.email);
-					return _el$15;
-				})()), null);
-				return _el$13;
-			})();
-		})(), _el$7);
-		insert(_el$, (() => {
-			var _c$2 = memo(() => !!store.currentUser);
-			return () => _c$2() && (() => {
-				var _el$31 = _tmpl$4(), _el$32 = _el$31.firstChild;
-				_el$32.firstChild;
-				var _el$34 = _el$32.nextSibling;
-				_el$34.firstChild;
-				var _el$36 = _el$34.nextSibling, _el$42 = _el$36.firstChild.nextSibling, _el$43 = _el$42.nextSibling.nextSibling;
-				_el$43.nextSibling;
-				var _el$44 = _el$36.nextSibling, _el$46 = _el$44.firstChild.nextSibling, _el$47 = _el$46.nextSibling, _el$48 = _el$47.nextSibling, _el$49 = _el$48.nextSibling, _el$50 = _el$49.nextSibling, _el$53 = _el$44.nextSibling.firstChild.nextSibling;
-				_el$53.firstChild;
-				var _el$56 = _el$53.nextSibling;
-				_el$56.firstChild;
-				var _el$59 = _el$56.nextSibling;
-				_el$59.firstChild;
-				insert(_el$32, () => store.currentUser.name, null);
-				insert(_el$34, () => store.currentUser.preferences.theme, null);
-				insert(_el$36, () => store.currentUser.address.street, _el$42);
-				insert(_el$36, () => store.currentUser.address.city, _el$43);
-				insert(_el$36, () => store.currentUser.address.zipCode, null);
-				_el$46.$$click = handleToggleTheme;
-				_el$47.$$click = handleUpdateAddress;
-				_el$48.$$click = () => handleToggleNotification("email");
-				_el$49.$$click = () => handleToggleNotification("push");
-				_el$50.$$click = () => handleToggleNotification("marketing");
-				insert(_el$53, () => store.currentUser.preferences.notifications.email ? "Enabled" : "Disabled", null);
-				insert(_el$56, () => store.currentUser.preferences.notifications.push ? "Enabled" : "Disabled", null);
-				insert(_el$59, () => store.currentUser.preferences.notifications.marketing ? "Enabled" : "Disabled", null);
-				createRenderEffect((_$p) => style(_el$31, \`background: \${store.currentUser.preferences.theme === "dark" ? "#333" : "#f5f5f5"}; color: \${store.currentUser.preferences.theme === "dark" ? "#fff" : "#000"}; padding: 15px; margin: 10px;\`, _$p));
-				return _el$31;
-			})();
-		})(), _el$7);
-		insert(_el$9, () => store.isLoading ? "Yes" : "No", null);
-		insert(_el$1, () => store.error || "None", null);
-		insert(_el$11, () => selectedUserId() || "None", null);
-		return _el$;
+		var _el$1 = _tmpl$6(), _el$11 = _el$1.firstChild.nextSibling, _el$12 = _el$11.firstChild;
+		_el$12.firstChild;
+		var _el$14 = _el$12.nextSibling, _el$17 = _el$14.firstChild.nextSibling;
+		_el$17.nextSibling;
+		var _el$18 = _el$11.nextSibling;
+		_el$18.firstChild;
+		var _el$20 = _el$18.nextSibling;
+		insert(_el$12, mountedTime, null);
+		insert(_el$14, elapsed, _el$17);
+		insert(_el$18, (() => {
+			var _c$2 = memo(() => !!error());
+			return () => _c$2() ? (() => {
+				var _el$21 = _tmpl$7();
+				_el$21.firstChild;
+				insert(_el$21, error, null);
+				return _el$21;
+			})() : memo(() => !!data())() ? (() => {
+				var _el$23 = _tmpl$8();
+				insert(_el$23, data);
+				return _el$23;
+			})() : _tmpl$9();
+		})(), null);
+		insert(_el$1, createComponent(DataLoader, {}), _el$20);
+		insert(_el$1, createComponent(TimerComponent, {}), _el$20);
+		return _el$1;
 	})();
 };
-var create_store_default = StoreExample;
-delegateEvents(["click"]);
+var onmount_default = OnMountExample;
 
 //#endregion
-export { create_store_default as default };"
+export { onmount_default as default };"
 `;

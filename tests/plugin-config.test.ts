@@ -1,23 +1,15 @@
 import { describe, expect, it } from "bun:test";
+
 import solidPlugin from "../src";
 
 describe("Plugin Configuration", () => {
   it("should create plugin with default options", () => {
-    const plugin = solidPlugin();
-
-    expect(plugin).toBeDefined();
+    expect(solidPlugin()).toBeDefined();
   });
 
   it("should create plugin with custom options", () => {
-    const customOptions = {
-      solid: {
-        generate: "ssr" as const,
-        hydratable: true,
-      },
-    };
-
-    const plugin = solidPlugin(customOptions);
-
-    expect(plugin).toBeDefined();
+    expect(
+      solidPlugin({ solid: { generate: "ssr", hydratable: true } }),
+    ).toBeDefined();
   });
 });

@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`rolldown-plugin-solid src should transform component with createStore 1`] = `
+exports[`rolldown-plugin-solid src should transform component with batch 1`] = `
 "//#region node_modules/solid-js/dist/solid.js
 const sharedConfig = {
 	context: void 0,
@@ -22,8 +22,6 @@ function setHydrateContext(context) {
 	sharedConfig.context = context;
 }
 const equalFn = (a, b) => a === b;
-const $PROXY = Symbol("solid-proxy");
-const $TRACK = Symbol("solid-track");
 const signalOptions = { equals: equalFn };
 let ERROR = null;
 let runEffects = runQueue;
@@ -70,18 +68,6 @@ function createEffect(fn, value, options) {
 	if (!options || !options.render) c.user = true;
 	Effects ? Effects.push(c) : updateComputation(c);
 }
-function createMemo(fn, value, options) {
-	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
-	const c = createComputation(fn, value, true, 0);
-	c.observers = null;
-	c.observerSlots = null;
-	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
-	return readSignal.bind(c);
-}
 function batch(fn) {
 	return runUpdates(fn, false);
 }
@@ -101,9 +87,6 @@ function onCleanup(fn) {
 	else if (Owner.cleanups === null) Owner.cleanups = [fn];
 	else Owner.cleanups.push(fn);
 	return fn;
-}
-function getListener() {
-	return Listener;
 }
 function startTransition(fn) {
 	if (Transition && Transition.running) {
@@ -587,7 +570,6 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -655,32 +637,6 @@ function delegateEvents(eventNames, document$1 = window.document) {
 			document$1.addEventListener(name, eventHandler);
 		}
 	}
-}
-function setAttribute(node, name, value) {
-	if (isHydrating(node)) return;
-	if (value == null) node.removeAttribute(name);
-	else node.setAttribute(name, value);
-}
-function style(node, value, prev) {
-	if (!value) return prev ? setAttribute(node, "style") : value;
-	const nodeStyle = node.style;
-	if (typeof value === "string") return nodeStyle.cssText = value;
-	typeof prev === "string" && (nodeStyle.cssText = prev = void 0);
-	prev || (prev = {});
-	value || (value = {});
-	let v, s;
-	for (s in prev) {
-		value[s] ?? nodeStyle.removeProperty(s);
-		delete prev[s];
-	}
-	for (s in value) {
-		v = value[s];
-		if (v !== prev[s]) {
-			nodeStyle.setProperty(s, v);
-			prev[s] = v;
-		}
-	}
-	return prev;
 }
 function insert(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
@@ -814,14 +770,14 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 	}
 	return current;
 }
-function normalizeIncomingArray(normalized, array, current, unwrap$1) {
+function normalizeIncomingArray(normalized, array, current, unwrap) {
 	let dynamic = false;
 	for (let i = 0, len = array.length; i < len; i++) {
 		let item = array[i], prev = current && current[normalized.length], t;
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap$1) {
+		else if (t === "function") if (unwrap) {
 			while (typeof item === "function") item = item();
 			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
 		} else {
@@ -857,366 +813,95 @@ function cleanChildren(parent, current, marker, replacement) {
 }
 
 //#endregion
-//#region node_modules/solid-js/store/dist/store.js
-const $RAW = Symbol("store-raw"), $NODE = Symbol("store-node"), $HAS = Symbol("store-has"), $SELF = Symbol("store-self");
-function wrap$1(value) {
-	let p = value[$PROXY];
-	if (!p) {
-		Object.defineProperty(value, $PROXY, { value: p = new Proxy(value, proxyTraps$1) });
-		if (!Array.isArray(value)) {
-			const keys = Object.keys(value), desc = Object.getOwnPropertyDescriptors(value);
-			for (let i = 0, l = keys.length; i < l; i++) {
-				const prop = keys[i];
-				if (desc[prop].get) Object.defineProperty(value, prop, {
-					enumerable: desc[prop].enumerable,
-					get: desc[prop].get.bind(p)
-				});
-			}
-		}
-	}
-	return p;
-}
-function isWrappable(obj) {
-	let proto;
-	return obj != null && typeof obj === "object" && (obj[$PROXY] || !(proto = Object.getPrototypeOf(obj)) || proto === Object.prototype || Array.isArray(obj));
-}
-function unwrap(item, set = /* @__PURE__ */ new Set()) {
-	let result, unwrapped, v, prop;
-	if (result = item != null && item[$RAW]) return result;
-	if (!isWrappable(item) || set.has(item)) return item;
-	if (Array.isArray(item)) {
-		if (Object.isFrozen(item)) item = item.slice(0);
-		else set.add(item);
-		for (let i = 0, l = item.length; i < l; i++) {
-			v = item[i];
-			if ((unwrapped = unwrap(v, set)) !== v) item[i] = unwrapped;
-		}
-	} else {
-		if (Object.isFrozen(item)) item = Object.assign({}, item);
-		else set.add(item);
-		const keys = Object.keys(item), desc = Object.getOwnPropertyDescriptors(item);
-		for (let i = 0, l = keys.length; i < l; i++) {
-			prop = keys[i];
-			if (desc[prop].get) continue;
-			v = item[prop];
-			if ((unwrapped = unwrap(v, set)) !== v) item[prop] = unwrapped;
-		}
-	}
-	return item;
-}
-function getNodes(target, symbol) {
-	let nodes = target[symbol];
-	if (!nodes) Object.defineProperty(target, symbol, { value: nodes = Object.create(null) });
-	return nodes;
-}
-function getNode(nodes, property, value) {
-	if (nodes[property]) return nodes[property];
-	const [s, set] = createSignal(value, {
-		equals: false,
-		internal: true
+//#region tests/fixtures/batch.tsx
+var _tmpl$ = /* @__PURE__ */ template(\`<div class=batch-example><h2>Batch Example</h2><div class=state-display><p>Count: </p><p>Double: </p><p>Name: </p><p>Greeting: </p></div><div class=controls><button>Update Without Batch</button><button>Update With Batch</button><button>Nested Batch Example</button><button>Complex Update</button></div><div class=info><p>Check console to see the difference in effect triggers!</p><p>Without batch: Each signal update triggers effects separately</p><p>With batch: All updates trigger effects together once\`);
+const BatchExample = () => {
+	const [count, setCount] = createSignal(0);
+	const [double, setDouble] = createSignal(0);
+	const [name, setName] = createSignal("");
+	const [greeting, setGreeting] = createSignal("");
+	createEffect(() => {
+		console.log("Count changed:", count());
 	});
-	s.$ = set;
-	return nodes[property] = s;
-}
-function proxyDescriptor$1(target, property) {
-	const desc = Reflect.getOwnPropertyDescriptor(target, property);
-	if (!desc || desc.get || !desc.configurable || property === $PROXY || property === $NODE) return desc;
-	delete desc.value;
-	delete desc.writable;
-	desc.get = () => target[$PROXY][property];
-	return desc;
-}
-function trackSelf(target) {
-	getListener() && getNode(getNodes(target, $NODE), $SELF)();
-}
-function ownKeys(target) {
-	trackSelf(target);
-	return Reflect.ownKeys(target);
-}
-const proxyTraps$1 = {
-	get(target, property, receiver) {
-		if (property === $RAW) return target;
-		if (property === $PROXY) return receiver;
-		if (property === $TRACK) {
-			trackSelf(target);
-			return receiver;
-		}
-		const nodes = getNodes(target, $NODE);
-		const tracked = nodes[property];
-		let value = tracked ? tracked() : target[property];
-		if (property === $NODE || property === $HAS || property === "__proto__") return value;
-		if (!tracked) {
-			const desc = Object.getOwnPropertyDescriptor(target, property);
-			if (getListener() && (typeof value !== "function" || target.hasOwnProperty(property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
-		}
-		return isWrappable(value) ? wrap$1(value) : value;
-	},
-	has(target, property) {
-		if (property === $RAW || property === $PROXY || property === $TRACK || property === $NODE || property === $HAS || property === "__proto__") return true;
-		getListener() && getNode(getNodes(target, $HAS), property)();
-		return property in target;
-	},
-	set() {
-		return true;
-	},
-	deleteProperty() {
-		return true;
-	},
-	ownKeys,
-	getOwnPropertyDescriptor: proxyDescriptor$1
-};
-function setProperty(state, property, value, deleting = false) {
-	if (!deleting && state[property] === value) return;
-	const prev = state[property], len = state.length;
-	if (value === void 0) {
-		delete state[property];
-		if (state[$HAS] && state[$HAS][property] && prev !== void 0) state[$HAS][property].$();
-	} else {
-		state[property] = value;
-		if (state[$HAS] && state[$HAS][property] && prev === void 0) state[$HAS][property].$();
-	}
-	let nodes = getNodes(state, $NODE), node;
-	if (node = getNode(nodes, property, prev)) node.$(() => value);
-	if (Array.isArray(state) && state.length !== len) {
-		for (let i = state.length; i < len; i++) (node = nodes[i]) && node.$();
-		(node = getNode(nodes, "length", len)) && node.$(state.length);
-	}
-	(node = nodes[$SELF]) && node.$();
-}
-function mergeStoreNode(state, value) {
-	const keys = Object.keys(value);
-	for (let i = 0; i < keys.length; i += 1) {
-		const key = keys[i];
-		setProperty(state, key, value[key]);
-	}
-}
-function updateArray(current, next) {
-	if (typeof next === "function") next = next(current);
-	next = unwrap(next);
-	if (Array.isArray(next)) {
-		if (current === next) return;
-		let i = 0, len = next.length;
-		for (; i < len; i++) {
-			const value = next[i];
-			if (current[i] !== value) setProperty(current, i, value);
-		}
-		setProperty(current, "length", len);
-	} else mergeStoreNode(current, next);
-}
-function updatePath(current, path, traversed = []) {
-	let part, prev = current;
-	if (path.length > 1) {
-		part = path.shift();
-		const partType = typeof part, isArray = Array.isArray(current);
-		if (Array.isArray(part)) {
-			for (let i = 0; i < part.length; i++) updatePath(current, [part[i]].concat(path), traversed);
-			return;
-		} else if (isArray && partType === "function") {
-			for (let i = 0; i < current.length; i++) if (part(current[i], i)) updatePath(current, [i].concat(path), traversed);
-			return;
-		} else if (isArray && partType === "object") {
-			const { from = 0, to = current.length - 1, by = 1 } = part;
-			for (let i = from; i <= to; i += by) updatePath(current, [i].concat(path), traversed);
-			return;
-		} else if (path.length > 1) {
-			updatePath(current[part], path, [part].concat(traversed));
-			return;
-		}
-		prev = current[part];
-		traversed = [part].concat(traversed);
-	}
-	let value = path[0];
-	if (typeof value === "function") {
-		value = value(prev, traversed);
-		if (value === prev) return;
-	}
-	if (part === void 0 && value == void 0) return;
-	value = unwrap(value);
-	if (part === void 0 || isWrappable(prev) && isWrappable(value) && !Array.isArray(value)) mergeStoreNode(prev, value);
-	else setProperty(current, part, value);
-}
-function createStore(...[store, options]) {
-	const unwrappedStore = unwrap(store || {});
-	const isArray = Array.isArray(unwrappedStore);
-	const wrappedStore = wrap$1(unwrappedStore);
-	function setStore(...args) {
+	createEffect(() => {
+		console.log("Double changed:", double());
+	});
+	createEffect(() => {
+		console.log("Name changed:", name());
+	});
+	createEffect(() => {
+		console.log("Greeting changed:", greeting());
+	});
+	const updateWithoutBatch = () => {
+		console.log("=== Updating without batch ===");
+		setCount((c) => c + 1);
+		setDouble((d) => d + 2);
+		setName("Alice");
+		setGreeting("Hello, Alice!");
+	};
+	const updateWithBatch = () => {
+		console.log("=== Updating with batch ===");
 		batch(() => {
-			isArray && args.length === 1 ? updateArray(unwrappedStore, args[0]) : updatePath(unwrappedStore, args);
-		});
-	}
-	return [wrappedStore, setStore];
-}
-
-//#endregion
-//#region tests/fixtures/create-store.tsx
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Users List\`), _tmpl$3 = /* @__PURE__ */ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
-const StoreExample = () => {
-	const [store, setStore] = createStore({
-		currentUser: null,
-		users: [],
-		isLoading: false,
-		error: null
-	});
-	const [selectedUserId, setSelectedUserId] = createSignal(null);
-	const addUser = (user) => {
-		const newUser = {
-			...user,
-			id: Date.now()
-		};
-		setStore("users", (users) => [...users, newUser]);
-	};
-	const updateNestedPreference = (id, preferenceType, value) => {
-		setStore("users", (user) => user.id === id, "preferences", "notifications", preferenceType, value);
-	};
-	const setCurrentUser = (user) => {
-		setStore("currentUser", user);
-	};
-	const updateCurrentAddress = (field, value) => {
-		setStore("currentUser", "address", field, value);
-	};
-	createEffect(() => {
-		if (store.users.length > 0) console.log("Users updated:", store.users.length);
-	});
-	createEffect(() => {
-		if (store.currentUser) console.log("Current user theme:", store.currentUser.preferences.theme);
-	});
-	const handleAddSampleUsers = () => {
-		addUser({
-			name: "Alice Johnson",
-			email: "alice@example.com",
-			address: {
-				street: "123 Main St",
-				city: "San Francisco",
-				zipCode: "94102"
-			},
-			preferences: {
-				theme: "light",
-				notifications: {
-					email: true,
-					push: false,
-					marketing: true
-				}
-			}
-		});
-		addUser({
-			name: "Bob Smith",
-			email: "bob@example.com",
-			address: {
-				street: "456 Oak Ave",
-				city: "New York",
-				zipCode: "10001"
-			},
-			preferences: {
-				theme: "dark",
-				notifications: {
-					email: false,
-					push: true,
-					marketing: false
-				}
-			}
+			setCount((c) => c + 1);
+			setDouble((d) => d + 2);
+			setName("Bob");
+			setGreeting("Hello, Bob!");
 		});
 	};
-	const handleSelectUser = (id) => {
-		setSelectedUserId(id);
-		setCurrentUser(store.users.find((u) => u.id === id) || null);
+	const nestedBatchExample = () => {
+		console.log("=== Nested batch example ===");
+		batch(() => {
+			setCount(0);
+			setDouble(0);
+			setName("");
+			setGreeting("");
+			batch(() => {
+				setCount(10);
+				setDouble(20);
+			});
+			setName("Charlie");
+			setGreeting("Hello, Charlie!");
+		});
 	};
-	const handleToggleTheme = () => {
-		if (store.currentUser) setStore("currentUser", "preferences", "theme", store.currentUser.preferences.theme === "light" ? "dark" : "light");
-	};
-	const handleUpdateAddress = () => {
-		if (store.currentUser) updateCurrentAddress("city", "Updated City");
-	};
-	const handleToggleNotification = (type) => {
-		if (store.currentUser) {
-			const currentValue = store.currentUser.preferences.notifications[type];
-			setStore("currentUser", "preferences", "notifications", type, !currentValue);
-		}
+	const complexUpdate = () => {
+		console.log("=== Complex update with dependencies ===");
+		batch(() => {
+			const newCount = count() + 5;
+			setCount(newCount);
+			setDouble(newCount * 2);
+			setName(newCount > 10 ? "High Count" : "Low Count");
+			setGreeting(\`Count is \${newCount}\`);
+		});
 	};
 	return (() => {
-		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.firstChild, _el$5 = _el$4.nextSibling;
-		_el$5.firstChild;
-		var _el$7 = _el$3.nextSibling, _el$9 = _el$7.firstChild.nextSibling;
-		_el$9.firstChild;
-		var _el$1 = _el$9.nextSibling;
-		_el$1.firstChild;
-		var _el$11 = _el$1.nextSibling;
-		_el$11.firstChild;
-		_el$4.$$click = handleAddSampleUsers;
-		insert(_el$5, () => store.users.length, null);
-		insert(_el$, (() => {
-			var _c$ = memo(() => store.users.length > 0);
-			return () => _c$() && (() => {
-				var _el$13 = _tmpl$2();
-				_el$13.firstChild;
-				insert(_el$13, () => store.users.map((user) => (() => {
-					var _el$15 = _tmpl$3(), _el$16 = _el$15.firstChild, _el$17 = _el$16.firstChild, _el$20 = _el$17.nextSibling.nextSibling;
-					_el$20.nextSibling;
-					var _el$21 = _el$16.nextSibling;
-					_el$21.firstChild;
-					var _el$23 = _el$21.nextSibling;
-					_el$23.firstChild;
-					var _el$25 = _el$23.nextSibling, _el$28 = _el$25.firstChild.nextSibling;
-					_el$28.nextSibling;
-					var _el$29 = _el$25.nextSibling, _el$30 = _el$29.nextSibling;
-					insert(_el$17, () => user.name);
-					insert(_el$16, () => user.email, _el$20);
-					insert(_el$21, () => user.address.city, null);
-					insert(_el$23, () => user.preferences.theme, null);
-					insert(_el$25, () => user.preferences.notifications.email ? "✓" : "✗", _el$28);
-					insert(_el$25, () => user.preferences.notifications.push ? "✓" : "✗", null);
-					_el$29.$$click = () => handleSelectUser(user.id);
-					_el$30.$$click = () => updateNestedPreference(user.id, "email", !user.preferences.notifications.email);
-					return _el$15;
-				})()), null);
-				return _el$13;
-			})();
-		})(), _el$7);
-		insert(_el$, (() => {
-			var _c$2 = memo(() => !!store.currentUser);
-			return () => _c$2() && (() => {
-				var _el$31 = _tmpl$4(), _el$32 = _el$31.firstChild;
-				_el$32.firstChild;
-				var _el$34 = _el$32.nextSibling;
-				_el$34.firstChild;
-				var _el$36 = _el$34.nextSibling, _el$42 = _el$36.firstChild.nextSibling, _el$43 = _el$42.nextSibling.nextSibling;
-				_el$43.nextSibling;
-				var _el$44 = _el$36.nextSibling, _el$46 = _el$44.firstChild.nextSibling, _el$47 = _el$46.nextSibling, _el$48 = _el$47.nextSibling, _el$49 = _el$48.nextSibling, _el$50 = _el$49.nextSibling, _el$53 = _el$44.nextSibling.firstChild.nextSibling;
-				_el$53.firstChild;
-				var _el$56 = _el$53.nextSibling;
-				_el$56.firstChild;
-				var _el$59 = _el$56.nextSibling;
-				_el$59.firstChild;
-				insert(_el$32, () => store.currentUser.name, null);
-				insert(_el$34, () => store.currentUser.preferences.theme, null);
-				insert(_el$36, () => store.currentUser.address.street, _el$42);
-				insert(_el$36, () => store.currentUser.address.city, _el$43);
-				insert(_el$36, () => store.currentUser.address.zipCode, null);
-				_el$46.$$click = handleToggleTheme;
-				_el$47.$$click = handleUpdateAddress;
-				_el$48.$$click = () => handleToggleNotification("email");
-				_el$49.$$click = () => handleToggleNotification("push");
-				_el$50.$$click = () => handleToggleNotification("marketing");
-				insert(_el$53, () => store.currentUser.preferences.notifications.email ? "Enabled" : "Disabled", null);
-				insert(_el$56, () => store.currentUser.preferences.notifications.push ? "Enabled" : "Disabled", null);
-				insert(_el$59, () => store.currentUser.preferences.notifications.marketing ? "Enabled" : "Disabled", null);
-				createRenderEffect((_$p) => style(_el$31, \`background: \${store.currentUser.preferences.theme === "dark" ? "#333" : "#f5f5f5"}; color: \${store.currentUser.preferences.theme === "dark" ? "#fff" : "#000"}; padding: 15px; margin: 10px;\`, _$p));
-				return _el$31;
-			})();
-		})(), _el$7);
-		insert(_el$9, () => store.isLoading ? "Yes" : "No", null);
-		insert(_el$1, () => store.error || "None", null);
-		insert(_el$11, () => selectedUserId() || "None", null);
+		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.firstChild;
+		_el$4.firstChild;
+		var _el$6 = _el$4.nextSibling;
+		_el$6.firstChild;
+		var _el$8 = _el$6.nextSibling;
+		_el$8.firstChild;
+		var _el$0 = _el$8.nextSibling;
+		_el$0.firstChild;
+		var _el$11 = _el$3.nextSibling.firstChild, _el$12 = _el$11.nextSibling, _el$13 = _el$12.nextSibling, _el$14 = _el$13.nextSibling;
+		insert(_el$4, count, null);
+		insert(_el$6, double, null);
+		insert(_el$8, name, null);
+		insert(_el$0, greeting, null);
+		_el$11.$$click = updateWithoutBatch;
+		_el$12.$$click = updateWithBatch;
+		_el$13.$$click = nestedBatchExample;
+		_el$14.$$click = complexUpdate;
 		return _el$;
 	})();
 };
-var create_store_default = StoreExample;
+var batch_default = BatchExample;
 delegateEvents(["click"]);
 
 //#endregion
-export { create_store_default as default };"
+export { batch_default as default };"
 `;
 
-exports[`rolldown-plugin-solid dist should transform component with createStore 1`] = `
+exports[`rolldown-plugin-solid dist should transform component with batch 1`] = `
 "//#region node_modules/solid-js/dist/solid.js
 const sharedConfig = {
 	context: void 0,
@@ -1238,8 +923,6 @@ function setHydrateContext(context) {
 	sharedConfig.context = context;
 }
 const equalFn = (a, b) => a === b;
-const $PROXY = Symbol("solid-proxy");
-const $TRACK = Symbol("solid-track");
 const signalOptions = { equals: equalFn };
 let ERROR = null;
 let runEffects = runQueue;
@@ -1286,18 +969,6 @@ function createEffect(fn, value, options) {
 	if (!options || !options.render) c.user = true;
 	Effects ? Effects.push(c) : updateComputation(c);
 }
-function createMemo(fn, value, options) {
-	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
-	const c = createComputation(fn, value, true, 0);
-	c.observers = null;
-	c.observerSlots = null;
-	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
-	return readSignal.bind(c);
-}
 function batch(fn) {
 	return runUpdates(fn, false);
 }
@@ -1317,9 +988,6 @@ function onCleanup(fn) {
 	else if (Owner.cleanups === null) Owner.cleanups = [fn];
 	else Owner.cleanups.push(fn);
 	return fn;
-}
-function getListener() {
-	return Listener;
 }
 function startTransition(fn) {
 	if (Transition && Transition.running) {
@@ -1803,7 +1471,6 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -1871,32 +1538,6 @@ function delegateEvents(eventNames, document$1 = window.document) {
 			document$1.addEventListener(name, eventHandler);
 		}
 	}
-}
-function setAttribute(node, name, value) {
-	if (isHydrating(node)) return;
-	if (value == null) node.removeAttribute(name);
-	else node.setAttribute(name, value);
-}
-function style(node, value, prev) {
-	if (!value) return prev ? setAttribute(node, "style") : value;
-	const nodeStyle = node.style;
-	if (typeof value === "string") return nodeStyle.cssText = value;
-	typeof prev === "string" && (nodeStyle.cssText = prev = void 0);
-	prev || (prev = {});
-	value || (value = {});
-	let v, s;
-	for (s in prev) {
-		value[s] ?? nodeStyle.removeProperty(s);
-		delete prev[s];
-	}
-	for (s in value) {
-		v = value[s];
-		if (v !== prev[s]) {
-			nodeStyle.setProperty(s, v);
-			prev[s] = v;
-		}
-	}
-	return prev;
 }
 function insert(parent, accessor, marker, initial) {
 	if (marker !== void 0 && !initial) initial = [];
@@ -2030,14 +1671,14 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 	}
 	return current;
 }
-function normalizeIncomingArray(normalized, array, current, unwrap$1) {
+function normalizeIncomingArray(normalized, array, current, unwrap) {
 	let dynamic = false;
 	for (let i = 0, len = array.length; i < len; i++) {
 		let item = array[i], prev = current && current[normalized.length], t;
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap$1) {
+		else if (t === "function") if (unwrap) {
 			while (typeof item === "function") item = item();
 			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
 		} else {
@@ -2073,361 +1714,90 @@ function cleanChildren(parent, current, marker, replacement) {
 }
 
 //#endregion
-//#region node_modules/solid-js/store/dist/store.js
-const $RAW = Symbol("store-raw"), $NODE = Symbol("store-node"), $HAS = Symbol("store-has"), $SELF = Symbol("store-self");
-function wrap$1(value) {
-	let p = value[$PROXY];
-	if (!p) {
-		Object.defineProperty(value, $PROXY, { value: p = new Proxy(value, proxyTraps$1) });
-		if (!Array.isArray(value)) {
-			const keys = Object.keys(value), desc = Object.getOwnPropertyDescriptors(value);
-			for (let i = 0, l = keys.length; i < l; i++) {
-				const prop = keys[i];
-				if (desc[prop].get) Object.defineProperty(value, prop, {
-					enumerable: desc[prop].enumerable,
-					get: desc[prop].get.bind(p)
-				});
-			}
-		}
-	}
-	return p;
-}
-function isWrappable(obj) {
-	let proto;
-	return obj != null && typeof obj === "object" && (obj[$PROXY] || !(proto = Object.getPrototypeOf(obj)) || proto === Object.prototype || Array.isArray(obj));
-}
-function unwrap(item, set = /* @__PURE__ */ new Set()) {
-	let result, unwrapped, v, prop;
-	if (result = item != null && item[$RAW]) return result;
-	if (!isWrappable(item) || set.has(item)) return item;
-	if (Array.isArray(item)) {
-		if (Object.isFrozen(item)) item = item.slice(0);
-		else set.add(item);
-		for (let i = 0, l = item.length; i < l; i++) {
-			v = item[i];
-			if ((unwrapped = unwrap(v, set)) !== v) item[i] = unwrapped;
-		}
-	} else {
-		if (Object.isFrozen(item)) item = Object.assign({}, item);
-		else set.add(item);
-		const keys = Object.keys(item), desc = Object.getOwnPropertyDescriptors(item);
-		for (let i = 0, l = keys.length; i < l; i++) {
-			prop = keys[i];
-			if (desc[prop].get) continue;
-			v = item[prop];
-			if ((unwrapped = unwrap(v, set)) !== v) item[prop] = unwrapped;
-		}
-	}
-	return item;
-}
-function getNodes(target, symbol) {
-	let nodes = target[symbol];
-	if (!nodes) Object.defineProperty(target, symbol, { value: nodes = Object.create(null) });
-	return nodes;
-}
-function getNode(nodes, property, value) {
-	if (nodes[property]) return nodes[property];
-	const [s, set] = createSignal(value, {
-		equals: false,
-		internal: true
+//#region tests/fixtures/batch.tsx
+var _tmpl$ = /* @__PURE__ */ template(\`<div class=batch-example><h2>Batch Example</h2><div class=state-display><p>Count: </p><p>Double: </p><p>Name: </p><p>Greeting: </p></div><div class=controls><button>Update Without Batch</button><button>Update With Batch</button><button>Nested Batch Example</button><button>Complex Update</button></div><div class=info><p>Check console to see the difference in effect triggers!</p><p>Without batch: Each signal update triggers effects separately</p><p>With batch: All updates trigger effects together once\`);
+const BatchExample = () => {
+	const [count, setCount] = createSignal(0);
+	const [double, setDouble] = createSignal(0);
+	const [name, setName] = createSignal("");
+	const [greeting, setGreeting] = createSignal("");
+	createEffect(() => {
+		console.log("Count changed:", count());
 	});
-	s.$ = set;
-	return nodes[property] = s;
-}
-function proxyDescriptor$1(target, property) {
-	const desc = Reflect.getOwnPropertyDescriptor(target, property);
-	if (!desc || desc.get || !desc.configurable || property === $PROXY || property === $NODE) return desc;
-	delete desc.value;
-	delete desc.writable;
-	desc.get = () => target[$PROXY][property];
-	return desc;
-}
-function trackSelf(target) {
-	getListener() && getNode(getNodes(target, $NODE), $SELF)();
-}
-function ownKeys(target) {
-	trackSelf(target);
-	return Reflect.ownKeys(target);
-}
-const proxyTraps$1 = {
-	get(target, property, receiver) {
-		if (property === $RAW) return target;
-		if (property === $PROXY) return receiver;
-		if (property === $TRACK) {
-			trackSelf(target);
-			return receiver;
-		}
-		const nodes = getNodes(target, $NODE);
-		const tracked = nodes[property];
-		let value = tracked ? tracked() : target[property];
-		if (property === $NODE || property === $HAS || property === "__proto__") return value;
-		if (!tracked) {
-			const desc = Object.getOwnPropertyDescriptor(target, property);
-			if (getListener() && (typeof value !== "function" || target.hasOwnProperty(property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
-		}
-		return isWrappable(value) ? wrap$1(value) : value;
-	},
-	has(target, property) {
-		if (property === $RAW || property === $PROXY || property === $TRACK || property === $NODE || property === $HAS || property === "__proto__") return true;
-		getListener() && getNode(getNodes(target, $HAS), property)();
-		return property in target;
-	},
-	set() {
-		return true;
-	},
-	deleteProperty() {
-		return true;
-	},
-	ownKeys,
-	getOwnPropertyDescriptor: proxyDescriptor$1
-};
-function setProperty(state, property, value, deleting = false) {
-	if (!deleting && state[property] === value) return;
-	const prev = state[property], len = state.length;
-	if (value === void 0) {
-		delete state[property];
-		if (state[$HAS] && state[$HAS][property] && prev !== void 0) state[$HAS][property].$();
-	} else {
-		state[property] = value;
-		if (state[$HAS] && state[$HAS][property] && prev === void 0) state[$HAS][property].$();
-	}
-	let nodes = getNodes(state, $NODE), node;
-	if (node = getNode(nodes, property, prev)) node.$(() => value);
-	if (Array.isArray(state) && state.length !== len) {
-		for (let i = state.length; i < len; i++) (node = nodes[i]) && node.$();
-		(node = getNode(nodes, "length", len)) && node.$(state.length);
-	}
-	(node = nodes[$SELF]) && node.$();
-}
-function mergeStoreNode(state, value) {
-	const keys = Object.keys(value);
-	for (let i = 0; i < keys.length; i += 1) {
-		const key = keys[i];
-		setProperty(state, key, value[key]);
-	}
-}
-function updateArray(current, next) {
-	if (typeof next === "function") next = next(current);
-	next = unwrap(next);
-	if (Array.isArray(next)) {
-		if (current === next) return;
-		let i = 0, len = next.length;
-		for (; i < len; i++) {
-			const value = next[i];
-			if (current[i] !== value) setProperty(current, i, value);
-		}
-		setProperty(current, "length", len);
-	} else mergeStoreNode(current, next);
-}
-function updatePath(current, path, traversed = []) {
-	let part, prev = current;
-	if (path.length > 1) {
-		part = path.shift();
-		const partType = typeof part, isArray = Array.isArray(current);
-		if (Array.isArray(part)) {
-			for (let i = 0; i < part.length; i++) updatePath(current, [part[i]].concat(path), traversed);
-			return;
-		} else if (isArray && partType === "function") {
-			for (let i = 0; i < current.length; i++) if (part(current[i], i)) updatePath(current, [i].concat(path), traversed);
-			return;
-		} else if (isArray && partType === "object") {
-			const { from = 0, to = current.length - 1, by = 1 } = part;
-			for (let i = from; i <= to; i += by) updatePath(current, [i].concat(path), traversed);
-			return;
-		} else if (path.length > 1) {
-			updatePath(current[part], path, [part].concat(traversed));
-			return;
-		}
-		prev = current[part];
-		traversed = [part].concat(traversed);
-	}
-	let value = path[0];
-	if (typeof value === "function") {
-		value = value(prev, traversed);
-		if (value === prev) return;
-	}
-	if (part === void 0 && value == void 0) return;
-	value = unwrap(value);
-	if (part === void 0 || isWrappable(prev) && isWrappable(value) && !Array.isArray(value)) mergeStoreNode(prev, value);
-	else setProperty(current, part, value);
-}
-function createStore(...[store, options]) {
-	const unwrappedStore = unwrap(store || {});
-	const isArray = Array.isArray(unwrappedStore);
-	const wrappedStore = wrap$1(unwrappedStore);
-	function setStore(...args) {
+	createEffect(() => {
+		console.log("Double changed:", double());
+	});
+	createEffect(() => {
+		console.log("Name changed:", name());
+	});
+	createEffect(() => {
+		console.log("Greeting changed:", greeting());
+	});
+	const updateWithoutBatch = () => {
+		console.log("=== Updating without batch ===");
+		setCount((c) => c + 1);
+		setDouble((d) => d + 2);
+		setName("Alice");
+		setGreeting("Hello, Alice!");
+	};
+	const updateWithBatch = () => {
+		console.log("=== Updating with batch ===");
 		batch(() => {
-			isArray && args.length === 1 ? updateArray(unwrappedStore, args[0]) : updatePath(unwrappedStore, args);
-		});
-	}
-	return [wrappedStore, setStore];
-}
-
-//#endregion
-//#region tests/fixtures/create-store.tsx
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Users List\`), _tmpl$3 = /* @__PURE__ */ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
-const StoreExample = () => {
-	const [store, setStore] = createStore({
-		currentUser: null,
-		users: [],
-		isLoading: false,
-		error: null
-	});
-	const [selectedUserId, setSelectedUserId] = createSignal(null);
-	const addUser = (user) => {
-		const newUser = {
-			...user,
-			id: Date.now()
-		};
-		setStore("users", (users) => [...users, newUser]);
-	};
-	const updateNestedPreference = (id, preferenceType, value) => {
-		setStore("users", (user) => user.id === id, "preferences", "notifications", preferenceType, value);
-	};
-	const setCurrentUser = (user) => {
-		setStore("currentUser", user);
-	};
-	const updateCurrentAddress = (field, value) => {
-		setStore("currentUser", "address", field, value);
-	};
-	createEffect(() => {
-		if (store.users.length > 0) console.log("Users updated:", store.users.length);
-	});
-	createEffect(() => {
-		if (store.currentUser) console.log("Current user theme:", store.currentUser.preferences.theme);
-	});
-	const handleAddSampleUsers = () => {
-		addUser({
-			name: "Alice Johnson",
-			email: "alice@example.com",
-			address: {
-				street: "123 Main St",
-				city: "San Francisco",
-				zipCode: "94102"
-			},
-			preferences: {
-				theme: "light",
-				notifications: {
-					email: true,
-					push: false,
-					marketing: true
-				}
-			}
-		});
-		addUser({
-			name: "Bob Smith",
-			email: "bob@example.com",
-			address: {
-				street: "456 Oak Ave",
-				city: "New York",
-				zipCode: "10001"
-			},
-			preferences: {
-				theme: "dark",
-				notifications: {
-					email: false,
-					push: true,
-					marketing: false
-				}
-			}
+			setCount((c) => c + 1);
+			setDouble((d) => d + 2);
+			setName("Bob");
+			setGreeting("Hello, Bob!");
 		});
 	};
-	const handleSelectUser = (id) => {
-		setSelectedUserId(id);
-		setCurrentUser(store.users.find((u) => u.id === id) || null);
+	const nestedBatchExample = () => {
+		console.log("=== Nested batch example ===");
+		batch(() => {
+			setCount(0);
+			setDouble(0);
+			setName("");
+			setGreeting("");
+			batch(() => {
+				setCount(10);
+				setDouble(20);
+			});
+			setName("Charlie");
+			setGreeting("Hello, Charlie!");
+		});
 	};
-	const handleToggleTheme = () => {
-		if (store.currentUser) setStore("currentUser", "preferences", "theme", store.currentUser.preferences.theme === "light" ? "dark" : "light");
-	};
-	const handleUpdateAddress = () => {
-		if (store.currentUser) updateCurrentAddress("city", "Updated City");
-	};
-	const handleToggleNotification = (type) => {
-		if (store.currentUser) {
-			const currentValue = store.currentUser.preferences.notifications[type];
-			setStore("currentUser", "preferences", "notifications", type, !currentValue);
-		}
+	const complexUpdate = () => {
+		console.log("=== Complex update with dependencies ===");
+		batch(() => {
+			const newCount = count() + 5;
+			setCount(newCount);
+			setDouble(newCount * 2);
+			setName(newCount > 10 ? "High Count" : "Low Count");
+			setGreeting(\`Count is \${newCount}\`);
+		});
 	};
 	return (() => {
-		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.firstChild, _el$5 = _el$4.nextSibling;
-		_el$5.firstChild;
-		var _el$7 = _el$3.nextSibling, _el$9 = _el$7.firstChild.nextSibling;
-		_el$9.firstChild;
-		var _el$1 = _el$9.nextSibling;
-		_el$1.firstChild;
-		var _el$11 = _el$1.nextSibling;
-		_el$11.firstChild;
-		_el$4.$$click = handleAddSampleUsers;
-		insert(_el$5, () => store.users.length, null);
-		insert(_el$, (() => {
-			var _c$ = memo(() => store.users.length > 0);
-			return () => _c$() && (() => {
-				var _el$13 = _tmpl$2();
-				_el$13.firstChild;
-				insert(_el$13, () => store.users.map((user) => (() => {
-					var _el$15 = _tmpl$3(), _el$16 = _el$15.firstChild, _el$17 = _el$16.firstChild, _el$20 = _el$17.nextSibling.nextSibling;
-					_el$20.nextSibling;
-					var _el$21 = _el$16.nextSibling;
-					_el$21.firstChild;
-					var _el$23 = _el$21.nextSibling;
-					_el$23.firstChild;
-					var _el$25 = _el$23.nextSibling, _el$28 = _el$25.firstChild.nextSibling;
-					_el$28.nextSibling;
-					var _el$29 = _el$25.nextSibling, _el$30 = _el$29.nextSibling;
-					insert(_el$17, () => user.name);
-					insert(_el$16, () => user.email, _el$20);
-					insert(_el$21, () => user.address.city, null);
-					insert(_el$23, () => user.preferences.theme, null);
-					insert(_el$25, () => user.preferences.notifications.email ? "✓" : "✗", _el$28);
-					insert(_el$25, () => user.preferences.notifications.push ? "✓" : "✗", null);
-					_el$29.$$click = () => handleSelectUser(user.id);
-					_el$30.$$click = () => updateNestedPreference(user.id, "email", !user.preferences.notifications.email);
-					return _el$15;
-				})()), null);
-				return _el$13;
-			})();
-		})(), _el$7);
-		insert(_el$, (() => {
-			var _c$2 = memo(() => !!store.currentUser);
-			return () => _c$2() && (() => {
-				var _el$31 = _tmpl$4(), _el$32 = _el$31.firstChild;
-				_el$32.firstChild;
-				var _el$34 = _el$32.nextSibling;
-				_el$34.firstChild;
-				var _el$36 = _el$34.nextSibling, _el$42 = _el$36.firstChild.nextSibling, _el$43 = _el$42.nextSibling.nextSibling;
-				_el$43.nextSibling;
-				var _el$44 = _el$36.nextSibling, _el$46 = _el$44.firstChild.nextSibling, _el$47 = _el$46.nextSibling, _el$48 = _el$47.nextSibling, _el$49 = _el$48.nextSibling, _el$50 = _el$49.nextSibling, _el$53 = _el$44.nextSibling.firstChild.nextSibling;
-				_el$53.firstChild;
-				var _el$56 = _el$53.nextSibling;
-				_el$56.firstChild;
-				var _el$59 = _el$56.nextSibling;
-				_el$59.firstChild;
-				insert(_el$32, () => store.currentUser.name, null);
-				insert(_el$34, () => store.currentUser.preferences.theme, null);
-				insert(_el$36, () => store.currentUser.address.street, _el$42);
-				insert(_el$36, () => store.currentUser.address.city, _el$43);
-				insert(_el$36, () => store.currentUser.address.zipCode, null);
-				_el$46.$$click = handleToggleTheme;
-				_el$47.$$click = handleUpdateAddress;
-				_el$48.$$click = () => handleToggleNotification("email");
-				_el$49.$$click = () => handleToggleNotification("push");
-				_el$50.$$click = () => handleToggleNotification("marketing");
-				insert(_el$53, () => store.currentUser.preferences.notifications.email ? "Enabled" : "Disabled", null);
-				insert(_el$56, () => store.currentUser.preferences.notifications.push ? "Enabled" : "Disabled", null);
-				insert(_el$59, () => store.currentUser.preferences.notifications.marketing ? "Enabled" : "Disabled", null);
-				createRenderEffect((_$p) => style(_el$31, \`background: \${store.currentUser.preferences.theme === "dark" ? "#333" : "#f5f5f5"}; color: \${store.currentUser.preferences.theme === "dark" ? "#fff" : "#000"}; padding: 15px; margin: 10px;\`, _$p));
-				return _el$31;
-			})();
-		})(), _el$7);
-		insert(_el$9, () => store.isLoading ? "Yes" : "No", null);
-		insert(_el$1, () => store.error || "None", null);
-		insert(_el$11, () => selectedUserId() || "None", null);
+		var _el$ = _tmpl$(), _el$3 = _el$.firstChild.nextSibling, _el$4 = _el$3.firstChild;
+		_el$4.firstChild;
+		var _el$6 = _el$4.nextSibling;
+		_el$6.firstChild;
+		var _el$8 = _el$6.nextSibling;
+		_el$8.firstChild;
+		var _el$0 = _el$8.nextSibling;
+		_el$0.firstChild;
+		var _el$11 = _el$3.nextSibling.firstChild, _el$12 = _el$11.nextSibling, _el$13 = _el$12.nextSibling, _el$14 = _el$13.nextSibling;
+		insert(_el$4, count, null);
+		insert(_el$6, double, null);
+		insert(_el$8, name, null);
+		insert(_el$0, greeting, null);
+		_el$11.$$click = updateWithoutBatch;
+		_el$12.$$click = updateWithBatch;
+		_el$13.$$click = nestedBatchExample;
+		_el$14.$$click = complexUpdate;
 		return _el$;
 	})();
 };
-var create_store_default = StoreExample;
+var batch_default = BatchExample;
 delegateEvents(["click"]);
 
 //#endregion
-export { create_store_default as default };"
+export { batch_default as default };"
 `;
