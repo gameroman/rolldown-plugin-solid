@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`rolldown-plugin-solid src should transform rewrites TypeScript import extensions to JavaScript 1`] = `
+exports[`rolldown-plugin-solid src should transform TypeScript import extensions to JavaScript 1`] = `
 "//#region tests/fixtures/typescript-imports/default.ts
 var default_default = "default";
 
@@ -21,7 +21,49 @@ Promise.resolve().then(() => /* @__PURE__ */ Object.freeze({ __proto__: null }))
 export { all, default_default as default, something };"
 `;
 
-exports[`rolldown-plugin-solid dist should transform rewrites TypeScript import extensions to JavaScript 1`] = `
+exports[`rolldown-plugin-solid dist should transform TypeScript import extensions to JavaScript 1`] = `
+"//#region tests/fixtures/typescript-imports/default.ts
+var default_default = "default";
+
+//#endregion
+//#region tests/fixtures/typescript-imports/export.ts
+const something = "test";
+
+//#endregion
+//#region tests/fixtures/typescript-imports/export-all.tsx
+const all = "test";
+
+//#endregion
+//#region tests/fixtures/typescript-imports/index.ts
+await Promise.resolve().then(() => /* @__PURE__ */ Object.freeze({ __proto__: null }));
+Promise.resolve().then(() => /* @__PURE__ */ Object.freeze({ __proto__: null }));
+
+//#endregion
+export { all, default_default as default, something };"
+`;
+
+exports[`rolldown-plugin-solid src should transform TypeScript import extensions to JavaScript (rewriteImportExtensions: false) 1`] = `
+"//#region tests/fixtures/typescript-imports/default.ts
+var default_default = "default";
+
+//#endregion
+//#region tests/fixtures/typescript-imports/export.ts
+const something = "test";
+
+//#endregion
+//#region tests/fixtures/typescript-imports/export-all.tsx
+const all = "test";
+
+//#endregion
+//#region tests/fixtures/typescript-imports/index.ts
+await Promise.resolve().then(() => /* @__PURE__ */ Object.freeze({ __proto__: null }));
+Promise.resolve().then(() => /* @__PURE__ */ Object.freeze({ __proto__: null }));
+
+//#endregion
+export { all, default_default as default, something };"
+`;
+
+exports[`rolldown-plugin-solid dist should transform TypeScript import extensions to JavaScript (rewriteImportExtensions: false) 1`] = `
 "//#region tests/fixtures/typescript-imports/default.ts
 var default_default = "default";
 

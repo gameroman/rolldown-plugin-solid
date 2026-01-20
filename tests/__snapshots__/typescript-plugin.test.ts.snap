@@ -1,0 +1,311 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`rolldown-plugin-solid src should transform typescript code with default options 1`] = `
+"//#region tests/fixtures/typescript-plugin.tsx
+var Enum4 = /* @__PURE__ */ function(Enum4$1) {
+	Enum4$1[Enum4$1["Foo"] = 0] = "Foo";
+	Enum4$1[Enum4$1["Bar"] = 1] = "Bar";
+	Enum4$1[Enum4$1["Baz"] = 2] = "Baz";
+	return Enum4$1;
+}(Enum4 || {});
+const text = "text";
+var Enum1 = /* @__PURE__ */ function(Enum1$1) {
+	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
+	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
+	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
+	return Enum1$1;
+}(Enum1 || {});
+var Enum2 = /* @__PURE__ */ function(Enum2$1) {
+	Enum2$1["Foo"] = "FOO";
+	Enum2$1["Bar"] = "BAR";
+	Enum2$1["Baz"] = "BAZ";
+	return Enum2$1;
+}(Enum2 || {});
+var Class1 = class {
+	constructor(prop1) {
+		this.prop1 = prop1;
+	}
+	method1() {
+		console.log(this.prop1);
+	}
+};
+var Class2 = class extends Class1 {
+	constructor(prop1, prop2) {
+		super(prop1);
+		this.prop2 = prop2;
+	}
+	method2() {
+		return this.prop2;
+	}
+};
+let Namespace1;
+(function(_Namespace) {
+	_Namespace.Enum3 = /* @__PURE__ */ function(Enum3) {
+		Enum3[Enum3["Foo"] = 0] = "Foo";
+		Enum3[Enum3["Bar"] = 1] = "Bar";
+		Enum3[Enum3["Baz"] = 2] = "Baz";
+		return Enum3;
+	}({});
+})(Namespace1 || (Namespace1 = {}));
+
+//#endregion
+export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, text };"
+`;
+
+exports[`rolldown-plugin-solid dist should transform typescript code with default options 1`] = `
+"//#region tests/fixtures/typescript-plugin.tsx
+var Enum4 = /* @__PURE__ */ function(Enum4$1) {
+	Enum4$1[Enum4$1["Foo"] = 0] = "Foo";
+	Enum4$1[Enum4$1["Bar"] = 1] = "Bar";
+	Enum4$1[Enum4$1["Baz"] = 2] = "Baz";
+	return Enum4$1;
+}(Enum4 || {});
+const text = "text";
+var Enum1 = /* @__PURE__ */ function(Enum1$1) {
+	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
+	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
+	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
+	return Enum1$1;
+}(Enum1 || {});
+var Enum2 = /* @__PURE__ */ function(Enum2$1) {
+	Enum2$1["Foo"] = "FOO";
+	Enum2$1["Bar"] = "BAR";
+	Enum2$1["Baz"] = "BAZ";
+	return Enum2$1;
+}(Enum2 || {});
+var Class1 = class {
+	constructor(prop1) {
+		this.prop1 = prop1;
+	}
+	method1() {
+		console.log(this.prop1);
+	}
+};
+var Class2 = class extends Class1 {
+	constructor(prop1, prop2) {
+		super(prop1);
+		this.prop2 = prop2;
+	}
+	method2() {
+		return this.prop2;
+	}
+};
+let Namespace1;
+(function(_Namespace) {
+	_Namespace.Enum3 = /* @__PURE__ */ function(Enum3) {
+		Enum3[Enum3["Foo"] = 0] = "Foo";
+		Enum3[Enum3["Bar"] = 1] = "Bar";
+		Enum3[Enum3["Baz"] = 2] = "Baz";
+		return Enum3;
+	}({});
+})(Namespace1 || (Namespace1 = {}));
+
+//#endregion
+export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, text };"
+`;
+
+exports[`rolldown-plugin-solid src should transform typescript code with {onlyRemoveTypeImports: true} 1`] = `
+"//#region tests/fixtures/typescript-plugin.tsx
+var Enum4 = /* @__PURE__ */ function(Enum4$1) {
+	Enum4$1[Enum4$1["Foo"] = 0] = "Foo";
+	Enum4$1[Enum4$1["Bar"] = 1] = "Bar";
+	Enum4$1[Enum4$1["Baz"] = 2] = "Baz";
+	return Enum4$1;
+}(Enum4 || {});
+const text = "text";
+var Enum1 = /* @__PURE__ */ function(Enum1$1) {
+	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
+	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
+	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
+	return Enum1$1;
+}(Enum1 || {});
+var Enum2 = /* @__PURE__ */ function(Enum2$1) {
+	Enum2$1["Foo"] = "FOO";
+	Enum2$1["Bar"] = "BAR";
+	Enum2$1["Baz"] = "BAZ";
+	return Enum2$1;
+}(Enum2 || {});
+var Class1 = class {
+	constructor(prop1) {
+		this.prop1 = prop1;
+	}
+	method1() {
+		console.log(this.prop1);
+	}
+};
+var Class2 = class extends Class1 {
+	constructor(prop1, prop2) {
+		super(prop1);
+		this.prop2 = prop2;
+	}
+	method2() {
+		return this.prop2;
+	}
+};
+let Namespace1;
+(function(_Namespace) {
+	_Namespace.Enum3 = /* @__PURE__ */ function(Enum3) {
+		Enum3[Enum3["Foo"] = 0] = "Foo";
+		Enum3[Enum3["Bar"] = 1] = "Bar";
+		Enum3[Enum3["Baz"] = 2] = "Baz";
+		return Enum3;
+	}({});
+})(Namespace1 || (Namespace1 = {}));
+
+//#endregion
+export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, text };"
+`;
+
+exports[`rolldown-plugin-solid dist should transform typescript code with {onlyRemoveTypeImports: true} 1`] = `
+"//#region tests/fixtures/typescript-plugin.tsx
+var Enum4 = /* @__PURE__ */ function(Enum4$1) {
+	Enum4$1[Enum4$1["Foo"] = 0] = "Foo";
+	Enum4$1[Enum4$1["Bar"] = 1] = "Bar";
+	Enum4$1[Enum4$1["Baz"] = 2] = "Baz";
+	return Enum4$1;
+}(Enum4 || {});
+const text = "text";
+var Enum1 = /* @__PURE__ */ function(Enum1$1) {
+	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
+	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
+	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
+	return Enum1$1;
+}(Enum1 || {});
+var Enum2 = /* @__PURE__ */ function(Enum2$1) {
+	Enum2$1["Foo"] = "FOO";
+	Enum2$1["Bar"] = "BAR";
+	Enum2$1["Baz"] = "BAZ";
+	return Enum2$1;
+}(Enum2 || {});
+var Class1 = class {
+	constructor(prop1) {
+		this.prop1 = prop1;
+	}
+	method1() {
+		console.log(this.prop1);
+	}
+};
+var Class2 = class extends Class1 {
+	constructor(prop1, prop2) {
+		super(prop1);
+		this.prop2 = prop2;
+	}
+	method2() {
+		return this.prop2;
+	}
+};
+let Namespace1;
+(function(_Namespace) {
+	_Namespace.Enum3 = /* @__PURE__ */ function(Enum3) {
+		Enum3[Enum3["Foo"] = 0] = "Foo";
+		Enum3[Enum3["Bar"] = 1] = "Bar";
+		Enum3[Enum3["Baz"] = 2] = "Baz";
+		return Enum3;
+	}({});
+})(Namespace1 || (Namespace1 = {}));
+
+//#endregion
+export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, text };"
+`;
+
+exports[`rolldown-plugin-solid src should transform typescript code with {optimizeConstEnums: true} 1`] = `
+"//#region tests/fixtures/typescript-plugin.tsx
+var Enum4 = {
+	Foo: 0,
+	Bar: 1,
+	Baz: 2
+};
+const text = "text";
+var Enum1 = /* @__PURE__ */ function(Enum1$1) {
+	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
+	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
+	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
+	return Enum1$1;
+}(Enum1 || {});
+var Enum2 = /* @__PURE__ */ function(Enum2$1) {
+	Enum2$1["Foo"] = "FOO";
+	Enum2$1["Bar"] = "BAR";
+	Enum2$1["Baz"] = "BAZ";
+	return Enum2$1;
+}(Enum2 || {});
+var Class1 = class {
+	constructor(prop1) {
+		this.prop1 = prop1;
+	}
+	method1() {
+		console.log(this.prop1);
+	}
+};
+var Class2 = class extends Class1 {
+	constructor(prop1, prop2) {
+		super(prop1);
+		this.prop2 = prop2;
+	}
+	method2() {
+		return this.prop2;
+	}
+};
+let Namespace1;
+(function(_Namespace) {
+	_Namespace.Enum3 = /* @__PURE__ */ function(Enum3) {
+		Enum3[Enum3["Foo"] = 0] = "Foo";
+		Enum3[Enum3["Bar"] = 1] = "Bar";
+		Enum3[Enum3["Baz"] = 2] = "Baz";
+		return Enum3;
+	}({});
+})(Namespace1 || (Namespace1 = {}));
+
+//#endregion
+export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, text };"
+`;
+
+exports[`rolldown-plugin-solid dist should transform typescript code with {optimizeConstEnums: true} 1`] = `
+"//#region tests/fixtures/typescript-plugin.tsx
+var Enum4 = {
+	Foo: 0,
+	Bar: 1,
+	Baz: 2
+};
+const text = "text";
+var Enum1 = /* @__PURE__ */ function(Enum1$1) {
+	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
+	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
+	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
+	return Enum1$1;
+}(Enum1 || {});
+var Enum2 = /* @__PURE__ */ function(Enum2$1) {
+	Enum2$1["Foo"] = "FOO";
+	Enum2$1["Bar"] = "BAR";
+	Enum2$1["Baz"] = "BAZ";
+	return Enum2$1;
+}(Enum2 || {});
+var Class1 = class {
+	constructor(prop1) {
+		this.prop1 = prop1;
+	}
+	method1() {
+		console.log(this.prop1);
+	}
+};
+var Class2 = class extends Class1 {
+	constructor(prop1, prop2) {
+		super(prop1);
+		this.prop2 = prop2;
+	}
+	method2() {
+		return this.prop2;
+	}
+};
+let Namespace1;
+(function(_Namespace) {
+	_Namespace.Enum3 = /* @__PURE__ */ function(Enum3) {
+		Enum3[Enum3["Foo"] = 0] = "Foo";
+		Enum3[Enum3["Bar"] = 1] = "Bar";
+		Enum3[Enum3["Baz"] = 2] = "Baz";
+		return Enum3;
+	}({});
+})(Namespace1 || (Namespace1 = {}));
+
+//#endregion
+export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, text };"
+`;

@@ -10,7 +10,7 @@ const testDir = resolve(import.meta.dir, "../fixtures");
 
 interface FixtureOptions {
   platform?: "browser" | "node";
-  plugin?: Parameters<typeof solidPluginDist>[0];
+  plugin?: Parameters<typeof solidPluginSrc>[0];
 }
 
 export function createFixtureTest(
