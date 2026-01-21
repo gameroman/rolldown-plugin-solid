@@ -53,6 +53,10 @@ export interface Options {
      * The name of the runtime module to import the methods from.
      *
      * @default "solid-js/web"
+     *
+     * @required when generate="universal"
+     * Universal mode requires a custom renderer module that exports all required functions.
+     * Must be provided when generate mode is "universal" - see error message for details.
      */
     moduleName?: string;
 
@@ -64,6 +68,9 @@ export interface Options {
      * - "universal" is for using custom renderers from solid-js/universal
      *
      * @default "dom"
+     *
+     * NOTE: When using "universal" mode, you must also provide "moduleName"
+     * pointing to your custom renderer that exports the required universal functions.
      */
     generate?: "ssr" | "dom" | "universal";
 
@@ -108,6 +115,29 @@ export interface Options {
 }
 
 const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
+  // Validate universal mode configuration
+  if (options?.solid?.generate === "universal") {
+    if (!options?.solid?.moduleName) {
+      throw new Error(
+        `Universal mode requires a 'moduleName' option pointing to your custom renderer.\n\n` +
+          `Please provide a moduleName that exports the required universal renderer functions:\n` +
+          `- createElement\n` +
+          `- createTextNode\n` +
+          `- insertNode\n` +
+          `- setProp\n` +
+          `- insert\n` +
+          `- spread\n` +
+          `- mergeProps\n` +
+          `- effect\n` +
+          `- memo\n` +
+          `- use\n\n` +
+          `Example configuration:\n` +
+          `{ solid: { generate: "universal", moduleName: "my-custom-renderer" } }\n\n` +
+          `Your custom renderer should be created using 'createRenderer' from 'solid-js/universal'.`,
+      );
+    }
+  }
+
   return {
     name: "rolldown-plugin-solid",
     transform: {
