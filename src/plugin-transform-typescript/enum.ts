@@ -235,19 +235,14 @@ function ReferencedIdentifier(
           return A;
         })())
       } */
-    if (undefined) {
-      if (expr.scope.hasBinding(name, { upToScope: path.scope })) {
+
+    for (
+      let curScope = expr.scope;
+      curScope !== path.scope;
+      curScope = curScope.parent
+    ) {
+      if (curScope.hasOwnBinding(name)) {
         return;
-      }
-    } else {
-      for (
-        let curScope = expr.scope;
-        curScope !== path.scope;
-        curScope = curScope.parent
-      ) {
-        if (curScope.hasOwnBinding(name)) {
-          return;
-        }
       }
     }
 

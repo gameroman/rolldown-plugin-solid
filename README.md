@@ -1,21 +1,23 @@
-# rolldown-plugin-solid
+# @rolldown-plugin/solid
 
-[![npm version](https://img.shields.io/npm/v/rolldown-plugin-solid)](https://www.npmjs.com/package/rolldown-plugin-solid)
-[![license](https://img.shields.io/npm/l/rolldown-plugin-solid)](https://github.com/g-mero/rolldown-plugin-solid/blob/main/LICENSE)
+A Rolldown plugin for compiling SolidJS JSX/TSX files.
 
-A Rolldown plugin for compiling SolidJS JSX/TSX files using Babel presets. Basically is a migration from [esbuild-plugin-solid](https://github.com/amoutonbrady/esbuild-plugin-solid).
+**This is a fork of [rolldown-plugin-solid](https://github.com/g-mero/rolldown-plugin-solid)**
 
 ## Installation
 
 ```bash
-# Using pnpm (recommended)
-pnpm add -D rolldown-plugin-solid
+# Using bun
+bun add -d @rolldown-plugin/solid
+
+# Using pnpm
+pnpm add -D @rolldown-plugin/solid
 
 # Using npm
-npm install --save-dev rolldown-plugin-solid
+npm install --save-dev @rolldown-plugin/solid
 
 # Using yarn
-yarn add --dev rolldown-plugin-solid
+yarn add --dev @rolldown-plugin/solid
 ```
 
 ## Usage
@@ -26,7 +28,7 @@ Create a `rolldown.config.js` file in your project root:
 
 ```javascript
 import { defineConfig } from 'rolldown';
-import solid from 'rolldown-plugin-solid';
+import solid from '@rolldown-plugin/solid';
 
 export default defineConfig({
   input: 'src/index.tsx',
@@ -46,10 +48,7 @@ The plugin accepts an options object with the following properties:
 interface Options {
   /** TypeScript preset options */
   typescript?: object;
-  
-  /** Babel transform options */
-  babel?: TransformOptions | ((source: string, id: string, ssr: boolean) => TransformOptions);
-  
+    
   /** Solid-specific options */
   solid?: SolidOptions;
 }
@@ -107,7 +106,7 @@ export default function App() {
 ```javascript
 // rolldown.config.js
 import { defineConfig } from 'rolldown';
-import solid from 'rolldown-plugin-solid';
+import solid from '@rolldown-plugin/solid';
 
 export default defineConfig({
   input: 'src/server.tsx',
@@ -127,7 +126,7 @@ export default defineConfig({
 ```javascript
 // rolldown.config.js
 import { defineConfig } from 'rolldown';
-import solid from 'rolldown-plugin-solid';
+import solid from '@rolldown-plugin/solid';
 
 export default defineConfig({
   input: 'src/index.tsx',
@@ -152,13 +151,6 @@ export default defineConfig({
           'Index', 'Dynamic', 'ErrorBoundary'
         ]
       },
-      
-      // Custom Babel configuration
-      babel: {
-        plugins: [
-          // Add any additional Babel plugins
-        ]
-      }
     })
   ],
 });
@@ -169,7 +161,7 @@ export default defineConfig({
 ```javascript
 // rolldown.config.js
 import { defineConfig } from 'rolldown';
-import solid from 'rolldown-plugin-solid';
+import solid from '@rolldown-plugin/solid';
 
 export default defineConfig({
   input: 'src/index.tsx',
@@ -188,4 +180,5 @@ export default defineConfig({
 
 - [Rolldown](https://github.com/rolldown/rolldown) - Fast Rust-based bundler
 - [SolidJS](https://github.com/solidjs/solid) - Simple and performant reactivity
+- [rolldown-plugin-solid](https://github.com/g-mero/rolldown-plugin-solid) - Original plugin for rolldown
 - [babel-preset-solid](https://github.com/solidjs/solid/tree/main/packages/babel-preset-solid) - Babel preset for Solid

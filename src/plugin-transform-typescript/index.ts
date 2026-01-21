@@ -559,13 +559,9 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         const { node }: { node: typeof path.node & ExtraNodeProps } = path;
 
         if (node.typeParameters) node.typeParameters = null;
-        if (undefined) {
-          // @ts-ignore(Babel 7 vs Babel 8) Renamed
-          if (node.superTypeArguments) node.superTypeArguments = null;
-        } else {
-          // @ts-ignore(Babel 7 vs Babel 8) Renamed
-          if (node.superTypeParameters) node.superTypeParameters = null;
-        }
+
+        if (node.superTypeParameters) node.superTypeParameters = null;
+
         if (node.implements) node.implements = null;
         if (node.abstract) node.abstract = null;
 
@@ -655,9 +651,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
           t.variableDeclarator(id, init),
         ]);
 
-        if (undefined) {
-          path.replaceWith(newNode);
-        } else {
+        {
           path.replaceWith(
             // @ts-ignore(Babel 7 vs Babel 8) Babel 7 AST
             path.node.isExport ? t.exportNamedDeclaration(newNode) : newNode,
@@ -714,47 +708,35 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
       },
 
       CallExpression(path) {
-        if (undefined) {
-          path.node.typeArguments = null;
-        } else {
+        {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeParameters = null;
         }
       },
 
       OptionalCallExpression(path) {
-        if (undefined) {
-          path.node.typeArguments = null;
-        } else {
+        {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeParameters = null;
         }
       },
 
       NewExpression(path) {
-        if (undefined) {
-          path.node.typeArguments = null;
-        } else {
+        {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeParameters = null;
         }
       },
 
       JSXOpeningElement(path) {
-        if (undefined) {
-          //@ts-ignore(Babel 7 vs Babel 8) Babel 8 AST
-          path.node.typeArguments = null;
-        } else {
+        {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeParameters = null;
         }
       },
 
       TaggedTemplateExpression(path) {
-        if (undefined) {
-          // @ts-ignore(Babel 7 vs Babel 8) Babel 8 AST
-          path.node.typeArguments = null;
-        } else {
+        {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeParameters = null;
         }
@@ -805,14 +787,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
     // "React" or the JSX pragma is referenced as a value if there are any JSX elements/fragments in the code.
     let sourceFileHasJsx = false;
-    if (undefined) {
-      t.traverseFast(programPath.node, (node) => {
-        if (t.isJSXElement(node) || t.isJSXFragment(node)) {
-          sourceFileHasJsx = true;
-          return t.traverseFast.stop;
-        }
-      });
-    } else {
+    {
       programPath.traverse({
         "JSXElement|JSXFragment"(path) {
           sourceFileHasJsx = true;
