@@ -10,6 +10,9 @@
   ],
   "type": "module",
   "types": "./dist/index.d.ts",
+  "imports": {
+    "#universal-mode-renderer": "./tests/helpers/universal-mode-renderer.ts"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"

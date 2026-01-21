@@ -22,6 +22,10 @@
 - [x] `onMount` fixture - Component mounting
 - [x] `createStore` fixture - Nested reactive state
 
+## ⚠️ Critical
+
+- [ ] Add proper tests for `"universal"` mode
+
 ## State Management
 
 - [ ] `mergeProps` fixture - Props merging
