@@ -13,3 +13,16 @@ createFixtureTest(
   "fragment.tsx",
   { plugin: { solid: { generate: "ssr" } } },
 );
+
+createFixtureTest(
+  "SolidJS component with fragments and universal mode",
+  "fragment.tsx",
+  {
+    plugin: {
+      solid: {
+        generate: "universal",
+        moduleName: "#universal-mode-renderer",
+      },
+    },
+  },
+);

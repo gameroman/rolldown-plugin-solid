@@ -53,10 +53,6 @@ export interface Options {
      * The name of the runtime module to import the methods from.
      *
      * @default "solid-js/web"
-     *
-     * @required when generate="universal"
-     * Universal mode requires a custom renderer module that exports all required functions.
-     * Must be provided when generate mode is "universal" - see error message for details.
      */
     moduleName?: string;
 
@@ -68,9 +64,6 @@ export interface Options {
      * - "universal" is for using custom renderers from solid-js/universal
      *
      * @default "dom"
-     *
-     * NOTE: When using "universal" mode, you must also provide "moduleName"
-     * pointing to your custom renderer that exports the required universal functions.
      */
     generate?: "ssr" | "dom" | "universal";
 
