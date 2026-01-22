@@ -1,9 +1,7 @@
-// Heavily inspired by
-// https://github.com/airbnb/babel-plugin-dynamic-import-node/blob/master/src/utils.js
-
 import type { File, NodePath } from "@babel/core";
-import { types as t, template } from "@babel/core";
+import { template } from "@babel/core";
 import { buildDynamicImport } from "@babel/helper-module-transforms";
+import * as t from "@babel/types";
 
 const requireNoInterop = (source: t.Expression) =>
   template.expression.ast`require(${source})`;

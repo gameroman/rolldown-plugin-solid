@@ -1,4 +1,5 @@
-import type { NodePath, types as t } from "@babel/core";
+import type { NodePath } from "@babel/core";
+import * as t from "@babel/types";
 
 import { translateEnumValues } from "./enum";
 

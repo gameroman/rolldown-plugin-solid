@@ -1,5 +1,6 @@
 import assert from "node:assert";
-import { type NodePath, types as t, template } from "@babel/core";
+import { type NodePath, template } from "@babel/core";
+import * as t from "@babel/types";
 import { addComment, type Node } from "@babel/types";
 
 type TransparentExprWrapper =

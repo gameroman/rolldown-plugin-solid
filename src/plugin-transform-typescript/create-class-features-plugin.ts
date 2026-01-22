@@ -1,6 +1,7 @@
 import type { NodePath, Scope, Visitor } from "@babel/core";
-import { types as t, template } from "@babel/core";
+import { template } from "@babel/core";
 import { visitors } from "@babel/traverse";
+import * as t from "@babel/types";
 
 const findBareSupers = visitors.environmentVisitor<
   NodePath<t.CallExpression>[]

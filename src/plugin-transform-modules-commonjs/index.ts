@@ -1,5 +1,5 @@
 import type { NodePath, PluginPass, Scope, Visitor } from "@babel/core";
-import { types as t, template } from "@babel/core";
+import { template } from "@babel/core";
 import type { PluginOptions } from "@babel/helper-module-transforms";
 import {
   buildNamespaceInitStatements,
@@ -12,6 +12,7 @@ import {
   wrapInterop,
 } from "@babel/helper-module-transforms";
 import { declare } from "@babel/helper-plugin-utils";
+import * as t from "@babel/types";
 
 import { transformDynamicImport } from "./dynamic-import";
 import { makeInvokers } from "./hooks";

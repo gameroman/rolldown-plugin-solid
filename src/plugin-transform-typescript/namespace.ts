@@ -1,4 +1,5 @@
-import { type NodePath, types as t, template } from "@babel/core";
+import { type NodePath, template } from "@babel/core";
+import * as t from "@babel/types";
 import { EXPORTED_CONST_ENUMS_IN_NAMESPACE } from "./const-enum";
 import { registerGlobalType } from "./global-types";
 

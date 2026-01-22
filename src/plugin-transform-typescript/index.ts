@@ -1,6 +1,7 @@
-import type { NodePath, PluginPass, Scope, types as t } from "@babel/core";
+import type { NodePath, PluginPass, Scope } from "@babel/core";
 // @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
+import * as t from "@babel/types";
 import type { NodePathConstEnum } from "./const-enum";
 import transpileConstEnum from "./const-enum";
 import { injectInitialization } from "./create-class-features-plugin";

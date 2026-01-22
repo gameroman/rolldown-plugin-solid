@@ -1,5 +1,6 @@
-import type { File, types as t } from "@babel/core";
+import type { File } from "@babel/core";
 import type { isSideEffectImport } from "@babel/helper-module-transforms";
+import * as t from "@babel/types";
 
 const commonJSHooksKey =
   "@babel/plugin-transform-modules-commonjs/customWrapperPlugin";

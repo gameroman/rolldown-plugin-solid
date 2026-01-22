@@ -1,6 +1,7 @@
-import type { NodePath, PluginPass, types as t } from "@babel/core";
+import type { NodePath, PluginPass } from "@babel/core";
 // @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
+import * as t from "@babel/types";
 
 const pluginRewriteTSImports = declare(({ types: t, template }) => {
   function maybeReplace(

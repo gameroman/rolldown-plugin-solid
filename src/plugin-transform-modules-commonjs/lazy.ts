@@ -1,5 +1,6 @@
-import { types as t, template } from "@babel/core";
+import { template } from "@babel/core";
 import { isSideEffectImport } from "@babel/helper-module-transforms";
+import * as t from "@babel/types";
 import type { CommonJSHook } from "./hooks.ts";
 
 type Lazy = boolean | string[] | ((source: string) => boolean);
