@@ -1,5 +1,5 @@
-import type { NodePath, Scope, Visitor } from "@babel/core";
 import { template } from "@babel/core";
+import type { NodePath, Scope, Visitor } from "@babel/traverse";
 import { visitors } from "@babel/traverse";
 import * as t from "@babel/types";
 

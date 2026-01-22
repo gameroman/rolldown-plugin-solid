@@ -1,6 +1,7 @@
-import type { File, NodePath } from "@babel/core";
+import type { File } from "@babel/core";
 import { template } from "@babel/core";
 import { buildDynamicImport } from "@babel/helper-module-transforms";
+import type { NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
 
 const requireNoInterop = (source: t.Expression) =>

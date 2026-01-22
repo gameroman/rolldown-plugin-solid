@@ -1,6 +1,7 @@
-import type { NodePath, PluginPass, Scope } from "@babel/core";
+import type { PluginPass } from "@babel/core";
 // @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
+import type { Binding, NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
 import type { NodePathConstEnum } from "./const-enum";
 import transpileConstEnum from "./const-enum";
@@ -768,7 +769,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     pragmaImportName,
     pragmaFragImportName,
   }: {
-    binding: Scope.Binding;
+    binding: Binding;
     programPath: NodePath<t.Program>;
     pragmaImportName: string;
     pragmaFragImportName: string;

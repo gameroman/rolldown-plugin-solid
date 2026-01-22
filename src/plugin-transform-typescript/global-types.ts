@@ -1,4 +1,4 @@
-import type { NodePath, Scope } from "@babel/core";
+import type { NodePath, Scope } from "@babel/traverse";
 
 export const GLOBAL_TYPES = new WeakMap<Scope, Set<string>>();
 

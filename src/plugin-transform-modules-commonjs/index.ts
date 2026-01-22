@@ -1,4 +1,4 @@
-import type { NodePath, PluginPass, Scope, Visitor } from "@babel/core";
+import type { PluginPass } from "@babel/core";
 import { template } from "@babel/core";
 import type { PluginOptions } from "@babel/helper-module-transforms";
 import {
@@ -12,6 +12,7 @@ import {
   wrapInterop,
 } from "@babel/helper-module-transforms";
 import { declare } from "@babel/helper-plugin-utils";
+import type { NodePath, Scope, Visitor } from "@babel/traverse";
 import * as t from "@babel/types";
 
 import { transformDynamicImport } from "./dynamic-import";
