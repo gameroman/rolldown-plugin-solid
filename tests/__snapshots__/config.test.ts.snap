@@ -1871,32 +1871,32 @@ function handleError(err, owner = Owner) {
 }
 let Owner = null;
 function createOwner() {
-	const o$1 = {
+	const o$3 = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$1];
-	else Owner.owned.push(o$1);
-	return o$1;
+	if (Owner) if (!Owner.owned) Owner.owned = [o$3];
+	else Owner.owned.push(o$3);
+	return o$3;
 }
 function createSignal(value, options) {
-	return [() => value, (v) => {
-		return value = typeof v === "function" ? v(value) : v;
+	return [() => value, (v$3) => {
+		return value = typeof v$3 === "function" ? v$3(value) : v$3;
 	}];
 }
 function createMemo(fn, value) {
 	Owner = createOwner();
-	let v;
+	let v$3;
 	try {
-		v = fn(value);
+		v$3 = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v;
+	return () => v$3;
 }
 function createContext(defaultValue) {
 	const id = Symbol("context");
@@ -1912,8 +1912,8 @@ function useContext(context) {
 function children(fn) {
 	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$1 = memo();
-		return Array.isArray(c$1) ? c$1 : c$1 != null ? [c$1] : [];
+		const c$3 = memo();
+		return Array.isArray(c$3) ? c$3 : c$3 != null ? [c$3] : [];
 	};
 	return memo;
 }
@@ -2055,53 +2055,28 @@ function createResource(source, fetcher, options = {}) {
 	if (options.ssrLoadFrom !== "initial") load();
 	const ref = [read, {
 		refetch: load,
-		mutate: (v) => value = v
+		mutate: (v$3) => value = v$3
 	}];
 	if (p$1) resource.ref = ref;
 	return ref;
 }
-function suspenseComplete(c$1) {
-	for (const r of c$1.resources.values()) if (r._loading) return false;
+function suspenseComplete(c$3) {
+	for (const r of c$3.resources.values()) if (r._loading) return false;
 	return true;
 }
 function notifySuspense(contexts) {
-	for (const c$1 of contexts) {
-		if (!suspenseComplete(c$1)) continue;
-		c$1.completed();
-		contexts.delete(c$1);
+	for (const c$3 of contexts) {
+		if (!suspenseComplete(c$3)) continue;
+		c$3.completed();
+		contexts.delete(c$3);
 	}
 }
 
 //#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var R = ((a) => (a[a.AggregateError = 1] = "AggregateError", a[a.ArrowFunction = 2] = "ArrowFunction", a[a.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", a[a.ObjectAssign = 8] = "ObjectAssign", a[a.BigIntTypedArray = 16] = "BigIntTypedArray", a))(R || {});
-var O$1 = "__SEROVAL_REFS__", Q = "$R", ae = \`self.\${Q}\`;
-var Be = /* @__PURE__ */ new Map(), C$1 = /* @__PURE__ */ new Map();
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, O$1, {
-	value: C$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, O$1, {
-	value: C$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, O$1, {
-	value: C$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, O$1, {
-	value: C$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-});
-function Hr(o$1) {
-	return o$1;
-}
-var $e = {
+//#region node_modules/solid-js/node_modules/seroval/dist/esm/production/index.mjs
+var L$2 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$2 || {});
+var v$2 = Symbol.asyncIterator, mr$1 = Symbol.hasInstance, R$1 = Symbol.isConcatSpreadable, C$1 = Symbol.iterator, pr$1 = Symbol.match, dr$1 = Symbol.matchAll, gr$1 = Symbol.replace, yr$1 = Symbol.search, Nr$1 = Symbol.species, br$1 = Symbol.split, vr$1 = Symbol.toPrimitive, P$2 = Symbol.toStringTag, Cr$1 = Symbol.unscopables;
+var rt$1 = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -2115,35 +2090,35 @@ var $e = {
 	10: "Symbol.toPrimitive",
 	11: "Symbol.toStringTag",
 	12: "Symbol.unscopables"
-}, ce = {
-	[Symbol.asyncIterator]: 0,
-	[Symbol.hasInstance]: 1,
-	[Symbol.isConcatSpreadable]: 2,
-	[Symbol.iterator]: 3,
-	[Symbol.match]: 4,
-	[Symbol.matchAll]: 5,
-	[Symbol.replace]: 6,
-	[Symbol.search]: 7,
-	[Symbol.species]: 8,
-	[Symbol.split]: 9,
-	[Symbol.toPrimitive]: 10,
-	[Symbol.toStringTag]: 11,
-	[Symbol.unscopables]: 12
-}, Ge = {
-	0: Symbol.asyncIterator,
-	1: Symbol.hasInstance,
-	2: Symbol.isConcatSpreadable,
-	3: Symbol.iterator,
-	4: Symbol.match,
-	5: Symbol.matchAll,
-	6: Symbol.replace,
-	7: Symbol.search,
-	8: Symbol.species,
-	9: Symbol.split,
-	10: Symbol.toPrimitive,
-	11: Symbol.toStringTag,
-	12: Symbol.unscopables
-}, qe = {
+}, ve$1 = {
+	[v$2]: 0,
+	[mr$1]: 1,
+	[R$1]: 2,
+	[C$1]: 3,
+	[pr$1]: 4,
+	[dr$1]: 5,
+	[gr$1]: 6,
+	[yr$1]: 7,
+	[Nr$1]: 8,
+	[br$1]: 9,
+	[vr$1]: 10,
+	[P$2]: 11,
+	[Cr$1]: 12
+}, tt$1 = {
+	0: v$2,
+	1: mr$1,
+	2: R$1,
+	3: C$1,
+	4: pr$1,
+	5: dr$1,
+	6: gr$1,
+	7: yr$1,
+	8: Nr$1,
+	9: br$1,
+	10: vr$1,
+	11: P$2,
+	12: Cr$1
+}, nt$1 = {
 	2: "!0",
 	3: "!1",
 	1: "void 0",
@@ -2152,143 +2127,453 @@ var $e = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, He = {
+}, o$2 = void 0, ot$1 = {
 	2: !0,
 	3: !1,
-	1: void 0,
+	1: o$2,
 	0: null,
 	4: -0,
 	5: Number.POSITIVE_INFINITY,
 	6: Number.NEGATIVE_INFINITY,
 	7: NaN
 };
-var ue$1 = {
-	0: "Error",
-	1: "EvalError",
-	2: "RangeError",
-	3: "ReferenceError",
-	4: "SyntaxError",
-	5: "TypeError",
-	6: "URIError"
-}, Ze = {
-	0: Error,
-	1: EvalError,
-	2: RangeError,
-	3: ReferenceError,
-	4: SyntaxError,
-	5: TypeError,
-	6: URIError
-}, s$1 = void 0;
-function u$1(o$1, e, r, t, n, a, i$1, l$1, c$1, p$1, h$1, X) {
+function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 	return {
-		t: o$1,
-		i: e,
-		s: r,
-		l: t,
-		c: n,
+		t: e,
+		i: r,
+		s: t,
+		c: n$1,
 		m: a,
-		p: i$1,
-		e: l$1,
-		a: c$1,
-		f: p$1,
-		b: h$1,
-		o: X
+		p: s,
+		e: i$1,
+		a: u$1,
+		f: l$1,
+		b: g$1,
+		o: S,
+		l: d$1
 	};
 }
-function x$1(o$1) {
-	return u$1(2, s$1, o$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1);
+function F$1(e) {
+	return c$2(2, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
 }
-var I = x$1(2), A$1 = x$1(3), pe = x$1(1), de = x$1(0), Xe = x$1(4), Qe = x$1(5), er = x$1(6), rr = x$1(7);
-var { toString: _e } = Object.prototype;
-function K$1() {
-	let o$1 = /* @__PURE__ */ new Set(), e = [], r = !0, t = !0;
-	function n(l$1) {
-		for (let c$1 of o$1.keys()) c$1.next(l$1);
-	}
-	function a(l$1) {
-		for (let c$1 of o$1.keys()) c$1.throw(l$1);
-	}
-	function i$1(l$1) {
-		for (let c$1 of o$1.keys()) c$1.return(l$1);
-	}
+var J$1 = F$1(2), Z$1 = F$1(3), Ae$1 = F$1(1), Ee$1 = F$1(0), st$1 = F$1(4), it$1 = F$1(5), ut$1 = F$1(6), lt$1 = F$1(7);
+var U$1 = "__SEROVAL_REFS__", ce$1 = "$R", Ie$1 = \`self.\${ce$1}\`;
+var Ar$1 = /* @__PURE__ */ new Map(), j$1 = /* @__PURE__ */ new Map();
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U$1, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof window != "undefined" ? Object.defineProperty(window, U$1, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof self != "undefined" ? Object.defineProperty(self, U$1, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof global != "undefined" && Object.defineProperty(global, U$1, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+});
+var { toString: ys$1 } = Object.prototype;
+var re$1 = () => {
+	let e = {
+		p: 0,
+		s: 0,
+		f: 0
+	};
+	return e.p = new Promise((r, t) => {
+		e.s = r, e.f = t;
+	}), e;
+}, vn$1 = (e, r) => {
+	e.s(r), e.p.s = 1, e.p.v = r;
+}, Cn$1 = (e, r) => {
+	e.f(r), e.p.s = 2, e.p.v = r;
+}, yt$1 = re$1.toString(), Nt$1 = vn$1.toString(), bt$1 = Cn$1.toString(), Rr$1 = () => {
+	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
+	}, i$1 = (l$1, g$1, S, d$1) => {
+		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
+	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
+		t && (r[g$1] = r[a], r[a--] = void 0);
+	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on(l$1) {
-			r && o$1.add(l$1);
-			for (let c$1 = 0, p$1 = e.length; c$1 < p$1; c$1++) {
-				let h$1 = e[c$1];
-				c$1 === p$1 - 1 && !r ? t ? l$1.return(h$1) : l$1.throw(h$1) : l$1.next(h$1);
-			}
-			return () => {
-				r && o$1.delete(l$1);
-			};
+		on: (l$1) => u$1(l$1),
+		next: (l$1) => {
+			t && (e.push(l$1), s(l$1, "next"));
 		},
-		next(l$1) {
-			r && (e.push(l$1), n(l$1));
+		throw: (l$1) => {
+			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
 		},
-		throw(l$1) {
-			r && (e.push(l$1), a(l$1), r = !1, t = !1, o$1.clear());
-		},
-		return(l$1) {
-			r && (e.push(l$1), i$1(l$1), r = !1, t = !0, o$1.clear());
+		return: (l$1) => {
+			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
 		}
 	};
+}, vt$1 = Rr$1.toString(), Pr$1 = (e) => (r) => () => {
+	let t = 0, n$1 = {
+		[e]: () => n$1,
+		next: () => {
+			if (t > r.d) return {
+				done: !0,
+				value: void 0
+			};
+			let a = t++, s = r.v[a];
+			if (a === r.t) throw s;
+			return {
+				done: a === r.d,
+				value: s
+			};
+		}
+	};
+	return n$1;
+}, Ct$1 = Pr$1.toString(), xr$1 = (e, r) => (t) => () => {
+	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
+		for (; S < d$1; S++) u$1[S].s({
+			done: !0,
+			value: void 0
+		});
+	};
+	t.on({
+		next: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.s({
+				done: !1,
+				value: S
+			}), i$1.push(S);
+		},
+		throw: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+		},
+		return: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.s({
+				done: !0,
+				value: S
+			}), l$1(), a = i$1.length, i$1.push(S);
+		}
+	});
+	let g$1 = {
+		[e]: () => g$1,
+		next: () => {
+			if (a === -1) {
+				let K$1 = n$1++;
+				if (K$1 >= i$1.length) {
+					let et = r();
+					return u$1.push(et), et.p;
+				}
+				return {
+					done: !1,
+					value: i$1[K$1]
+				};
+			}
+			if (n$1 > a) return {
+				done: !0,
+				value: void 0
+			};
+			let S = n$1++, d$1 = i$1[S];
+			if (S !== a) return {
+				done: !1,
+				value: d$1
+			};
+			if (s) throw d$1;
+			return {
+				done: !0,
+				value: d$1
+			};
+		}
+	};
+	return g$1;
+}, At$1 = xr$1.toString(), Or$1 = (e) => {
+	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
+	return n$1.buffer;
+}, Et$1 = Or$1.toString();
+var An$1 = Pr$1(C$1);
+var En$1 = xr$1(v$2, re$1);
+var ae$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae$1 || {});
+var Eo$1 = () => T, Io$1 = Eo$1.toString(), qt$1 = /=>/.test(Io$1);
+var Ht$1 = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt$1 = Ht$1.length, Jt$1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt$1 = Jt$1.length;
+
+//#endregion
+//#region node_modules/seroval/dist/esm/production/index.mjs
+var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
+var rt = {
+	0: "Symbol.asyncIterator",
+	1: "Symbol.hasInstance",
+	2: "Symbol.isConcatSpreadable",
+	3: "Symbol.iterator",
+	4: "Symbol.match",
+	5: "Symbol.matchAll",
+	6: "Symbol.replace",
+	7: "Symbol.search",
+	8: "Symbol.species",
+	9: "Symbol.split",
+	10: "Symbol.toPrimitive",
+	11: "Symbol.toStringTag",
+	12: "Symbol.unscopables"
+}, ve = {
+	[v$1]: 0,
+	[mr]: 1,
+	[R]: 2,
+	[C]: 3,
+	[pr]: 4,
+	[dr]: 5,
+	[gr]: 6,
+	[yr]: 7,
+	[Nr]: 8,
+	[br]: 9,
+	[vr]: 10,
+	[P$1]: 11,
+	[Cr]: 12
+}, tt = {
+	0: v$1,
+	1: mr,
+	2: R,
+	3: C,
+	4: pr,
+	5: dr,
+	6: gr,
+	7: yr,
+	8: Nr,
+	9: br,
+	10: vr,
+	11: P$1,
+	12: Cr
+}, nt = {
+	2: "!0",
+	3: "!1",
+	1: "void 0",
+	0: "null",
+	4: "-0",
+	5: "1/0",
+	6: "-1/0",
+	7: "0/0"
+}, o$1 = void 0, ot = {
+	2: !0,
+	3: !1,
+	1: o$1,
+	0: null,
+	4: -0,
+	5: Number.POSITIVE_INFINITY,
+	6: Number.NEGATIVE_INFINITY,
+	7: NaN
+};
+function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+	return {
+		t: e,
+		i: r,
+		s: t,
+		c: n$1,
+		m: a,
+		p: s,
+		e: i$1,
+		a: u$1,
+		f: l$1,
+		b: g$1,
+		o: S,
+		l: d$1
+	};
 }
-var yr = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Sr = yr.length, vr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", hr = vr.length;
+function F(e) {
+	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
+}
+var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
+var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
+var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
+	value: j,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
+	value: j,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
+	value: j,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof global != "undefined" && Object.defineProperty(global, U, {
+	value: j,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+});
+var { toString: ys } = Object.prototype;
+var re = () => {
+	let e = {
+		p: 0,
+		s: 0,
+		f: 0
+	};
+	return e.p = new Promise((r, t) => {
+		e.s = r, e.f = t;
+	}), e;
+}, vn = (e, r) => {
+	e.s(r), e.p.s = 1, e.p.v = r;
+}, Cn = (e, r) => {
+	e.f(r), e.p.s = 2, e.p.v = r;
+}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
+	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
+	}, i$1 = (l$1, g$1, S, d$1) => {
+		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
+	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
+		t && (r[g$1] = r[a], r[a--] = void 0);
+	});
+	return {
+		__SEROVAL_STREAM__: !0,
+		on: (l$1) => u$1(l$1),
+		next: (l$1) => {
+			t && (e.push(l$1), s(l$1, "next"));
+		},
+		throw: (l$1) => {
+			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		},
+		return: (l$1) => {
+			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		}
+	};
+}, vt = Rr.toString(), Pr = (e) => (r) => () => {
+	let t = 0, n$1 = {
+		[e]: () => n$1,
+		next: () => {
+			if (t > r.d) return {
+				done: !0,
+				value: void 0
+			};
+			let a = t++, s = r.v[a];
+			if (a === r.t) throw s;
+			return {
+				done: a === r.d,
+				value: s
+			};
+		}
+	};
+	return n$1;
+}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
+	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
+		for (; S < d$1; S++) u$1[S].s({
+			done: !0,
+			value: void 0
+		});
+	};
+	t.on({
+		next: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.s({
+				done: !1,
+				value: S
+			}), i$1.push(S);
+		},
+		throw: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+		},
+		return: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.s({
+				done: !0,
+				value: S
+			}), l$1(), a = i$1.length, i$1.push(S);
+		}
+	});
+	let g$1 = {
+		[e]: () => g$1,
+		next: () => {
+			if (a === -1) {
+				let K$1 = n$1++;
+				if (K$1 >= i$1.length) {
+					let et = r();
+					return u$1.push(et), et.p;
+				}
+				return {
+					done: !1,
+					value: i$1[K$1]
+				};
+			}
+			if (n$1 > a) return {
+				done: !0,
+				value: void 0
+			};
+			let S = n$1++, d$1 = i$1[S];
+			if (S !== a) return {
+				done: !1,
+				value: d$1
+			};
+			if (s) throw d$1;
+			return {
+				done: !0,
+				value: d$1
+			};
+		}
+	};
+	return g$1;
+}, At = xr.toString(), Or = (e) => {
+	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
+	return n$1.buffer;
+}, Et = Or.toString();
+var An = Pr(C);
+function te$1() {
+	return Rr();
+}
+var En = xr(v$1, re);
+var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
+function ni(e) {
+	return e;
+}
+var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
+var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
-function h(e) {
+var u = (e) => {
+	let r = new AbortController(), a = r.abort.bind(r);
+	return e.then(a, a), r;
+};
+function E(e) {
 	e(this.reason);
 }
-function A(e) {
-	this.addEventListener("abort", h.bind(this, e), { once: !0 });
+function D(e) {
+	this.addEventListener("abort", E.bind(this, e), { once: !0 });
 }
-function E(e) {
-	return new Promise(A.bind(e));
+function c(e) {
+	return new Promise(D.bind(e));
 }
-var o = class {
-	constructor() {
-		this.controller = new AbortController();
-	}
-}, F = Hr({
-	tag: "seroval-plugins/web/AbortSignalController",
-	test(e) {
-		return e instanceof o;
-	},
-	parse: { stream() {} },
-	serialize(e) {
-		return "new AbortController";
-	},
-	deserialize(e) {
-		return new o();
-	}
-}), s = class {
-	constructor(r, a) {
-		this.controller = r;
-		this.reason = a;
-	}
-};
-var C = Hr({
+var i = {}, O = ni({
 	tag: "seroval-plugins/web/AbortSignal",
-	extends: [Hr({
-		extends: [F],
-		tag: "seroval-plugins/web/AbortSignalAbort",
+	extends: [ni({
+		tag: "seroval-plugins/web/AbortControllerFactoryPlugin",
 		test(e) {
-			return e instanceof s;
+			return e === i;
 		},
-		parse: { stream(e, r) {
-			return {
-				controller: r.parse(e.controller),
-				reason: r.parse(e.reason)
-			};
-		} },
-		serialize(e, r) {
-			return r.serialize(e.controller) + ".abort(" + r.serialize(e.reason) + ")";
+		parse: {
+			sync() {
+				return i;
+			},
+			async async() {
+				return await Promise.resolve(i);
+			},
+			stream() {
+				return i;
+			}
 		},
-		deserialize(e, r) {
-			let a = r.deserialize(e.controller), t = r.deserialize(e.reason);
-			return a.controller.abort(t), new s(a, t);
+		serialize() {
+			return u.toString();
+		},
+		deserialize() {
+			return u;
 		}
 	})],
 	test(e) {
@@ -2296,45 +2581,30 @@ var C = Hr({
 	},
 	parse: {
 		sync(e, r) {
-			return e.aborted ? {
-				type: 1,
-				reason: r.parse(e.reason)
-			} : { type: 0 };
+			return e.aborted ? { reason: r.parse(e.reason) } : {};
 		},
 		async async(e, r) {
-			if (e.aborted) return {
-				type: 1,
-				reason: await r.parse(e.reason)
-			};
-			let a = await E(e);
-			return {
-				type: 1,
-				reason: await r.parse(a)
-			};
+			if (e.aborted) return { reason: await r.parse(e.reason) };
+			let a = await c(e);
+			return { reason: await r.parse(a) };
 		},
 		stream(e, r) {
-			if (e.aborted) return {
-				type: 1,
-				reason: r.parse(e.reason)
-			};
-			let a = new o();
-			return r.pushPendingState(), e.addEventListener("abort", () => {
-				let t = r.parseWithError(new s(a, e.reason));
-				t && r.onParse(t), r.popPendingState();
-			}, { once: !0 }), {
-				type: 2,
+			if (e.aborted) return { reason: r.parse(e.reason) };
+			let a = c(e);
+			return {
+				factory: r.parse(i),
 				controller: r.parse(a)
 			};
 		}
 	},
 	serialize(e, r) {
-		return e.type === 0 ? "(new AbortController).signal" : e.type === 1 ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : "(" + r.serialize(e.controller) + ").signal";
+		return e.reason ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : e.controller && e.factory ? "(" + r.serialize(e.factory) + ")(" + r.serialize(e.controller) + ").signal" : "(new AbortController).signal";
 	},
 	deserialize(e, r) {
-		return e.type === 0 ? new AbortController().signal : e.type === 1 ? AbortSignal.abort(r.deserialize(e.reason)) : r.deserialize(e.controller).controller.signal;
+		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-var O = Hr({
+var B = ni({
 	tag: "seroval-plugins/web/Blob",
 	test(e) {
 		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
@@ -2352,7 +2622,7 @@ var O = Hr({
 		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
 	}
 });
-function f(e) {
+function d(e) {
 	return {
 		detail: e.detail,
 		bubbles: e.bubbles,
@@ -2360,7 +2630,7 @@ function f(e) {
 		composed: e.composed
 	};
 }
-var H = Hr({
+var L = ni({
 	tag: "seroval-plugins/web/CustomEvent",
 	test(e) {
 		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
@@ -2369,19 +2639,19 @@ var H = Hr({
 		sync(e, r) {
 			return {
 				type: r.parse(e.type),
-				options: r.parse(f(e))
+				options: r.parse(d(e))
 			};
 		},
 		async async(e, r) {
 			return {
 				type: await r.parse(e.type),
-				options: await r.parse(f(e))
+				options: await r.parse(d(e))
 			};
 		},
 		stream(e, r) {
 			return {
 				type: r.parse(e.type),
-				options: r.parse(f(e))
+				options: r.parse(d(e))
 			};
 		}
 	},
@@ -2392,7 +2662,7 @@ var H = Hr({
 		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
 	}
 });
-var _ = Hr({
+var q = ni({
 	tag: "seroval-plugins/web/DOMException",
 	test(e) {
 		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
@@ -2424,14 +2694,14 @@ var _ = Hr({
 		return new DOMException(r.deserialize(e.message), r.deserialize(e.name));
 	}
 });
-function m(e) {
+function f(e) {
 	return {
 		bubbles: e.bubbles,
 		cancelable: e.cancelable,
 		composed: e.composed
 	};
 }
-var Y = Hr({
+var Y = ni({
 	tag: "seroval-plugins/web/Event",
 	test(e) {
 		return typeof Event == "undefined" ? !1 : e instanceof Event;
@@ -2440,19 +2710,19 @@ var Y = Hr({
 		sync(e, r) {
 			return {
 				type: r.parse(e.type),
-				options: r.parse(m(e))
+				options: r.parse(f(e))
 			};
 		},
 		async async(e, r) {
 			return {
 				type: await r.parse(e.type),
-				options: await r.parse(m(e))
+				options: await r.parse(f(e))
 			};
 		},
 		stream(e, r) {
 			return {
 				type: r.parse(e.type),
-				options: r.parse(m(e))
+				options: r.parse(f(e))
 			};
 		}
 	},
@@ -2463,7 +2733,7 @@ var Y = Hr({
 		return new Event(r.deserialize(e.type), r.deserialize(e.options));
 	}
 });
-var c = Hr({
+var m = ni({
 	tag: "seroval-plugins/web/File",
 	test(e) {
 		return typeof File == "undefined" ? !1 : e instanceof File;
@@ -2485,37 +2755,38 @@ var c = Hr({
 		return new File([r.deserialize(e.buffer)], r.deserialize(e.name), r.deserialize(e.options));
 	}
 });
-function g(e) {
+function y(e) {
 	let r = [];
 	return e.forEach((a, t) => {
 		r.push([t, a]);
 	}), r;
 }
-var i = {}, K = Hr({
+var o = {}, v = (e, r = new FormData(), a = 0, t = e.length, s) => {
+	for (; a < t; a++) s = e[a], r.append(s[0], s[1]);
+	return r;
+}, K = ni({
 	tag: "seroval-plugins/web/FormData",
-	extends: [c, Hr({
+	extends: [m, ni({
 		tag: "seroval-plugins/web/FormDataFactory",
 		test(e) {
-			return e === i;
+			return e === o;
 		},
 		parse: {
-			sync() {},
-			async async() {
-				return await Promise.resolve(void 0);
+			sync() {
+				return o;
 			},
-			stream() {}
+			async async() {
+				return await Promise.resolve(o);
+			},
+			stream() {
+				return o;
+			}
 		},
-		serialize(e, r) {
-			return r.createEffectfulFunction([
-				"e",
-				"f",
-				"i",
-				"s",
-				"t"
-			], "f=new FormData;for(i=0,s=e.length;i<s;i++)f.append((t=e[i])[0],t[1]);return f");
+		serialize() {
+			return v.toString();
 		},
 		deserialize() {
-			return i;
+			return o;
 		}
 	})],
 	test(e) {
@@ -2524,20 +2795,20 @@ var i = {}, K = Hr({
 	parse: {
 		sync(e, r) {
 			return {
-				factory: r.parse(i),
-				entries: r.parse(g(e))
+				factory: r.parse(o),
+				entries: r.parse(y(e))
 			};
 		},
 		async async(e, r) {
 			return {
-				factory: await r.parse(i),
-				entries: await r.parse(g(e))
+				factory: await r.parse(o),
+				entries: await r.parse(y(e))
 			};
 		},
 		stream(e, r) {
 			return {
-				factory: r.parse(i),
-				entries: r.parse(g(e))
+				factory: r.parse(o),
+				entries: r.parse(y(e))
 			};
 		}
 	},
@@ -2545,44 +2816,39 @@ var i = {}, K = Hr({
 		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.entries) + ")";
 	},
 	deserialize(e, r) {
-		let a = new FormData(), t = r.deserialize(e.entries);
-		for (let n = 0, R$1 = t.length; n < R$1; n++) {
-			let b = t[n];
-			a.append(b[0], b[1]);
-		}
-		return a;
+		return v(r.deserialize(e.entries));
 	}
 });
-function y(e) {
+function g(e) {
 	let r = [];
 	return e.forEach((a, t) => {
 		r.push([t, a]);
 	}), r;
 }
-var l = Hr({
+var l = ni({
 	tag: "seroval-plugins/web/Headers",
 	test(e) {
 		return typeof Headers == "undefined" ? !1 : e instanceof Headers;
 	},
 	parse: {
 		sync(e, r) {
-			return r.parse(y(e));
+			return { value: r.parse(g(e)) };
 		},
 		async async(e, r) {
-			return await r.parse(y(e));
+			return { value: await r.parse(g(e)) };
 		},
 		stream(e, r) {
-			return r.parse(y(e));
+			return { value: r.parse(g(e)) };
 		}
 	},
 	serialize(e, r) {
-		return "new Headers(" + r.serialize(e) + ")";
+		return "new Headers(" + r.serialize(e.value) + ")";
 	},
 	deserialize(e, r) {
-		return new Headers(r.deserialize(e));
+		return new Headers(r.deserialize(e.value));
 	}
 });
-var x = Hr({
+var $ = ni({
 	tag: "seroval-plugins/web/ImageData",
 	test(e) {
 		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
@@ -2620,59 +2886,79 @@ var x = Hr({
 		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
 	}
 });
-var p = {}, ee = Hr({
+var n = {}, P = (e) => new ReadableStream({ start: (r) => {
+	e.on({
+		next: (a) => {
+			try {
+				r.enqueue(a);
+			} catch (t) {}
+		},
+		throw: (a) => {
+			r.error(a);
+		},
+		return: () => {
+			try {
+				r.close();
+			} catch (a) {}
+		}
+	});
+} }), x = ni({
 	tag: "seroval-plugins/web/ReadableStreamFactory",
 	test(e) {
-		return e === p;
+		return e === n;
 	},
 	parse: {
-		sync() {},
-		async async() {
-			return await Promise.resolve(void 0);
+		sync() {
+			return n;
 		},
-		stream() {}
+		async async() {
+			return await Promise.resolve(n);
+		},
+		stream() {
+			return n;
+		}
 	},
-	serialize(e, r) {
-		return r.createFunction(["d"], "new ReadableStream({start:" + r.createEffectfulFunction(["c"], "d.on({next:" + r.createEffectfulFunction(["v"], "c.enqueue(v)") + ",throw:" + r.createEffectfulFunction(["v"], "c.error(v)") + ",return:" + r.createEffectfulFunction([], "c.close()") + "})") + "})");
+	serialize() {
+		return P.toString();
 	},
 	deserialize() {
-		return p;
+		return n;
 	}
 });
 function w(e) {
-	let r = K$1(), a = e.getReader();
+	let r = te$1(), a = e.getReader();
 	async function t() {
 		try {
-			let n = await a.read();
-			n.done ? r.return(n.value) : (r.next(n.value), await t());
-		} catch (n) {
-			r.throw(n);
+			let s = await a.read();
+			s.done ? r.return(s.value) : (r.next(s.value), await t());
+		} catch (s) {
+			r.throw(s);
 		}
 	}
 	return t().catch(() => {}), r;
 }
-var u = Hr({
+var p = ni({
 	tag: "seroval/plugins/web/ReadableStream",
-	extends: [ee],
+	extends: [x],
 	test(e) {
 		return typeof ReadableStream == "undefined" ? !1 : e instanceof ReadableStream;
 	},
 	parse: {
 		sync(e, r) {
 			return {
-				factory: r.parse(p),
-				stream: r.parse(K$1())
+				factory: r.parse(n),
+				stream: r.parse(te$1())
 			};
 		},
 		async async(e, r) {
 			return {
-				factory: await r.parse(p),
+				factory: await r.parse(n),
 				stream: await r.parse(w(e))
 			};
 		},
 		stream(e, r) {
 			return {
-				factory: r.parse(p),
+				factory: r.parse(n),
 				stream: r.parse(w(e))
 			};
 		}
@@ -2681,23 +2967,10 @@ var u = Hr({
 		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.stream) + ")";
 	},
 	deserialize(e, r) {
-		let a = r.deserialize(e.stream);
-		return new ReadableStream({ start(t) {
-			a.on({
-				next(n) {
-					t.enqueue(n);
-				},
-				throw(n) {
-					t.error(n);
-				},
-				return() {
-					t.close();
-				}
-			});
-		} });
+		return P(r.deserialize(e.stream));
 	}
 });
-function P(e, r) {
+function N(e, r) {
 	return {
 		body: r,
 		cache: e.cache,
@@ -2712,9 +2985,9 @@ function P(e, r) {
 		referrerPolicy: e.referrerPolicy
 	};
 }
-var ne = Hr({
+var te = ni({
 	tag: "seroval-plugins/web/Request",
-	extends: [u, l],
+	extends: [p, l],
 	test(e) {
 		return typeof Request == "undefined" ? !1 : e instanceof Request;
 	},
@@ -2722,13 +2995,13 @@ var ne = Hr({
 		async async(e, r) {
 			return {
 				url: await r.parse(e.url),
-				options: await r.parse(P(e, e.body ? await e.clone().arrayBuffer() : null))
+				options: await r.parse(N(e, e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null))
 			};
 		},
 		stream(e, r) {
 			return {
 				url: r.parse(e.url),
-				options: r.parse(P(e, e.clone().body))
+				options: r.parse(N(e, e.body && !e.bodyUsed ? e.clone().body : null))
 			};
 		}
 	},
@@ -2739,30 +3012,30 @@ var ne = Hr({
 		return new Request(r.deserialize(e.url), r.deserialize(e.options));
 	}
 });
-function N(e) {
+function h(e) {
 	return {
 		headers: e.headers,
 		status: e.status,
 		statusText: e.statusText
 	};
 }
-var ie = Hr({
+var ne = ni({
 	tag: "seroval-plugins/web/Response",
-	extends: [u, l],
+	extends: [p, l],
 	test(e) {
 		return typeof Response == "undefined" ? !1 : e instanceof Response;
 	},
 	parse: {
 		async async(e, r) {
 			return {
-				body: await r.parse(e.body ? await e.clone().arrayBuffer() : null),
-				options: await r.parse(N(e))
+				body: await r.parse(e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null),
+				options: await r.parse(h(e))
 			};
 		},
 		stream(e, r) {
 			return {
-				body: r.parse(e.clone().body),
-				options: r.parse(N(e))
+				body: r.parse(e.body && !e.bodyUsed ? e.clone().body : null),
+				options: r.parse(h(e))
 			};
 		}
 	},
@@ -2773,50 +3046,50 @@ var ie = Hr({
 		return new Response(r.deserialize(e.body), r.deserialize(e.options));
 	}
 });
-var ue = Hr({
+var pe = ni({
 	tag: "seroval-plugins/web/URL",
 	test(e) {
 		return typeof URL == "undefined" ? !1 : e instanceof URL;
 	},
 	parse: {
 		sync(e, r) {
-			return r.parse(e.href);
+			return { value: r.parse(e.href) };
 		},
 		async async(e, r) {
-			return await r.parse(e.href);
+			return { value: await r.parse(e.href) };
 		},
 		stream(e, r) {
-			return r.parse(e.href);
+			return { value: r.parse(e.href) };
 		}
 	},
 	serialize(e, r) {
-		return "new URL(" + r.serialize(e) + ")";
+		return "new URL(" + r.serialize(e.value) + ")";
 	},
 	deserialize(e, r) {
-		return new URL(r.deserialize(e));
+		return new URL(r.deserialize(e.value));
 	}
 });
-var me = Hr({
+var fe = ni({
 	tag: "seroval-plugins/web/URLSearchParams",
 	test(e) {
 		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
 	},
 	parse: {
 		sync(e, r) {
-			return r.parse(e.toString());
+			return { value: r.parse(e.toString()) };
 		},
 		async async(e, r) {
-			return await r.parse(e.toString());
+			return { value: await r.parse(e.toString()) };
 		},
 		stream(e, r) {
-			return r.parse(e.toString());
+			return { value: r.parse(e.toString()) };
 		}
 	},
 	serialize(e, r) {
-		return "new URLSearchParams(" + r.serialize(e) + ")";
+		return "new URLSearchParams(" + r.serialize(e.value) + ")";
 	},
 	deserialize(e, r) {
-		return new URLSearchParams(r.deserialize(e));
+		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
 
@@ -2979,7 +3252,7 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const ES2017FLAG = R.AggregateError | R.BigIntTypedArray;
+const ES2017FLAG = L$2.AggregateError | L$2.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
@@ -2992,48 +3265,48 @@ function ssr(t, ...nodes) {
 	}
 	return { t };
 }
-function escape(s$2, attr) {
-	const t = typeof s$2;
+function escape(s, attr) {
+	const t = typeof s;
 	if (t !== "string") {
-		if (!attr && t === "function") return escape(s$2());
-		if (!attr && Array.isArray(s$2)) {
-			s$2 = s$2.slice();
-			for (let i$1 = 0; i$1 < s$2.length; i$1++) s$2[i$1] = escape(s$2[i$1]);
-			return s$2;
+		if (!attr && t === "function") return escape(s());
+		if (!attr && Array.isArray(s)) {
+			s = s.slice();
+			for (let i$1 = 0; i$1 < s.length; i$1++) s[i$1] = escape(s[i$1]);
+			return s;
 		}
-		if (attr && t === "boolean") return String(s$2);
-		return s$2;
+		if (attr && t === "boolean") return String(s);
+		return s;
 	}
 	const delim = attr ? "\\"" : "<";
 	const escDelim = attr ? "&quot;" : "&lt;";
-	let iDelim = s$2.indexOf(delim);
-	let iAmp = s$2.indexOf("&");
-	if (iDelim < 0 && iAmp < 0) return s$2;
+	let iDelim = s.indexOf(delim);
+	let iAmp = s.indexOf("&");
+	if (iDelim < 0 && iAmp < 0) return s;
 	let left = 0, out = "";
 	while (iDelim >= 0 && iAmp >= 0) if (iDelim < iAmp) {
-		if (left < iDelim) out += s$2.substring(left, iDelim);
+		if (left < iDelim) out += s.substring(left, iDelim);
 		out += escDelim;
 		left = iDelim + 1;
-		iDelim = s$2.indexOf(delim, left);
+		iDelim = s.indexOf(delim, left);
 	} else {
-		if (left < iAmp) out += s$2.substring(left, iAmp);
+		if (left < iAmp) out += s.substring(left, iAmp);
 		out += "&amp;";
 		left = iAmp + 1;
-		iAmp = s$2.indexOf("&", left);
+		iAmp = s.indexOf("&", left);
 	}
 	if (iDelim >= 0) do {
-		if (left < iDelim) out += s$2.substring(left, iDelim);
+		if (left < iDelim) out += s.substring(left, iDelim);
 		out += escDelim;
 		left = iDelim + 1;
-		iDelim = s$2.indexOf(delim, left);
+		iDelim = s.indexOf(delim, left);
 	} while (iDelim >= 0);
 	else while (iAmp >= 0) {
-		if (left < iAmp) out += s$2.substring(left, iAmp);
+		if (left < iAmp) out += s.substring(left, iAmp);
 		out += "&amp;";
 		left = iAmp + 1;
-		iAmp = s$2.indexOf("&", left);
+		iAmp = s.indexOf("&", left);
 	}
-	return left < s$2.length ? out + s$2.substring(left) : out;
+	return left < s.length ? out + s.substring(left) : out;
 }
 function resolveSSRNode(node, top) {
 	const t = typeof node;
@@ -3098,32 +3371,32 @@ function handleError(err, owner = Owner) {
 }
 let Owner = null;
 function createOwner() {
-	const o$1 = {
+	const o$3 = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$1];
-	else Owner.owned.push(o$1);
-	return o$1;
+	if (Owner) if (!Owner.owned) Owner.owned = [o$3];
+	else Owner.owned.push(o$3);
+	return o$3;
 }
 function createSignal(value, options) {
-	return [() => value, (v) => {
-		return value = typeof v === "function" ? v(value) : v;
+	return [() => value, (v$3) => {
+		return value = typeof v$3 === "function" ? v$3(value) : v$3;
 	}];
 }
 function createMemo(fn, value) {
 	Owner = createOwner();
-	let v;
+	let v$3;
 	try {
-		v = fn(value);
+		v$3 = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v;
+	return () => v$3;
 }
 function createContext(defaultValue) {
 	const id = Symbol("context");
@@ -3139,8 +3412,8 @@ function useContext(context) {
 function children(fn) {
 	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$1 = memo();
-		return Array.isArray(c$1) ? c$1 : c$1 != null ? [c$1] : [];
+		const c$3 = memo();
+		return Array.isArray(c$3) ? c$3 : c$3 != null ? [c$3] : [];
 	};
 	return memo;
 }
@@ -3282,53 +3555,28 @@ function createResource(source, fetcher, options = {}) {
 	if (options.ssrLoadFrom !== "initial") load();
 	const ref = [read, {
 		refetch: load,
-		mutate: (v) => value = v
+		mutate: (v$3) => value = v$3
 	}];
 	if (p$1) resource.ref = ref;
 	return ref;
 }
-function suspenseComplete(c$1) {
-	for (const r of c$1.resources.values()) if (r._loading) return false;
+function suspenseComplete(c$3) {
+	for (const r of c$3.resources.values()) if (r._loading) return false;
 	return true;
 }
 function notifySuspense(contexts) {
-	for (const c$1 of contexts) {
-		if (!suspenseComplete(c$1)) continue;
-		c$1.completed();
-		contexts.delete(c$1);
+	for (const c$3 of contexts) {
+		if (!suspenseComplete(c$3)) continue;
+		c$3.completed();
+		contexts.delete(c$3);
 	}
 }
 
 //#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var R = ((a) => (a[a.AggregateError = 1] = "AggregateError", a[a.ArrowFunction = 2] = "ArrowFunction", a[a.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", a[a.ObjectAssign = 8] = "ObjectAssign", a[a.BigIntTypedArray = 16] = "BigIntTypedArray", a))(R || {});
-var O$1 = "__SEROVAL_REFS__", Q = "$R", ae = \`self.\${Q}\`;
-var Be = /* @__PURE__ */ new Map(), C$1 = /* @__PURE__ */ new Map();
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, O$1, {
-	value: C$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, O$1, {
-	value: C$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, O$1, {
-	value: C$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, O$1, {
-	value: C$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-});
-function Hr(o$1) {
-	return o$1;
-}
-var $e = {
+//#region node_modules/solid-js/node_modules/seroval/dist/esm/production/index.mjs
+var L$2 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$2 || {});
+var v$2 = Symbol.asyncIterator, mr$1 = Symbol.hasInstance, R$1 = Symbol.isConcatSpreadable, C$1 = Symbol.iterator, pr$1 = Symbol.match, dr$1 = Symbol.matchAll, gr$1 = Symbol.replace, yr$1 = Symbol.search, Nr$1 = Symbol.species, br$1 = Symbol.split, vr$1 = Symbol.toPrimitive, P$2 = Symbol.toStringTag, Cr$1 = Symbol.unscopables;
+var rt$1 = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -3342,35 +3590,35 @@ var $e = {
 	10: "Symbol.toPrimitive",
 	11: "Symbol.toStringTag",
 	12: "Symbol.unscopables"
-}, ce = {
-	[Symbol.asyncIterator]: 0,
-	[Symbol.hasInstance]: 1,
-	[Symbol.isConcatSpreadable]: 2,
-	[Symbol.iterator]: 3,
-	[Symbol.match]: 4,
-	[Symbol.matchAll]: 5,
-	[Symbol.replace]: 6,
-	[Symbol.search]: 7,
-	[Symbol.species]: 8,
-	[Symbol.split]: 9,
-	[Symbol.toPrimitive]: 10,
-	[Symbol.toStringTag]: 11,
-	[Symbol.unscopables]: 12
-}, Ge = {
-	0: Symbol.asyncIterator,
-	1: Symbol.hasInstance,
-	2: Symbol.isConcatSpreadable,
-	3: Symbol.iterator,
-	4: Symbol.match,
-	5: Symbol.matchAll,
-	6: Symbol.replace,
-	7: Symbol.search,
-	8: Symbol.species,
-	9: Symbol.split,
-	10: Symbol.toPrimitive,
-	11: Symbol.toStringTag,
-	12: Symbol.unscopables
-}, qe = {
+}, ve$1 = {
+	[v$2]: 0,
+	[mr$1]: 1,
+	[R$1]: 2,
+	[C$1]: 3,
+	[pr$1]: 4,
+	[dr$1]: 5,
+	[gr$1]: 6,
+	[yr$1]: 7,
+	[Nr$1]: 8,
+	[br$1]: 9,
+	[vr$1]: 10,
+	[P$2]: 11,
+	[Cr$1]: 12
+}, tt$1 = {
+	0: v$2,
+	1: mr$1,
+	2: R$1,
+	3: C$1,
+	4: pr$1,
+	5: dr$1,
+	6: gr$1,
+	7: yr$1,
+	8: Nr$1,
+	9: br$1,
+	10: vr$1,
+	11: P$2,
+	12: Cr$1
+}, nt$1 = {
 	2: "!0",
 	3: "!1",
 	1: "void 0",
@@ -3379,143 +3627,453 @@ var $e = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, He = {
+}, o$2 = void 0, ot$1 = {
 	2: !0,
 	3: !1,
-	1: void 0,
+	1: o$2,
 	0: null,
 	4: -0,
 	5: Number.POSITIVE_INFINITY,
 	6: Number.NEGATIVE_INFINITY,
 	7: NaN
 };
-var ue$1 = {
-	0: "Error",
-	1: "EvalError",
-	2: "RangeError",
-	3: "ReferenceError",
-	4: "SyntaxError",
-	5: "TypeError",
-	6: "URIError"
-}, Ze = {
-	0: Error,
-	1: EvalError,
-	2: RangeError,
-	3: ReferenceError,
-	4: SyntaxError,
-	5: TypeError,
-	6: URIError
-}, s$1 = void 0;
-function u$1(o$1, e, r, t, n, a, i$1, l$1, c$1, p$1, h$1, X) {
+function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 	return {
-		t: o$1,
-		i: e,
-		s: r,
-		l: t,
-		c: n,
+		t: e,
+		i: r,
+		s: t,
+		c: n$1,
 		m: a,
-		p: i$1,
-		e: l$1,
-		a: c$1,
-		f: p$1,
-		b: h$1,
-		o: X
+		p: s,
+		e: i$1,
+		a: u$1,
+		f: l$1,
+		b: g$1,
+		o: S,
+		l: d$1
 	};
 }
-function x$1(o$1) {
-	return u$1(2, s$1, o$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1, s$1);
+function F$1(e) {
+	return c$2(2, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
 }
-var I = x$1(2), A$1 = x$1(3), pe = x$1(1), de = x$1(0), Xe = x$1(4), Qe = x$1(5), er = x$1(6), rr = x$1(7);
-var { toString: _e } = Object.prototype;
-function K$1() {
-	let o$1 = /* @__PURE__ */ new Set(), e = [], r = !0, t = !0;
-	function n(l$1) {
-		for (let c$1 of o$1.keys()) c$1.next(l$1);
-	}
-	function a(l$1) {
-		for (let c$1 of o$1.keys()) c$1.throw(l$1);
-	}
-	function i$1(l$1) {
-		for (let c$1 of o$1.keys()) c$1.return(l$1);
-	}
+var J$1 = F$1(2), Z$1 = F$1(3), Ae$1 = F$1(1), Ee$1 = F$1(0), st$1 = F$1(4), it$1 = F$1(5), ut$1 = F$1(6), lt$1 = F$1(7);
+var U$1 = "__SEROVAL_REFS__", ce$1 = "$R", Ie$1 = \`self.\${ce$1}\`;
+var Ar$1 = /* @__PURE__ */ new Map(), j$1 = /* @__PURE__ */ new Map();
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U$1, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof window != "undefined" ? Object.defineProperty(window, U$1, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof self != "undefined" ? Object.defineProperty(self, U$1, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof global != "undefined" && Object.defineProperty(global, U$1, {
+	value: j$1,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+});
+var { toString: ys$1 } = Object.prototype;
+var re$1 = () => {
+	let e = {
+		p: 0,
+		s: 0,
+		f: 0
+	};
+	return e.p = new Promise((r, t) => {
+		e.s = r, e.f = t;
+	}), e;
+}, vn$1 = (e, r) => {
+	e.s(r), e.p.s = 1, e.p.v = r;
+}, Cn$1 = (e, r) => {
+	e.f(r), e.p.s = 2, e.p.v = r;
+}, yt$1 = re$1.toString(), Nt$1 = vn$1.toString(), bt$1 = Cn$1.toString(), Rr$1 = () => {
+	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
+	}, i$1 = (l$1, g$1, S, d$1) => {
+		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
+	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
+		t && (r[g$1] = r[a], r[a--] = void 0);
+	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on(l$1) {
-			r && o$1.add(l$1);
-			for (let c$1 = 0, p$1 = e.length; c$1 < p$1; c$1++) {
-				let h$1 = e[c$1];
-				c$1 === p$1 - 1 && !r ? t ? l$1.return(h$1) : l$1.throw(h$1) : l$1.next(h$1);
-			}
-			return () => {
-				r && o$1.delete(l$1);
-			};
+		on: (l$1) => u$1(l$1),
+		next: (l$1) => {
+			t && (e.push(l$1), s(l$1, "next"));
 		},
-		next(l$1) {
-			r && (e.push(l$1), n(l$1));
+		throw: (l$1) => {
+			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
 		},
-		throw(l$1) {
-			r && (e.push(l$1), a(l$1), r = !1, t = !1, o$1.clear());
-		},
-		return(l$1) {
-			r && (e.push(l$1), i$1(l$1), r = !1, t = !0, o$1.clear());
+		return: (l$1) => {
+			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
 		}
 	};
+}, vt$1 = Rr$1.toString(), Pr$1 = (e) => (r) => () => {
+	let t = 0, n$1 = {
+		[e]: () => n$1,
+		next: () => {
+			if (t > r.d) return {
+				done: !0,
+				value: void 0
+			};
+			let a = t++, s = r.v[a];
+			if (a === r.t) throw s;
+			return {
+				done: a === r.d,
+				value: s
+			};
+		}
+	};
+	return n$1;
+}, Ct$1 = Pr$1.toString(), xr$1 = (e, r) => (t) => () => {
+	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
+		for (; S < d$1; S++) u$1[S].s({
+			done: !0,
+			value: void 0
+		});
+	};
+	t.on({
+		next: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.s({
+				done: !1,
+				value: S
+			}), i$1.push(S);
+		},
+		throw: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+		},
+		return: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.s({
+				done: !0,
+				value: S
+			}), l$1(), a = i$1.length, i$1.push(S);
+		}
+	});
+	let g$1 = {
+		[e]: () => g$1,
+		next: () => {
+			if (a === -1) {
+				let K$1 = n$1++;
+				if (K$1 >= i$1.length) {
+					let et = r();
+					return u$1.push(et), et.p;
+				}
+				return {
+					done: !1,
+					value: i$1[K$1]
+				};
+			}
+			if (n$1 > a) return {
+				done: !0,
+				value: void 0
+			};
+			let S = n$1++, d$1 = i$1[S];
+			if (S !== a) return {
+				done: !1,
+				value: d$1
+			};
+			if (s) throw d$1;
+			return {
+				done: !0,
+				value: d$1
+			};
+		}
+	};
+	return g$1;
+}, At$1 = xr$1.toString(), Or$1 = (e) => {
+	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
+	return n$1.buffer;
+}, Et$1 = Or$1.toString();
+var An$1 = Pr$1(C$1);
+var En$1 = xr$1(v$2, re$1);
+var ae$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae$1 || {});
+var Eo$1 = () => T, Io$1 = Eo$1.toString(), qt$1 = /=>/.test(Io$1);
+var Ht$1 = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt$1 = Ht$1.length, Jt$1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt$1 = Jt$1.length;
+
+//#endregion
+//#region node_modules/seroval/dist/esm/production/index.mjs
+var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
+var rt = {
+	0: "Symbol.asyncIterator",
+	1: "Symbol.hasInstance",
+	2: "Symbol.isConcatSpreadable",
+	3: "Symbol.iterator",
+	4: "Symbol.match",
+	5: "Symbol.matchAll",
+	6: "Symbol.replace",
+	7: "Symbol.search",
+	8: "Symbol.species",
+	9: "Symbol.split",
+	10: "Symbol.toPrimitive",
+	11: "Symbol.toStringTag",
+	12: "Symbol.unscopables"
+}, ve = {
+	[v$1]: 0,
+	[mr]: 1,
+	[R]: 2,
+	[C]: 3,
+	[pr]: 4,
+	[dr]: 5,
+	[gr]: 6,
+	[yr]: 7,
+	[Nr]: 8,
+	[br]: 9,
+	[vr]: 10,
+	[P$1]: 11,
+	[Cr]: 12
+}, tt = {
+	0: v$1,
+	1: mr,
+	2: R,
+	3: C,
+	4: pr,
+	5: dr,
+	6: gr,
+	7: yr,
+	8: Nr,
+	9: br,
+	10: vr,
+	11: P$1,
+	12: Cr
+}, nt = {
+	2: "!0",
+	3: "!1",
+	1: "void 0",
+	0: "null",
+	4: "-0",
+	5: "1/0",
+	6: "-1/0",
+	7: "0/0"
+}, o$1 = void 0, ot = {
+	2: !0,
+	3: !1,
+	1: o$1,
+	0: null,
+	4: -0,
+	5: Number.POSITIVE_INFINITY,
+	6: Number.NEGATIVE_INFINITY,
+	7: NaN
+};
+function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+	return {
+		t: e,
+		i: r,
+		s: t,
+		c: n$1,
+		m: a,
+		p: s,
+		e: i$1,
+		a: u$1,
+		f: l$1,
+		b: g$1,
+		o: S,
+		l: d$1
+	};
 }
-var yr = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Sr = yr.length, vr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", hr = vr.length;
+function F(e) {
+	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
+}
+var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
+var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
+var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
+	value: j,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
+	value: j,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
+	value: j,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+}) : typeof global != "undefined" && Object.defineProperty(global, U, {
+	value: j,
+	configurable: !0,
+	writable: !1,
+	enumerable: !1
+});
+var { toString: ys } = Object.prototype;
+var re = () => {
+	let e = {
+		p: 0,
+		s: 0,
+		f: 0
+	};
+	return e.p = new Promise((r, t) => {
+		e.s = r, e.f = t;
+	}), e;
+}, vn = (e, r) => {
+	e.s(r), e.p.s = 1, e.p.v = r;
+}, Cn = (e, r) => {
+	e.f(r), e.p.s = 2, e.p.v = r;
+}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
+	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
+	}, i$1 = (l$1, g$1, S, d$1) => {
+		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
+	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
+		t && (r[g$1] = r[a], r[a--] = void 0);
+	});
+	return {
+		__SEROVAL_STREAM__: !0,
+		on: (l$1) => u$1(l$1),
+		next: (l$1) => {
+			t && (e.push(l$1), s(l$1, "next"));
+		},
+		throw: (l$1) => {
+			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		},
+		return: (l$1) => {
+			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		}
+	};
+}, vt = Rr.toString(), Pr = (e) => (r) => () => {
+	let t = 0, n$1 = {
+		[e]: () => n$1,
+		next: () => {
+			if (t > r.d) return {
+				done: !0,
+				value: void 0
+			};
+			let a = t++, s = r.v[a];
+			if (a === r.t) throw s;
+			return {
+				done: a === r.d,
+				value: s
+			};
+		}
+	};
+	return n$1;
+}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
+	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
+		for (; S < d$1; S++) u$1[S].s({
+			done: !0,
+			value: void 0
+		});
+	};
+	t.on({
+		next: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.s({
+				done: !1,
+				value: S
+			}), i$1.push(S);
+		},
+		throw: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+		},
+		return: (S) => {
+			let d$1 = u$1.shift();
+			d$1 && d$1.s({
+				done: !0,
+				value: S
+			}), l$1(), a = i$1.length, i$1.push(S);
+		}
+	});
+	let g$1 = {
+		[e]: () => g$1,
+		next: () => {
+			if (a === -1) {
+				let K$1 = n$1++;
+				if (K$1 >= i$1.length) {
+					let et = r();
+					return u$1.push(et), et.p;
+				}
+				return {
+					done: !1,
+					value: i$1[K$1]
+				};
+			}
+			if (n$1 > a) return {
+				done: !0,
+				value: void 0
+			};
+			let S = n$1++, d$1 = i$1[S];
+			if (S !== a) return {
+				done: !1,
+				value: d$1
+			};
+			if (s) throw d$1;
+			return {
+				done: !0,
+				value: d$1
+			};
+		}
+	};
+	return g$1;
+}, At = xr.toString(), Or = (e) => {
+	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
+	return n$1.buffer;
+}, Et = Or.toString();
+var An = Pr(C);
+function te$1() {
+	return Rr();
+}
+var En = xr(v$1, re);
+var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
+function ni(e) {
+	return e;
+}
+var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
+var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
-function h(e) {
+var u = (e) => {
+	let r = new AbortController(), a = r.abort.bind(r);
+	return e.then(a, a), r;
+};
+function E(e) {
 	e(this.reason);
 }
-function A(e) {
-	this.addEventListener("abort", h.bind(this, e), { once: !0 });
+function D(e) {
+	this.addEventListener("abort", E.bind(this, e), { once: !0 });
 }
-function E(e) {
-	return new Promise(A.bind(e));
+function c(e) {
+	return new Promise(D.bind(e));
 }
-var o = class {
-	constructor() {
-		this.controller = new AbortController();
-	}
-}, F = Hr({
-	tag: "seroval-plugins/web/AbortSignalController",
-	test(e) {
-		return e instanceof o;
-	},
-	parse: { stream() {} },
-	serialize(e) {
-		return "new AbortController";
-	},
-	deserialize(e) {
-		return new o();
-	}
-}), s = class {
-	constructor(r, a) {
-		this.controller = r;
-		this.reason = a;
-	}
-};
-var C = Hr({
+var i = {}, O = ni({
 	tag: "seroval-plugins/web/AbortSignal",
-	extends: [Hr({
-		extends: [F],
-		tag: "seroval-plugins/web/AbortSignalAbort",
+	extends: [ni({
+		tag: "seroval-plugins/web/AbortControllerFactoryPlugin",
 		test(e) {
-			return e instanceof s;
+			return e === i;
 		},
-		parse: { stream(e, r) {
-			return {
-				controller: r.parse(e.controller),
-				reason: r.parse(e.reason)
-			};
-		} },
-		serialize(e, r) {
-			return r.serialize(e.controller) + ".abort(" + r.serialize(e.reason) + ")";
+		parse: {
+			sync() {
+				return i;
+			},
+			async async() {
+				return await Promise.resolve(i);
+			},
+			stream() {
+				return i;
+			}
 		},
-		deserialize(e, r) {
-			let a = r.deserialize(e.controller), t = r.deserialize(e.reason);
-			return a.controller.abort(t), new s(a, t);
+		serialize() {
+			return u.toString();
+		},
+		deserialize() {
+			return u;
 		}
 	})],
 	test(e) {
@@ -3523,45 +4081,30 @@ var C = Hr({
 	},
 	parse: {
 		sync(e, r) {
-			return e.aborted ? {
-				type: 1,
-				reason: r.parse(e.reason)
-			} : { type: 0 };
+			return e.aborted ? { reason: r.parse(e.reason) } : {};
 		},
 		async async(e, r) {
-			if (e.aborted) return {
-				type: 1,
-				reason: await r.parse(e.reason)
-			};
-			let a = await E(e);
-			return {
-				type: 1,
-				reason: await r.parse(a)
-			};
+			if (e.aborted) return { reason: await r.parse(e.reason) };
+			let a = await c(e);
+			return { reason: await r.parse(a) };
 		},
 		stream(e, r) {
-			if (e.aborted) return {
-				type: 1,
-				reason: r.parse(e.reason)
-			};
-			let a = new o();
-			return r.pushPendingState(), e.addEventListener("abort", () => {
-				let t = r.parseWithError(new s(a, e.reason));
-				t && r.onParse(t), r.popPendingState();
-			}, { once: !0 }), {
-				type: 2,
+			if (e.aborted) return { reason: r.parse(e.reason) };
+			let a = c(e);
+			return {
+				factory: r.parse(i),
 				controller: r.parse(a)
 			};
 		}
 	},
 	serialize(e, r) {
-		return e.type === 0 ? "(new AbortController).signal" : e.type === 1 ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : "(" + r.serialize(e.controller) + ").signal";
+		return e.reason ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : e.controller && e.factory ? "(" + r.serialize(e.factory) + ")(" + r.serialize(e.controller) + ").signal" : "(new AbortController).signal";
 	},
 	deserialize(e, r) {
-		return e.type === 0 ? new AbortController().signal : e.type === 1 ? AbortSignal.abort(r.deserialize(e.reason)) : r.deserialize(e.controller).controller.signal;
+		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-var O = Hr({
+var B = ni({
 	tag: "seroval-plugins/web/Blob",
 	test(e) {
 		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
@@ -3579,7 +4122,7 @@ var O = Hr({
 		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
 	}
 });
-function f(e) {
+function d(e) {
 	return {
 		detail: e.detail,
 		bubbles: e.bubbles,
@@ -3587,7 +4130,7 @@ function f(e) {
 		composed: e.composed
 	};
 }
-var H = Hr({
+var L = ni({
 	tag: "seroval-plugins/web/CustomEvent",
 	test(e) {
 		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
@@ -3596,19 +4139,19 @@ var H = Hr({
 		sync(e, r) {
 			return {
 				type: r.parse(e.type),
-				options: r.parse(f(e))
+				options: r.parse(d(e))
 			};
 		},
 		async async(e, r) {
 			return {
 				type: await r.parse(e.type),
-				options: await r.parse(f(e))
+				options: await r.parse(d(e))
 			};
 		},
 		stream(e, r) {
 			return {
 				type: r.parse(e.type),
-				options: r.parse(f(e))
+				options: r.parse(d(e))
 			};
 		}
 	},
@@ -3619,7 +4162,7 @@ var H = Hr({
 		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
 	}
 });
-var _ = Hr({
+var q = ni({
 	tag: "seroval-plugins/web/DOMException",
 	test(e) {
 		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
@@ -3651,14 +4194,14 @@ var _ = Hr({
 		return new DOMException(r.deserialize(e.message), r.deserialize(e.name));
 	}
 });
-function m(e) {
+function f(e) {
 	return {
 		bubbles: e.bubbles,
 		cancelable: e.cancelable,
 		composed: e.composed
 	};
 }
-var Y = Hr({
+var Y = ni({
 	tag: "seroval-plugins/web/Event",
 	test(e) {
 		return typeof Event == "undefined" ? !1 : e instanceof Event;
@@ -3667,19 +4210,19 @@ var Y = Hr({
 		sync(e, r) {
 			return {
 				type: r.parse(e.type),
-				options: r.parse(m(e))
+				options: r.parse(f(e))
 			};
 		},
 		async async(e, r) {
 			return {
 				type: await r.parse(e.type),
-				options: await r.parse(m(e))
+				options: await r.parse(f(e))
 			};
 		},
 		stream(e, r) {
 			return {
 				type: r.parse(e.type),
-				options: r.parse(m(e))
+				options: r.parse(f(e))
 			};
 		}
 	},
@@ -3690,7 +4233,7 @@ var Y = Hr({
 		return new Event(r.deserialize(e.type), r.deserialize(e.options));
 	}
 });
-var c = Hr({
+var m = ni({
 	tag: "seroval-plugins/web/File",
 	test(e) {
 		return typeof File == "undefined" ? !1 : e instanceof File;
@@ -3712,37 +4255,38 @@ var c = Hr({
 		return new File([r.deserialize(e.buffer)], r.deserialize(e.name), r.deserialize(e.options));
 	}
 });
-function g(e) {
+function y(e) {
 	let r = [];
 	return e.forEach((a, t) => {
 		r.push([t, a]);
 	}), r;
 }
-var i = {}, K = Hr({
+var o = {}, v = (e, r = new FormData(), a = 0, t = e.length, s) => {
+	for (; a < t; a++) s = e[a], r.append(s[0], s[1]);
+	return r;
+}, K = ni({
 	tag: "seroval-plugins/web/FormData",
-	extends: [c, Hr({
+	extends: [m, ni({
 		tag: "seroval-plugins/web/FormDataFactory",
 		test(e) {
-			return e === i;
+			return e === o;
 		},
 		parse: {
-			sync() {},
-			async async() {
-				return await Promise.resolve(void 0);
+			sync() {
+				return o;
 			},
-			stream() {}
+			async async() {
+				return await Promise.resolve(o);
+			},
+			stream() {
+				return o;
+			}
 		},
-		serialize(e, r) {
-			return r.createEffectfulFunction([
-				"e",
-				"f",
-				"i",
-				"s",
-				"t"
-			], "f=new FormData;for(i=0,s=e.length;i<s;i++)f.append((t=e[i])[0],t[1]);return f");
+		serialize() {
+			return v.toString();
 		},
 		deserialize() {
-			return i;
+			return o;
 		}
 	})],
 	test(e) {
@@ -3751,20 +4295,20 @@ var i = {}, K = Hr({
 	parse: {
 		sync(e, r) {
 			return {
-				factory: r.parse(i),
-				entries: r.parse(g(e))
+				factory: r.parse(o),
+				entries: r.parse(y(e))
 			};
 		},
 		async async(e, r) {
 			return {
-				factory: await r.parse(i),
-				entries: await r.parse(g(e))
+				factory: await r.parse(o),
+				entries: await r.parse(y(e))
 			};
 		},
 		stream(e, r) {
 			return {
-				factory: r.parse(i),
-				entries: r.parse(g(e))
+				factory: r.parse(o),
+				entries: r.parse(y(e))
 			};
 		}
 	},
@@ -3772,44 +4316,39 @@ var i = {}, K = Hr({
 		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.entries) + ")";
 	},
 	deserialize(e, r) {
-		let a = new FormData(), t = r.deserialize(e.entries);
-		for (let n = 0, R$1 = t.length; n < R$1; n++) {
-			let b = t[n];
-			a.append(b[0], b[1]);
-		}
-		return a;
+		return v(r.deserialize(e.entries));
 	}
 });
-function y(e) {
+function g(e) {
 	let r = [];
 	return e.forEach((a, t) => {
 		r.push([t, a]);
 	}), r;
 }
-var l = Hr({
+var l = ni({
 	tag: "seroval-plugins/web/Headers",
 	test(e) {
 		return typeof Headers == "undefined" ? !1 : e instanceof Headers;
 	},
 	parse: {
 		sync(e, r) {
-			return r.parse(y(e));
+			return { value: r.parse(g(e)) };
 		},
 		async async(e, r) {
-			return await r.parse(y(e));
+			return { value: await r.parse(g(e)) };
 		},
 		stream(e, r) {
-			return r.parse(y(e));
+			return { value: r.parse(g(e)) };
 		}
 	},
 	serialize(e, r) {
-		return "new Headers(" + r.serialize(e) + ")";
+		return "new Headers(" + r.serialize(e.value) + ")";
 	},
 	deserialize(e, r) {
-		return new Headers(r.deserialize(e));
+		return new Headers(r.deserialize(e.value));
 	}
 });
-var x = Hr({
+var $ = ni({
 	tag: "seroval-plugins/web/ImageData",
 	test(e) {
 		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
@@ -3847,59 +4386,79 @@ var x = Hr({
 		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
 	}
 });
-var p = {}, ee = Hr({
+var n = {}, P = (e) => new ReadableStream({ start: (r) => {
+	e.on({
+		next: (a) => {
+			try {
+				r.enqueue(a);
+			} catch (t) {}
+		},
+		throw: (a) => {
+			r.error(a);
+		},
+		return: () => {
+			try {
+				r.close();
+			} catch (a) {}
+		}
+	});
+} }), x = ni({
 	tag: "seroval-plugins/web/ReadableStreamFactory",
 	test(e) {
-		return e === p;
+		return e === n;
 	},
 	parse: {
-		sync() {},
-		async async() {
-			return await Promise.resolve(void 0);
+		sync() {
+			return n;
 		},
-		stream() {}
+		async async() {
+			return await Promise.resolve(n);
+		},
+		stream() {
+			return n;
+		}
 	},
-	serialize(e, r) {
-		return r.createFunction(["d"], "new ReadableStream({start:" + r.createEffectfulFunction(["c"], "d.on({next:" + r.createEffectfulFunction(["v"], "c.enqueue(v)") + ",throw:" + r.createEffectfulFunction(["v"], "c.error(v)") + ",return:" + r.createEffectfulFunction([], "c.close()") + "})") + "})");
+	serialize() {
+		return P.toString();
 	},
 	deserialize() {
-		return p;
+		return n;
 	}
 });
 function w(e) {
-	let r = K$1(), a = e.getReader();
+	let r = te$1(), a = e.getReader();
 	async function t() {
 		try {
-			let n = await a.read();
-			n.done ? r.return(n.value) : (r.next(n.value), await t());
-		} catch (n) {
-			r.throw(n);
+			let s = await a.read();
+			s.done ? r.return(s.value) : (r.next(s.value), await t());
+		} catch (s) {
+			r.throw(s);
 		}
 	}
 	return t().catch(() => {}), r;
 }
-var u = Hr({
+var p = ni({
 	tag: "seroval/plugins/web/ReadableStream",
-	extends: [ee],
+	extends: [x],
 	test(e) {
 		return typeof ReadableStream == "undefined" ? !1 : e instanceof ReadableStream;
 	},
 	parse: {
 		sync(e, r) {
 			return {
-				factory: r.parse(p),
-				stream: r.parse(K$1())
+				factory: r.parse(n),
+				stream: r.parse(te$1())
 			};
 		},
 		async async(e, r) {
 			return {
-				factory: await r.parse(p),
+				factory: await r.parse(n),
 				stream: await r.parse(w(e))
 			};
 		},
 		stream(e, r) {
 			return {
-				factory: r.parse(p),
+				factory: r.parse(n),
 				stream: r.parse(w(e))
 			};
 		}
@@ -3908,23 +4467,10 @@ var u = Hr({
 		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.stream) + ")";
 	},
 	deserialize(e, r) {
-		let a = r.deserialize(e.stream);
-		return new ReadableStream({ start(t) {
-			a.on({
-				next(n) {
-					t.enqueue(n);
-				},
-				throw(n) {
-					t.error(n);
-				},
-				return() {
-					t.close();
-				}
-			});
-		} });
+		return P(r.deserialize(e.stream));
 	}
 });
-function P(e, r) {
+function N(e, r) {
 	return {
 		body: r,
 		cache: e.cache,
@@ -3939,9 +4485,9 @@ function P(e, r) {
 		referrerPolicy: e.referrerPolicy
 	};
 }
-var ne = Hr({
+var te = ni({
 	tag: "seroval-plugins/web/Request",
-	extends: [u, l],
+	extends: [p, l],
 	test(e) {
 		return typeof Request == "undefined" ? !1 : e instanceof Request;
 	},
@@ -3949,13 +4495,13 @@ var ne = Hr({
 		async async(e, r) {
 			return {
 				url: await r.parse(e.url),
-				options: await r.parse(P(e, e.body ? await e.clone().arrayBuffer() : null))
+				options: await r.parse(N(e, e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null))
 			};
 		},
 		stream(e, r) {
 			return {
 				url: r.parse(e.url),
-				options: r.parse(P(e, e.clone().body))
+				options: r.parse(N(e, e.body && !e.bodyUsed ? e.clone().body : null))
 			};
 		}
 	},
@@ -3966,30 +4512,30 @@ var ne = Hr({
 		return new Request(r.deserialize(e.url), r.deserialize(e.options));
 	}
 });
-function N(e) {
+function h(e) {
 	return {
 		headers: e.headers,
 		status: e.status,
 		statusText: e.statusText
 	};
 }
-var ie = Hr({
+var ne = ni({
 	tag: "seroval-plugins/web/Response",
-	extends: [u, l],
+	extends: [p, l],
 	test(e) {
 		return typeof Response == "undefined" ? !1 : e instanceof Response;
 	},
 	parse: {
 		async async(e, r) {
 			return {
-				body: await r.parse(e.body ? await e.clone().arrayBuffer() : null),
-				options: await r.parse(N(e))
+				body: await r.parse(e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null),
+				options: await r.parse(h(e))
 			};
 		},
 		stream(e, r) {
 			return {
-				body: r.parse(e.clone().body),
-				options: r.parse(N(e))
+				body: r.parse(e.body && !e.bodyUsed ? e.clone().body : null),
+				options: r.parse(h(e))
 			};
 		}
 	},
@@ -4000,50 +4546,50 @@ var ie = Hr({
 		return new Response(r.deserialize(e.body), r.deserialize(e.options));
 	}
 });
-var ue = Hr({
+var pe = ni({
 	tag: "seroval-plugins/web/URL",
 	test(e) {
 		return typeof URL == "undefined" ? !1 : e instanceof URL;
 	},
 	parse: {
 		sync(e, r) {
-			return r.parse(e.href);
+			return { value: r.parse(e.href) };
 		},
 		async async(e, r) {
-			return await r.parse(e.href);
+			return { value: await r.parse(e.href) };
 		},
 		stream(e, r) {
-			return r.parse(e.href);
+			return { value: r.parse(e.href) };
 		}
 	},
 	serialize(e, r) {
-		return "new URL(" + r.serialize(e) + ")";
+		return "new URL(" + r.serialize(e.value) + ")";
 	},
 	deserialize(e, r) {
-		return new URL(r.deserialize(e));
+		return new URL(r.deserialize(e.value));
 	}
 });
-var me = Hr({
+var fe = ni({
 	tag: "seroval-plugins/web/URLSearchParams",
 	test(e) {
 		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
 	},
 	parse: {
 		sync(e, r) {
-			return r.parse(e.toString());
+			return { value: r.parse(e.toString()) };
 		},
 		async async(e, r) {
-			return await r.parse(e.toString());
+			return { value: await r.parse(e.toString()) };
 		},
 		stream(e, r) {
-			return r.parse(e.toString());
+			return { value: r.parse(e.toString()) };
 		}
 	},
 	serialize(e, r) {
-		return "new URLSearchParams(" + r.serialize(e) + ")";
+		return "new URLSearchParams(" + r.serialize(e.value) + ")";
 	},
 	deserialize(e, r) {
-		return new URLSearchParams(r.deserialize(e));
+		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
 
@@ -4206,7 +4752,7 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const ES2017FLAG = R.AggregateError | R.BigIntTypedArray;
+const ES2017FLAG = L$2.AggregateError | L$2.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
@@ -4219,48 +4765,48 @@ function ssr(t, ...nodes) {
 	}
 	return { t };
 }
-function escape(s$2, attr) {
-	const t = typeof s$2;
+function escape(s, attr) {
+	const t = typeof s;
 	if (t !== "string") {
-		if (!attr && t === "function") return escape(s$2());
-		if (!attr && Array.isArray(s$2)) {
-			s$2 = s$2.slice();
-			for (let i$1 = 0; i$1 < s$2.length; i$1++) s$2[i$1] = escape(s$2[i$1]);
-			return s$2;
+		if (!attr && t === "function") return escape(s());
+		if (!attr && Array.isArray(s)) {
+			s = s.slice();
+			for (let i$1 = 0; i$1 < s.length; i$1++) s[i$1] = escape(s[i$1]);
+			return s;
 		}
-		if (attr && t === "boolean") return String(s$2);
-		return s$2;
+		if (attr && t === "boolean") return String(s);
+		return s;
 	}
 	const delim = attr ? "\\"" : "<";
 	const escDelim = attr ? "&quot;" : "&lt;";
-	let iDelim = s$2.indexOf(delim);
-	let iAmp = s$2.indexOf("&");
-	if (iDelim < 0 && iAmp < 0) return s$2;
+	let iDelim = s.indexOf(delim);
+	let iAmp = s.indexOf("&");
+	if (iDelim < 0 && iAmp < 0) return s;
 	let left = 0, out = "";
 	while (iDelim >= 0 && iAmp >= 0) if (iDelim < iAmp) {
-		if (left < iDelim) out += s$2.substring(left, iDelim);
+		if (left < iDelim) out += s.substring(left, iDelim);
 		out += escDelim;
 		left = iDelim + 1;
-		iDelim = s$2.indexOf(delim, left);
+		iDelim = s.indexOf(delim, left);
 	} else {
-		if (left < iAmp) out += s$2.substring(left, iAmp);
+		if (left < iAmp) out += s.substring(left, iAmp);
 		out += "&amp;";
 		left = iAmp + 1;
-		iAmp = s$2.indexOf("&", left);
+		iAmp = s.indexOf("&", left);
 	}
 	if (iDelim >= 0) do {
-		if (left < iDelim) out += s$2.substring(left, iDelim);
+		if (left < iDelim) out += s.substring(left, iDelim);
 		out += escDelim;
 		left = iDelim + 1;
-		iDelim = s$2.indexOf(delim, left);
+		iDelim = s.indexOf(delim, left);
 	} while (iDelim >= 0);
 	else while (iAmp >= 0) {
-		if (left < iAmp) out += s$2.substring(left, iAmp);
+		if (left < iAmp) out += s.substring(left, iAmp);
 		out += "&amp;";
 		left = iAmp + 1;
-		iAmp = s$2.indexOf("&", left);
+		iAmp = s.indexOf("&", left);
 	}
-	return left < s$2.length ? out + s$2.substring(left) : out;
+	return left < s.length ? out + s.substring(left) : out;
 }
 function resolveSSRNode(node, top) {
 	const t = typeof node;

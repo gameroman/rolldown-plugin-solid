@@ -4,6 +4,7 @@ createFixtureTest("custom builtIns configuration", "config-test.tsx", {
   plugin: { solid: { builtIns: ["createResource", "createSignal"] } },
 });
 
+// TODO(bad test): Output changes when updating seroval
 createFixtureTest("SSR generate mode", "config-test.tsx", {
   platform: "node",
   plugin: { solid: { generate: "ssr" } },
