@@ -64,7 +64,7 @@ const presetTypescript: unknown = declarePreset((api, opts: Options) => {
             test: /\.cts$/,
             sourceType: "unambiguous",
             plugins: [
-              [transformModulesCommonJS, { allowTopLevelThis: true }],
+              // [transformModulesCommonJS, { allowTopLevelThis: true }],
               [transformTypeScript, pluginOptions(true)],
             ],
           },
