@@ -21,10 +21,7 @@
 - [x] `batch` fixture - Grouping updates
 - [x] `onMount` fixture - Component mounting
 - [x] `createStore` fixture - Nested reactive state
-
-## ⚠️ Critical
-
-- [ ] Add proper tests for `"universal"` mode
+- [x] `"universal"` mode
 
 ## State Management
 
