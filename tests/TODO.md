@@ -21,7 +21,9 @@
 - [x] `batch` fixture - Grouping updates
 - [x] `onMount` fixture - Component mounting
 - [x] `createStore` fixture - Nested reactive state
-- [x] `"universal"` mode
+- [x] `universal.tsx` fixture - universal mode
+- [x] `fragment.tsx` fixture - fragments
+- [x] Different generate modes (dom, ssr, universal)
 
 ## State Management
 
@@ -46,6 +48,5 @@
 ## Configuration Testing
 
 - [ ] Custom builtIns configuration
-- [ ] Different generate modes (dom, ssr, universal)
 - [ ] Event delegation customization
 - [ ] Context to Custom Elements options
