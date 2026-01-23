@@ -1,6 +1,6 @@
 import type { File } from "@babel/core";
-import { template } from "@babel/core";
 import { buildDynamicImport } from "@babel/helper-module-transforms";
+import * as template from "@babel/template";
 import type { NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
 

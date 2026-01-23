@@ -1,4 +1,4 @@
-import { template } from "@babel/core";
+import * as template from "@babel/template";
 import type { NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
 import { EXPORTED_CONST_ENUMS_IN_NAMESPACE } from "./const-enum";

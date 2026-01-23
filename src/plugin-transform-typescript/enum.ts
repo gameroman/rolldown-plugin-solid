@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { template } from "@babel/core";
+import * as template from "@babel/template";
 import type { NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
 import { addComment, type Node } from "@babel/types";

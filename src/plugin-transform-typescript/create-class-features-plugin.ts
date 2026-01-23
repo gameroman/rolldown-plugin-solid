@@ -1,4 +1,4 @@
-import { template } from "@babel/core";
+import * as template from "@babel/template";
 import type { NodePath, Scope, Visitor } from "@babel/traverse";
 import { visitors } from "@babel/traverse";
 import * as t from "@babel/types";
