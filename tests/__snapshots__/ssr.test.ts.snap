@@ -25,15 +25,15 @@ const UNOWNED = {
 };
 let Owner = null;
 function createOwner() {
-	const o$3 = {
+	const o$2 = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$3];
-	else Owner.owned.push(o$3);
-	return o$3;
+	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
+	else Owner.owned.push(o$2);
+	return o$2;
 }
 function createRoot(fn$1, detachedOwner) {
 	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn$1.length === 0 ? UNOWNED : {
@@ -54,21 +54,21 @@ function createRoot(fn$1, detachedOwner) {
 	return result;
 }
 function createSignal(value, options) {
-	return [() => value, (v$3) => {
-		return value = typeof v$3 === "function" ? v$3(value) : v$3;
+	return [() => value, (v$2) => {
+		return value = typeof v$2 === "function" ? v$2(value) : v$2;
 	}];
 }
 function createMemo(fn$1, value) {
 	Owner = createOwner();
-	let v$3;
+	let v$2;
 	try {
-		v$3 = fn$1(value);
+		v$2 = fn$1(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$3;
+	return () => v$2;
 }
 function cleanNode(node) {
 	if (node.owned) {
@@ -91,8 +91,8 @@ function createContext(defaultValue) {
 function children(fn$1) {
 	const memo = createMemo(() => resolveChildren(fn$1()));
 	memo.toArray = () => {
-		const c$3 = memo();
-		return Array.isArray(c$3) ? c$3 : c$3 != null ? [c$3] : [];
+		const c$2 = memo();
+		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
 	};
 	return memo;
 }
@@ -137,10 +137,10 @@ function getContextId(count) {
 const SuspenseContext = createContext();
 
 //#endregion
-//#region node_modules/solid-js/node_modules/seroval/dist/esm/production/index.mjs
-var L$2 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$2 || {});
-var v$2 = Symbol.asyncIterator, mr$1 = Symbol.hasInstance, R$1 = Symbol.isConcatSpreadable, C$1 = Symbol.iterator, pr$1 = Symbol.match, dr$1 = Symbol.matchAll, gr$1 = Symbol.replace, yr$1 = Symbol.search, Nr$1 = Symbol.species, br$1 = Symbol.split, vr$1 = Symbol.toPrimitive, P$2 = Symbol.toStringTag, Cr$1 = Symbol.unscopables;
-var rt$1 = {
+//#region node_modules/seroval/dist/esm/production/index.mjs
+var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
+var rt = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -154,35 +154,35 @@ var rt$1 = {
 	10: "Symbol.toPrimitive",
 	11: "Symbol.toStringTag",
 	12: "Symbol.unscopables"
-}, ve$1 = {
-	[v$2]: 0,
-	[mr$1]: 1,
-	[R$1]: 2,
-	[C$1]: 3,
-	[pr$1]: 4,
-	[dr$1]: 5,
-	[gr$1]: 6,
-	[yr$1]: 7,
-	[Nr$1]: 8,
-	[br$1]: 9,
-	[vr$1]: 10,
-	[P$2]: 11,
-	[Cr$1]: 12
-}, tt$1 = {
-	0: v$2,
-	1: mr$1,
-	2: R$1,
-	3: C$1,
-	4: pr$1,
-	5: dr$1,
-	6: gr$1,
-	7: yr$1,
-	8: Nr$1,
-	9: br$1,
-	10: vr$1,
-	11: P$2,
-	12: Cr$1
-}, nt$1 = {
+}, ve = {
+	[v$1]: 0,
+	[mr]: 1,
+	[R]: 2,
+	[C]: 3,
+	[pr]: 4,
+	[dr]: 5,
+	[gr]: 6,
+	[yr]: 7,
+	[Nr]: 8,
+	[br]: 9,
+	[vr]: 10,
+	[P$1]: 11,
+	[Cr]: 12
+}, tt = {
+	0: v$1,
+	1: mr,
+	2: R,
+	3: C,
+	4: pr,
+	5: dr,
+	6: gr,
+	7: yr,
+	8: Nr,
+	9: br,
+	10: vr,
+	11: P$1,
+	12: Cr
+}, nt = {
 	2: "!0",
 	3: "!1",
 	1: "void 0",
@@ -191,10 +191,10 @@ var rt$1 = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, o$2 = void 0, ot$1 = {
+}, o$1 = void 0, ot = {
 	2: !0,
 	3: !1,
-	1: o$2,
+	1: o$1,
 	0: null,
 	4: -0,
 	5: Number.POSITIVE_INFINITY,
@@ -218,7 +218,7 @@ var Ce = {
 	5: TypeError,
 	6: URIError
 };
-function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 	return {
 		t: e,
 		i: r,
@@ -234,10 +234,10 @@ function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 		l: d$1
 	};
 }
-function F$1(e) {
-	return c$2(2, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+function F(e) {
+	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-var J$1 = F$1(2), Z$1 = F$1(3), Ae$1 = F$1(1), Ee$1 = F$1(0), st$1 = F$1(4), it$1 = F$1(5), ut$1 = F$1(6), lt$1 = F$1(7);
+var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
 function fn(e) {
 	switch (e) {
 		case "\\"": return "\\\\\\"";
@@ -251,7 +251,7 @@ function fn(e) {
 		case "<": return "\\\\x3C";
 		case "\\u2028": return "\\\\u2028";
 		case "\\u2029": return "\\\\u2029";
-		default: return o$2;
+		default: return o$1;
 	}
 }
 function y$1(e) {
@@ -259,35 +259,35 @@ function y$1(e) {
 	for (let a = 0, s = e.length; a < s; a++) n$1 = fn(e[a]), n$1 && (r += e.slice(t, a) + n$1, t = a + 1);
 	return t === 0 ? r = e : r += e.slice(t), r;
 }
-var U$1 = "__SEROVAL_REFS__", ce$1 = "$R", Ie$1 = \`self.\${ce$1}\`;
+var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
 function mn(e) {
-	return e == null ? \`\${Ie$1}=\${Ie$1}||[]\` : \`(\${Ie$1}=\${Ie$1}||{})["\${y$1(e)}"]=[]\`;
+	return e == null ? \`\${Ie}=\${Ie}||[]\` : \`(\${Ie}=\${Ie}||{})["\${y$1(e)}"]=[]\`;
 }
-var Ar$1 = /* @__PURE__ */ new Map(), j$1 = /* @__PURE__ */ new Map();
+var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
 function Er(e) {
-	return Ar$1.has(e);
+	return Ar.has(e);
 }
 function ct(e) {
-	if (Er(e)) return Ar$1.get(e);
+	if (Er(e)) return Ar.get(e);
 	throw new Re(e);
 }
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U$1, {
-	value: j$1,
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U$1, {
-	value: j$1,
+}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U$1, {
-	value: j$1,
+}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U$1, {
-	value: j$1,
+}) : typeof global != "undefined" && Object.defineProperty(global, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
@@ -309,82 +309,82 @@ function Oe(e) {
 }
 function Te(e) {
 	switch (e) {
-		case Number.POSITIVE_INFINITY: return it$1;
-		case Number.NEGATIVE_INFINITY: return ut$1;
+		case Number.POSITIVE_INFINITY: return it;
+		case Number.NEGATIVE_INFINITY: return ut;
 	}
-	return e !== e ? lt$1 : Object.is(e, -0) ? st$1 : c$2(0, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return e !== e ? lt : Object.is(e, -0) ? st : c$1(0, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function X(e) {
-	return c$2(1, o$2, y$1(e), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(1, o$1, y$1(e), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function we(e) {
-	return c$2(3, o$2, "" + e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(3, o$1, "" + e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function mt(e) {
-	return c$2(4, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(4, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function he(e, r) {
 	let t = r.valueOf();
-	return c$2(5, e, t !== t ? "" : r.toISOString(), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(5, e, t !== t ? "" : r.toISOString(), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function ze(e, r) {
-	return c$2(6, e, o$2, y$1(r.source), r.flags, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(6, e, o$1, y$1(r.source), r.flags, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function pt(e, r) {
-	return c$2(17, e, ve$1[r], o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(17, e, ve[r], o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function dt(e, r) {
-	return c$2(18, e, y$1(ct(r)), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(18, e, y$1(ct(r)), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function fe$1(e, r, t) {
-	return c$2(25, e, t, y$1(r), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(25, e, t, y$1(r), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function _e(e, r, t) {
-	return c$2(9, e, o$2, o$2, o$2, o$2, o$2, t, o$2, o$2, Oe(r), o$2);
+	return c$1(9, e, o$1, o$1, o$1, o$1, o$1, t, o$1, o$1, Oe(r), o$1);
 }
 function ke(e, r) {
-	return c$2(21, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(21, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function De(e, r, t) {
-	return c$2(15, e, o$2, r.constructor.name, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.length);
+	return c$1(15, e, o$1, r.constructor.name, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.length);
 }
 function Fe(e, r, t) {
-	return c$2(16, e, o$2, r.constructor.name, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.byteLength);
+	return c$1(16, e, o$1, r.constructor.name, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.byteLength);
 }
 function Be(e, r, t) {
-	return c$2(20, e, o$2, o$2, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.byteLength);
+	return c$1(20, e, o$1, o$1, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.byteLength);
 }
 function Ve(e, r, t) {
-	return c$2(13, e, xe(r), o$2, y$1(r.message), t, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(13, e, xe(r), o$1, y$1(r.message), t, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function Me(e, r, t) {
-	return c$2(14, e, xe(r), o$2, y$1(r.message), t, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(14, e, xe(r), o$1, y$1(r.message), t, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function Le(e, r) {
-	return c$2(7, e, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2, o$2);
+	return c$1(7, e, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, o$1);
 }
 function Ue(e, r) {
-	return c$2(28, o$2, o$2, o$2, o$2, o$2, o$2, [e, r], o$2, o$2, o$2, o$2);
+	return c$1(28, o$1, o$1, o$1, o$1, o$1, o$1, [e, r], o$1, o$1, o$1, o$1);
 }
 function je(e, r) {
-	return c$2(30, o$2, o$2, o$2, o$2, o$2, o$2, [e, r], o$2, o$2, o$2, o$2);
+	return c$1(30, o$1, o$1, o$1, o$1, o$1, o$1, [e, r], o$1, o$1, o$1, o$1);
 }
 function Ye(e, r, t) {
-	return c$2(31, e, o$2, o$2, o$2, o$2, o$2, t, r, o$2, o$2, o$2);
+	return c$1(31, e, o$1, o$1, o$1, o$1, o$1, t, r, o$1, o$1, o$1);
 }
 function qe(e, r) {
-	return c$2(32, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(32, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function We(e, r) {
-	return c$2(33, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(33, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function Ge(e, r) {
-	return c$2(34, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(34, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function Ke(e, r, t, n$1) {
-	return c$2(35, e, t, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2, n$1);
+	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n$1);
 }
-var { toString: ys$1 } = Object.prototype;
+var { toString: ys } = Object.prototype;
 var yn = {
 	parsing: 1,
 	serialization: 2,
@@ -463,7 +463,7 @@ var Y$1 = class {
 		this.replacement = t;
 	}
 };
-var re$1 = () => {
+var re = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -472,11 +472,11 @@ var re$1 = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn$1 = (e, r) => {
+}, vn = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn$1 = (e, r) => {
+}, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt$1 = re$1.toString(), Nt$1 = vn$1.toString(), bt$1 = Cn$1.toString(), Rr$1 = () => {
+}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
 	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
 	}, i$1 = (l$1, g$1, S, d$1) => {
@@ -497,7 +497,7 @@ var re$1 = () => {
 			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
 		}
 	};
-}, vt$1 = Rr$1.toString(), Pr$1 = (e) => (r) => () => {
+}, vt = Rr.toString(), Pr = (e) => (r) => () => {
 	let t = 0, n$1 = {
 		[e]: () => n$1,
 		next: () => {
@@ -514,7 +514,7 @@ var re$1 = () => {
 		}
 	};
 	return n$1;
-}, Ct$1 = Pr$1.toString(), xr$1 = (e, r) => (t) => () => {
+}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
 	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
 		for (; S < d$1; S++) u$1[S].s({
 			done: !0,
@@ -572,11 +572,11 @@ var re$1 = () => {
 		}
 	};
 	return g$1;
-}, At$1 = xr$1.toString(), Or$1 = (e) => {
+}, At = xr.toString(), Or = (e) => {
 	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
 	return n$1.buffer;
-}, Et$1 = Or$1.toString();
+}, Et = Or.toString();
 function Ze(e) {
 	return "__SEROVAL_SEQUENCE__" in e;
 }
@@ -589,7 +589,7 @@ function Tr(e, r, t) {
 	};
 }
 function $e(e) {
-	let r = [], t = -1, n$1 = -1, a = e[C$1]();
+	let r = [], t = -1, n$1 = -1, a = e[C]();
 	for (;;) try {
 		let s = a.next();
 		if (r.push(s.value), s.done) {
@@ -601,7 +601,7 @@ function $e(e) {
 	}
 	return Tr(r, t, n$1);
 }
-var An$1 = Pr$1(C$1);
+var An = Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -612,20 +612,20 @@ var xt = {
 	5: {}
 }, Ot = {
 	0: "[]",
-	1: yt$1,
-	2: Nt$1,
-	3: bt$1,
-	4: vt$1,
-	5: Et$1
+	1: yt,
+	2: Nt,
+	3: bt,
+	4: vt,
+	5: Et
 };
 function M(e) {
 	return "__SEROVAL_STREAM__" in e;
 }
-function te$2() {
-	return Rr$1();
+function te$1() {
+	return Rr();
 }
 function Xe(e) {
-	let r = te$2(), t = e[v$2]();
+	let r = te$1(), t = e[v$1]();
 	async function n$1() {
 		try {
 			let a = await t.next();
@@ -636,7 +636,7 @@ function Xe(e) {
 	}
 	return n$1().catch(() => {}), r;
 }
-var En$1 = xr$1(v$2, re$1);
+var En = xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -674,39 +674,42 @@ function q$1(e, r) {
 function I(e, r) {
 	let t = q$1(e, r);
 	if (t.type !== 0) return t.value;
-	if (r in ve$1) return pt(t.value, r);
+	if (r in ve) return pt(t.value, r);
 	throw new x$1(r);
 }
 function k(e, r) {
 	let t = Qe(e, xt[r]);
-	return t.type === 1 ? t.value : c$2(26, t.value, r, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return t.type === 1 ? t.value : c$1(26, t.value, r, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function er(e) {
 	let r = Qe(e, Rt);
-	return r.type === 1 ? r.value : c$2(27, r.value, o$2, o$2, o$2, o$2, o$2, o$2, I(e, C$1), o$2, o$2, o$2);
+	return r.type === 1 ? r.value : c$1(27, r.value, o$1, o$1, o$1, o$1, o$1, o$1, I(e, C), o$1, o$1, o$1);
 }
 function rr(e) {
 	let r = Qe(e, Pt);
-	return r.type === 1 ? r.value : c$2(29, r.value, o$2, o$2, o$2, o$2, o$2, [k(e, 1), I(e, v$2)], o$2, o$2, o$2, o$2);
+	return r.type === 1 ? r.value : c$1(29, r.value, o$1, o$1, o$1, o$1, o$1, [k(e, 1), I(e, v$1)], o$1, o$1, o$1, o$1);
 }
 function tr(e, r, t, n$1) {
-	return c$2(t ? 11 : 10, e, o$2, o$2, o$2, n$1, o$2, o$2, o$2, o$2, Oe(r), o$2);
+	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n$1, o$1, o$1, o$1, o$1, Oe(r), o$1);
 }
 function nr(e, r, t, n$1) {
-	return c$2(8, r, o$2, o$2, o$2, o$2, {
+	return c$1(8, r, o$1, o$1, o$1, o$1, {
 		k: t,
 		v: n$1
-	}, o$2, k(e, 0), o$2, o$2, o$2);
+	}, o$1, k(e, 0), o$1, o$1, o$1);
 }
 function ht(e, r, t) {
-	return c$2(22, r, t, o$2, o$2, o$2, o$2, o$2, k(e, 1), o$2, o$2, o$2);
+	return c$1(22, r, t, o$1, o$1, o$1, o$1, o$1, k(e, 1), o$1, o$1, o$1);
 }
 function or(e, r, t) {
 	let n$1 = new Uint8Array(t), a = "";
 	for (let s = 0, i$1 = n$1.length; s < i$1; s++) a += String.fromCharCode(n$1[s]);
-	return c$2(19, r, y$1(btoa(a)), o$2, o$2, o$2, o$2, o$2, k(e, 5), o$2, o$2, o$2);
+	return c$1(19, r, y$1(btoa(a)), o$1, o$1, o$1, o$1, o$1, k(e, 5), o$1, o$1, o$1);
 }
-var ae$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae$1 || {});
+var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
+function ni(e) {
+	return e;
+}
 function kt(e, r) {
 	for (let t = 0, n$1 = r.length; t < n$1; t++) {
 		let a = r[t];
@@ -719,17 +722,17 @@ function A(e) {
 		return kt(r, e), [...r];
 	}
 }
-var Eo$1 = () => T, Io$1 = Eo$1.toString(), qt$1 = /=>/.test(Io$1);
+var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
 function sr(e, r) {
-	return qt$1 ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>" + (r.startsWith("{") ? "(" + r + ")" : r) : "function(" + e.join(",") + "){return " + r + "}";
+	return qt ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>" + (r.startsWith("{") ? "(" + r + ")" : r) : "function(" + e.join(",") + "){return " + r + "}";
 }
 function Wt(e, r) {
-	return qt$1 ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>{" + r + "}" : "function(" + e.join(",") + "){" + r + "}";
+	return qt ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>{" + r + "}" : "function(" + e.join(",") + "){" + r + "}";
 }
-var Ht$1 = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt$1 = Ht$1.length, Jt$1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt$1 = Jt$1.length;
+var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 function Br(e) {
-	let r = e % Gt$1, t = Ht$1[r];
-	for (e = (e - r) / Gt$1; e > 0;) r = e % Kt$1, t += Jt$1[r], e = (e - r) / Kt$1;
+	let r = e % Gt, t = Ht[r];
+	for (e = (e - r) / Gt; e > 0;) r = e % Kt, t += Jt[r], e = (e - r) / Kt;
 	return t;
 }
 var Ro = /^[$A-Z_][0-9A-Z_$]*$/i;
@@ -750,7 +753,7 @@ function Po(e) {
 	for (let n$1 = 1, a = e.length, s, i$1 = t; n$1 < a; n$1++) s = e[n$1], s.t === 0 && s.v === i$1.v ? t = {
 		t: 0,
 		s: s.s,
-		k: o$2,
+		k: o$1,
 		v: ye(t)
 	} : s.t === 2 && s.s === i$1.s ? t = {
 		t: 2,
@@ -760,13 +763,13 @@ function Po(e) {
 	} : s.t === 1 && s.s === i$1.s ? t = {
 		t: 1,
 		s: ye(t),
-		k: o$2,
+		k: o$1,
 		v: s.v
 	} : s.t === 3 && s.s === i$1.s ? t = {
 		t: 3,
 		s: ye(t),
 		k: s.k,
-		v: o$2
+		v: o$1
 	} : (r.push(t), t = s), i$1 = s;
 	return r.push(t), r;
 }
@@ -776,13 +779,13 @@ function tn(e) {
 		for (let n$1 = 0, a = t.length; n$1 < a; n$1++) r += ye(t[n$1]) + ",";
 		return r;
 	}
-	return o$2;
+	return o$1;
 }
 var xo = "Object.create(null)", Oo = "new Set", To = "new Map", wo = "Promise.resolve", ho = "Promise.reject", zo = {
 	3: "Object.freeze",
 	2: "Object.seal",
 	1: "Object.preventExtensions",
-	0: o$2
+	0: o$1
 };
 function nn(e, r) {
 	return {
@@ -800,7 +803,7 @@ function ur(e) {
 		mode: 2,
 		base: nn(2, e),
 		state: e,
-		child: o$2
+		child: o$1
 	};
 }
 var Mr = class {
@@ -818,7 +821,7 @@ function ko(e, r) {
 	return n$1 ?? (n$1 = Br(t), e.vars[t] = n$1), n$1;
 }
 function Do(e) {
-	return ce$1 + "[" + e + "]";
+	return ce + "[" + e + "]";
 }
 function m$1(e, r) {
 	return e.mode === 1 ? ko(e.state, r) : Do(r);
@@ -851,7 +854,7 @@ function Yr(e, r, t) {
 	e.assignments.push({
 		t: 0,
 		s: r,
-		k: o$2,
+		k: o$1,
 		v: t
 	});
 }
@@ -859,7 +862,7 @@ function Bo(e, r, t) {
 	e.base.assignments.push({
 		t: 1,
 		s: m$1(e, r),
-		k: o$2,
+		k: o$1,
 		v: t
 	});
 }
@@ -876,7 +879,7 @@ function Zt(e, r, t) {
 		t: 3,
 		s: m$1(e, r),
 		k: t,
-		v: o$2
+		v: o$1
 	});
 }
 function Ne(e, r, t, n$1) {
@@ -895,7 +898,7 @@ function se(e, r, t) {
 	return e.mode === 1 && !Lr(e.base, r) ? t : m$1(e, r) + "=" + t;
 }
 function Mo(e) {
-	return U$1 + ".get(\\"" + e.s + "\\")";
+	return U + ".get(\\"" + e.s + "\\")";
 }
 function $t(e, r, t, n$1) {
 	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n$1, m$1(e, t.i)), "") : f$1(e, t) : "";
@@ -966,7 +969,7 @@ function Wo(e, r, t) {
 		for (let u$1 = 0; u$1 < a; u$1++) qo(e, r, s, n$1[u$1], i$1[u$1]);
 		return e.base.stack.pop(), tn(s);
 	}
-	return o$2;
+	return o$1;
 }
 function qr(e, r, t) {
 	if (r.p) {
@@ -1097,7 +1100,7 @@ function ia(e, r) {
 }
 function ua(e, r) {
 	let t = "", n$1 = !1;
-	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct$1 + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
+	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
 }
 function la(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
@@ -1105,7 +1108,7 @@ function la(e, r) {
 function ca(e, r) {
 	let t = r.a[0], n$1 = r.a[1], a = e.base, s = "";
 	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n$1.t !== 4 && (O$1(a, n$1.i), s += (s ? "," : "(") + f$1(e, n$1)), s && (s += ",");
-	let i$1 = se(e, r.i, "(" + At$1 + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
+	let i$1 = se(e, r.i, "(" + At + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
 	return s ? s + i$1 + ")" : i$1;
 }
 function fa(e, r) {
@@ -1145,7 +1148,7 @@ function ga(e, r) {
 }
 function ya(e, r) {
 	switch (r.t) {
-		case 17: return rt$1[r.s];
+		case 17: return rt[r.s];
 		case 18: return Mo(r);
 		case 9: return Lo(e, r);
 		case 10: return Uo(e, r);
@@ -1171,7 +1174,7 @@ function ya(e, r) {
 }
 function f$1(e, r) {
 	switch (r.t) {
-		case 2: return nt$1[r.s];
+		case 2: return nt[r.s];
 		case 0: return "" + r.s;
 		case 1: return "\\"" + r.s + "\\"";
 		case 3: return r.s + "n";
@@ -1192,9 +1195,9 @@ function f$1(e, r) {
 function cr(e, r) {
 	let t = f$1(e, r), n$1 = r.i;
 	if (n$1 == null) return t;
-	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce$1, l$1 = a ? "(" + t + "," + a + s + ")" : t;
+	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce, l$1 = a ? "(" + t + "," + a + s + ")" : t;
 	if (u$1 === "") return r.t === 10 && !a ? "(" + l$1 + ")" : l$1;
-	let g$1 = i$1 == null ? "()" : "(" + ce$1 + "[\\"" + y$1(i$1) + "\\"])";
+	let g$1 = i$1 == null ? "()" : "(" + ce + "[\\"" + y$1(i$1) + "\\"])";
 	return "(" + sr([u$1], l$1) + ")" + g$1;
 }
 var Gr = class {
@@ -1261,7 +1264,7 @@ function va(e, r, t, n$1) {
 function Jr(e, r, t) {
 	let n$1 = Object.entries(t), a = [], s = [];
 	for (let i$1 = 0, u$1 = n$1.length; i$1 < u$1; i$1++) a.push(y$1(n$1[i$1][0])), s.push(E$1(e, r, n$1[i$1][1]));
-	return C$1 in t && (a.push(I(e.base, C$1)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$2 in t && (a.push(I(e.base, v$2)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$2() : Xe(t))))), P$2 in t && (a.push(I(e.base, P$2)), s.push(X(t[P$2]))), R$1 in t && (a.push(I(e.base, R$1)), s.push(t[R$1] ? J$1 : Z$1)), {
+	return C in t && (a.push(I(e.base, C)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$1 in t && (a.push(I(e.base, v$1)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$1() : Xe(t))))), P$1 in t && (a.push(I(e.base, P$1)), s.push(X(t[P$1]))), R in t && (a.push(I(e.base, R)), s.push(t[R] ? J : Z)), {
 		k: a,
 		v: s
 	};
@@ -1283,11 +1286,11 @@ function Ia(e, r, t, n$1) {
 }
 function sn(e, r, t, n$1) {
 	let a = $$1(n$1, e.base.features);
-	return Ve(t, n$1, a ? Jr(e, r, a) : o$2);
+	return Ve(t, n$1, a ? Jr(e, r, a) : o$1);
 }
 function Ra(e, r, t, n$1) {
 	let a = $$1(n$1, e.base.features);
-	return Me(t, n$1, a ? Jr(e, r, a) : o$2);
+	return Me(t, n$1, a ? Jr(e, r, a) : o$1);
 }
 function Pa(e, r, t, n$1) {
 	let a = [], s = [];
@@ -1327,13 +1330,13 @@ function Oa(e, r, t, n$1) {
 function Ta(e, r, t) {
 	if (this.state.alive) {
 		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$2(23, e, o$2, o$2, o$2, o$2, o$2, [k(this.base, 2), n$1], o$2, o$2, o$2, o$2)), be(this);
+		n$1 && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n$1], o$1, o$1, o$1, o$1)), be(this);
 	}
 }
 function wa(e, r, t) {
 	if (this.state.alive) {
 		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$2(24, e, o$2, o$2, o$2, o$2, o$2, [k(this.base, 3), n$1], o$2, o$2, o$2, o$2));
+		n$1 && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n$1], o$1, o$1, o$1, o$1));
 	}
 	be(this);
 }
@@ -1346,18 +1349,18 @@ function za(e, r, t, n$1, a) {
 		let u$1 = a[s];
 		if (u$1.parse.sync && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.sync(n$1, new Gr(e, r), { id: t }));
 	}
-	return o$2;
+	return o$1;
 }
 function _a(e, r, t, n$1, a) {
 	for (let s = 0, i$1 = a.length; s < i$1; s++) {
 		let u$1 = a[s];
 		if (u$1.parse.stream && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.stream(n$1, new Kr(e, r), { id: t }));
 	}
-	return o$2;
+	return o$1;
 }
 function un(e, r, t, n$1) {
 	let a = e.base.plugins;
-	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$2;
+	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$1;
 }
 function ka(e, r, t, n$1) {
 	let a = [];
@@ -1367,7 +1370,7 @@ function ka(e, r, t, n$1) {
 function Da(e, r, t, n$1, a) {
 	switch (a) {
 		case Object: return Wr(e, r, t, n$1, !1);
-		case o$2: return Wr(e, r, t, n$1, !0);
+		case o$1: return Wr(e, r, t, n$1, !0);
 		case Date: return he(t, n$1);
 		case Error:
 		case EvalError:
@@ -1405,7 +1408,7 @@ function Da(e, r, t, n$1, a) {
 	}
 	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n$1 instanceof AggregateError)) return Ra(e, r, t, n$1);
 	if (n$1 instanceof Error) return sn(e, r, t, n$1);
-	if (C$1 in n$1 || v$2 in n$1) return Wr(e, r, t, n$1, !!a);
+	if (C in n$1 || v$1 in n$1) return Wr(e, r, t, n$1, !!a);
 	throw new x$1(n$1);
 }
 function Fa(e, r, t, n$1) {
@@ -1426,8 +1429,8 @@ function Ba(e, r, t) {
 function E$1(e, r, t) {
 	if (r >= e.base.depthLimit) throw new ee(e.base.depthLimit);
 	switch (typeof t) {
-		case "boolean": return t ? J$1 : Z$1;
-		case "undefined": return Ae$1;
+		case "boolean": return t ? J : Z;
+		case "undefined": return Ae;
 		case "string": return X(t);
 		case "number": return Te(t);
 		case "bigint": return we(t);
@@ -1436,7 +1439,7 @@ function E$1(e, r, t) {
 				let n$1 = q$1(e.base, t);
 				return n$1.type === 0 ? Fa(e, r + 1, n$1.value, t) : n$1.value;
 			}
-			return Ee$1;
+			return Ee;
 		case "symbol": return I(e.base, t);
 		case "function": return Ba(e, r, t);
 		default: throw new x$1(t);
@@ -1469,7 +1472,7 @@ function G(e, r, t) {
 	try {
 		return E$1(e, r, t);
 	} catch (n$1) {
-		return Zr(e, n$1), o$2;
+		return Zr(e, n$1), o$1;
 	}
 }
 function Qr(e, r) {
@@ -1553,241 +1556,6 @@ var Sr = class {
 		}
 	}
 };
-
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
-	0: "Symbol.asyncIterator",
-	1: "Symbol.hasInstance",
-	2: "Symbol.isConcatSpreadable",
-	3: "Symbol.iterator",
-	4: "Symbol.match",
-	5: "Symbol.matchAll",
-	6: "Symbol.replace",
-	7: "Symbol.search",
-	8: "Symbol.species",
-	9: "Symbol.split",
-	10: "Symbol.toPrimitive",
-	11: "Symbol.toStringTag",
-	12: "Symbol.unscopables"
-}, ve = {
-	[v$1]: 0,
-	[mr]: 1,
-	[R]: 2,
-	[C]: 3,
-	[pr]: 4,
-	[dr]: 5,
-	[gr]: 6,
-	[yr]: 7,
-	[Nr]: 8,
-	[br]: 9,
-	[vr]: 10,
-	[P$1]: 11,
-	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
-}, nt = {
-	2: "!0",
-	3: "!1",
-	1: "void 0",
-	0: "null",
-	4: "-0",
-	5: "1/0",
-	6: "-1/0",
-	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
-	return {
-		t: e,
-		i: r,
-		s: t,
-		c: n$1,
-		m: a,
-		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
-		o: S,
-		l: d$1
-	};
-}
-function F(e) {
-	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
-}
-var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
-var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
-var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-});
-var { toString: ys } = Object.prototype;
-var re = () => {
-	let e = {
-		p: 0,
-		s: 0,
-		f: 0
-	};
-	return e.p = new Promise((r, t) => {
-		e.s = r, e.f = t;
-	}), e;
-}, vn = (e, r) => {
-	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
-	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
-	});
-	return {
-		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
-		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
-		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
-		}
-	};
-}, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
-		next: () => {
-			if (t > r.d) return {
-				done: !0,
-				value: void 0
-			};
-			let a = t++, s = r.v[a];
-			if (a === r.t) throw s;
-			return {
-				done: a === r.d,
-				value: s
-			};
-		}
-	};
-	return n$1;
-}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
-			done: !0,
-			value: void 0
-		});
-	};
-	t.on({
-		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !1,
-				value: S
-			}), i$1.push(S);
-		},
-		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
-		},
-		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !0,
-				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
-		}
-	});
-	let g$1 = {
-		[e]: () => g$1,
-		next: () => {
-			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
-					let et = r();
-					return u$1.push(et), et.p;
-				}
-				return {
-					done: !1,
-					value: i$1[K$1]
-				};
-			}
-			if (n$1 > a) return {
-				done: !0,
-				value: void 0
-			};
-			let S = n$1++, d$1 = i$1[S];
-			if (S !== a) return {
-				done: !1,
-				value: d$1
-			};
-			if (s) throw d$1;
-			return {
-				done: !0,
-				value: d$1
-			};
-		}
-	};
-	return g$1;
-}, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
-}, Et = Or.toString();
-var An = Pr(C);
-function te$1() {
-	return Rr();
-}
-var En = xr(v$1, re);
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-function ni(e) {
-	return e;
-}
-var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
-var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
@@ -2505,7 +2273,7 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const ES2017FLAG = L$2.AggregateError | L$2.BigIntTypedArray;
+const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 const GLOBAL_IDENTIFIER = "_$HY.r";
 function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
 	const defaultPlugins = [
@@ -2696,15 +2464,15 @@ const UNOWNED = {
 };
 let Owner = null;
 function createOwner() {
-	const o$3 = {
+	const o$2 = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$3];
-	else Owner.owned.push(o$3);
-	return o$3;
+	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
+	else Owner.owned.push(o$2);
+	return o$2;
 }
 function createRoot(fn$1, detachedOwner) {
 	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn$1.length === 0 ? UNOWNED : {
@@ -2725,21 +2493,21 @@ function createRoot(fn$1, detachedOwner) {
 	return result;
 }
 function createSignal(value, options) {
-	return [() => value, (v$3) => {
-		return value = typeof v$3 === "function" ? v$3(value) : v$3;
+	return [() => value, (v$2) => {
+		return value = typeof v$2 === "function" ? v$2(value) : v$2;
 	}];
 }
 function createMemo(fn$1, value) {
 	Owner = createOwner();
-	let v$3;
+	let v$2;
 	try {
-		v$3 = fn$1(value);
+		v$2 = fn$1(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$3;
+	return () => v$2;
 }
 function cleanNode(node) {
 	if (node.owned) {
@@ -2762,8 +2530,8 @@ function createContext(defaultValue) {
 function children(fn$1) {
 	const memo = createMemo(() => resolveChildren(fn$1()));
 	memo.toArray = () => {
-		const c$3 = memo();
-		return Array.isArray(c$3) ? c$3 : c$3 != null ? [c$3] : [];
+		const c$2 = memo();
+		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
 	};
 	return memo;
 }
@@ -2808,10 +2576,10 @@ function getContextId(count) {
 const SuspenseContext = createContext();
 
 //#endregion
-//#region node_modules/solid-js/node_modules/seroval/dist/esm/production/index.mjs
-var L$2 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$2 || {});
-var v$2 = Symbol.asyncIterator, mr$1 = Symbol.hasInstance, R$1 = Symbol.isConcatSpreadable, C$1 = Symbol.iterator, pr$1 = Symbol.match, dr$1 = Symbol.matchAll, gr$1 = Symbol.replace, yr$1 = Symbol.search, Nr$1 = Symbol.species, br$1 = Symbol.split, vr$1 = Symbol.toPrimitive, P$2 = Symbol.toStringTag, Cr$1 = Symbol.unscopables;
-var rt$1 = {
+//#region node_modules/seroval/dist/esm/production/index.mjs
+var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
+var rt = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -2825,35 +2593,35 @@ var rt$1 = {
 	10: "Symbol.toPrimitive",
 	11: "Symbol.toStringTag",
 	12: "Symbol.unscopables"
-}, ve$1 = {
-	[v$2]: 0,
-	[mr$1]: 1,
-	[R$1]: 2,
-	[C$1]: 3,
-	[pr$1]: 4,
-	[dr$1]: 5,
-	[gr$1]: 6,
-	[yr$1]: 7,
-	[Nr$1]: 8,
-	[br$1]: 9,
-	[vr$1]: 10,
-	[P$2]: 11,
-	[Cr$1]: 12
-}, tt$1 = {
-	0: v$2,
-	1: mr$1,
-	2: R$1,
-	3: C$1,
-	4: pr$1,
-	5: dr$1,
-	6: gr$1,
-	7: yr$1,
-	8: Nr$1,
-	9: br$1,
-	10: vr$1,
-	11: P$2,
-	12: Cr$1
-}, nt$1 = {
+}, ve = {
+	[v$1]: 0,
+	[mr]: 1,
+	[R]: 2,
+	[C]: 3,
+	[pr]: 4,
+	[dr]: 5,
+	[gr]: 6,
+	[yr]: 7,
+	[Nr]: 8,
+	[br]: 9,
+	[vr]: 10,
+	[P$1]: 11,
+	[Cr]: 12
+}, tt = {
+	0: v$1,
+	1: mr,
+	2: R,
+	3: C,
+	4: pr,
+	5: dr,
+	6: gr,
+	7: yr,
+	8: Nr,
+	9: br,
+	10: vr,
+	11: P$1,
+	12: Cr
+}, nt = {
 	2: "!0",
 	3: "!1",
 	1: "void 0",
@@ -2862,10 +2630,10 @@ var rt$1 = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, o$2 = void 0, ot$1 = {
+}, o$1 = void 0, ot = {
 	2: !0,
 	3: !1,
-	1: o$2,
+	1: o$1,
 	0: null,
 	4: -0,
 	5: Number.POSITIVE_INFINITY,
@@ -2889,7 +2657,7 @@ var Ce = {
 	5: TypeError,
 	6: URIError
 };
-function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 	return {
 		t: e,
 		i: r,
@@ -2905,10 +2673,10 @@ function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 		l: d$1
 	};
 }
-function F$1(e) {
-	return c$2(2, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+function F(e) {
+	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-var J$1 = F$1(2), Z$1 = F$1(3), Ae$1 = F$1(1), Ee$1 = F$1(0), st$1 = F$1(4), it$1 = F$1(5), ut$1 = F$1(6), lt$1 = F$1(7);
+var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
 function fn(e) {
 	switch (e) {
 		case "\\"": return "\\\\\\"";
@@ -2922,7 +2690,7 @@ function fn(e) {
 		case "<": return "\\\\x3C";
 		case "\\u2028": return "\\\\u2028";
 		case "\\u2029": return "\\\\u2029";
-		default: return o$2;
+		default: return o$1;
 	}
 }
 function y$1(e) {
@@ -2930,35 +2698,35 @@ function y$1(e) {
 	for (let a = 0, s = e.length; a < s; a++) n$1 = fn(e[a]), n$1 && (r += e.slice(t, a) + n$1, t = a + 1);
 	return t === 0 ? r = e : r += e.slice(t), r;
 }
-var U$1 = "__SEROVAL_REFS__", ce$1 = "$R", Ie$1 = \`self.\${ce$1}\`;
+var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
 function mn(e) {
-	return e == null ? \`\${Ie$1}=\${Ie$1}||[]\` : \`(\${Ie$1}=\${Ie$1}||{})["\${y$1(e)}"]=[]\`;
+	return e == null ? \`\${Ie}=\${Ie}||[]\` : \`(\${Ie}=\${Ie}||{})["\${y$1(e)}"]=[]\`;
 }
-var Ar$1 = /* @__PURE__ */ new Map(), j$1 = /* @__PURE__ */ new Map();
+var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
 function Er(e) {
-	return Ar$1.has(e);
+	return Ar.has(e);
 }
 function ct(e) {
-	if (Er(e)) return Ar$1.get(e);
+	if (Er(e)) return Ar.get(e);
 	throw new Re(e);
 }
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U$1, {
-	value: j$1,
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U$1, {
-	value: j$1,
+}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U$1, {
-	value: j$1,
+}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U$1, {
-	value: j$1,
+}) : typeof global != "undefined" && Object.defineProperty(global, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
@@ -2980,82 +2748,82 @@ function Oe(e) {
 }
 function Te(e) {
 	switch (e) {
-		case Number.POSITIVE_INFINITY: return it$1;
-		case Number.NEGATIVE_INFINITY: return ut$1;
+		case Number.POSITIVE_INFINITY: return it;
+		case Number.NEGATIVE_INFINITY: return ut;
 	}
-	return e !== e ? lt$1 : Object.is(e, -0) ? st$1 : c$2(0, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return e !== e ? lt : Object.is(e, -0) ? st : c$1(0, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function X(e) {
-	return c$2(1, o$2, y$1(e), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(1, o$1, y$1(e), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function we(e) {
-	return c$2(3, o$2, "" + e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(3, o$1, "" + e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function mt(e) {
-	return c$2(4, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(4, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function he(e, r) {
 	let t = r.valueOf();
-	return c$2(5, e, t !== t ? "" : r.toISOString(), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(5, e, t !== t ? "" : r.toISOString(), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function ze(e, r) {
-	return c$2(6, e, o$2, y$1(r.source), r.flags, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(6, e, o$1, y$1(r.source), r.flags, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function pt(e, r) {
-	return c$2(17, e, ve$1[r], o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(17, e, ve[r], o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function dt(e, r) {
-	return c$2(18, e, y$1(ct(r)), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(18, e, y$1(ct(r)), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function fe$1(e, r, t) {
-	return c$2(25, e, t, y$1(r), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(25, e, t, y$1(r), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function _e(e, r, t) {
-	return c$2(9, e, o$2, o$2, o$2, o$2, o$2, t, o$2, o$2, Oe(r), o$2);
+	return c$1(9, e, o$1, o$1, o$1, o$1, o$1, t, o$1, o$1, Oe(r), o$1);
 }
 function ke(e, r) {
-	return c$2(21, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(21, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function De(e, r, t) {
-	return c$2(15, e, o$2, r.constructor.name, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.length);
+	return c$1(15, e, o$1, r.constructor.name, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.length);
 }
 function Fe(e, r, t) {
-	return c$2(16, e, o$2, r.constructor.name, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.byteLength);
+	return c$1(16, e, o$1, r.constructor.name, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.byteLength);
 }
 function Be(e, r, t) {
-	return c$2(20, e, o$2, o$2, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.byteLength);
+	return c$1(20, e, o$1, o$1, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.byteLength);
 }
 function Ve(e, r, t) {
-	return c$2(13, e, xe(r), o$2, y$1(r.message), t, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(13, e, xe(r), o$1, y$1(r.message), t, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function Me(e, r, t) {
-	return c$2(14, e, xe(r), o$2, y$1(r.message), t, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(14, e, xe(r), o$1, y$1(r.message), t, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function Le(e, r) {
-	return c$2(7, e, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2, o$2);
+	return c$1(7, e, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, o$1);
 }
 function Ue(e, r) {
-	return c$2(28, o$2, o$2, o$2, o$2, o$2, o$2, [e, r], o$2, o$2, o$2, o$2);
+	return c$1(28, o$1, o$1, o$1, o$1, o$1, o$1, [e, r], o$1, o$1, o$1, o$1);
 }
 function je(e, r) {
-	return c$2(30, o$2, o$2, o$2, o$2, o$2, o$2, [e, r], o$2, o$2, o$2, o$2);
+	return c$1(30, o$1, o$1, o$1, o$1, o$1, o$1, [e, r], o$1, o$1, o$1, o$1);
 }
 function Ye(e, r, t) {
-	return c$2(31, e, o$2, o$2, o$2, o$2, o$2, t, r, o$2, o$2, o$2);
+	return c$1(31, e, o$1, o$1, o$1, o$1, o$1, t, r, o$1, o$1, o$1);
 }
 function qe(e, r) {
-	return c$2(32, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(32, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function We(e, r) {
-	return c$2(33, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(33, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function Ge(e, r) {
-	return c$2(34, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(34, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function Ke(e, r, t, n$1) {
-	return c$2(35, e, t, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2, n$1);
+	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n$1);
 }
-var { toString: ys$1 } = Object.prototype;
+var { toString: ys } = Object.prototype;
 var yn = {
 	parsing: 1,
 	serialization: 2,
@@ -3134,7 +2902,7 @@ var Y$1 = class {
 		this.replacement = t;
 	}
 };
-var re$1 = () => {
+var re = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -3143,11 +2911,11 @@ var re$1 = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn$1 = (e, r) => {
+}, vn = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn$1 = (e, r) => {
+}, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt$1 = re$1.toString(), Nt$1 = vn$1.toString(), bt$1 = Cn$1.toString(), Rr$1 = () => {
+}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
 	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
 	}, i$1 = (l$1, g$1, S, d$1) => {
@@ -3168,7 +2936,7 @@ var re$1 = () => {
 			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
 		}
 	};
-}, vt$1 = Rr$1.toString(), Pr$1 = (e) => (r) => () => {
+}, vt = Rr.toString(), Pr = (e) => (r) => () => {
 	let t = 0, n$1 = {
 		[e]: () => n$1,
 		next: () => {
@@ -3185,7 +2953,7 @@ var re$1 = () => {
 		}
 	};
 	return n$1;
-}, Ct$1 = Pr$1.toString(), xr$1 = (e, r) => (t) => () => {
+}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
 	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
 		for (; S < d$1; S++) u$1[S].s({
 			done: !0,
@@ -3243,11 +3011,11 @@ var re$1 = () => {
 		}
 	};
 	return g$1;
-}, At$1 = xr$1.toString(), Or$1 = (e) => {
+}, At = xr.toString(), Or = (e) => {
 	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
 	return n$1.buffer;
-}, Et$1 = Or$1.toString();
+}, Et = Or.toString();
 function Ze(e) {
 	return "__SEROVAL_SEQUENCE__" in e;
 }
@@ -3260,7 +3028,7 @@ function Tr(e, r, t) {
 	};
 }
 function $e(e) {
-	let r = [], t = -1, n$1 = -1, a = e[C$1]();
+	let r = [], t = -1, n$1 = -1, a = e[C]();
 	for (;;) try {
 		let s = a.next();
 		if (r.push(s.value), s.done) {
@@ -3272,7 +3040,7 @@ function $e(e) {
 	}
 	return Tr(r, t, n$1);
 }
-var An$1 = Pr$1(C$1);
+var An = Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -3283,20 +3051,20 @@ var xt = {
 	5: {}
 }, Ot = {
 	0: "[]",
-	1: yt$1,
-	2: Nt$1,
-	3: bt$1,
-	4: vt$1,
-	5: Et$1
+	1: yt,
+	2: Nt,
+	3: bt,
+	4: vt,
+	5: Et
 };
 function M(e) {
 	return "__SEROVAL_STREAM__" in e;
 }
-function te$2() {
-	return Rr$1();
+function te$1() {
+	return Rr();
 }
 function Xe(e) {
-	let r = te$2(), t = e[v$2]();
+	let r = te$1(), t = e[v$1]();
 	async function n$1() {
 		try {
 			let a = await t.next();
@@ -3307,7 +3075,7 @@ function Xe(e) {
 	}
 	return n$1().catch(() => {}), r;
 }
-var En$1 = xr$1(v$2, re$1);
+var En = xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -3345,39 +3113,42 @@ function q$1(e, r) {
 function I(e, r) {
 	let t = q$1(e, r);
 	if (t.type !== 0) return t.value;
-	if (r in ve$1) return pt(t.value, r);
+	if (r in ve) return pt(t.value, r);
 	throw new x$1(r);
 }
 function k(e, r) {
 	let t = Qe(e, xt[r]);
-	return t.type === 1 ? t.value : c$2(26, t.value, r, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return t.type === 1 ? t.value : c$1(26, t.value, r, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function er(e) {
 	let r = Qe(e, Rt);
-	return r.type === 1 ? r.value : c$2(27, r.value, o$2, o$2, o$2, o$2, o$2, o$2, I(e, C$1), o$2, o$2, o$2);
+	return r.type === 1 ? r.value : c$1(27, r.value, o$1, o$1, o$1, o$1, o$1, o$1, I(e, C), o$1, o$1, o$1);
 }
 function rr(e) {
 	let r = Qe(e, Pt);
-	return r.type === 1 ? r.value : c$2(29, r.value, o$2, o$2, o$2, o$2, o$2, [k(e, 1), I(e, v$2)], o$2, o$2, o$2, o$2);
+	return r.type === 1 ? r.value : c$1(29, r.value, o$1, o$1, o$1, o$1, o$1, [k(e, 1), I(e, v$1)], o$1, o$1, o$1, o$1);
 }
 function tr(e, r, t, n$1) {
-	return c$2(t ? 11 : 10, e, o$2, o$2, o$2, n$1, o$2, o$2, o$2, o$2, Oe(r), o$2);
+	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n$1, o$1, o$1, o$1, o$1, Oe(r), o$1);
 }
 function nr(e, r, t, n$1) {
-	return c$2(8, r, o$2, o$2, o$2, o$2, {
+	return c$1(8, r, o$1, o$1, o$1, o$1, {
 		k: t,
 		v: n$1
-	}, o$2, k(e, 0), o$2, o$2, o$2);
+	}, o$1, k(e, 0), o$1, o$1, o$1);
 }
 function ht(e, r, t) {
-	return c$2(22, r, t, o$2, o$2, o$2, o$2, o$2, k(e, 1), o$2, o$2, o$2);
+	return c$1(22, r, t, o$1, o$1, o$1, o$1, o$1, k(e, 1), o$1, o$1, o$1);
 }
 function or(e, r, t) {
 	let n$1 = new Uint8Array(t), a = "";
 	for (let s = 0, i$1 = n$1.length; s < i$1; s++) a += String.fromCharCode(n$1[s]);
-	return c$2(19, r, y$1(btoa(a)), o$2, o$2, o$2, o$2, o$2, k(e, 5), o$2, o$2, o$2);
+	return c$1(19, r, y$1(btoa(a)), o$1, o$1, o$1, o$1, o$1, k(e, 5), o$1, o$1, o$1);
 }
-var ae$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae$1 || {});
+var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
+function ni(e) {
+	return e;
+}
 function kt(e, r) {
 	for (let t = 0, n$1 = r.length; t < n$1; t++) {
 		let a = r[t];
@@ -3390,17 +3161,17 @@ function A(e) {
 		return kt(r, e), [...r];
 	}
 }
-var Eo$1 = () => T, Io$1 = Eo$1.toString(), qt$1 = /=>/.test(Io$1);
+var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
 function sr(e, r) {
-	return qt$1 ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>" + (r.startsWith("{") ? "(" + r + ")" : r) : "function(" + e.join(",") + "){return " + r + "}";
+	return qt ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>" + (r.startsWith("{") ? "(" + r + ")" : r) : "function(" + e.join(",") + "){return " + r + "}";
 }
 function Wt(e, r) {
-	return qt$1 ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>{" + r + "}" : "function(" + e.join(",") + "){" + r + "}";
+	return qt ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>{" + r + "}" : "function(" + e.join(",") + "){" + r + "}";
 }
-var Ht$1 = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt$1 = Ht$1.length, Jt$1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt$1 = Jt$1.length;
+var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 function Br(e) {
-	let r = e % Gt$1, t = Ht$1[r];
-	for (e = (e - r) / Gt$1; e > 0;) r = e % Kt$1, t += Jt$1[r], e = (e - r) / Kt$1;
+	let r = e % Gt, t = Ht[r];
+	for (e = (e - r) / Gt; e > 0;) r = e % Kt, t += Jt[r], e = (e - r) / Kt;
 	return t;
 }
 var Ro = /^[$A-Z_][0-9A-Z_$]*$/i;
@@ -3421,7 +3192,7 @@ function Po(e) {
 	for (let n$1 = 1, a = e.length, s, i$1 = t; n$1 < a; n$1++) s = e[n$1], s.t === 0 && s.v === i$1.v ? t = {
 		t: 0,
 		s: s.s,
-		k: o$2,
+		k: o$1,
 		v: ye(t)
 	} : s.t === 2 && s.s === i$1.s ? t = {
 		t: 2,
@@ -3431,13 +3202,13 @@ function Po(e) {
 	} : s.t === 1 && s.s === i$1.s ? t = {
 		t: 1,
 		s: ye(t),
-		k: o$2,
+		k: o$1,
 		v: s.v
 	} : s.t === 3 && s.s === i$1.s ? t = {
 		t: 3,
 		s: ye(t),
 		k: s.k,
-		v: o$2
+		v: o$1
 	} : (r.push(t), t = s), i$1 = s;
 	return r.push(t), r;
 }
@@ -3447,13 +3218,13 @@ function tn(e) {
 		for (let n$1 = 0, a = t.length; n$1 < a; n$1++) r += ye(t[n$1]) + ",";
 		return r;
 	}
-	return o$2;
+	return o$1;
 }
 var xo = "Object.create(null)", Oo = "new Set", To = "new Map", wo = "Promise.resolve", ho = "Promise.reject", zo = {
 	3: "Object.freeze",
 	2: "Object.seal",
 	1: "Object.preventExtensions",
-	0: o$2
+	0: o$1
 };
 function nn(e, r) {
 	return {
@@ -3471,7 +3242,7 @@ function ur(e) {
 		mode: 2,
 		base: nn(2, e),
 		state: e,
-		child: o$2
+		child: o$1
 	};
 }
 var Mr = class {
@@ -3489,7 +3260,7 @@ function ko(e, r) {
 	return n$1 ?? (n$1 = Br(t), e.vars[t] = n$1), n$1;
 }
 function Do(e) {
-	return ce$1 + "[" + e + "]";
+	return ce + "[" + e + "]";
 }
 function m$1(e, r) {
 	return e.mode === 1 ? ko(e.state, r) : Do(r);
@@ -3522,7 +3293,7 @@ function Yr(e, r, t) {
 	e.assignments.push({
 		t: 0,
 		s: r,
-		k: o$2,
+		k: o$1,
 		v: t
 	});
 }
@@ -3530,7 +3301,7 @@ function Bo(e, r, t) {
 	e.base.assignments.push({
 		t: 1,
 		s: m$1(e, r),
-		k: o$2,
+		k: o$1,
 		v: t
 	});
 }
@@ -3547,7 +3318,7 @@ function Zt(e, r, t) {
 		t: 3,
 		s: m$1(e, r),
 		k: t,
-		v: o$2
+		v: o$1
 	});
 }
 function Ne(e, r, t, n$1) {
@@ -3566,7 +3337,7 @@ function se(e, r, t) {
 	return e.mode === 1 && !Lr(e.base, r) ? t : m$1(e, r) + "=" + t;
 }
 function Mo(e) {
-	return U$1 + ".get(\\"" + e.s + "\\")";
+	return U + ".get(\\"" + e.s + "\\")";
 }
 function $t(e, r, t, n$1) {
 	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n$1, m$1(e, t.i)), "") : f$1(e, t) : "";
@@ -3637,7 +3408,7 @@ function Wo(e, r, t) {
 		for (let u$1 = 0; u$1 < a; u$1++) qo(e, r, s, n$1[u$1], i$1[u$1]);
 		return e.base.stack.pop(), tn(s);
 	}
-	return o$2;
+	return o$1;
 }
 function qr(e, r, t) {
 	if (r.p) {
@@ -3768,7 +3539,7 @@ function ia(e, r) {
 }
 function ua(e, r) {
 	let t = "", n$1 = !1;
-	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct$1 + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
+	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
 }
 function la(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
@@ -3776,7 +3547,7 @@ function la(e, r) {
 function ca(e, r) {
 	let t = r.a[0], n$1 = r.a[1], a = e.base, s = "";
 	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n$1.t !== 4 && (O$1(a, n$1.i), s += (s ? "," : "(") + f$1(e, n$1)), s && (s += ",");
-	let i$1 = se(e, r.i, "(" + At$1 + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
+	let i$1 = se(e, r.i, "(" + At + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
 	return s ? s + i$1 + ")" : i$1;
 }
 function fa(e, r) {
@@ -3816,7 +3587,7 @@ function ga(e, r) {
 }
 function ya(e, r) {
 	switch (r.t) {
-		case 17: return rt$1[r.s];
+		case 17: return rt[r.s];
 		case 18: return Mo(r);
 		case 9: return Lo(e, r);
 		case 10: return Uo(e, r);
@@ -3842,7 +3613,7 @@ function ya(e, r) {
 }
 function f$1(e, r) {
 	switch (r.t) {
-		case 2: return nt$1[r.s];
+		case 2: return nt[r.s];
 		case 0: return "" + r.s;
 		case 1: return "\\"" + r.s + "\\"";
 		case 3: return r.s + "n";
@@ -3863,9 +3634,9 @@ function f$1(e, r) {
 function cr(e, r) {
 	let t = f$1(e, r), n$1 = r.i;
 	if (n$1 == null) return t;
-	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce$1, l$1 = a ? "(" + t + "," + a + s + ")" : t;
+	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce, l$1 = a ? "(" + t + "," + a + s + ")" : t;
 	if (u$1 === "") return r.t === 10 && !a ? "(" + l$1 + ")" : l$1;
-	let g$1 = i$1 == null ? "()" : "(" + ce$1 + "[\\"" + y$1(i$1) + "\\"])";
+	let g$1 = i$1 == null ? "()" : "(" + ce + "[\\"" + y$1(i$1) + "\\"])";
 	return "(" + sr([u$1], l$1) + ")" + g$1;
 }
 var Gr = class {
@@ -3932,7 +3703,7 @@ function va(e, r, t, n$1) {
 function Jr(e, r, t) {
 	let n$1 = Object.entries(t), a = [], s = [];
 	for (let i$1 = 0, u$1 = n$1.length; i$1 < u$1; i$1++) a.push(y$1(n$1[i$1][0])), s.push(E$1(e, r, n$1[i$1][1]));
-	return C$1 in t && (a.push(I(e.base, C$1)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$2 in t && (a.push(I(e.base, v$2)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$2() : Xe(t))))), P$2 in t && (a.push(I(e.base, P$2)), s.push(X(t[P$2]))), R$1 in t && (a.push(I(e.base, R$1)), s.push(t[R$1] ? J$1 : Z$1)), {
+	return C in t && (a.push(I(e.base, C)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$1 in t && (a.push(I(e.base, v$1)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$1() : Xe(t))))), P$1 in t && (a.push(I(e.base, P$1)), s.push(X(t[P$1]))), R in t && (a.push(I(e.base, R)), s.push(t[R] ? J : Z)), {
 		k: a,
 		v: s
 	};
@@ -3954,11 +3725,11 @@ function Ia(e, r, t, n$1) {
 }
 function sn(e, r, t, n$1) {
 	let a = $$1(n$1, e.base.features);
-	return Ve(t, n$1, a ? Jr(e, r, a) : o$2);
+	return Ve(t, n$1, a ? Jr(e, r, a) : o$1);
 }
 function Ra(e, r, t, n$1) {
 	let a = $$1(n$1, e.base.features);
-	return Me(t, n$1, a ? Jr(e, r, a) : o$2);
+	return Me(t, n$1, a ? Jr(e, r, a) : o$1);
 }
 function Pa(e, r, t, n$1) {
 	let a = [], s = [];
@@ -3998,13 +3769,13 @@ function Oa(e, r, t, n$1) {
 function Ta(e, r, t) {
 	if (this.state.alive) {
 		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$2(23, e, o$2, o$2, o$2, o$2, o$2, [k(this.base, 2), n$1], o$2, o$2, o$2, o$2)), be(this);
+		n$1 && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n$1], o$1, o$1, o$1, o$1)), be(this);
 	}
 }
 function wa(e, r, t) {
 	if (this.state.alive) {
 		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$2(24, e, o$2, o$2, o$2, o$2, o$2, [k(this.base, 3), n$1], o$2, o$2, o$2, o$2));
+		n$1 && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n$1], o$1, o$1, o$1, o$1));
 	}
 	be(this);
 }
@@ -4017,18 +3788,18 @@ function za(e, r, t, n$1, a) {
 		let u$1 = a[s];
 		if (u$1.parse.sync && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.sync(n$1, new Gr(e, r), { id: t }));
 	}
-	return o$2;
+	return o$1;
 }
 function _a(e, r, t, n$1, a) {
 	for (let s = 0, i$1 = a.length; s < i$1; s++) {
 		let u$1 = a[s];
 		if (u$1.parse.stream && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.stream(n$1, new Kr(e, r), { id: t }));
 	}
-	return o$2;
+	return o$1;
 }
 function un(e, r, t, n$1) {
 	let a = e.base.plugins;
-	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$2;
+	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$1;
 }
 function ka(e, r, t, n$1) {
 	let a = [];
@@ -4038,7 +3809,7 @@ function ka(e, r, t, n$1) {
 function Da(e, r, t, n$1, a) {
 	switch (a) {
 		case Object: return Wr(e, r, t, n$1, !1);
-		case o$2: return Wr(e, r, t, n$1, !0);
+		case o$1: return Wr(e, r, t, n$1, !0);
 		case Date: return he(t, n$1);
 		case Error:
 		case EvalError:
@@ -4076,7 +3847,7 @@ function Da(e, r, t, n$1, a) {
 	}
 	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n$1 instanceof AggregateError)) return Ra(e, r, t, n$1);
 	if (n$1 instanceof Error) return sn(e, r, t, n$1);
-	if (C$1 in n$1 || v$2 in n$1) return Wr(e, r, t, n$1, !!a);
+	if (C in n$1 || v$1 in n$1) return Wr(e, r, t, n$1, !!a);
 	throw new x$1(n$1);
 }
 function Fa(e, r, t, n$1) {
@@ -4097,8 +3868,8 @@ function Ba(e, r, t) {
 function E$1(e, r, t) {
 	if (r >= e.base.depthLimit) throw new ee(e.base.depthLimit);
 	switch (typeof t) {
-		case "boolean": return t ? J$1 : Z$1;
-		case "undefined": return Ae$1;
+		case "boolean": return t ? J : Z;
+		case "undefined": return Ae;
 		case "string": return X(t);
 		case "number": return Te(t);
 		case "bigint": return we(t);
@@ -4107,7 +3878,7 @@ function E$1(e, r, t) {
 				let n$1 = q$1(e.base, t);
 				return n$1.type === 0 ? Fa(e, r + 1, n$1.value, t) : n$1.value;
 			}
-			return Ee$1;
+			return Ee;
 		case "symbol": return I(e.base, t);
 		case "function": return Ba(e, r, t);
 		default: throw new x$1(t);
@@ -4140,7 +3911,7 @@ function G(e, r, t) {
 	try {
 		return E$1(e, r, t);
 	} catch (n$1) {
-		return Zr(e, n$1), o$2;
+		return Zr(e, n$1), o$1;
 	}
 }
 function Qr(e, r) {
@@ -4224,241 +3995,6 @@ var Sr = class {
 		}
 	}
 };
-
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
-	0: "Symbol.asyncIterator",
-	1: "Symbol.hasInstance",
-	2: "Symbol.isConcatSpreadable",
-	3: "Symbol.iterator",
-	4: "Symbol.match",
-	5: "Symbol.matchAll",
-	6: "Symbol.replace",
-	7: "Symbol.search",
-	8: "Symbol.species",
-	9: "Symbol.split",
-	10: "Symbol.toPrimitive",
-	11: "Symbol.toStringTag",
-	12: "Symbol.unscopables"
-}, ve = {
-	[v$1]: 0,
-	[mr]: 1,
-	[R]: 2,
-	[C]: 3,
-	[pr]: 4,
-	[dr]: 5,
-	[gr]: 6,
-	[yr]: 7,
-	[Nr]: 8,
-	[br]: 9,
-	[vr]: 10,
-	[P$1]: 11,
-	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
-}, nt = {
-	2: "!0",
-	3: "!1",
-	1: "void 0",
-	0: "null",
-	4: "-0",
-	5: "1/0",
-	6: "-1/0",
-	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
-	return {
-		t: e,
-		i: r,
-		s: t,
-		c: n$1,
-		m: a,
-		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
-		o: S,
-		l: d$1
-	};
-}
-function F(e) {
-	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
-}
-var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
-var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
-var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-});
-var { toString: ys } = Object.prototype;
-var re = () => {
-	let e = {
-		p: 0,
-		s: 0,
-		f: 0
-	};
-	return e.p = new Promise((r, t) => {
-		e.s = r, e.f = t;
-	}), e;
-}, vn = (e, r) => {
-	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
-	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
-	});
-	return {
-		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
-		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
-		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
-		}
-	};
-}, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
-		next: () => {
-			if (t > r.d) return {
-				done: !0,
-				value: void 0
-			};
-			let a = t++, s = r.v[a];
-			if (a === r.t) throw s;
-			return {
-				done: a === r.d,
-				value: s
-			};
-		}
-	};
-	return n$1;
-}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
-			done: !0,
-			value: void 0
-		});
-	};
-	t.on({
-		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !1,
-				value: S
-			}), i$1.push(S);
-		},
-		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
-		},
-		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !0,
-				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
-		}
-	});
-	let g$1 = {
-		[e]: () => g$1,
-		next: () => {
-			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
-					let et = r();
-					return u$1.push(et), et.p;
-				}
-				return {
-					done: !1,
-					value: i$1[K$1]
-				};
-			}
-			if (n$1 > a) return {
-				done: !0,
-				value: void 0
-			};
-			let S = n$1++, d$1 = i$1[S];
-			if (S !== a) return {
-				done: !1,
-				value: d$1
-			};
-			if (s) throw d$1;
-			return {
-				done: !0,
-				value: d$1
-			};
-		}
-	};
-	return g$1;
-}, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
-}, Et = Or.toString();
-var An = Pr(C);
-function te$1() {
-	return Rr();
-}
-var En = xr(v$1, re);
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-function ni(e) {
-	return e;
-}
-var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
-var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
@@ -5176,7 +4712,7 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const ES2017FLAG = L$2.AggregateError | L$2.BigIntTypedArray;
+const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 const GLOBAL_IDENTIFIER = "_$HY.r";
 function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
 	const defaultPlugins = [
@@ -5367,15 +4903,15 @@ const UNOWNED = {
 };
 let Owner = null;
 function createOwner() {
-	const o$3 = {
+	const o$2 = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$3];
-	else Owner.owned.push(o$3);
-	return o$3;
+	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
+	else Owner.owned.push(o$2);
+	return o$2;
 }
 function createRoot(fn$1, detachedOwner) {
 	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn$1.length === 0 ? UNOWNED : {
@@ -5396,21 +4932,21 @@ function createRoot(fn$1, detachedOwner) {
 	return result;
 }
 function createSignal(value, options) {
-	return [() => value, (v$3) => {
-		return value = typeof v$3 === "function" ? v$3(value) : v$3;
+	return [() => value, (v$2) => {
+		return value = typeof v$2 === "function" ? v$2(value) : v$2;
 	}];
 }
 function createMemo(fn$1, value) {
 	Owner = createOwner();
-	let v$3;
+	let v$2;
 	try {
-		v$3 = fn$1(value);
+		v$2 = fn$1(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$3;
+	return () => v$2;
 }
 function cleanNode(node) {
 	if (node.owned) {
@@ -5433,8 +4969,8 @@ function createContext(defaultValue) {
 function children(fn$1) {
 	const memo = createMemo(() => resolveChildren(fn$1()));
 	memo.toArray = () => {
-		const c$3 = memo();
-		return Array.isArray(c$3) ? c$3 : c$3 != null ? [c$3] : [];
+		const c$2 = memo();
+		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
 	};
 	return memo;
 }
@@ -5479,10 +5015,10 @@ function getContextId(count) {
 const SuspenseContext = createContext();
 
 //#endregion
-//#region node_modules/solid-js/node_modules/seroval/dist/esm/production/index.mjs
-var L$2 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$2 || {});
-var v$2 = Symbol.asyncIterator, mr$1 = Symbol.hasInstance, R$1 = Symbol.isConcatSpreadable, C$1 = Symbol.iterator, pr$1 = Symbol.match, dr$1 = Symbol.matchAll, gr$1 = Symbol.replace, yr$1 = Symbol.search, Nr$1 = Symbol.species, br$1 = Symbol.split, vr$1 = Symbol.toPrimitive, P$2 = Symbol.toStringTag, Cr$1 = Symbol.unscopables;
-var rt$1 = {
+//#region node_modules/seroval/dist/esm/production/index.mjs
+var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
+var rt = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -5496,35 +5032,35 @@ var rt$1 = {
 	10: "Symbol.toPrimitive",
 	11: "Symbol.toStringTag",
 	12: "Symbol.unscopables"
-}, ve$1 = {
-	[v$2]: 0,
-	[mr$1]: 1,
-	[R$1]: 2,
-	[C$1]: 3,
-	[pr$1]: 4,
-	[dr$1]: 5,
-	[gr$1]: 6,
-	[yr$1]: 7,
-	[Nr$1]: 8,
-	[br$1]: 9,
-	[vr$1]: 10,
-	[P$2]: 11,
-	[Cr$1]: 12
-}, tt$1 = {
-	0: v$2,
-	1: mr$1,
-	2: R$1,
-	3: C$1,
-	4: pr$1,
-	5: dr$1,
-	6: gr$1,
-	7: yr$1,
-	8: Nr$1,
-	9: br$1,
-	10: vr$1,
-	11: P$2,
-	12: Cr$1
-}, nt$1 = {
+}, ve = {
+	[v$1]: 0,
+	[mr]: 1,
+	[R]: 2,
+	[C]: 3,
+	[pr]: 4,
+	[dr]: 5,
+	[gr]: 6,
+	[yr]: 7,
+	[Nr]: 8,
+	[br]: 9,
+	[vr]: 10,
+	[P$1]: 11,
+	[Cr]: 12
+}, tt = {
+	0: v$1,
+	1: mr,
+	2: R,
+	3: C,
+	4: pr,
+	5: dr,
+	6: gr,
+	7: yr,
+	8: Nr,
+	9: br,
+	10: vr,
+	11: P$1,
+	12: Cr
+}, nt = {
 	2: "!0",
 	3: "!1",
 	1: "void 0",
@@ -5533,10 +5069,10 @@ var rt$1 = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, o$2 = void 0, ot$1 = {
+}, o$1 = void 0, ot = {
 	2: !0,
 	3: !1,
-	1: o$2,
+	1: o$1,
 	0: null,
 	4: -0,
 	5: Number.POSITIVE_INFINITY,
@@ -5560,7 +5096,7 @@ var Ce = {
 	5: TypeError,
 	6: URIError
 };
-function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 	return {
 		t: e,
 		i: r,
@@ -5576,10 +5112,10 @@ function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 		l: d$1
 	};
 }
-function F$1(e) {
-	return c$2(2, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+function F(e) {
+	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-var J$1 = F$1(2), Z$1 = F$1(3), Ae$1 = F$1(1), Ee$1 = F$1(0), st$1 = F$1(4), it$1 = F$1(5), ut$1 = F$1(6), lt$1 = F$1(7);
+var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
 function fn(e) {
 	switch (e) {
 		case "\\"": return "\\\\\\"";
@@ -5593,7 +5129,7 @@ function fn(e) {
 		case "<": return "\\\\x3C";
 		case "\\u2028": return "\\\\u2028";
 		case "\\u2029": return "\\\\u2029";
-		default: return o$2;
+		default: return o$1;
 	}
 }
 function y$1(e) {
@@ -5601,35 +5137,35 @@ function y$1(e) {
 	for (let a = 0, s = e.length; a < s; a++) n$1 = fn(e[a]), n$1 && (r += e.slice(t, a) + n$1, t = a + 1);
 	return t === 0 ? r = e : r += e.slice(t), r;
 }
-var U$1 = "__SEROVAL_REFS__", ce$1 = "$R", Ie$1 = \`self.\${ce$1}\`;
+var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
 function mn(e) {
-	return e == null ? \`\${Ie$1}=\${Ie$1}||[]\` : \`(\${Ie$1}=\${Ie$1}||{})["\${y$1(e)}"]=[]\`;
+	return e == null ? \`\${Ie}=\${Ie}||[]\` : \`(\${Ie}=\${Ie}||{})["\${y$1(e)}"]=[]\`;
 }
-var Ar$1 = /* @__PURE__ */ new Map(), j$1 = /* @__PURE__ */ new Map();
+var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
 function Er(e) {
-	return Ar$1.has(e);
+	return Ar.has(e);
 }
 function ct(e) {
-	if (Er(e)) return Ar$1.get(e);
+	if (Er(e)) return Ar.get(e);
 	throw new Re(e);
 }
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U$1, {
-	value: j$1,
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U$1, {
-	value: j$1,
+}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U$1, {
-	value: j$1,
+}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U$1, {
-	value: j$1,
+}) : typeof global != "undefined" && Object.defineProperty(global, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
@@ -5651,82 +5187,82 @@ function Oe(e) {
 }
 function Te(e) {
 	switch (e) {
-		case Number.POSITIVE_INFINITY: return it$1;
-		case Number.NEGATIVE_INFINITY: return ut$1;
+		case Number.POSITIVE_INFINITY: return it;
+		case Number.NEGATIVE_INFINITY: return ut;
 	}
-	return e !== e ? lt$1 : Object.is(e, -0) ? st$1 : c$2(0, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return e !== e ? lt : Object.is(e, -0) ? st : c$1(0, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function X(e) {
-	return c$2(1, o$2, y$1(e), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(1, o$1, y$1(e), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function we(e) {
-	return c$2(3, o$2, "" + e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(3, o$1, "" + e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function mt(e) {
-	return c$2(4, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(4, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function he(e, r) {
 	let t = r.valueOf();
-	return c$2(5, e, t !== t ? "" : r.toISOString(), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(5, e, t !== t ? "" : r.toISOString(), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function ze(e, r) {
-	return c$2(6, e, o$2, y$1(r.source), r.flags, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(6, e, o$1, y$1(r.source), r.flags, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function pt(e, r) {
-	return c$2(17, e, ve$1[r], o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(17, e, ve[r], o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function dt(e, r) {
-	return c$2(18, e, y$1(ct(r)), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(18, e, y$1(ct(r)), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function fe$1(e, r, t) {
-	return c$2(25, e, t, y$1(r), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(25, e, t, y$1(r), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function _e(e, r, t) {
-	return c$2(9, e, o$2, o$2, o$2, o$2, o$2, t, o$2, o$2, Oe(r), o$2);
+	return c$1(9, e, o$1, o$1, o$1, o$1, o$1, t, o$1, o$1, Oe(r), o$1);
 }
 function ke(e, r) {
-	return c$2(21, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(21, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function De(e, r, t) {
-	return c$2(15, e, o$2, r.constructor.name, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.length);
+	return c$1(15, e, o$1, r.constructor.name, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.length);
 }
 function Fe(e, r, t) {
-	return c$2(16, e, o$2, r.constructor.name, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.byteLength);
+	return c$1(16, e, o$1, r.constructor.name, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.byteLength);
 }
 function Be(e, r, t) {
-	return c$2(20, e, o$2, o$2, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.byteLength);
+	return c$1(20, e, o$1, o$1, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.byteLength);
 }
 function Ve(e, r, t) {
-	return c$2(13, e, xe(r), o$2, y$1(r.message), t, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(13, e, xe(r), o$1, y$1(r.message), t, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function Me(e, r, t) {
-	return c$2(14, e, xe(r), o$2, y$1(r.message), t, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(14, e, xe(r), o$1, y$1(r.message), t, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function Le(e, r) {
-	return c$2(7, e, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2, o$2);
+	return c$1(7, e, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, o$1);
 }
 function Ue(e, r) {
-	return c$2(28, o$2, o$2, o$2, o$2, o$2, o$2, [e, r], o$2, o$2, o$2, o$2);
+	return c$1(28, o$1, o$1, o$1, o$1, o$1, o$1, [e, r], o$1, o$1, o$1, o$1);
 }
 function je(e, r) {
-	return c$2(30, o$2, o$2, o$2, o$2, o$2, o$2, [e, r], o$2, o$2, o$2, o$2);
+	return c$1(30, o$1, o$1, o$1, o$1, o$1, o$1, [e, r], o$1, o$1, o$1, o$1);
 }
 function Ye(e, r, t) {
-	return c$2(31, e, o$2, o$2, o$2, o$2, o$2, t, r, o$2, o$2, o$2);
+	return c$1(31, e, o$1, o$1, o$1, o$1, o$1, t, r, o$1, o$1, o$1);
 }
 function qe(e, r) {
-	return c$2(32, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(32, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function We(e, r) {
-	return c$2(33, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(33, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function Ge(e, r) {
-	return c$2(34, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(34, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function Ke(e, r, t, n$1) {
-	return c$2(35, e, t, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2, n$1);
+	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n$1);
 }
-var { toString: ys$1 } = Object.prototype;
+var { toString: ys } = Object.prototype;
 var yn = {
 	parsing: 1,
 	serialization: 2,
@@ -5805,7 +5341,7 @@ var Y$1 = class {
 		this.replacement = t;
 	}
 };
-var re$1 = () => {
+var re = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -5814,11 +5350,11 @@ var re$1 = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn$1 = (e, r) => {
+}, vn = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn$1 = (e, r) => {
+}, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt$1 = re$1.toString(), Nt$1 = vn$1.toString(), bt$1 = Cn$1.toString(), Rr$1 = () => {
+}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
 	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
 	}, i$1 = (l$1, g$1, S, d$1) => {
@@ -5839,7 +5375,7 @@ var re$1 = () => {
 			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
 		}
 	};
-}, vt$1 = Rr$1.toString(), Pr$1 = (e) => (r) => () => {
+}, vt = Rr.toString(), Pr = (e) => (r) => () => {
 	let t = 0, n$1 = {
 		[e]: () => n$1,
 		next: () => {
@@ -5856,7 +5392,7 @@ var re$1 = () => {
 		}
 	};
 	return n$1;
-}, Ct$1 = Pr$1.toString(), xr$1 = (e, r) => (t) => () => {
+}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
 	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
 		for (; S < d$1; S++) u$1[S].s({
 			done: !0,
@@ -5914,11 +5450,11 @@ var re$1 = () => {
 		}
 	};
 	return g$1;
-}, At$1 = xr$1.toString(), Or$1 = (e) => {
+}, At = xr.toString(), Or = (e) => {
 	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
 	return n$1.buffer;
-}, Et$1 = Or$1.toString();
+}, Et = Or.toString();
 function Ze(e) {
 	return "__SEROVAL_SEQUENCE__" in e;
 }
@@ -5931,7 +5467,7 @@ function Tr(e, r, t) {
 	};
 }
 function $e(e) {
-	let r = [], t = -1, n$1 = -1, a = e[C$1]();
+	let r = [], t = -1, n$1 = -1, a = e[C]();
 	for (;;) try {
 		let s = a.next();
 		if (r.push(s.value), s.done) {
@@ -5943,7 +5479,7 @@ function $e(e) {
 	}
 	return Tr(r, t, n$1);
 }
-var An$1 = Pr$1(C$1);
+var An = Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -5954,20 +5490,20 @@ var xt = {
 	5: {}
 }, Ot = {
 	0: "[]",
-	1: yt$1,
-	2: Nt$1,
-	3: bt$1,
-	4: vt$1,
-	5: Et$1
+	1: yt,
+	2: Nt,
+	3: bt,
+	4: vt,
+	5: Et
 };
 function M(e) {
 	return "__SEROVAL_STREAM__" in e;
 }
-function te$2() {
-	return Rr$1();
+function te$1() {
+	return Rr();
 }
 function Xe(e) {
-	let r = te$2(), t = e[v$2]();
+	let r = te$1(), t = e[v$1]();
 	async function n$1() {
 		try {
 			let a = await t.next();
@@ -5978,7 +5514,7 @@ function Xe(e) {
 	}
 	return n$1().catch(() => {}), r;
 }
-var En$1 = xr$1(v$2, re$1);
+var En = xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -6016,39 +5552,42 @@ function q$1(e, r) {
 function I(e, r) {
 	let t = q$1(e, r);
 	if (t.type !== 0) return t.value;
-	if (r in ve$1) return pt(t.value, r);
+	if (r in ve) return pt(t.value, r);
 	throw new x$1(r);
 }
 function k(e, r) {
 	let t = Qe(e, xt[r]);
-	return t.type === 1 ? t.value : c$2(26, t.value, r, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return t.type === 1 ? t.value : c$1(26, t.value, r, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function er(e) {
 	let r = Qe(e, Rt);
-	return r.type === 1 ? r.value : c$2(27, r.value, o$2, o$2, o$2, o$2, o$2, o$2, I(e, C$1), o$2, o$2, o$2);
+	return r.type === 1 ? r.value : c$1(27, r.value, o$1, o$1, o$1, o$1, o$1, o$1, I(e, C), o$1, o$1, o$1);
 }
 function rr(e) {
 	let r = Qe(e, Pt);
-	return r.type === 1 ? r.value : c$2(29, r.value, o$2, o$2, o$2, o$2, o$2, [k(e, 1), I(e, v$2)], o$2, o$2, o$2, o$2);
+	return r.type === 1 ? r.value : c$1(29, r.value, o$1, o$1, o$1, o$1, o$1, [k(e, 1), I(e, v$1)], o$1, o$1, o$1, o$1);
 }
 function tr(e, r, t, n$1) {
-	return c$2(t ? 11 : 10, e, o$2, o$2, o$2, n$1, o$2, o$2, o$2, o$2, Oe(r), o$2);
+	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n$1, o$1, o$1, o$1, o$1, Oe(r), o$1);
 }
 function nr(e, r, t, n$1) {
-	return c$2(8, r, o$2, o$2, o$2, o$2, {
+	return c$1(8, r, o$1, o$1, o$1, o$1, {
 		k: t,
 		v: n$1
-	}, o$2, k(e, 0), o$2, o$2, o$2);
+	}, o$1, k(e, 0), o$1, o$1, o$1);
 }
 function ht(e, r, t) {
-	return c$2(22, r, t, o$2, o$2, o$2, o$2, o$2, k(e, 1), o$2, o$2, o$2);
+	return c$1(22, r, t, o$1, o$1, o$1, o$1, o$1, k(e, 1), o$1, o$1, o$1);
 }
 function or(e, r, t) {
 	let n$1 = new Uint8Array(t), a = "";
 	for (let s = 0, i$1 = n$1.length; s < i$1; s++) a += String.fromCharCode(n$1[s]);
-	return c$2(19, r, y$1(btoa(a)), o$2, o$2, o$2, o$2, o$2, k(e, 5), o$2, o$2, o$2);
+	return c$1(19, r, y$1(btoa(a)), o$1, o$1, o$1, o$1, o$1, k(e, 5), o$1, o$1, o$1);
 }
-var ae$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae$1 || {});
+var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
+function ni(e) {
+	return e;
+}
 function kt(e, r) {
 	for (let t = 0, n$1 = r.length; t < n$1; t++) {
 		let a = r[t];
@@ -6061,17 +5600,17 @@ function A(e) {
 		return kt(r, e), [...r];
 	}
 }
-var Eo$1 = () => T, Io$1 = Eo$1.toString(), qt$1 = /=>/.test(Io$1);
+var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
 function sr(e, r) {
-	return qt$1 ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>" + (r.startsWith("{") ? "(" + r + ")" : r) : "function(" + e.join(",") + "){return " + r + "}";
+	return qt ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>" + (r.startsWith("{") ? "(" + r + ")" : r) : "function(" + e.join(",") + "){return " + r + "}";
 }
 function Wt(e, r) {
-	return qt$1 ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>{" + r + "}" : "function(" + e.join(",") + "){" + r + "}";
+	return qt ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>{" + r + "}" : "function(" + e.join(",") + "){" + r + "}";
 }
-var Ht$1 = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt$1 = Ht$1.length, Jt$1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt$1 = Jt$1.length;
+var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 function Br(e) {
-	let r = e % Gt$1, t = Ht$1[r];
-	for (e = (e - r) / Gt$1; e > 0;) r = e % Kt$1, t += Jt$1[r], e = (e - r) / Kt$1;
+	let r = e % Gt, t = Ht[r];
+	for (e = (e - r) / Gt; e > 0;) r = e % Kt, t += Jt[r], e = (e - r) / Kt;
 	return t;
 }
 var Ro = /^[$A-Z_][0-9A-Z_$]*$/i;
@@ -6092,7 +5631,7 @@ function Po(e) {
 	for (let n$1 = 1, a = e.length, s, i$1 = t; n$1 < a; n$1++) s = e[n$1], s.t === 0 && s.v === i$1.v ? t = {
 		t: 0,
 		s: s.s,
-		k: o$2,
+		k: o$1,
 		v: ye(t)
 	} : s.t === 2 && s.s === i$1.s ? t = {
 		t: 2,
@@ -6102,13 +5641,13 @@ function Po(e) {
 	} : s.t === 1 && s.s === i$1.s ? t = {
 		t: 1,
 		s: ye(t),
-		k: o$2,
+		k: o$1,
 		v: s.v
 	} : s.t === 3 && s.s === i$1.s ? t = {
 		t: 3,
 		s: ye(t),
 		k: s.k,
-		v: o$2
+		v: o$1
 	} : (r.push(t), t = s), i$1 = s;
 	return r.push(t), r;
 }
@@ -6118,13 +5657,13 @@ function tn(e) {
 		for (let n$1 = 0, a = t.length; n$1 < a; n$1++) r += ye(t[n$1]) + ",";
 		return r;
 	}
-	return o$2;
+	return o$1;
 }
 var xo = "Object.create(null)", Oo = "new Set", To = "new Map", wo = "Promise.resolve", ho = "Promise.reject", zo = {
 	3: "Object.freeze",
 	2: "Object.seal",
 	1: "Object.preventExtensions",
-	0: o$2
+	0: o$1
 };
 function nn(e, r) {
 	return {
@@ -6142,7 +5681,7 @@ function ur(e) {
 		mode: 2,
 		base: nn(2, e),
 		state: e,
-		child: o$2
+		child: o$1
 	};
 }
 var Mr = class {
@@ -6160,7 +5699,7 @@ function ko(e, r) {
 	return n$1 ?? (n$1 = Br(t), e.vars[t] = n$1), n$1;
 }
 function Do(e) {
-	return ce$1 + "[" + e + "]";
+	return ce + "[" + e + "]";
 }
 function m$1(e, r) {
 	return e.mode === 1 ? ko(e.state, r) : Do(r);
@@ -6193,7 +5732,7 @@ function Yr(e, r, t) {
 	e.assignments.push({
 		t: 0,
 		s: r,
-		k: o$2,
+		k: o$1,
 		v: t
 	});
 }
@@ -6201,7 +5740,7 @@ function Bo(e, r, t) {
 	e.base.assignments.push({
 		t: 1,
 		s: m$1(e, r),
-		k: o$2,
+		k: o$1,
 		v: t
 	});
 }
@@ -6218,7 +5757,7 @@ function Zt(e, r, t) {
 		t: 3,
 		s: m$1(e, r),
 		k: t,
-		v: o$2
+		v: o$1
 	});
 }
 function Ne(e, r, t, n$1) {
@@ -6237,7 +5776,7 @@ function se(e, r, t) {
 	return e.mode === 1 && !Lr(e.base, r) ? t : m$1(e, r) + "=" + t;
 }
 function Mo(e) {
-	return U$1 + ".get(\\"" + e.s + "\\")";
+	return U + ".get(\\"" + e.s + "\\")";
 }
 function $t(e, r, t, n$1) {
 	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n$1, m$1(e, t.i)), "") : f$1(e, t) : "";
@@ -6308,7 +5847,7 @@ function Wo(e, r, t) {
 		for (let u$1 = 0; u$1 < a; u$1++) qo(e, r, s, n$1[u$1], i$1[u$1]);
 		return e.base.stack.pop(), tn(s);
 	}
-	return o$2;
+	return o$1;
 }
 function qr(e, r, t) {
 	if (r.p) {
@@ -6439,7 +5978,7 @@ function ia(e, r) {
 }
 function ua(e, r) {
 	let t = "", n$1 = !1;
-	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct$1 + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
+	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
 }
 function la(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
@@ -6447,7 +5986,7 @@ function la(e, r) {
 function ca(e, r) {
 	let t = r.a[0], n$1 = r.a[1], a = e.base, s = "";
 	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n$1.t !== 4 && (O$1(a, n$1.i), s += (s ? "," : "(") + f$1(e, n$1)), s && (s += ",");
-	let i$1 = se(e, r.i, "(" + At$1 + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
+	let i$1 = se(e, r.i, "(" + At + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
 	return s ? s + i$1 + ")" : i$1;
 }
 function fa(e, r) {
@@ -6487,7 +6026,7 @@ function ga(e, r) {
 }
 function ya(e, r) {
 	switch (r.t) {
-		case 17: return rt$1[r.s];
+		case 17: return rt[r.s];
 		case 18: return Mo(r);
 		case 9: return Lo(e, r);
 		case 10: return Uo(e, r);
@@ -6513,7 +6052,7 @@ function ya(e, r) {
 }
 function f$1(e, r) {
 	switch (r.t) {
-		case 2: return nt$1[r.s];
+		case 2: return nt[r.s];
 		case 0: return "" + r.s;
 		case 1: return "\\"" + r.s + "\\"";
 		case 3: return r.s + "n";
@@ -6534,9 +6073,9 @@ function f$1(e, r) {
 function cr(e, r) {
 	let t = f$1(e, r), n$1 = r.i;
 	if (n$1 == null) return t;
-	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce$1, l$1 = a ? "(" + t + "," + a + s + ")" : t;
+	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce, l$1 = a ? "(" + t + "," + a + s + ")" : t;
 	if (u$1 === "") return r.t === 10 && !a ? "(" + l$1 + ")" : l$1;
-	let g$1 = i$1 == null ? "()" : "(" + ce$1 + "[\\"" + y$1(i$1) + "\\"])";
+	let g$1 = i$1 == null ? "()" : "(" + ce + "[\\"" + y$1(i$1) + "\\"])";
 	return "(" + sr([u$1], l$1) + ")" + g$1;
 }
 var Gr = class {
@@ -6603,7 +6142,7 @@ function va(e, r, t, n$1) {
 function Jr(e, r, t) {
 	let n$1 = Object.entries(t), a = [], s = [];
 	for (let i$1 = 0, u$1 = n$1.length; i$1 < u$1; i$1++) a.push(y$1(n$1[i$1][0])), s.push(E$1(e, r, n$1[i$1][1]));
-	return C$1 in t && (a.push(I(e.base, C$1)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$2 in t && (a.push(I(e.base, v$2)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$2() : Xe(t))))), P$2 in t && (a.push(I(e.base, P$2)), s.push(X(t[P$2]))), R$1 in t && (a.push(I(e.base, R$1)), s.push(t[R$1] ? J$1 : Z$1)), {
+	return C in t && (a.push(I(e.base, C)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$1 in t && (a.push(I(e.base, v$1)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$1() : Xe(t))))), P$1 in t && (a.push(I(e.base, P$1)), s.push(X(t[P$1]))), R in t && (a.push(I(e.base, R)), s.push(t[R] ? J : Z)), {
 		k: a,
 		v: s
 	};
@@ -6625,11 +6164,11 @@ function Ia(e, r, t, n$1) {
 }
 function sn(e, r, t, n$1) {
 	let a = $$1(n$1, e.base.features);
-	return Ve(t, n$1, a ? Jr(e, r, a) : o$2);
+	return Ve(t, n$1, a ? Jr(e, r, a) : o$1);
 }
 function Ra(e, r, t, n$1) {
 	let a = $$1(n$1, e.base.features);
-	return Me(t, n$1, a ? Jr(e, r, a) : o$2);
+	return Me(t, n$1, a ? Jr(e, r, a) : o$1);
 }
 function Pa(e, r, t, n$1) {
 	let a = [], s = [];
@@ -6669,13 +6208,13 @@ function Oa(e, r, t, n$1) {
 function Ta(e, r, t) {
 	if (this.state.alive) {
 		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$2(23, e, o$2, o$2, o$2, o$2, o$2, [k(this.base, 2), n$1], o$2, o$2, o$2, o$2)), be(this);
+		n$1 && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n$1], o$1, o$1, o$1, o$1)), be(this);
 	}
 }
 function wa(e, r, t) {
 	if (this.state.alive) {
 		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$2(24, e, o$2, o$2, o$2, o$2, o$2, [k(this.base, 3), n$1], o$2, o$2, o$2, o$2));
+		n$1 && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n$1], o$1, o$1, o$1, o$1));
 	}
 	be(this);
 }
@@ -6688,18 +6227,18 @@ function za(e, r, t, n$1, a) {
 		let u$1 = a[s];
 		if (u$1.parse.sync && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.sync(n$1, new Gr(e, r), { id: t }));
 	}
-	return o$2;
+	return o$1;
 }
 function _a(e, r, t, n$1, a) {
 	for (let s = 0, i$1 = a.length; s < i$1; s++) {
 		let u$1 = a[s];
 		if (u$1.parse.stream && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.stream(n$1, new Kr(e, r), { id: t }));
 	}
-	return o$2;
+	return o$1;
 }
 function un(e, r, t, n$1) {
 	let a = e.base.plugins;
-	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$2;
+	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$1;
 }
 function ka(e, r, t, n$1) {
 	let a = [];
@@ -6709,7 +6248,7 @@ function ka(e, r, t, n$1) {
 function Da(e, r, t, n$1, a) {
 	switch (a) {
 		case Object: return Wr(e, r, t, n$1, !1);
-		case o$2: return Wr(e, r, t, n$1, !0);
+		case o$1: return Wr(e, r, t, n$1, !0);
 		case Date: return he(t, n$1);
 		case Error:
 		case EvalError:
@@ -6747,7 +6286,7 @@ function Da(e, r, t, n$1, a) {
 	}
 	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n$1 instanceof AggregateError)) return Ra(e, r, t, n$1);
 	if (n$1 instanceof Error) return sn(e, r, t, n$1);
-	if (C$1 in n$1 || v$2 in n$1) return Wr(e, r, t, n$1, !!a);
+	if (C in n$1 || v$1 in n$1) return Wr(e, r, t, n$1, !!a);
 	throw new x$1(n$1);
 }
 function Fa(e, r, t, n$1) {
@@ -6768,8 +6307,8 @@ function Ba(e, r, t) {
 function E$1(e, r, t) {
 	if (r >= e.base.depthLimit) throw new ee(e.base.depthLimit);
 	switch (typeof t) {
-		case "boolean": return t ? J$1 : Z$1;
-		case "undefined": return Ae$1;
+		case "boolean": return t ? J : Z;
+		case "undefined": return Ae;
 		case "string": return X(t);
 		case "number": return Te(t);
 		case "bigint": return we(t);
@@ -6778,7 +6317,7 @@ function E$1(e, r, t) {
 				let n$1 = q$1(e.base, t);
 				return n$1.type === 0 ? Fa(e, r + 1, n$1.value, t) : n$1.value;
 			}
-			return Ee$1;
+			return Ee;
 		case "symbol": return I(e.base, t);
 		case "function": return Ba(e, r, t);
 		default: throw new x$1(t);
@@ -6811,7 +6350,7 @@ function G(e, r, t) {
 	try {
 		return E$1(e, r, t);
 	} catch (n$1) {
-		return Zr(e, n$1), o$2;
+		return Zr(e, n$1), o$1;
 	}
 }
 function Qr(e, r) {
@@ -6895,241 +6434,6 @@ var Sr = class {
 		}
 	}
 };
-
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
-	0: "Symbol.asyncIterator",
-	1: "Symbol.hasInstance",
-	2: "Symbol.isConcatSpreadable",
-	3: "Symbol.iterator",
-	4: "Symbol.match",
-	5: "Symbol.matchAll",
-	6: "Symbol.replace",
-	7: "Symbol.search",
-	8: "Symbol.species",
-	9: "Symbol.split",
-	10: "Symbol.toPrimitive",
-	11: "Symbol.toStringTag",
-	12: "Symbol.unscopables"
-}, ve = {
-	[v$1]: 0,
-	[mr]: 1,
-	[R]: 2,
-	[C]: 3,
-	[pr]: 4,
-	[dr]: 5,
-	[gr]: 6,
-	[yr]: 7,
-	[Nr]: 8,
-	[br]: 9,
-	[vr]: 10,
-	[P$1]: 11,
-	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
-}, nt = {
-	2: "!0",
-	3: "!1",
-	1: "void 0",
-	0: "null",
-	4: "-0",
-	5: "1/0",
-	6: "-1/0",
-	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
-	return {
-		t: e,
-		i: r,
-		s: t,
-		c: n$1,
-		m: a,
-		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
-		o: S,
-		l: d$1
-	};
-}
-function F(e) {
-	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
-}
-var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
-var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
-var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-});
-var { toString: ys } = Object.prototype;
-var re = () => {
-	let e = {
-		p: 0,
-		s: 0,
-		f: 0
-	};
-	return e.p = new Promise((r, t) => {
-		e.s = r, e.f = t;
-	}), e;
-}, vn = (e, r) => {
-	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
-	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
-	});
-	return {
-		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
-		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
-		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
-		}
-	};
-}, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
-		next: () => {
-			if (t > r.d) return {
-				done: !0,
-				value: void 0
-			};
-			let a = t++, s = r.v[a];
-			if (a === r.t) throw s;
-			return {
-				done: a === r.d,
-				value: s
-			};
-		}
-	};
-	return n$1;
-}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
-			done: !0,
-			value: void 0
-		});
-	};
-	t.on({
-		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !1,
-				value: S
-			}), i$1.push(S);
-		},
-		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
-		},
-		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !0,
-				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
-		}
-	});
-	let g$1 = {
-		[e]: () => g$1,
-		next: () => {
-			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
-					let et = r();
-					return u$1.push(et), et.p;
-				}
-				return {
-					done: !1,
-					value: i$1[K$1]
-				};
-			}
-			if (n$1 > a) return {
-				done: !0,
-				value: void 0
-			};
-			let S = n$1++, d$1 = i$1[S];
-			if (S !== a) return {
-				done: !1,
-				value: d$1
-			};
-			if (s) throw d$1;
-			return {
-				done: !0,
-				value: d$1
-			};
-		}
-	};
-	return g$1;
-}, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
-}, Et = Or.toString();
-var An = Pr(C);
-function te$1() {
-	return Rr();
-}
-var En = xr(v$1, re);
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-function ni(e) {
-	return e;
-}
-var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
-var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
@@ -7847,7 +7151,7 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const ES2017FLAG = L$2.AggregateError | L$2.BigIntTypedArray;
+const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 const GLOBAL_IDENTIFIER = "_$HY.r";
 function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
 	const defaultPlugins = [
@@ -8050,15 +7354,15 @@ const UNOWNED = {
 };
 let Owner = null;
 function createOwner() {
-	const o$3 = {
+	const o$2 = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$3];
-	else Owner.owned.push(o$3);
-	return o$3;
+	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
+	else Owner.owned.push(o$2);
+	return o$2;
 }
 function createRoot(fn$1, detachedOwner) {
 	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn$1.length === 0 ? UNOWNED : {
@@ -8079,21 +7383,21 @@ function createRoot(fn$1, detachedOwner) {
 	return result;
 }
 function createSignal(value, options) {
-	return [() => value, (v$3) => {
-		return value = typeof v$3 === "function" ? v$3(value) : v$3;
+	return [() => value, (v$2) => {
+		return value = typeof v$2 === "function" ? v$2(value) : v$2;
 	}];
 }
 function createMemo(fn$1, value) {
 	Owner = createOwner();
-	let v$3;
+	let v$2;
 	try {
-		v$3 = fn$1(value);
+		v$2 = fn$1(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$3;
+	return () => v$2;
 }
 function cleanNode(node) {
 	if (node.owned) {
@@ -8116,8 +7420,8 @@ function createContext(defaultValue) {
 function children(fn$1) {
 	const memo = createMemo(() => resolveChildren(fn$1()));
 	memo.toArray = () => {
-		const c$3 = memo();
-		return Array.isArray(c$3) ? c$3 : c$3 != null ? [c$3] : [];
+		const c$2 = memo();
+		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
 	};
 	return memo;
 }
@@ -8162,10 +7466,10 @@ function getContextId(count) {
 const SuspenseContext = createContext();
 
 //#endregion
-//#region node_modules/solid-js/node_modules/seroval/dist/esm/production/index.mjs
-var L$2 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$2 || {});
-var v$2 = Symbol.asyncIterator, mr$1 = Symbol.hasInstance, R$1 = Symbol.isConcatSpreadable, C$1 = Symbol.iterator, pr$1 = Symbol.match, dr$1 = Symbol.matchAll, gr$1 = Symbol.replace, yr$1 = Symbol.search, Nr$1 = Symbol.species, br$1 = Symbol.split, vr$1 = Symbol.toPrimitive, P$2 = Symbol.toStringTag, Cr$1 = Symbol.unscopables;
-var rt$1 = {
+//#region node_modules/seroval/dist/esm/production/index.mjs
+var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
+var rt = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -8179,35 +7483,35 @@ var rt$1 = {
 	10: "Symbol.toPrimitive",
 	11: "Symbol.toStringTag",
 	12: "Symbol.unscopables"
-}, ve$1 = {
-	[v$2]: 0,
-	[mr$1]: 1,
-	[R$1]: 2,
-	[C$1]: 3,
-	[pr$1]: 4,
-	[dr$1]: 5,
-	[gr$1]: 6,
-	[yr$1]: 7,
-	[Nr$1]: 8,
-	[br$1]: 9,
-	[vr$1]: 10,
-	[P$2]: 11,
-	[Cr$1]: 12
-}, tt$1 = {
-	0: v$2,
-	1: mr$1,
-	2: R$1,
-	3: C$1,
-	4: pr$1,
-	5: dr$1,
-	6: gr$1,
-	7: yr$1,
-	8: Nr$1,
-	9: br$1,
-	10: vr$1,
-	11: P$2,
-	12: Cr$1
-}, nt$1 = {
+}, ve = {
+	[v$1]: 0,
+	[mr]: 1,
+	[R]: 2,
+	[C]: 3,
+	[pr]: 4,
+	[dr]: 5,
+	[gr]: 6,
+	[yr]: 7,
+	[Nr]: 8,
+	[br]: 9,
+	[vr]: 10,
+	[P$1]: 11,
+	[Cr]: 12
+}, tt = {
+	0: v$1,
+	1: mr,
+	2: R,
+	3: C,
+	4: pr,
+	5: dr,
+	6: gr,
+	7: yr,
+	8: Nr,
+	9: br,
+	10: vr,
+	11: P$1,
+	12: Cr
+}, nt = {
 	2: "!0",
 	3: "!1",
 	1: "void 0",
@@ -8216,10 +7520,10 @@ var rt$1 = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, o$2 = void 0, ot$1 = {
+}, o$1 = void 0, ot = {
 	2: !0,
 	3: !1,
-	1: o$2,
+	1: o$1,
 	0: null,
 	4: -0,
 	5: Number.POSITIVE_INFINITY,
@@ -8243,7 +7547,7 @@ var Ce = {
 	5: TypeError,
 	6: URIError
 };
-function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 	return {
 		t: e,
 		i: r,
@@ -8259,10 +7563,10 @@ function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
 		l: d$1
 	};
 }
-function F$1(e) {
-	return c$2(2, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+function F(e) {
+	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-var J$1 = F$1(2), Z$1 = F$1(3), Ae$1 = F$1(1), Ee$1 = F$1(0), st$1 = F$1(4), it$1 = F$1(5), ut$1 = F$1(6), lt$1 = F$1(7);
+var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
 function fn(e) {
 	switch (e) {
 		case "\\"": return "\\\\\\"";
@@ -8276,7 +7580,7 @@ function fn(e) {
 		case "<": return "\\\\x3C";
 		case "\\u2028": return "\\\\u2028";
 		case "\\u2029": return "\\\\u2029";
-		default: return o$2;
+		default: return o$1;
 	}
 }
 function y$1(e) {
@@ -8284,35 +7588,35 @@ function y$1(e) {
 	for (let a = 0, s = e.length; a < s; a++) n$1 = fn(e[a]), n$1 && (r += e.slice(t, a) + n$1, t = a + 1);
 	return t === 0 ? r = e : r += e.slice(t), r;
 }
-var U$1 = "__SEROVAL_REFS__", ce$1 = "$R", Ie$1 = \`self.\${ce$1}\`;
+var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
 function mn(e) {
-	return e == null ? \`\${Ie$1}=\${Ie$1}||[]\` : \`(\${Ie$1}=\${Ie$1}||{})["\${y$1(e)}"]=[]\`;
+	return e == null ? \`\${Ie}=\${Ie}||[]\` : \`(\${Ie}=\${Ie}||{})["\${y$1(e)}"]=[]\`;
 }
-var Ar$1 = /* @__PURE__ */ new Map(), j$1 = /* @__PURE__ */ new Map();
+var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
 function Er(e) {
-	return Ar$1.has(e);
+	return Ar.has(e);
 }
 function ct(e) {
-	if (Er(e)) return Ar$1.get(e);
+	if (Er(e)) return Ar.get(e);
 	throw new Re(e);
 }
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U$1, {
-	value: j$1,
+typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U$1, {
-	value: j$1,
+}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U$1, {
-	value: j$1,
+}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U$1, {
-	value: j$1,
+}) : typeof global != "undefined" && Object.defineProperty(global, U, {
+	value: j,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
@@ -8334,82 +7638,82 @@ function Oe(e) {
 }
 function Te(e) {
 	switch (e) {
-		case Number.POSITIVE_INFINITY: return it$1;
-		case Number.NEGATIVE_INFINITY: return ut$1;
+		case Number.POSITIVE_INFINITY: return it;
+		case Number.NEGATIVE_INFINITY: return ut;
 	}
-	return e !== e ? lt$1 : Object.is(e, -0) ? st$1 : c$2(0, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return e !== e ? lt : Object.is(e, -0) ? st : c$1(0, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function X(e) {
-	return c$2(1, o$2, y$1(e), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(1, o$1, y$1(e), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function we(e) {
-	return c$2(3, o$2, "" + e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(3, o$1, "" + e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function mt(e) {
-	return c$2(4, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(4, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function he(e, r) {
 	let t = r.valueOf();
-	return c$2(5, e, t !== t ? "" : r.toISOString(), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(5, e, t !== t ? "" : r.toISOString(), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function ze(e, r) {
-	return c$2(6, e, o$2, y$1(r.source), r.flags, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(6, e, o$1, y$1(r.source), r.flags, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function pt(e, r) {
-	return c$2(17, e, ve$1[r], o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(17, e, ve[r], o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function dt(e, r) {
-	return c$2(18, e, y$1(ct(r)), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(18, e, y$1(ct(r)), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function fe$1(e, r, t) {
-	return c$2(25, e, t, y$1(r), o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(25, e, t, y$1(r), o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function _e(e, r, t) {
-	return c$2(9, e, o$2, o$2, o$2, o$2, o$2, t, o$2, o$2, Oe(r), o$2);
+	return c$1(9, e, o$1, o$1, o$1, o$1, o$1, t, o$1, o$1, Oe(r), o$1);
 }
 function ke(e, r) {
-	return c$2(21, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(21, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function De(e, r, t) {
-	return c$2(15, e, o$2, r.constructor.name, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.length);
+	return c$1(15, e, o$1, r.constructor.name, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.length);
 }
 function Fe(e, r, t) {
-	return c$2(16, e, o$2, r.constructor.name, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.byteLength);
+	return c$1(16, e, o$1, r.constructor.name, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.byteLength);
 }
 function Be(e, r, t) {
-	return c$2(20, e, o$2, o$2, o$2, o$2, o$2, o$2, t, r.byteOffset, o$2, r.byteLength);
+	return c$1(20, e, o$1, o$1, o$1, o$1, o$1, o$1, t, r.byteOffset, o$1, r.byteLength);
 }
 function Ve(e, r, t) {
-	return c$2(13, e, xe(r), o$2, y$1(r.message), t, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(13, e, xe(r), o$1, y$1(r.message), t, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function Me(e, r, t) {
-	return c$2(14, e, xe(r), o$2, y$1(r.message), t, o$2, o$2, o$2, o$2, o$2, o$2);
+	return c$1(14, e, xe(r), o$1, y$1(r.message), t, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function Le(e, r) {
-	return c$2(7, e, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2, o$2);
+	return c$1(7, e, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, o$1);
 }
 function Ue(e, r) {
-	return c$2(28, o$2, o$2, o$2, o$2, o$2, o$2, [e, r], o$2, o$2, o$2, o$2);
+	return c$1(28, o$1, o$1, o$1, o$1, o$1, o$1, [e, r], o$1, o$1, o$1, o$1);
 }
 function je(e, r) {
-	return c$2(30, o$2, o$2, o$2, o$2, o$2, o$2, [e, r], o$2, o$2, o$2, o$2);
+	return c$1(30, o$1, o$1, o$1, o$1, o$1, o$1, [e, r], o$1, o$1, o$1, o$1);
 }
 function Ye(e, r, t) {
-	return c$2(31, e, o$2, o$2, o$2, o$2, o$2, t, r, o$2, o$2, o$2);
+	return c$1(31, e, o$1, o$1, o$1, o$1, o$1, t, r, o$1, o$1, o$1);
 }
 function qe(e, r) {
-	return c$2(32, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(32, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function We(e, r) {
-	return c$2(33, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(33, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function Ge(e, r) {
-	return c$2(34, e, o$2, o$2, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2);
+	return c$1(34, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
 function Ke(e, r, t, n$1) {
-	return c$2(35, e, t, o$2, o$2, o$2, o$2, r, o$2, o$2, o$2, n$1);
+	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n$1);
 }
-var { toString: ys$1 } = Object.prototype;
+var { toString: ys } = Object.prototype;
 var yn = {
 	parsing: 1,
 	serialization: 2,
@@ -8488,7 +7792,7 @@ var Y$1 = class {
 		this.replacement = t;
 	}
 };
-var re$1 = () => {
+var re = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -8497,11 +7801,11 @@ var re$1 = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn$1 = (e, r) => {
+}, vn = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn$1 = (e, r) => {
+}, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt$1 = re$1.toString(), Nt$1 = vn$1.toString(), bt$1 = Cn$1.toString(), Rr$1 = () => {
+}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
 	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
 	}, i$1 = (l$1, g$1, S, d$1) => {
@@ -8522,7 +7826,7 @@ var re$1 = () => {
 			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
 		}
 	};
-}, vt$1 = Rr$1.toString(), Pr$1 = (e) => (r) => () => {
+}, vt = Rr.toString(), Pr = (e) => (r) => () => {
 	let t = 0, n$1 = {
 		[e]: () => n$1,
 		next: () => {
@@ -8539,7 +7843,7 @@ var re$1 = () => {
 		}
 	};
 	return n$1;
-}, Ct$1 = Pr$1.toString(), xr$1 = (e, r) => (t) => () => {
+}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
 	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
 		for (; S < d$1; S++) u$1[S].s({
 			done: !0,
@@ -8597,11 +7901,11 @@ var re$1 = () => {
 		}
 	};
 	return g$1;
-}, At$1 = xr$1.toString(), Or$1 = (e) => {
+}, At = xr.toString(), Or = (e) => {
 	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
 	return n$1.buffer;
-}, Et$1 = Or$1.toString();
+}, Et = Or.toString();
 function Ze(e) {
 	return "__SEROVAL_SEQUENCE__" in e;
 }
@@ -8614,7 +7918,7 @@ function Tr(e, r, t) {
 	};
 }
 function $e(e) {
-	let r = [], t = -1, n$1 = -1, a = e[C$1]();
+	let r = [], t = -1, n$1 = -1, a = e[C]();
 	for (;;) try {
 		let s = a.next();
 		if (r.push(s.value), s.done) {
@@ -8626,7 +7930,7 @@ function $e(e) {
 	}
 	return Tr(r, t, n$1);
 }
-var An$1 = Pr$1(C$1);
+var An = Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -8637,20 +7941,20 @@ var xt = {
 	5: {}
 }, Ot = {
 	0: "[]",
-	1: yt$1,
-	2: Nt$1,
-	3: bt$1,
-	4: vt$1,
-	5: Et$1
+	1: yt,
+	2: Nt,
+	3: bt,
+	4: vt,
+	5: Et
 };
 function M(e) {
 	return "__SEROVAL_STREAM__" in e;
 }
-function te$2() {
-	return Rr$1();
+function te$1() {
+	return Rr();
 }
 function Xe(e) {
-	let r = te$2(), t = e[v$2]();
+	let r = te$1(), t = e[v$1]();
 	async function n$1() {
 		try {
 			let a = await t.next();
@@ -8661,7 +7965,7 @@ function Xe(e) {
 	}
 	return n$1().catch(() => {}), r;
 }
-var En$1 = xr$1(v$2, re$1);
+var En = xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -8699,39 +8003,42 @@ function q$1(e, r) {
 function I(e, r) {
 	let t = q$1(e, r);
 	if (t.type !== 0) return t.value;
-	if (r in ve$1) return pt(t.value, r);
+	if (r in ve) return pt(t.value, r);
 	throw new x$1(r);
 }
 function k(e, r) {
 	let t = Qe(e, xt[r]);
-	return t.type === 1 ? t.value : c$2(26, t.value, r, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
+	return t.type === 1 ? t.value : c$1(26, t.value, r, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
 function er(e) {
 	let r = Qe(e, Rt);
-	return r.type === 1 ? r.value : c$2(27, r.value, o$2, o$2, o$2, o$2, o$2, o$2, I(e, C$1), o$2, o$2, o$2);
+	return r.type === 1 ? r.value : c$1(27, r.value, o$1, o$1, o$1, o$1, o$1, o$1, I(e, C), o$1, o$1, o$1);
 }
 function rr(e) {
 	let r = Qe(e, Pt);
-	return r.type === 1 ? r.value : c$2(29, r.value, o$2, o$2, o$2, o$2, o$2, [k(e, 1), I(e, v$2)], o$2, o$2, o$2, o$2);
+	return r.type === 1 ? r.value : c$1(29, r.value, o$1, o$1, o$1, o$1, o$1, [k(e, 1), I(e, v$1)], o$1, o$1, o$1, o$1);
 }
 function tr(e, r, t, n$1) {
-	return c$2(t ? 11 : 10, e, o$2, o$2, o$2, n$1, o$2, o$2, o$2, o$2, Oe(r), o$2);
+	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n$1, o$1, o$1, o$1, o$1, Oe(r), o$1);
 }
 function nr(e, r, t, n$1) {
-	return c$2(8, r, o$2, o$2, o$2, o$2, {
+	return c$1(8, r, o$1, o$1, o$1, o$1, {
 		k: t,
 		v: n$1
-	}, o$2, k(e, 0), o$2, o$2, o$2);
+	}, o$1, k(e, 0), o$1, o$1, o$1);
 }
 function ht(e, r, t) {
-	return c$2(22, r, t, o$2, o$2, o$2, o$2, o$2, k(e, 1), o$2, o$2, o$2);
+	return c$1(22, r, t, o$1, o$1, o$1, o$1, o$1, k(e, 1), o$1, o$1, o$1);
 }
 function or(e, r, t) {
 	let n$1 = new Uint8Array(t), a = "";
 	for (let s = 0, i$1 = n$1.length; s < i$1; s++) a += String.fromCharCode(n$1[s]);
-	return c$2(19, r, y$1(btoa(a)), o$2, o$2, o$2, o$2, o$2, k(e, 5), o$2, o$2, o$2);
+	return c$1(19, r, y$1(btoa(a)), o$1, o$1, o$1, o$1, o$1, k(e, 5), o$1, o$1, o$1);
 }
-var ae$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae$1 || {});
+var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
+function ni(e) {
+	return e;
+}
 function kt(e, r) {
 	for (let t = 0, n$1 = r.length; t < n$1; t++) {
 		let a = r[t];
@@ -8744,17 +8051,17 @@ function A(e) {
 		return kt(r, e), [...r];
 	}
 }
-var Eo$1 = () => T, Io$1 = Eo$1.toString(), qt$1 = /=>/.test(Io$1);
+var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
 function sr(e, r) {
-	return qt$1 ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>" + (r.startsWith("{") ? "(" + r + ")" : r) : "function(" + e.join(",") + "){return " + r + "}";
+	return qt ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>" + (r.startsWith("{") ? "(" + r + ")" : r) : "function(" + e.join(",") + "){return " + r + "}";
 }
 function Wt(e, r) {
-	return qt$1 ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>{" + r + "}" : "function(" + e.join(",") + "){" + r + "}";
+	return qt ? (e.length === 1 ? e[0] : "(" + e.join(",") + ")") + "=>{" + r + "}" : "function(" + e.join(",") + "){" + r + "}";
 }
-var Ht$1 = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt$1 = Ht$1.length, Jt$1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt$1 = Jt$1.length;
+var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 function Br(e) {
-	let r = e % Gt$1, t = Ht$1[r];
-	for (e = (e - r) / Gt$1; e > 0;) r = e % Kt$1, t += Jt$1[r], e = (e - r) / Kt$1;
+	let r = e % Gt, t = Ht[r];
+	for (e = (e - r) / Gt; e > 0;) r = e % Kt, t += Jt[r], e = (e - r) / Kt;
 	return t;
 }
 var Ro = /^[$A-Z_][0-9A-Z_$]*$/i;
@@ -8775,7 +8082,7 @@ function Po(e) {
 	for (let n$1 = 1, a = e.length, s, i$1 = t; n$1 < a; n$1++) s = e[n$1], s.t === 0 && s.v === i$1.v ? t = {
 		t: 0,
 		s: s.s,
-		k: o$2,
+		k: o$1,
 		v: ye(t)
 	} : s.t === 2 && s.s === i$1.s ? t = {
 		t: 2,
@@ -8785,13 +8092,13 @@ function Po(e) {
 	} : s.t === 1 && s.s === i$1.s ? t = {
 		t: 1,
 		s: ye(t),
-		k: o$2,
+		k: o$1,
 		v: s.v
 	} : s.t === 3 && s.s === i$1.s ? t = {
 		t: 3,
 		s: ye(t),
 		k: s.k,
-		v: o$2
+		v: o$1
 	} : (r.push(t), t = s), i$1 = s;
 	return r.push(t), r;
 }
@@ -8801,13 +8108,13 @@ function tn(e) {
 		for (let n$1 = 0, a = t.length; n$1 < a; n$1++) r += ye(t[n$1]) + ",";
 		return r;
 	}
-	return o$2;
+	return o$1;
 }
 var xo = "Object.create(null)", Oo = "new Set", To = "new Map", wo = "Promise.resolve", ho = "Promise.reject", zo = {
 	3: "Object.freeze",
 	2: "Object.seal",
 	1: "Object.preventExtensions",
-	0: o$2
+	0: o$1
 };
 function nn(e, r) {
 	return {
@@ -8825,7 +8132,7 @@ function ur(e) {
 		mode: 2,
 		base: nn(2, e),
 		state: e,
-		child: o$2
+		child: o$1
 	};
 }
 var Mr = class {
@@ -8843,7 +8150,7 @@ function ko(e, r) {
 	return n$1 ?? (n$1 = Br(t), e.vars[t] = n$1), n$1;
 }
 function Do(e) {
-	return ce$1 + "[" + e + "]";
+	return ce + "[" + e + "]";
 }
 function m$1(e, r) {
 	return e.mode === 1 ? ko(e.state, r) : Do(r);
@@ -8876,7 +8183,7 @@ function Yr(e, r, t) {
 	e.assignments.push({
 		t: 0,
 		s: r,
-		k: o$2,
+		k: o$1,
 		v: t
 	});
 }
@@ -8884,7 +8191,7 @@ function Bo(e, r, t) {
 	e.base.assignments.push({
 		t: 1,
 		s: m$1(e, r),
-		k: o$2,
+		k: o$1,
 		v: t
 	});
 }
@@ -8901,7 +8208,7 @@ function Zt(e, r, t) {
 		t: 3,
 		s: m$1(e, r),
 		k: t,
-		v: o$2
+		v: o$1
 	});
 }
 function Ne(e, r, t, n$1) {
@@ -8920,7 +8227,7 @@ function se(e, r, t) {
 	return e.mode === 1 && !Lr(e.base, r) ? t : m$1(e, r) + "=" + t;
 }
 function Mo(e) {
-	return U$1 + ".get(\\"" + e.s + "\\")";
+	return U + ".get(\\"" + e.s + "\\")";
 }
 function $t(e, r, t, n$1) {
 	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n$1, m$1(e, t.i)), "") : f$1(e, t) : "";
@@ -8991,7 +8298,7 @@ function Wo(e, r, t) {
 		for (let u$1 = 0; u$1 < a; u$1++) qo(e, r, s, n$1[u$1], i$1[u$1]);
 		return e.base.stack.pop(), tn(s);
 	}
-	return o$2;
+	return o$1;
 }
 function qr(e, r, t) {
 	if (r.p) {
@@ -9122,7 +8429,7 @@ function ia(e, r) {
 }
 function ua(e, r) {
 	let t = "", n$1 = !1;
-	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct$1 + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
+	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
 }
 function la(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
@@ -9130,7 +8437,7 @@ function la(e, r) {
 function ca(e, r) {
 	let t = r.a[0], n$1 = r.a[1], a = e.base, s = "";
 	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n$1.t !== 4 && (O$1(a, n$1.i), s += (s ? "," : "(") + f$1(e, n$1)), s && (s += ",");
-	let i$1 = se(e, r.i, "(" + At$1 + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
+	let i$1 = se(e, r.i, "(" + At + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
 	return s ? s + i$1 + ")" : i$1;
 }
 function fa(e, r) {
@@ -9170,7 +8477,7 @@ function ga(e, r) {
 }
 function ya(e, r) {
 	switch (r.t) {
-		case 17: return rt$1[r.s];
+		case 17: return rt[r.s];
 		case 18: return Mo(r);
 		case 9: return Lo(e, r);
 		case 10: return Uo(e, r);
@@ -9196,7 +8503,7 @@ function ya(e, r) {
 }
 function f$1(e, r) {
 	switch (r.t) {
-		case 2: return nt$1[r.s];
+		case 2: return nt[r.s];
 		case 0: return "" + r.s;
 		case 1: return "\\"" + r.s + "\\"";
 		case 3: return r.s + "n";
@@ -9217,9 +8524,9 @@ function f$1(e, r) {
 function cr(e, r) {
 	let t = f$1(e, r), n$1 = r.i;
 	if (n$1 == null) return t;
-	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce$1, l$1 = a ? "(" + t + "," + a + s + ")" : t;
+	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce, l$1 = a ? "(" + t + "," + a + s + ")" : t;
 	if (u$1 === "") return r.t === 10 && !a ? "(" + l$1 + ")" : l$1;
-	let g$1 = i$1 == null ? "()" : "(" + ce$1 + "[\\"" + y$1(i$1) + "\\"])";
+	let g$1 = i$1 == null ? "()" : "(" + ce + "[\\"" + y$1(i$1) + "\\"])";
 	return "(" + sr([u$1], l$1) + ")" + g$1;
 }
 var Gr = class {
@@ -9286,7 +8593,7 @@ function va(e, r, t, n$1) {
 function Jr(e, r, t) {
 	let n$1 = Object.entries(t), a = [], s = [];
 	for (let i$1 = 0, u$1 = n$1.length; i$1 < u$1; i$1++) a.push(y$1(n$1[i$1][0])), s.push(E$1(e, r, n$1[i$1][1]));
-	return C$1 in t && (a.push(I(e.base, C$1)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$2 in t && (a.push(I(e.base, v$2)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$2() : Xe(t))))), P$2 in t && (a.push(I(e.base, P$2)), s.push(X(t[P$2]))), R$1 in t && (a.push(I(e.base, R$1)), s.push(t[R$1] ? J$1 : Z$1)), {
+	return C in t && (a.push(I(e.base, C)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$1 in t && (a.push(I(e.base, v$1)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$1() : Xe(t))))), P$1 in t && (a.push(I(e.base, P$1)), s.push(X(t[P$1]))), R in t && (a.push(I(e.base, R)), s.push(t[R] ? J : Z)), {
 		k: a,
 		v: s
 	};
@@ -9308,11 +8615,11 @@ function Ia(e, r, t, n$1) {
 }
 function sn(e, r, t, n$1) {
 	let a = $$1(n$1, e.base.features);
-	return Ve(t, n$1, a ? Jr(e, r, a) : o$2);
+	return Ve(t, n$1, a ? Jr(e, r, a) : o$1);
 }
 function Ra(e, r, t, n$1) {
 	let a = $$1(n$1, e.base.features);
-	return Me(t, n$1, a ? Jr(e, r, a) : o$2);
+	return Me(t, n$1, a ? Jr(e, r, a) : o$1);
 }
 function Pa(e, r, t, n$1) {
 	let a = [], s = [];
@@ -9352,13 +8659,13 @@ function Oa(e, r, t, n$1) {
 function Ta(e, r, t) {
 	if (this.state.alive) {
 		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$2(23, e, o$2, o$2, o$2, o$2, o$2, [k(this.base, 2), n$1], o$2, o$2, o$2, o$2)), be(this);
+		n$1 && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n$1], o$1, o$1, o$1, o$1)), be(this);
 	}
 }
 function wa(e, r, t) {
 	if (this.state.alive) {
 		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$2(24, e, o$2, o$2, o$2, o$2, o$2, [k(this.base, 3), n$1], o$2, o$2, o$2, o$2));
+		n$1 && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n$1], o$1, o$1, o$1, o$1));
 	}
 	be(this);
 }
@@ -9371,18 +8678,18 @@ function za(e, r, t, n$1, a) {
 		let u$1 = a[s];
 		if (u$1.parse.sync && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.sync(n$1, new Gr(e, r), { id: t }));
 	}
-	return o$2;
+	return o$1;
 }
 function _a(e, r, t, n$1, a) {
 	for (let s = 0, i$1 = a.length; s < i$1; s++) {
 		let u$1 = a[s];
 		if (u$1.parse.stream && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.stream(n$1, new Kr(e, r), { id: t }));
 	}
-	return o$2;
+	return o$1;
 }
 function un(e, r, t, n$1) {
 	let a = e.base.plugins;
-	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$2;
+	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$1;
 }
 function ka(e, r, t, n$1) {
 	let a = [];
@@ -9392,7 +8699,7 @@ function ka(e, r, t, n$1) {
 function Da(e, r, t, n$1, a) {
 	switch (a) {
 		case Object: return Wr(e, r, t, n$1, !1);
-		case o$2: return Wr(e, r, t, n$1, !0);
+		case o$1: return Wr(e, r, t, n$1, !0);
 		case Date: return he(t, n$1);
 		case Error:
 		case EvalError:
@@ -9430,7 +8737,7 @@ function Da(e, r, t, n$1, a) {
 	}
 	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n$1 instanceof AggregateError)) return Ra(e, r, t, n$1);
 	if (n$1 instanceof Error) return sn(e, r, t, n$1);
-	if (C$1 in n$1 || v$2 in n$1) return Wr(e, r, t, n$1, !!a);
+	if (C in n$1 || v$1 in n$1) return Wr(e, r, t, n$1, !!a);
 	throw new x$1(n$1);
 }
 function Fa(e, r, t, n$1) {
@@ -9451,8 +8758,8 @@ function Ba(e, r, t) {
 function E$1(e, r, t) {
 	if (r >= e.base.depthLimit) throw new ee(e.base.depthLimit);
 	switch (typeof t) {
-		case "boolean": return t ? J$1 : Z$1;
-		case "undefined": return Ae$1;
+		case "boolean": return t ? J : Z;
+		case "undefined": return Ae;
 		case "string": return X(t);
 		case "number": return Te(t);
 		case "bigint": return we(t);
@@ -9461,7 +8768,7 @@ function E$1(e, r, t) {
 				let n$1 = q$1(e.base, t);
 				return n$1.type === 0 ? Fa(e, r + 1, n$1.value, t) : n$1.value;
 			}
-			return Ee$1;
+			return Ee;
 		case "symbol": return I(e.base, t);
 		case "function": return Ba(e, r, t);
 		default: throw new x$1(t);
@@ -9494,7 +8801,7 @@ function G(e, r, t) {
 	try {
 		return E$1(e, r, t);
 	} catch (n$1) {
-		return Zr(e, n$1), o$2;
+		return Zr(e, n$1), o$1;
 	}
 }
 function Qr(e, r) {
@@ -9578,241 +8885,6 @@ var Sr = class {
 		}
 	}
 };
-
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
-	0: "Symbol.asyncIterator",
-	1: "Symbol.hasInstance",
-	2: "Symbol.isConcatSpreadable",
-	3: "Symbol.iterator",
-	4: "Symbol.match",
-	5: "Symbol.matchAll",
-	6: "Symbol.replace",
-	7: "Symbol.search",
-	8: "Symbol.species",
-	9: "Symbol.split",
-	10: "Symbol.toPrimitive",
-	11: "Symbol.toStringTag",
-	12: "Symbol.unscopables"
-}, ve = {
-	[v$1]: 0,
-	[mr]: 1,
-	[R]: 2,
-	[C]: 3,
-	[pr]: 4,
-	[dr]: 5,
-	[gr]: 6,
-	[yr]: 7,
-	[Nr]: 8,
-	[br]: 9,
-	[vr]: 10,
-	[P$1]: 11,
-	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
-}, nt = {
-	2: "!0",
-	3: "!1",
-	1: "void 0",
-	0: "null",
-	4: "-0",
-	5: "1/0",
-	6: "-1/0",
-	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
-	return {
-		t: e,
-		i: r,
-		s: t,
-		c: n$1,
-		m: a,
-		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
-		o: S,
-		l: d$1
-	};
-}
-function F(e) {
-	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
-}
-var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
-var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
-var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-});
-var { toString: ys } = Object.prototype;
-var re = () => {
-	let e = {
-		p: 0,
-		s: 0,
-		f: 0
-	};
-	return e.p = new Promise((r, t) => {
-		e.s = r, e.f = t;
-	}), e;
-}, vn = (e, r) => {
-	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
-	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
-	});
-	return {
-		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
-		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
-		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
-		}
-	};
-}, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
-		next: () => {
-			if (t > r.d) return {
-				done: !0,
-				value: void 0
-			};
-			let a = t++, s = r.v[a];
-			if (a === r.t) throw s;
-			return {
-				done: a === r.d,
-				value: s
-			};
-		}
-	};
-	return n$1;
-}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
-			done: !0,
-			value: void 0
-		});
-	};
-	t.on({
-		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !1,
-				value: S
-			}), i$1.push(S);
-		},
-		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
-		},
-		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !0,
-				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
-		}
-	});
-	let g$1 = {
-		[e]: () => g$1,
-		next: () => {
-			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
-					let et = r();
-					return u$1.push(et), et.p;
-				}
-				return {
-					done: !1,
-					value: i$1[K$1]
-				};
-			}
-			if (n$1 > a) return {
-				done: !0,
-				value: void 0
-			};
-			let S = n$1++, d$1 = i$1[S];
-			if (S !== a) return {
-				done: !1,
-				value: d$1
-			};
-			if (s) throw d$1;
-			return {
-				done: !0,
-				value: d$1
-			};
-		}
-	};
-	return g$1;
-}, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
-}, Et = Or.toString();
-var An = Pr(C);
-function te$1() {
-	return Rr();
-}
-var En = xr(v$1, re);
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-function ni(e) {
-	return e;
-}
-var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
-var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
 
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
@@ -10530,7 +9602,7 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const ES2017FLAG = L$2.AggregateError | L$2.BigIntTypedArray;
+const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 const GLOBAL_IDENTIFIER = "_$HY.r";
 function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
 	const defaultPlugins = [
