@@ -1,7 +1,6 @@
 import type { PluginItem } from "@babel/core";
 // @ts-expect-error: Babel types are not installed
 import { declarePreset } from "@babel/helper-plugin-utils";
-import transformModulesCommonJS from "../plugin-transform-modules-commonjs";
 import transformTypeScript from "../plugin-transform-typescript";
 import type { Options } from "./normalize-options";
 import normalizeOptions from "./normalize-options";
@@ -64,7 +63,6 @@ const presetTypescript: unknown = declarePreset((api, opts: Options) => {
             test: /\.cts$/,
             sourceType: "unambiguous",
             plugins: [
-              // [transformModulesCommonJS, { allowTopLevelThis: true }],
               [transformTypeScript, pluginOptions(true)],
             ],
           },
