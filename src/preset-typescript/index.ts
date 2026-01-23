@@ -62,9 +62,7 @@ const presetTypescript: unknown = declarePreset((api, opts: Options) => {
           {
             test: /\.cts$/,
             sourceType: "unambiguous",
-            plugins: [
-              [transformTypeScript, pluginOptions(true)],
-            ],
+            plugins: [[transformTypeScript, pluginOptions(true)]],
           },
           {
             test: /\.tsx$/,
