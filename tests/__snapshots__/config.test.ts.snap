@@ -1871,32 +1871,32 @@ function handleError(err, owner = Owner) {
 }
 let Owner = null;
 function createOwner() {
-	const o$3 = {
+	const o$2 = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$3];
-	else Owner.owned.push(o$3);
-	return o$3;
+	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
+	else Owner.owned.push(o$2);
+	return o$2;
 }
 function createSignal(value, options) {
-	return [() => value, (v$3) => {
-		return value = typeof v$3 === "function" ? v$3(value) : v$3;
+	return [() => value, (v$2) => {
+		return value = typeof v$2 === "function" ? v$2(value) : v$2;
 	}];
 }
 function createMemo(fn, value) {
 	Owner = createOwner();
-	let v$3;
+	let v$2;
 	try {
-		v$3 = fn(value);
+		v$2 = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$3;
+	return () => v$2;
 }
 function createContext(defaultValue) {
 	const id = Symbol("context");
@@ -1912,8 +1912,8 @@ function useContext(context) {
 function children(fn) {
 	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$3 = memo();
-		return Array.isArray(c$3) ? c$3 : c$3 != null ? [c$3] : [];
+		const c$2 = memo();
+		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
 	};
 	return memo;
 }
@@ -2055,251 +2055,22 @@ function createResource(source, fetcher, options = {}) {
 	if (options.ssrLoadFrom !== "initial") load();
 	const ref = [read, {
 		refetch: load,
-		mutate: (v$3) => value = v$3
+		mutate: (v$2) => value = v$2
 	}];
 	if (p$1) resource.ref = ref;
 	return ref;
 }
-function suspenseComplete(c$3) {
-	for (const r of c$3.resources.values()) if (r._loading) return false;
+function suspenseComplete(c$2) {
+	for (const r of c$2.resources.values()) if (r._loading) return false;
 	return true;
 }
 function notifySuspense(contexts) {
-	for (const c$3 of contexts) {
-		if (!suspenseComplete(c$3)) continue;
-		c$3.completed();
-		contexts.delete(c$3);
+	for (const c$2 of contexts) {
+		if (!suspenseComplete(c$2)) continue;
+		c$2.completed();
+		contexts.delete(c$2);
 	}
 }
-
-//#endregion
-//#region node_modules/solid-js/node_modules/seroval/dist/esm/production/index.mjs
-var L$2 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$2 || {});
-var v$2 = Symbol.asyncIterator, mr$1 = Symbol.hasInstance, R$1 = Symbol.isConcatSpreadable, C$1 = Symbol.iterator, pr$1 = Symbol.match, dr$1 = Symbol.matchAll, gr$1 = Symbol.replace, yr$1 = Symbol.search, Nr$1 = Symbol.species, br$1 = Symbol.split, vr$1 = Symbol.toPrimitive, P$2 = Symbol.toStringTag, Cr$1 = Symbol.unscopables;
-var rt$1 = {
-	0: "Symbol.asyncIterator",
-	1: "Symbol.hasInstance",
-	2: "Symbol.isConcatSpreadable",
-	3: "Symbol.iterator",
-	4: "Symbol.match",
-	5: "Symbol.matchAll",
-	6: "Symbol.replace",
-	7: "Symbol.search",
-	8: "Symbol.species",
-	9: "Symbol.split",
-	10: "Symbol.toPrimitive",
-	11: "Symbol.toStringTag",
-	12: "Symbol.unscopables"
-}, ve$1 = {
-	[v$2]: 0,
-	[mr$1]: 1,
-	[R$1]: 2,
-	[C$1]: 3,
-	[pr$1]: 4,
-	[dr$1]: 5,
-	[gr$1]: 6,
-	[yr$1]: 7,
-	[Nr$1]: 8,
-	[br$1]: 9,
-	[vr$1]: 10,
-	[P$2]: 11,
-	[Cr$1]: 12
-}, tt$1 = {
-	0: v$2,
-	1: mr$1,
-	2: R$1,
-	3: C$1,
-	4: pr$1,
-	5: dr$1,
-	6: gr$1,
-	7: yr$1,
-	8: Nr$1,
-	9: br$1,
-	10: vr$1,
-	11: P$2,
-	12: Cr$1
-}, nt$1 = {
-	2: "!0",
-	3: "!1",
-	1: "void 0",
-	0: "null",
-	4: "-0",
-	5: "1/0",
-	6: "-1/0",
-	7: "0/0"
-}, o$2 = void 0, ot$1 = {
-	2: !0,
-	3: !1,
-	1: o$2,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
-function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
-	return {
-		t: e,
-		i: r,
-		s: t,
-		c: n$1,
-		m: a,
-		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
-		o: S,
-		l: d$1
-	};
-}
-function F$1(e) {
-	return c$2(2, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
-}
-var J$1 = F$1(2), Z$1 = F$1(3), Ae$1 = F$1(1), Ee$1 = F$1(0), st$1 = F$1(4), it$1 = F$1(5), ut$1 = F$1(6), lt$1 = F$1(7);
-var U$1 = "__SEROVAL_REFS__", ce$1 = "$R", Ie$1 = \`self.\${ce$1}\`;
-var Ar$1 = /* @__PURE__ */ new Map(), j$1 = /* @__PURE__ */ new Map();
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U$1, {
-	value: j$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U$1, {
-	value: j$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U$1, {
-	value: j$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U$1, {
-	value: j$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-});
-var { toString: ys$1 } = Object.prototype;
-var re$1 = () => {
-	let e = {
-		p: 0,
-		s: 0,
-		f: 0
-	};
-	return e.p = new Promise((r, t) => {
-		e.s = r, e.f = t;
-	}), e;
-}, vn$1 = (e, r) => {
-	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn$1 = (e, r) => {
-	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt$1 = re$1.toString(), Nt$1 = vn$1.toString(), bt$1 = Cn$1.toString(), Rr$1 = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
-	});
-	return {
-		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
-		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
-		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
-		}
-	};
-}, vt$1 = Rr$1.toString(), Pr$1 = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
-		next: () => {
-			if (t > r.d) return {
-				done: !0,
-				value: void 0
-			};
-			let a = t++, s = r.v[a];
-			if (a === r.t) throw s;
-			return {
-				done: a === r.d,
-				value: s
-			};
-		}
-	};
-	return n$1;
-}, Ct$1 = Pr$1.toString(), xr$1 = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
-			done: !0,
-			value: void 0
-		});
-	};
-	t.on({
-		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !1,
-				value: S
-			}), i$1.push(S);
-		},
-		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
-		},
-		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !0,
-				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
-		}
-	});
-	let g$1 = {
-		[e]: () => g$1,
-		next: () => {
-			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
-					let et = r();
-					return u$1.push(et), et.p;
-				}
-				return {
-					done: !1,
-					value: i$1[K$1]
-				};
-			}
-			if (n$1 > a) return {
-				done: !0,
-				value: void 0
-			};
-			let S = n$1++, d$1 = i$1[S];
-			if (S !== a) return {
-				done: !1,
-				value: d$1
-			};
-			if (s) throw d$1;
-			return {
-				done: !0,
-				value: d$1
-			};
-		}
-	};
-	return g$1;
-}, At$1 = xr$1.toString(), Or$1 = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
-}, Et$1 = Or$1.toString();
-var An$1 = Pr$1(C$1);
-var En$1 = xr$1(v$2, re$1);
-var ae$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae$1 || {});
-var Eo$1 = () => T, Io$1 = Eo$1.toString(), qt$1 = /=>/.test(Io$1);
-var Ht$1 = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt$1 = Ht$1.length, Jt$1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt$1 = Jt$1.length;
 
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
@@ -3252,7 +3023,7 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const ES2017FLAG = L$2.AggregateError | L$2.BigIntTypedArray;
+const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
@@ -3371,32 +3142,32 @@ function handleError(err, owner = Owner) {
 }
 let Owner = null;
 function createOwner() {
-	const o$3 = {
+	const o$2 = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$3];
-	else Owner.owned.push(o$3);
-	return o$3;
+	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
+	else Owner.owned.push(o$2);
+	return o$2;
 }
 function createSignal(value, options) {
-	return [() => value, (v$3) => {
-		return value = typeof v$3 === "function" ? v$3(value) : v$3;
+	return [() => value, (v$2) => {
+		return value = typeof v$2 === "function" ? v$2(value) : v$2;
 	}];
 }
 function createMemo(fn, value) {
 	Owner = createOwner();
-	let v$3;
+	let v$2;
 	try {
-		v$3 = fn(value);
+		v$2 = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$3;
+	return () => v$2;
 }
 function createContext(defaultValue) {
 	const id = Symbol("context");
@@ -3412,8 +3183,8 @@ function useContext(context) {
 function children(fn) {
 	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$3 = memo();
-		return Array.isArray(c$3) ? c$3 : c$3 != null ? [c$3] : [];
+		const c$2 = memo();
+		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
 	};
 	return memo;
 }
@@ -3555,251 +3326,22 @@ function createResource(source, fetcher, options = {}) {
 	if (options.ssrLoadFrom !== "initial") load();
 	const ref = [read, {
 		refetch: load,
-		mutate: (v$3) => value = v$3
+		mutate: (v$2) => value = v$2
 	}];
 	if (p$1) resource.ref = ref;
 	return ref;
 }
-function suspenseComplete(c$3) {
-	for (const r of c$3.resources.values()) if (r._loading) return false;
+function suspenseComplete(c$2) {
+	for (const r of c$2.resources.values()) if (r._loading) return false;
 	return true;
 }
 function notifySuspense(contexts) {
-	for (const c$3 of contexts) {
-		if (!suspenseComplete(c$3)) continue;
-		c$3.completed();
-		contexts.delete(c$3);
+	for (const c$2 of contexts) {
+		if (!suspenseComplete(c$2)) continue;
+		c$2.completed();
+		contexts.delete(c$2);
 	}
 }
-
-//#endregion
-//#region node_modules/solid-js/node_modules/seroval/dist/esm/production/index.mjs
-var L$2 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$2 || {});
-var v$2 = Symbol.asyncIterator, mr$1 = Symbol.hasInstance, R$1 = Symbol.isConcatSpreadable, C$1 = Symbol.iterator, pr$1 = Symbol.match, dr$1 = Symbol.matchAll, gr$1 = Symbol.replace, yr$1 = Symbol.search, Nr$1 = Symbol.species, br$1 = Symbol.split, vr$1 = Symbol.toPrimitive, P$2 = Symbol.toStringTag, Cr$1 = Symbol.unscopables;
-var rt$1 = {
-	0: "Symbol.asyncIterator",
-	1: "Symbol.hasInstance",
-	2: "Symbol.isConcatSpreadable",
-	3: "Symbol.iterator",
-	4: "Symbol.match",
-	5: "Symbol.matchAll",
-	6: "Symbol.replace",
-	7: "Symbol.search",
-	8: "Symbol.species",
-	9: "Symbol.split",
-	10: "Symbol.toPrimitive",
-	11: "Symbol.toStringTag",
-	12: "Symbol.unscopables"
-}, ve$1 = {
-	[v$2]: 0,
-	[mr$1]: 1,
-	[R$1]: 2,
-	[C$1]: 3,
-	[pr$1]: 4,
-	[dr$1]: 5,
-	[gr$1]: 6,
-	[yr$1]: 7,
-	[Nr$1]: 8,
-	[br$1]: 9,
-	[vr$1]: 10,
-	[P$2]: 11,
-	[Cr$1]: 12
-}, tt$1 = {
-	0: v$2,
-	1: mr$1,
-	2: R$1,
-	3: C$1,
-	4: pr$1,
-	5: dr$1,
-	6: gr$1,
-	7: yr$1,
-	8: Nr$1,
-	9: br$1,
-	10: vr$1,
-	11: P$2,
-	12: Cr$1
-}, nt$1 = {
-	2: "!0",
-	3: "!1",
-	1: "void 0",
-	0: "null",
-	4: "-0",
-	5: "1/0",
-	6: "-1/0",
-	7: "0/0"
-}, o$2 = void 0, ot$1 = {
-	2: !0,
-	3: !1,
-	1: o$2,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
-function c$2(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
-	return {
-		t: e,
-		i: r,
-		s: t,
-		c: n$1,
-		m: a,
-		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
-		o: S,
-		l: d$1
-	};
-}
-function F$1(e) {
-	return c$2(2, o$2, e, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2, o$2);
-}
-var J$1 = F$1(2), Z$1 = F$1(3), Ae$1 = F$1(1), Ee$1 = F$1(0), st$1 = F$1(4), it$1 = F$1(5), ut$1 = F$1(6), lt$1 = F$1(7);
-var U$1 = "__SEROVAL_REFS__", ce$1 = "$R", Ie$1 = \`self.\${ce$1}\`;
-var Ar$1 = /* @__PURE__ */ new Map(), j$1 = /* @__PURE__ */ new Map();
-typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U$1, {
-	value: j$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof window != "undefined" ? Object.defineProperty(window, U$1, {
-	value: j$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof self != "undefined" ? Object.defineProperty(self, U$1, {
-	value: j$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-}) : typeof global != "undefined" && Object.defineProperty(global, U$1, {
-	value: j$1,
-	configurable: !0,
-	writable: !1,
-	enumerable: !1
-});
-var { toString: ys$1 } = Object.prototype;
-var re$1 = () => {
-	let e = {
-		p: 0,
-		s: 0,
-		f: 0
-	};
-	return e.p = new Promise((r, t) => {
-		e.s = r, e.f = t;
-	}), e;
-}, vn$1 = (e, r) => {
-	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn$1 = (e, r) => {
-	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt$1 = re$1.toString(), Nt$1 = vn$1.toString(), bt$1 = Cn$1.toString(), Rr$1 = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
-	});
-	return {
-		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
-		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
-		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
-		}
-	};
-}, vt$1 = Rr$1.toString(), Pr$1 = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
-		next: () => {
-			if (t > r.d) return {
-				done: !0,
-				value: void 0
-			};
-			let a = t++, s = r.v[a];
-			if (a === r.t) throw s;
-			return {
-				done: a === r.d,
-				value: s
-			};
-		}
-	};
-	return n$1;
-}, Ct$1 = Pr$1.toString(), xr$1 = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
-			done: !0,
-			value: void 0
-		});
-	};
-	t.on({
-		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !1,
-				value: S
-			}), i$1.push(S);
-		},
-		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
-		},
-		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
-				done: !0,
-				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
-		}
-	});
-	let g$1 = {
-		[e]: () => g$1,
-		next: () => {
-			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
-					let et = r();
-					return u$1.push(et), et.p;
-				}
-				return {
-					done: !1,
-					value: i$1[K$1]
-				};
-			}
-			if (n$1 > a) return {
-				done: !0,
-				value: void 0
-			};
-			let S = n$1++, d$1 = i$1[S];
-			if (S !== a) return {
-				done: !1,
-				value: d$1
-			};
-			if (s) throw d$1;
-			return {
-				done: !0,
-				value: d$1
-			};
-		}
-	};
-	return g$1;
-}, At$1 = xr$1.toString(), Or$1 = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
-}, Et$1 = Or$1.toString();
-var An$1 = Pr$1(C$1);
-var En$1 = xr$1(v$2, re$1);
-var ae$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae$1 || {});
-var Eo$1 = () => T, Io$1 = Eo$1.toString(), qt$1 = /=>/.test(Io$1);
-var Ht$1 = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt$1 = Ht$1.length, Jt$1 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt$1 = Jt$1.length;
 
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
@@ -4752,7 +4294,7 @@ const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
 		IMG: 1
 	}
 });
-const ES2017FLAG = L$2.AggregateError | L$2.BigIntTypedArray;
+const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
