@@ -10,6 +10,7 @@
         "@babel/helper-module-transforms": "7.28.6",
         "@babel/helper-plugin-utils": "^7.28.6",
         "@babel/helper-validator-option": "^7.27.1",
+        "@babel/template": "7.28.6",
         "@babel/traverse": "7.28.6",
         "@babel/types": "7.28.6",
         "html-entities": "2.6.0",
