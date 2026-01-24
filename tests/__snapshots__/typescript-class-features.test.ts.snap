@@ -1,0 +1,95 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`rolldown-plugin-solid src should transform typescript class features 1`] = `
+"//#region tests/fixtures/typescript-class-features.tsx
+var ParameterProps = class {
+	constructor(name, age, id) {
+		this.name = name;
+		this.age = age;
+		this.id = id;
+	}
+};
+var ParameterPropsWithConstructor = class {
+	constructor(name, count) {
+		this.name = name;
+		this.count = count;
+		this.value = name + count;
+	}
+};
+var DerivedParameterProps = class extends ParameterProps {
+	constructor(name, age, id, extra) {
+		super(name, age, id);
+		this.extra = extra;
+	}
+};
+var DefaultParameterProps = class {
+	constructor(name = "default", value = 42) {
+		this.name = name;
+		this.value = value;
+	}
+};
+var ComplexDerived = class extends ParameterPropsWithConstructor {
+	constructor(name, count, items) {
+		super(name, count);
+		this.items = items;
+		this.data = items;
+	}
+};
+var ComplexParameterProps = class {
+	constructor(input, config) {
+		this.input = input;
+		this.config = config;
+		this.processed = config.enabled;
+	}
+};
+
+//#endregion
+export { ComplexDerived, ComplexParameterProps, DefaultParameterProps, DerivedParameterProps, ParameterProps, ParameterPropsWithConstructor };"
+`;
+
+exports[`rolldown-plugin-solid dist should transform typescript class features 1`] = `
+"//#region tests/fixtures/typescript-class-features.tsx
+var ParameterProps = class {
+	constructor(name, age, id) {
+		this.name = name;
+		this.age = age;
+		this.id = id;
+	}
+};
+var ParameterPropsWithConstructor = class {
+	constructor(name, count) {
+		this.name = name;
+		this.count = count;
+		this.value = name + count;
+	}
+};
+var DerivedParameterProps = class extends ParameterProps {
+	constructor(name, age, id, extra) {
+		super(name, age, id);
+		this.extra = extra;
+	}
+};
+var DefaultParameterProps = class {
+	constructor(name = "default", value = 42) {
+		this.name = name;
+		this.value = value;
+	}
+};
+var ComplexDerived = class extends ParameterPropsWithConstructor {
+	constructor(name, count, items) {
+		super(name, count);
+		this.items = items;
+		this.data = items;
+	}
+};
+var ComplexParameterProps = class {
+	constructor(input, config) {
+		this.input = input;
+		this.config = config;
+		this.processed = config.enabled;
+	}
+};
+
+//#endregion
+export { ComplexDerived, ComplexParameterProps, DefaultParameterProps, DerivedParameterProps, ParameterProps, ParameterPropsWithConstructor };"
+`;
