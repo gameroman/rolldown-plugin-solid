@@ -13,6 +13,10 @@
   "imports": {
     "#universal-mode-renderer": "./tests/helpers/universal-mode-renderer.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gameroman/rolldown-plugin-solid.git"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
@@ -22,7 +26,8 @@
     "lint": "biome lint",
     "format": "biome check --write --linter-enabled=false",
     "test": "bun test --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "@babel/helper-plugin-utils": "^7.28.6",
