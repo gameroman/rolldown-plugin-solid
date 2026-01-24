@@ -1,6 +1,46 @@
 import type { Component, JSX } from "solid-js";
 import { createMemo, createSignal, For } from "solid-js";
 
+// Test TypeScript const enum functionality
+const enum Status {
+  Pending,
+  Loading,
+  Success,
+  Error,
+}
+
+const enum Colors {
+  Red = "#FF0000",
+  Green = "#00FF00",
+  Blue = "#0000FF",
+}
+
+export function TestConstEnum() {
+  const status: Status = Status.Loading;
+  const color: Colors = Colors.Green;
+
+  return (
+    <div data-status={status} style={{ color }}>
+      Status: {status}
+    </div>
+  );
+}
+
+export function TestConstEnumSwitch(status: Status) {
+  switch (status) {
+    case Status.Pending:
+      return <div>Pending...</div>;
+    case Status.Loading:
+      return <div>Loading...</div>;
+    case Status.Success:
+      return <div>Success!</div>;
+    case Status.Error:
+      return <div>Error!</div>;
+    default:
+      return <div>Unknown</div>;
+  }
+}
+
 // Basic generic interface
 interface GenericProps<T> {
   value: T;

@@ -1,4 +1,71 @@
-// Test fixture for TypeScript class features to improve coverage
+import type { JSX } from "solid-js";
+
+// Test TypeScript class features extension
+export abstract class BaseComponent {
+  protected name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  abstract render(): JSX.Element;
+}
+
+export class DecoratedComponent extends BaseComponent {
+  private count: number = 0;
+
+  constructor(name: string) {
+    super(name);
+  }
+
+  increment(): void {
+    this.count++;
+  }
+
+  render(): JSX.Element {
+    return (
+      <div>
+        <h2>{this.name}</h2>
+        <p>Count: {this.count}</p>
+        <button onClick={() => this.increment()}>Increment</button>
+      </div>
+    );
+  }
+}
+
+export class GenericComponent<T> {
+  private data: T[];
+
+  constructor(data: T[]) {
+    this.data = data;
+  }
+
+  renderItem(item: T): JSX.Element {
+    return <div>{String(item)}</div>;
+  }
+
+  render(): JSX.Element {
+    return (
+      <ul>
+        {this.data.map((item) => (
+          <li>{this.renderItem(item)}</li>
+        ))}
+      </ul>
+    );
+  }
+}
+
+export function TestClassFeatures() {
+  const component = new DecoratedComponent("Test Component");
+  const genericComponent = new GenericComponent([1, 2, 3]);
+
+  return (
+    <div>
+      {component.render()}
+      {genericComponent.render()}
+    </div>
+  );
+}
 
 // Class with parameter properties (no existing constructor)
 class ParameterProps {

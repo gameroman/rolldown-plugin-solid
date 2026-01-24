@@ -1,0 +1,359 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`rolldown-plugin-solid src should transform hydratable html/head/body elements 1`] = `
+"//#region node_modules/solid-js/dist/solid.js
+const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+function setHydrateContext(context) {
+	sharedConfig.context = context;
+}
+function nextHydrateContext() {
+	return {
+		...sharedConfig.context,
+		id: sharedConfig.getNextContextId(),
+		count: 0
+	};
+}
+let ExternalSourceConfig = null;
+let Listener = null;
+function untrack(fn) {
+	if (!ExternalSourceConfig && Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+let hydrationEnabled = false;
+function createComponent(Comp, props) {
+	if (hydrationEnabled) {
+		if (sharedConfig.context) {
+			const c = sharedConfig.context;
+			setHydrateContext(nextHydrateContext());
+			const r = untrack(() => Comp(props || {}));
+			setHydrateContext(c);
+			return r;
+		}
+	}
+	return untrack(() => Comp(props || {}));
+}
+
+//#endregion
+//#region node_modules/solid-js/web/dist/web.js
+const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	className: "class",
+	htmlFor: "for"
+});
+const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	class: "className",
+	novalidate: {
+		$: "noValidate",
+		FORM: 1
+	},
+	formnovalidate: {
+		$: "formNoValidate",
+		BUTTON: 1,
+		INPUT: 1
+	},
+	ismap: {
+		$: "isMap",
+		IMG: 1
+	},
+	nomodule: {
+		$: "noModule",
+		SCRIPT: 1
+	},
+	playsinline: {
+		$: "playsInline",
+		VIDEO: 1
+	},
+	readonly: {
+		$: "readOnly",
+		INPUT: 1,
+		TEXTAREA: 1
+	},
+	adauctionheaders: {
+		$: "adAuctionHeaders",
+		IFRAME: 1
+	},
+	allowfullscreen: {
+		$: "allowFullscreen",
+		IFRAME: 1
+	},
+	browsingtopics: {
+		$: "browsingTopics",
+		IMG: 1
+	},
+	defaultchecked: {
+		$: "defaultChecked",
+		INPUT: 1
+	},
+	defaultmuted: {
+		$: "defaultMuted",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	defaultselected: {
+		$: "defaultSelected",
+		OPTION: 1
+	},
+	disablepictureinpicture: {
+		$: "disablePictureInPicture",
+		VIDEO: 1
+	},
+	disableremoteplayback: {
+		$: "disableRemotePlayback",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	preservespitch: {
+		$: "preservesPitch",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	shadowrootclonable: {
+		$: "shadowRootClonable",
+		TEMPLATE: 1
+	},
+	shadowrootdelegatesfocus: {
+		$: "shadowRootDelegatesFocus",
+		TEMPLATE: 1
+	},
+	shadowrootserializable: {
+		$: "shadowRootSerializable",
+		TEMPLATE: 1
+	},
+	sharedstoragewritable: {
+		$: "sharedStorageWritable",
+		IFRAME: 1,
+		IMG: 1
+	}
+});
+function getNextElement(template) {
+	let node, key;
+	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template();
+	if (sharedConfig.completed) sharedConfig.completed.add(node);
+	sharedConfig.registry.delete(key);
+	return node;
+}
+function isHydrating(node) {
+	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
+}
+function getHydrationKey() {
+	return sharedConfig.getNextContextId();
+}
+function NoHydration(props) {
+	return sharedConfig.context ? void 0 : props.children;
+}
+
+//#endregion
+//#region tests/fixtures/hydratable-root.tsx
+function TestHydratableHtml() {
+	return getNextElement();
+}
+function TestHydratableHead() {
+	return createComponent(NoHydration, {});
+}
+function TestHydratableBody() {
+	return getNextElement();
+}
+
+//#endregion
+export { TestHydratableBody, TestHydratableHead, TestHydratableHtml };"
+`;
+
+exports[`rolldown-plugin-solid dist should transform hydratable html/head/body elements 1`] = `
+"//#region node_modules/solid-js/dist/solid.js
+const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+function setHydrateContext(context) {
+	sharedConfig.context = context;
+}
+function nextHydrateContext() {
+	return {
+		...sharedConfig.context,
+		id: sharedConfig.getNextContextId(),
+		count: 0
+	};
+}
+let ExternalSourceConfig = null;
+let Listener = null;
+function untrack(fn) {
+	if (!ExternalSourceConfig && Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+let hydrationEnabled = false;
+function createComponent(Comp, props) {
+	if (hydrationEnabled) {
+		if (sharedConfig.context) {
+			const c = sharedConfig.context;
+			setHydrateContext(nextHydrateContext());
+			const r = untrack(() => Comp(props || {}));
+			setHydrateContext(c);
+			return r;
+		}
+	}
+	return untrack(() => Comp(props || {}));
+}
+
+//#endregion
+//#region node_modules/solid-js/web/dist/web.js
+const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	className: "class",
+	htmlFor: "for"
+});
+const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+	class: "className",
+	novalidate: {
+		$: "noValidate",
+		FORM: 1
+	},
+	formnovalidate: {
+		$: "formNoValidate",
+		BUTTON: 1,
+		INPUT: 1
+	},
+	ismap: {
+		$: "isMap",
+		IMG: 1
+	},
+	nomodule: {
+		$: "noModule",
+		SCRIPT: 1
+	},
+	playsinline: {
+		$: "playsInline",
+		VIDEO: 1
+	},
+	readonly: {
+		$: "readOnly",
+		INPUT: 1,
+		TEXTAREA: 1
+	},
+	adauctionheaders: {
+		$: "adAuctionHeaders",
+		IFRAME: 1
+	},
+	allowfullscreen: {
+		$: "allowFullscreen",
+		IFRAME: 1
+	},
+	browsingtopics: {
+		$: "browsingTopics",
+		IMG: 1
+	},
+	defaultchecked: {
+		$: "defaultChecked",
+		INPUT: 1
+	},
+	defaultmuted: {
+		$: "defaultMuted",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	defaultselected: {
+		$: "defaultSelected",
+		OPTION: 1
+	},
+	disablepictureinpicture: {
+		$: "disablePictureInPicture",
+		VIDEO: 1
+	},
+	disableremoteplayback: {
+		$: "disableRemotePlayback",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	preservespitch: {
+		$: "preservesPitch",
+		AUDIO: 1,
+		VIDEO: 1
+	},
+	shadowrootclonable: {
+		$: "shadowRootClonable",
+		TEMPLATE: 1
+	},
+	shadowrootdelegatesfocus: {
+		$: "shadowRootDelegatesFocus",
+		TEMPLATE: 1
+	},
+	shadowrootserializable: {
+		$: "shadowRootSerializable",
+		TEMPLATE: 1
+	},
+	sharedstoragewritable: {
+		$: "sharedStorageWritable",
+		IFRAME: 1,
+		IMG: 1
+	}
+});
+function getNextElement(template) {
+	let node, key;
+	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template();
+	if (sharedConfig.completed) sharedConfig.completed.add(node);
+	sharedConfig.registry.delete(key);
+	return node;
+}
+function isHydrating(node) {
+	return !!sharedConfig.context && !sharedConfig.done && (!node || node.isConnected);
+}
+function getHydrationKey() {
+	return sharedConfig.getNextContextId();
+}
+function NoHydration(props) {
+	return sharedConfig.context ? void 0 : props.children;
+}
+
+//#endregion
+//#region tests/fixtures/hydratable-root.tsx
+function TestHydratableHtml() {
+	return getNextElement();
+}
+function TestHydratableHead() {
+	return createComponent(NoHydration, {});
+}
+function TestHydratableBody() {
+	return getNextElement();
+}
+
+//#endregion
+export { TestHydratableBody, TestHydratableHead, TestHydratableHtml };"
+`;

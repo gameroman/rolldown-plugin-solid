@@ -12,3 +12,5 @@ createFixtureTest("complex HTML with universal", "validation.tsx", {
     solid: { generate: "universal", moduleName: "#universal-mode-renderer" },
   },
 });
+
+createFixtureTest("data-hk attribute warning", "data-hk.tsx");

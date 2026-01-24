@@ -1,3 +1,29 @@
+// Test SVG element wrapping functionality
+export function TestSvgWrap() {
+  return (
+    <svg width="100" height="100">
+      <circle cx="50" cy="50" r="40" fill="red" />
+      <foreignObject x="10" y="10" width="80" height="80">
+        <div>
+          <p>HTML content inside SVG</p>
+        </div>
+      </foreignObject>
+    </svg>
+  );
+}
+
+export function TestNestedSvg() {
+  return (
+    <div>
+      <svg>
+        <g>
+          <rect x="0" y="0" width="100" height="100" />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 // Test event delegation scenarios (exercises postprocess.ts)
 export function TestEventDelegation() {
   return (

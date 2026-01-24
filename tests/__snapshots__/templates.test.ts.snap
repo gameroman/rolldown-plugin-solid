@@ -1022,16 +1022,22 @@ function cleanChildren(parent, current, marker, replacement) {
 
 //#endregion
 //#region tests/fixtures/templates.tsx
-var _tmpl$ = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$6 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$7 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$8 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$9 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$0 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$1 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$10 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$11 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+function TestSvgWrap() {
+	return _tmpl$();
+}
+function TestNestedSvg() {
+	return _tmpl$2();
+}
 function TestEventDelegation() {
 	return (() => {
-		var _el$ = _tmpl$(), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling, _el$4 = _el$3.nextSibling, _el$5 = _el$4.nextSibling, _el$6 = _el$5.firstChild;
-		_el$2.$$click = () => console.log("click");
-		_el$3.$$mouseover = () => console.log("hover");
-		_el$4.$$input = (e) => console.log(e.target.value);
-		_el$5.addEventListener("submit", (e) => e.preventDefault());
-		_el$6.addEventListener("change", (e) => console.log(e.target.value));
-		return _el$;
+		var _el$3 = _tmpl$3(), _el$4 = _el$3.firstChild, _el$5 = _el$4.nextSibling, _el$6 = _el$5.nextSibling, _el$7 = _el$6.nextSibling, _el$8 = _el$7.firstChild;
+		_el$4.$$click = () => console.log("click");
+		_el$5.$$mouseover = () => console.log("hover");
+		_el$6.$$input = (e) => console.log(e.target.value);
+		_el$7.addEventListener("submit", (e) => e.preventDefault());
+		_el$8.addEventListener("change", (e) => console.log(e.target.value));
+		return _el$3;
 	})();
 }
 function TestComplexTemplates() {
@@ -1041,48 +1047,48 @@ function TestComplexTemplates() {
 		"c"
 	];
 	return (() => {
-		var _el$7 = _tmpl$2(), _el$9 = _el$7.firstChild.nextSibling;
-		_el$9.nextSibling;
-		insert(_el$7, _tmpl$3(), _el$9);
-		insert(_el$9, () => items.map((item) => (() => {
-			var _el$10 = _tmpl$4();
-			insert(_el$10, item);
-			return _el$10;
+		var _el$9 = _tmpl$4(), _el$1 = _el$9.firstChild.nextSibling;
+		_el$1.nextSibling;
+		insert(_el$9, _tmpl$5(), _el$1);
+		insert(_el$1, () => items.map((item) => (() => {
+			var _el$12 = _tmpl$6();
+			insert(_el$12, item);
+			return _el$12;
 		})()));
-		return _el$7;
+		return _el$9;
 	})();
 }
 function TestAttributeTemplates() {
 	return (() => {
-		var _el$11 = _tmpl$5(), _el$13 = _el$11.firstChild.nextSibling;
-		_el$13.disabled = false;
-		return _el$11;
+		var _el$13 = _tmpl$7(), _el$15 = _el$13.firstChild.nextSibling;
+		_el$15.disabled = false;
+		return _el$13;
 	})();
 }
 function TestSVGTemplates() {
-	return _tmpl$6();
+	return _tmpl$8();
 }
 function TestSSRHeadElement() {
-	return _tmpl$7();
+	return _tmpl$9();
 }
 function TestSSRScriptStyle() {
-	return _tmpl$8();
+	return _tmpl$0();
 }
 function TestSSRHydration() {
 	return (() => {
-		var _el$17 = _tmpl$9(), _el$19 = _el$17.firstChild.nextSibling, _el$20 = _el$19.nextSibling;
-		insert(_el$19, () => \`Dynamic content: \${Date.now()}\`);
-		insert(_el$20, () => [
+		var _el$19 = _tmpl$1(), _el$21 = _el$19.firstChild.nextSibling, _el$22 = _el$21.nextSibling;
+		insert(_el$21, () => \`Dynamic content: \${Date.now()}\`);
+		insert(_el$22, () => [
 			1,
 			2,
 			3
 		].map((item) => (() => {
-			var _el$21 = _tmpl$0();
-			_el$21.firstChild;
-			insert(_el$21, item, null);
-			return _el$21;
+			var _el$23 = _tmpl$10();
+			_el$23.firstChild;
+			insert(_el$23, item, null);
+			return _el$23;
 		})()));
-		return _el$17;
+		return _el$19;
 	})();
 }
 function TestSSRSpreadAttributes() {
@@ -1092,16 +1098,16 @@ function TestSSRSpreadAttributes() {
 		"data-test": "value"
 	};
 	return (() => {
-		var _el$23 = _tmpl$1();
-		spread(_el$23, props, false, true);
-		return _el$23;
+		var _el$25 = _tmpl$11();
+		spread(_el$25, props, false, true);
+		return _el$25;
 	})();
 }
 function TestSSRSpecialElements() {
-	return _tmpl$10();
+	return _tmpl$12();
 }
 function TestValidationScenarios() {
-	return _tmpl$11();
+	return _tmpl$13();
 }
 delegateEvents([
 	"click",
@@ -1110,7 +1116,7 @@ delegateEvents([
 ]);
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates and event delegation 1`] = `
@@ -2135,16 +2141,22 @@ function cleanChildren(parent, current, marker, replacement) {
 
 //#endregion
 //#region tests/fixtures/templates.tsx
-var _tmpl$ = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$6 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$7 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$8 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$9 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$0 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$1 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$10 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$11 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+function TestSvgWrap() {
+	return _tmpl$();
+}
+function TestNestedSvg() {
+	return _tmpl$2();
+}
 function TestEventDelegation() {
 	return (() => {
-		var _el$ = _tmpl$(), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling, _el$4 = _el$3.nextSibling, _el$5 = _el$4.nextSibling, _el$6 = _el$5.firstChild;
-		_el$2.$$click = () => console.log("click");
-		_el$3.$$mouseover = () => console.log("hover");
-		_el$4.$$input = (e) => console.log(e.target.value);
-		_el$5.addEventListener("submit", (e) => e.preventDefault());
-		_el$6.addEventListener("change", (e) => console.log(e.target.value));
-		return _el$;
+		var _el$3 = _tmpl$3(), _el$4 = _el$3.firstChild, _el$5 = _el$4.nextSibling, _el$6 = _el$5.nextSibling, _el$7 = _el$6.nextSibling, _el$8 = _el$7.firstChild;
+		_el$4.$$click = () => console.log("click");
+		_el$5.$$mouseover = () => console.log("hover");
+		_el$6.$$input = (e) => console.log(e.target.value);
+		_el$7.addEventListener("submit", (e) => e.preventDefault());
+		_el$8.addEventListener("change", (e) => console.log(e.target.value));
+		return _el$3;
 	})();
 }
 function TestComplexTemplates() {
@@ -2154,48 +2166,48 @@ function TestComplexTemplates() {
 		"c"
 	];
 	return (() => {
-		var _el$7 = _tmpl$2(), _el$9 = _el$7.firstChild.nextSibling;
-		_el$9.nextSibling;
-		insert(_el$7, _tmpl$3(), _el$9);
-		insert(_el$9, () => items.map((item) => (() => {
-			var _el$10 = _tmpl$4();
-			insert(_el$10, item);
-			return _el$10;
+		var _el$9 = _tmpl$4(), _el$1 = _el$9.firstChild.nextSibling;
+		_el$1.nextSibling;
+		insert(_el$9, _tmpl$5(), _el$1);
+		insert(_el$1, () => items.map((item) => (() => {
+			var _el$12 = _tmpl$6();
+			insert(_el$12, item);
+			return _el$12;
 		})()));
-		return _el$7;
+		return _el$9;
 	})();
 }
 function TestAttributeTemplates() {
 	return (() => {
-		var _el$11 = _tmpl$5(), _el$13 = _el$11.firstChild.nextSibling;
-		_el$13.disabled = false;
-		return _el$11;
+		var _el$13 = _tmpl$7(), _el$15 = _el$13.firstChild.nextSibling;
+		_el$15.disabled = false;
+		return _el$13;
 	})();
 }
 function TestSVGTemplates() {
-	return _tmpl$6();
+	return _tmpl$8();
 }
 function TestSSRHeadElement() {
-	return _tmpl$7();
+	return _tmpl$9();
 }
 function TestSSRScriptStyle() {
-	return _tmpl$8();
+	return _tmpl$0();
 }
 function TestSSRHydration() {
 	return (() => {
-		var _el$17 = _tmpl$9(), _el$19 = _el$17.firstChild.nextSibling, _el$20 = _el$19.nextSibling;
-		insert(_el$19, () => \`Dynamic content: \${Date.now()}\`);
-		insert(_el$20, () => [
+		var _el$19 = _tmpl$1(), _el$21 = _el$19.firstChild.nextSibling, _el$22 = _el$21.nextSibling;
+		insert(_el$21, () => \`Dynamic content: \${Date.now()}\`);
+		insert(_el$22, () => [
 			1,
 			2,
 			3
 		].map((item) => (() => {
-			var _el$21 = _tmpl$0();
-			_el$21.firstChild;
-			insert(_el$21, item, null);
-			return _el$21;
+			var _el$23 = _tmpl$10();
+			_el$23.firstChild;
+			insert(_el$23, item, null);
+			return _el$23;
 		})()));
-		return _el$17;
+		return _el$19;
 	})();
 }
 function TestSSRSpreadAttributes() {
@@ -2205,16 +2217,16 @@ function TestSSRSpreadAttributes() {
 		"data-test": "value"
 	};
 	return (() => {
-		var _el$23 = _tmpl$1();
-		spread(_el$23, props, false, true);
-		return _el$23;
+		var _el$25 = _tmpl$11();
+		spread(_el$25, props, false, true);
+		return _el$25;
 	})();
 }
 function TestSSRSpecialElements() {
-	return _tmpl$10();
+	return _tmpl$12();
 }
 function TestValidationScenarios() {
-	return _tmpl$11();
+	return _tmpl$13();
 }
 delegateEvents([
 	"click",
@@ -2223,7 +2235,7 @@ delegateEvents([
 ]);
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with SSR 1`] = `
@@ -3430,44 +3442,50 @@ function getHydrationKey() {
 
 //#endregion
 //#region tests/fixtures/templates.tsx
-var _tmpl$ = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>", _tmpl$2 = [
+var _tmpl$ = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>", _tmpl$2 = "<div><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>", _tmpl$3 = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>", _tmpl$4 = [
 	"<div class=\\"container\\"><h1>Title</h1>",
 	"<ul>",
 	"</ul><div style=\\"",
 	"\\">Styled content</div></div>"
-], _tmpl$3 = "<p>Conditional content</p>", _tmpl$4 = ["<li>", "</li>"], _tmpl$5 = "<div id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>", _tmpl$6 = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>", _tmpl$7 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$8 = "<div><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>", _tmpl$9 = [
+], _tmpl$5 = "<p>Conditional content</p>", _tmpl$6 = ["<li>", "</li>"], _tmpl$7 = "<div id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>", _tmpl$8 = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>", _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$0 = "<div><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>", _tmpl$1 = [
 	"<div><p>Static content</p><div>",
 	"</div><ul>",
 	"</ul></div>"
-], _tmpl$0 = ["<li>Item ", "</li>"], _tmpl$1 = "<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>", _tmpl$10 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>";
-function TestEventDelegation() {
+], _tmpl$10 = ["<li>Item ", "</li>"], _tmpl$11 = "<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>", _tmpl$12 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>";
+function TestSvgWrap() {
 	return ssr(_tmpl$);
 }
+function TestNestedSvg() {
+	return ssr(_tmpl$2);
+}
+function TestEventDelegation() {
+	return ssr(_tmpl$3);
+}
 function TestComplexTemplates() {
-	return ssr(_tmpl$2, _tmpl$3, escape([
+	return ssr(_tmpl$4, _tmpl$5, escape([
 		"a",
 		"b",
 		"c"
-	].map((item) => ssr(_tmpl$4, escape(item)))), ssrStyleProperty("color:", "red") + ssrStyleProperty(";font-size:", "16px"));
+	].map((item) => ssr(_tmpl$6, escape(item)))), ssrStyleProperty("color:", "red") + ssrStyleProperty(";font-size:", "16px"));
 }
 function TestAttributeTemplates() {
-	return ssr(_tmpl$5);
-}
-function TestSVGTemplates() {
-	return ssr(_tmpl$6);
-}
-function TestSSRHeadElement() {
 	return ssr(_tmpl$7);
 }
-function TestSSRScriptStyle() {
+function TestSVGTemplates() {
 	return ssr(_tmpl$8);
 }
+function TestSSRHeadElement() {
+	return ssr(_tmpl$9);
+}
+function TestSSRScriptStyle() {
+	return ssr(_tmpl$0);
+}
 function TestSSRHydration() {
-	return ssr(_tmpl$9, \`Dynamic content: \${escape(Date.now())}\`, escape([
+	return ssr(_tmpl$1, \`Dynamic content: \${escape(Date.now())}\`, escape([
 		1,
 		2,
 		3
-	].map((item) => ssr(_tmpl$0, escape(item)))));
+	].map((item) => ssr(_tmpl$10, escape(item)))));
 }
 function TestSSRSpreadAttributes() {
 	return ssrElement("div", {
@@ -3477,14 +3495,14 @@ function TestSSRSpreadAttributes() {
 	}, "Spread attributes", false);
 }
 function TestSSRSpecialElements() {
-	return ssr(_tmpl$1);
+	return ssr(_tmpl$11);
 }
 function TestValidationScenarios() {
-	return ssr(_tmpl$10);
+	return ssr(_tmpl$12);
 }
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with SSR 1`] = `
@@ -4691,44 +4709,50 @@ function getHydrationKey() {
 
 //#endregion
 //#region tests/fixtures/templates.tsx
-var _tmpl$ = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>", _tmpl$2 = [
+var _tmpl$ = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>", _tmpl$2 = "<div><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>", _tmpl$3 = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>", _tmpl$4 = [
 	"<div class=\\"container\\"><h1>Title</h1>",
 	"<ul>",
 	"</ul><div style=\\"",
 	"\\">Styled content</div></div>"
-], _tmpl$3 = "<p>Conditional content</p>", _tmpl$4 = ["<li>", "</li>"], _tmpl$5 = "<div id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>", _tmpl$6 = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>", _tmpl$7 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$8 = "<div><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>", _tmpl$9 = [
+], _tmpl$5 = "<p>Conditional content</p>", _tmpl$6 = ["<li>", "</li>"], _tmpl$7 = "<div id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>", _tmpl$8 = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>", _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$0 = "<div><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>", _tmpl$1 = [
 	"<div><p>Static content</p><div>",
 	"</div><ul>",
 	"</ul></div>"
-], _tmpl$0 = ["<li>Item ", "</li>"], _tmpl$1 = "<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>", _tmpl$10 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>";
-function TestEventDelegation() {
+], _tmpl$10 = ["<li>Item ", "</li>"], _tmpl$11 = "<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>", _tmpl$12 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>";
+function TestSvgWrap() {
 	return ssr(_tmpl$);
 }
+function TestNestedSvg() {
+	return ssr(_tmpl$2);
+}
+function TestEventDelegation() {
+	return ssr(_tmpl$3);
+}
 function TestComplexTemplates() {
-	return ssr(_tmpl$2, _tmpl$3, escape([
+	return ssr(_tmpl$4, _tmpl$5, escape([
 		"a",
 		"b",
 		"c"
-	].map((item) => ssr(_tmpl$4, escape(item)))), ssrStyleProperty("color:", "red") + ssrStyleProperty(";font-size:", "16px"));
+	].map((item) => ssr(_tmpl$6, escape(item)))), ssrStyleProperty("color:", "red") + ssrStyleProperty(";font-size:", "16px"));
 }
 function TestAttributeTemplates() {
-	return ssr(_tmpl$5);
-}
-function TestSVGTemplates() {
-	return ssr(_tmpl$6);
-}
-function TestSSRHeadElement() {
 	return ssr(_tmpl$7);
 }
-function TestSSRScriptStyle() {
+function TestSVGTemplates() {
 	return ssr(_tmpl$8);
 }
+function TestSSRHeadElement() {
+	return ssr(_tmpl$9);
+}
+function TestSSRScriptStyle() {
+	return ssr(_tmpl$0);
+}
 function TestSSRHydration() {
-	return ssr(_tmpl$9, \`Dynamic content: \${escape(Date.now())}\`, escape([
+	return ssr(_tmpl$1, \`Dynamic content: \${escape(Date.now())}\`, escape([
 		1,
 		2,
 		3
-	].map((item) => ssr(_tmpl$0, escape(item)))));
+	].map((item) => ssr(_tmpl$10, escape(item)))));
 }
 function TestSSRSpreadAttributes() {
 	return ssrElement("div", {
@@ -4738,14 +4762,14 @@ function TestSSRSpreadAttributes() {
 	}, "Spread attributes", false);
 }
 function TestSSRSpecialElements() {
-	return ssr(_tmpl$1);
+	return ssr(_tmpl$11);
 }
 function TestValidationScenarios() {
-	return ssr(_tmpl$10);
+	return ssr(_tmpl$12);
 }
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with universal 1`] = `
@@ -5555,28 +5579,62 @@ const { createComponent, createElement, createTextNode, effect, insert, insertNo
 
 //#endregion
 //#region tests/fixtures/templates.tsx
+function TestSvgWrap() {
+	return (() => {
+		var _el$ = createElement("svg"), _el$2 = createElement("circle"), _el$3 = createElement("foreignObject"), _el$4 = createElement("div"), _el$5 = createElement("p");
+		insertNode(_el$, _el$2);
+		insertNode(_el$, _el$3);
+		setProp(_el$, "width", "100");
+		setProp(_el$, "height", "100");
+		setProp(_el$2, "cx", "50");
+		setProp(_el$2, "cy", "50");
+		setProp(_el$2, "r", "40");
+		setProp(_el$2, "fill", "red");
+		insertNode(_el$3, _el$4);
+		setProp(_el$3, "x", "10");
+		setProp(_el$3, "y", "10");
+		setProp(_el$3, "width", "80");
+		setProp(_el$3, "height", "80");
+		insertNode(_el$4, _el$5);
+		insertNode(_el$5, createTextNode(\`HTML content inside SVG\`));
+		return _el$;
+	})();
+}
+function TestNestedSvg() {
+	return (() => {
+		var _el$7 = createElement("div"), _el$8 = createElement("svg"), _el$9 = createElement("g"), _el$0 = createElement("rect");
+		insertNode(_el$7, _el$8);
+		insertNode(_el$8, _el$9);
+		insertNode(_el$9, _el$0);
+		setProp(_el$0, "x", "0");
+		setProp(_el$0, "y", "0");
+		setProp(_el$0, "width", "100");
+		setProp(_el$0, "height", "100");
+		return _el$7;
+	})();
+}
 function TestEventDelegation() {
 	return (() => {
-		var _el$ = createElement("div"), _el$2 = createElement("button"), _el$4 = createElement("div"), _el$6 = createElement("input"), _el$7 = createElement("form"), _el$8 = createElement("select"), _el$9 = createElement("option"), _el$1 = createElement("option");
-		insertNode(_el$, _el$2);
-		insertNode(_el$, _el$4);
-		insertNode(_el$, _el$6);
-		insertNode(_el$, _el$7);
-		insertNode(_el$2, createTextNode(\`Click me\`));
-		setProp(_el$2, "onClick", () => console.log("click"));
-		insertNode(_el$4, createTextNode(\`Hover me\`));
-		setProp(_el$4, "onMouseOver", () => console.log("hover"));
-		setProp(_el$6, "onInput", (e) => console.log(e.target.value));
-		insertNode(_el$7, _el$8);
-		setProp(_el$7, "onSubmit", (e) => e.preventDefault());
-		insertNode(_el$8, _el$9);
-		insertNode(_el$8, _el$1);
-		setProp(_el$8, "onChange", (e) => console.log(e.target.value));
-		insertNode(_el$9, createTextNode(\`Option 1\`));
-		setProp(_el$9, "value", "1");
-		insertNode(_el$1, createTextNode(\`Option 2\`));
-		setProp(_el$1, "value", "2");
-		return _el$;
+		var _el$1 = createElement("div"), _el$10 = createElement("button"), _el$12 = createElement("div"), _el$14 = createElement("input"), _el$15 = createElement("form"), _el$16 = createElement("select"), _el$17 = createElement("option"), _el$19 = createElement("option");
+		insertNode(_el$1, _el$10);
+		insertNode(_el$1, _el$12);
+		insertNode(_el$1, _el$14);
+		insertNode(_el$1, _el$15);
+		insertNode(_el$10, createTextNode(\`Click me\`));
+		setProp(_el$10, "onClick", () => console.log("click"));
+		insertNode(_el$12, createTextNode(\`Hover me\`));
+		setProp(_el$12, "onMouseOver", () => console.log("hover"));
+		setProp(_el$14, "onInput", (e) => console.log(e.target.value));
+		insertNode(_el$15, _el$16);
+		setProp(_el$15, "onSubmit", (e) => e.preventDefault());
+		insertNode(_el$16, _el$17);
+		insertNode(_el$16, _el$19);
+		setProp(_el$16, "onChange", (e) => console.log(e.target.value));
+		insertNode(_el$17, createTextNode(\`Option 1\`));
+		setProp(_el$17, "value", "1");
+		insertNode(_el$19, createTextNode(\`Option 2\`));
+		setProp(_el$19, "value", "2");
+		return _el$1;
 	})();
 }
 function TestComplexTemplates() {
@@ -5586,118 +5644,118 @@ function TestComplexTemplates() {
 		"c"
 	];
 	return (() => {
-		var _el$11 = createElement("div"), _el$12 = createElement("h1"), _el$14 = createElement("ul"), _el$15 = createElement("div");
-		insertNode(_el$11, _el$12);
-		insertNode(_el$11, _el$14);
-		insertNode(_el$11, _el$15);
-		setProp(_el$11, "class", "container");
-		insertNode(_el$12, createTextNode(\`Title\`));
-		insert(_el$11, (() => {
-			var _el$17 = createElement("p");
-			insertNode(_el$17, createTextNode(\`Conditional content\`));
-			return _el$17;
-		})(), _el$14);
-		insert(_el$14, () => items.map((item) => (() => {
-			var _el$19 = createElement("li");
-			insert(_el$19, item);
-			return _el$19;
+		var _el$21 = createElement("div"), _el$22 = createElement("h1"), _el$24 = createElement("ul"), _el$25 = createElement("div");
+		insertNode(_el$21, _el$22);
+		insertNode(_el$21, _el$24);
+		insertNode(_el$21, _el$25);
+		setProp(_el$21, "class", "container");
+		insertNode(_el$22, createTextNode(\`Title\`));
+		insert(_el$21, (() => {
+			var _el$27 = createElement("p");
+			insertNode(_el$27, createTextNode(\`Conditional content\`));
+			return _el$27;
+		})(), _el$24);
+		insert(_el$24, () => items.map((item) => (() => {
+			var _el$29 = createElement("li");
+			insert(_el$29, item);
+			return _el$29;
 		})()));
-		insertNode(_el$15, createTextNode(\`Styled content\`));
-		setProp(_el$15, "style", {
+		insertNode(_el$25, createTextNode(\`Styled content\`));
+		setProp(_el$25, "style", {
 			color: "red",
 			"font-size": "16px"
 		});
-		return _el$11;
+		return _el$21;
 	})();
 }
 function TestAttributeTemplates() {
 	return (() => {
-		var _el$20 = createElement("div"), _el$21 = createElement("img"), _el$22 = createElement("input");
-		insertNode(_el$20, _el$21);
-		insertNode(_el$20, _el$22);
-		setProp(_el$20, "id", "test");
-		setProp(_el$20, "class", "my-class");
-		setProp(_el$20, "data-testid", "element");
-		setProp(_el$20, "aria-label", "Accessible element");
-		setProp(_el$20, "role", "button");
-		setProp(_el$20, "tabIndex", 0);
-		setProp(_el$21, "src", "test.jpg");
-		setProp(_el$21, "alt", "test image");
-		setProp(_el$21, "width", "100");
-		setProp(_el$21, "height", "100");
-		setProp(_el$22, "type", "text");
-		setProp(_el$22, "placeholder", "Enter text");
-		setProp(_el$22, "required", true);
-		setProp(_el$22, "disabled", false);
-		return _el$20;
+		var _el$30 = createElement("div"), _el$31 = createElement("img"), _el$32 = createElement("input");
+		insertNode(_el$30, _el$31);
+		insertNode(_el$30, _el$32);
+		setProp(_el$30, "id", "test");
+		setProp(_el$30, "class", "my-class");
+		setProp(_el$30, "data-testid", "element");
+		setProp(_el$30, "aria-label", "Accessible element");
+		setProp(_el$30, "role", "button");
+		setProp(_el$30, "tabIndex", 0);
+		setProp(_el$31, "src", "test.jpg");
+		setProp(_el$31, "alt", "test image");
+		setProp(_el$31, "width", "100");
+		setProp(_el$31, "height", "100");
+		setProp(_el$32, "type", "text");
+		setProp(_el$32, "placeholder", "Enter text");
+		setProp(_el$32, "required", true);
+		setProp(_el$32, "disabled", false);
+		return _el$30;
 	})();
 }
 function TestSVGTemplates() {
 	return (() => {
-		var _el$23 = createElement("svg"), _el$24 = createElement("circle"), _el$25 = createElement("rect"), _el$26 = createElement("text");
-		insertNode(_el$23, _el$24);
-		insertNode(_el$23, _el$25);
-		insertNode(_el$23, _el$26);
-		setProp(_el$23, "width", "100");
-		setProp(_el$23, "height", "100");
-		setProp(_el$24, "cx", "50");
-		setProp(_el$24, "cy", "50");
-		setProp(_el$24, "r", "40");
-		setProp(_el$24, "fill", "red");
-		setProp(_el$25, "x", "10");
-		setProp(_el$25, "y", "10");
-		setProp(_el$25, "width", "30");
-		setProp(_el$25, "height", "30");
-		setProp(_el$25, "fill", "blue");
-		insertNode(_el$26, createTextNode(\`SVG Text\`));
-		setProp(_el$26, "x", "50");
-		setProp(_el$26, "y", "50");
-		setProp(_el$26, "text-anchor", "middle");
-		return _el$23;
+		var _el$33 = createElement("svg"), _el$34 = createElement("circle"), _el$35 = createElement("rect"), _el$36 = createElement("text");
+		insertNode(_el$33, _el$34);
+		insertNode(_el$33, _el$35);
+		insertNode(_el$33, _el$36);
+		setProp(_el$33, "width", "100");
+		setProp(_el$33, "height", "100");
+		setProp(_el$34, "cx", "50");
+		setProp(_el$34, "cy", "50");
+		setProp(_el$34, "r", "40");
+		setProp(_el$34, "fill", "red");
+		setProp(_el$35, "x", "10");
+		setProp(_el$35, "y", "10");
+		setProp(_el$35, "width", "30");
+		setProp(_el$35, "height", "30");
+		setProp(_el$35, "fill", "blue");
+		insertNode(_el$36, createTextNode(\`SVG Text\`));
+		setProp(_el$36, "x", "50");
+		setProp(_el$36, "y", "50");
+		setProp(_el$36, "text-anchor", "middle");
+		return _el$33;
 	})();
 }
 function TestSSRHeadElement() {
 	return (() => {
-		var _el$28 = createElement("head"), _el$29 = createElement("title"), _el$31 = createElement("meta"), _el$32 = createElement("meta");
-		insertNode(_el$28, _el$29);
-		insertNode(_el$28, _el$31);
-		insertNode(_el$28, _el$32);
-		insertNode(_el$29, createTextNode(\`SSR Test\`));
-		setProp(_el$31, "charset", "utf-8");
-		setProp(_el$32, "name", "viewport");
-		setProp(_el$32, "content", "width=device-width");
-		return _el$28;
+		var _el$38 = createElement("head"), _el$39 = createElement("title"), _el$41 = createElement("meta"), _el$42 = createElement("meta");
+		insertNode(_el$38, _el$39);
+		insertNode(_el$38, _el$41);
+		insertNode(_el$38, _el$42);
+		insertNode(_el$39, createTextNode(\`SSR Test\`));
+		setProp(_el$41, "charset", "utf-8");
+		setProp(_el$42, "name", "viewport");
+		setProp(_el$42, "content", "width=device-width");
+		return _el$38;
 	})();
 }
 function TestSSRScriptStyle() {
 	return (() => {
-		var _el$33 = createElement("div"), _el$34 = createElement("script"), _el$36 = createElement("style");
-		insertNode(_el$33, _el$34);
-		insertNode(_el$33, _el$36);
-		insertNode(_el$34, createTextNode(\`console.log('test');\`));
-		insertNode(_el$36, createTextNode(\`body \\{ margin: 0; }\`));
-		return _el$33;
+		var _el$43 = createElement("div"), _el$44 = createElement("script"), _el$46 = createElement("style");
+		insertNode(_el$43, _el$44);
+		insertNode(_el$43, _el$46);
+		insertNode(_el$44, createTextNode(\`console.log('test');\`));
+		insertNode(_el$46, createTextNode(\`body \\{ margin: 0; }\`));
+		return _el$43;
 	})();
 }
 function TestSSRHydration() {
 	return (() => {
-		var _el$38 = createElement("div"), _el$39 = createElement("p"), _el$41 = createElement("div"), _el$42 = createElement("ul");
-		insertNode(_el$38, _el$39);
-		insertNode(_el$38, _el$41);
-		insertNode(_el$38, _el$42);
-		insertNode(_el$39, createTextNode(\`Static content\`));
-		insert(_el$41, () => \`Dynamic content: \${Date.now()}\`);
-		insert(_el$42, () => [
+		var _el$48 = createElement("div"), _el$49 = createElement("p"), _el$51 = createElement("div"), _el$52 = createElement("ul");
+		insertNode(_el$48, _el$49);
+		insertNode(_el$48, _el$51);
+		insertNode(_el$48, _el$52);
+		insertNode(_el$49, createTextNode(\`Static content\`));
+		insert(_el$51, () => \`Dynamic content: \${Date.now()}\`);
+		insert(_el$52, () => [
 			1,
 			2,
 			3
 		].map((item) => (() => {
-			var _el$43 = createElement("li");
-			insertNode(_el$43, createTextNode(\`Item \`));
-			insert(_el$43, item, null);
-			return _el$43;
+			var _el$53 = createElement("li");
+			insertNode(_el$53, createTextNode(\`Item \`));
+			insert(_el$53, item, null);
+			return _el$53;
 		})()));
-		return _el$38;
+		return _el$48;
 	})();
 }
 function TestSSRSpreadAttributes() {
@@ -5707,61 +5765,61 @@ function TestSSRSpreadAttributes() {
 		"data-test": "value"
 	};
 	return (() => {
-		var _el$45 = createElement("div");
-		insertNode(_el$45, createTextNode(\`Spread attributes\`));
-		spread(_el$45, props, true);
-		return _el$45;
+		var _el$55 = createElement("div");
+		insertNode(_el$55, createTextNode(\`Spread attributes\`));
+		spread(_el$55, props, true);
+		return _el$55;
 	})();
 }
 function TestSSRSpecialElements() {
 	return (() => {
-		var _el$47 = createElement("table"), _el$48 = createElement("thead"), _el$49 = createElement("tr"), _el$50 = createElement("th"), _el$52 = createElement("th"), _el$54 = createElement("tbody"), _el$55 = createElement("tr"), _el$56 = createElement("td"), _el$58 = createElement("td");
-		insertNode(_el$47, _el$48);
-		insertNode(_el$47, _el$54);
-		insertNode(_el$48, _el$49);
-		insertNode(_el$49, _el$50);
-		insertNode(_el$49, _el$52);
-		insertNode(_el$50, createTextNode(\`Header 1\`));
-		insertNode(_el$52, createTextNode(\`Header 2\`));
-		insertNode(_el$54, _el$55);
-		insertNode(_el$55, _el$56);
-		insertNode(_el$55, _el$58);
-		insertNode(_el$56, createTextNode(\`Cell 1\`));
-		insertNode(_el$58, createTextNode(\`Cell 2\`));
-		return _el$47;
+		var _el$57 = createElement("table"), _el$58 = createElement("thead"), _el$59 = createElement("tr"), _el$60 = createElement("th"), _el$62 = createElement("th"), _el$64 = createElement("tbody"), _el$65 = createElement("tr"), _el$66 = createElement("td"), _el$68 = createElement("td");
+		insertNode(_el$57, _el$58);
+		insertNode(_el$57, _el$64);
+		insertNode(_el$58, _el$59);
+		insertNode(_el$59, _el$60);
+		insertNode(_el$59, _el$62);
+		insertNode(_el$60, createTextNode(\`Header 1\`));
+		insertNode(_el$62, createTextNode(\`Header 2\`));
+		insertNode(_el$64, _el$65);
+		insertNode(_el$65, _el$66);
+		insertNode(_el$65, _el$68);
+		insertNode(_el$66, createTextNode(\`Cell 1\`));
+		insertNode(_el$68, createTextNode(\`Cell 2\`));
+		return _el$57;
 	})();
 }
 function TestValidationScenarios() {
 	return (() => {
-		var _el$60 = createElement("div"), _el$61 = createElement("section"), _el$62 = createElement("article"), _el$63 = createElement("header"), _el$64 = createElement("h1"), _el$66 = createElement("main"), _el$67 = createElement("p"), _el$69 = createElement("footer"), _el$70 = createElement("small"), _el$72 = createElement("table"), _el$73 = createElement("tr"), _el$74 = createElement("td"), _el$76 = createElement("td"), _el$78 = createElement("img"), _el$79 = createElement("br"), _el$80 = createElement("hr");
-		insertNode(_el$60, _el$61);
-		insertNode(_el$60, _el$72);
-		insertNode(_el$60, _el$78);
-		insertNode(_el$60, _el$79);
-		insertNode(_el$60, _el$80);
-		insertNode(_el$61, _el$62);
-		insertNode(_el$62, _el$63);
-		insertNode(_el$62, _el$66);
-		insertNode(_el$62, _el$69);
-		insertNode(_el$63, _el$64);
-		insertNode(_el$64, createTextNode(\`Title\`));
-		insertNode(_el$66, _el$67);
-		insertNode(_el$67, createTextNode(\`Content\`));
-		insertNode(_el$69, _el$70);
-		insertNode(_el$70, createTextNode(\`Footer\`));
+		var _el$70 = createElement("div"), _el$71 = createElement("section"), _el$72 = createElement("article"), _el$73 = createElement("header"), _el$74 = createElement("h1"), _el$76 = createElement("main"), _el$77 = createElement("p"), _el$79 = createElement("footer"), _el$80 = createElement("small"), _el$82 = createElement("table"), _el$83 = createElement("tr"), _el$84 = createElement("td"), _el$86 = createElement("td"), _el$88 = createElement("img"), _el$89 = createElement("br"), _el$90 = createElement("hr");
+		insertNode(_el$70, _el$71);
+		insertNode(_el$70, _el$82);
+		insertNode(_el$70, _el$88);
+		insertNode(_el$70, _el$89);
+		insertNode(_el$70, _el$90);
+		insertNode(_el$71, _el$72);
 		insertNode(_el$72, _el$73);
+		insertNode(_el$72, _el$76);
+		insertNode(_el$72, _el$79);
 		insertNode(_el$73, _el$74);
-		insertNode(_el$73, _el$76);
-		insertNode(_el$74, createTextNode(\`Cell 1\`));
-		insertNode(_el$76, createTextNode(\`Cell 2\`));
-		setProp(_el$78, "src", "test.jpg");
-		setProp(_el$78, "alt", "test");
-		return _el$60;
+		insertNode(_el$74, createTextNode(\`Title\`));
+		insertNode(_el$76, _el$77);
+		insertNode(_el$77, createTextNode(\`Content\`));
+		insertNode(_el$79, _el$80);
+		insertNode(_el$80, createTextNode(\`Footer\`));
+		insertNode(_el$82, _el$83);
+		insertNode(_el$83, _el$84);
+		insertNode(_el$83, _el$86);
+		insertNode(_el$84, createTextNode(\`Cell 1\`));
+		insertNode(_el$86, createTextNode(\`Cell 2\`));
+		setProp(_el$88, "src", "test.jpg");
+		setProp(_el$88, "alt", "test");
+		return _el$70;
 	})();
 }
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with universal 1`] = `
@@ -6571,28 +6629,62 @@ const { createComponent, createElement, createTextNode, effect, insert, insertNo
 
 //#endregion
 //#region tests/fixtures/templates.tsx
+function TestSvgWrap() {
+	return (() => {
+		var _el$ = createElement("svg"), _el$2 = createElement("circle"), _el$3 = createElement("foreignObject"), _el$4 = createElement("div"), _el$5 = createElement("p");
+		insertNode(_el$, _el$2);
+		insertNode(_el$, _el$3);
+		setProp(_el$, "width", "100");
+		setProp(_el$, "height", "100");
+		setProp(_el$2, "cx", "50");
+		setProp(_el$2, "cy", "50");
+		setProp(_el$2, "r", "40");
+		setProp(_el$2, "fill", "red");
+		insertNode(_el$3, _el$4);
+		setProp(_el$3, "x", "10");
+		setProp(_el$3, "y", "10");
+		setProp(_el$3, "width", "80");
+		setProp(_el$3, "height", "80");
+		insertNode(_el$4, _el$5);
+		insertNode(_el$5, createTextNode(\`HTML content inside SVG\`));
+		return _el$;
+	})();
+}
+function TestNestedSvg() {
+	return (() => {
+		var _el$7 = createElement("div"), _el$8 = createElement("svg"), _el$9 = createElement("g"), _el$0 = createElement("rect");
+		insertNode(_el$7, _el$8);
+		insertNode(_el$8, _el$9);
+		insertNode(_el$9, _el$0);
+		setProp(_el$0, "x", "0");
+		setProp(_el$0, "y", "0");
+		setProp(_el$0, "width", "100");
+		setProp(_el$0, "height", "100");
+		return _el$7;
+	})();
+}
 function TestEventDelegation() {
 	return (() => {
-		var _el$ = createElement("div"), _el$2 = createElement("button"), _el$4 = createElement("div"), _el$6 = createElement("input"), _el$7 = createElement("form"), _el$8 = createElement("select"), _el$9 = createElement("option"), _el$1 = createElement("option");
-		insertNode(_el$, _el$2);
-		insertNode(_el$, _el$4);
-		insertNode(_el$, _el$6);
-		insertNode(_el$, _el$7);
-		insertNode(_el$2, createTextNode(\`Click me\`));
-		setProp(_el$2, "onClick", () => console.log("click"));
-		insertNode(_el$4, createTextNode(\`Hover me\`));
-		setProp(_el$4, "onMouseOver", () => console.log("hover"));
-		setProp(_el$6, "onInput", (e) => console.log(e.target.value));
-		insertNode(_el$7, _el$8);
-		setProp(_el$7, "onSubmit", (e) => e.preventDefault());
-		insertNode(_el$8, _el$9);
-		insertNode(_el$8, _el$1);
-		setProp(_el$8, "onChange", (e) => console.log(e.target.value));
-		insertNode(_el$9, createTextNode(\`Option 1\`));
-		setProp(_el$9, "value", "1");
-		insertNode(_el$1, createTextNode(\`Option 2\`));
-		setProp(_el$1, "value", "2");
-		return _el$;
+		var _el$1 = createElement("div"), _el$10 = createElement("button"), _el$12 = createElement("div"), _el$14 = createElement("input"), _el$15 = createElement("form"), _el$16 = createElement("select"), _el$17 = createElement("option"), _el$19 = createElement("option");
+		insertNode(_el$1, _el$10);
+		insertNode(_el$1, _el$12);
+		insertNode(_el$1, _el$14);
+		insertNode(_el$1, _el$15);
+		insertNode(_el$10, createTextNode(\`Click me\`));
+		setProp(_el$10, "onClick", () => console.log("click"));
+		insertNode(_el$12, createTextNode(\`Hover me\`));
+		setProp(_el$12, "onMouseOver", () => console.log("hover"));
+		setProp(_el$14, "onInput", (e) => console.log(e.target.value));
+		insertNode(_el$15, _el$16);
+		setProp(_el$15, "onSubmit", (e) => e.preventDefault());
+		insertNode(_el$16, _el$17);
+		insertNode(_el$16, _el$19);
+		setProp(_el$16, "onChange", (e) => console.log(e.target.value));
+		insertNode(_el$17, createTextNode(\`Option 1\`));
+		setProp(_el$17, "value", "1");
+		insertNode(_el$19, createTextNode(\`Option 2\`));
+		setProp(_el$19, "value", "2");
+		return _el$1;
 	})();
 }
 function TestComplexTemplates() {
@@ -6602,118 +6694,118 @@ function TestComplexTemplates() {
 		"c"
 	];
 	return (() => {
-		var _el$11 = createElement("div"), _el$12 = createElement("h1"), _el$14 = createElement("ul"), _el$15 = createElement("div");
-		insertNode(_el$11, _el$12);
-		insertNode(_el$11, _el$14);
-		insertNode(_el$11, _el$15);
-		setProp(_el$11, "class", "container");
-		insertNode(_el$12, createTextNode(\`Title\`));
-		insert(_el$11, (() => {
-			var _el$17 = createElement("p");
-			insertNode(_el$17, createTextNode(\`Conditional content\`));
-			return _el$17;
-		})(), _el$14);
-		insert(_el$14, () => items.map((item) => (() => {
-			var _el$19 = createElement("li");
-			insert(_el$19, item);
-			return _el$19;
+		var _el$21 = createElement("div"), _el$22 = createElement("h1"), _el$24 = createElement("ul"), _el$25 = createElement("div");
+		insertNode(_el$21, _el$22);
+		insertNode(_el$21, _el$24);
+		insertNode(_el$21, _el$25);
+		setProp(_el$21, "class", "container");
+		insertNode(_el$22, createTextNode(\`Title\`));
+		insert(_el$21, (() => {
+			var _el$27 = createElement("p");
+			insertNode(_el$27, createTextNode(\`Conditional content\`));
+			return _el$27;
+		})(), _el$24);
+		insert(_el$24, () => items.map((item) => (() => {
+			var _el$29 = createElement("li");
+			insert(_el$29, item);
+			return _el$29;
 		})()));
-		insertNode(_el$15, createTextNode(\`Styled content\`));
-		setProp(_el$15, "style", {
+		insertNode(_el$25, createTextNode(\`Styled content\`));
+		setProp(_el$25, "style", {
 			color: "red",
 			"font-size": "16px"
 		});
-		return _el$11;
+		return _el$21;
 	})();
 }
 function TestAttributeTemplates() {
 	return (() => {
-		var _el$20 = createElement("div"), _el$21 = createElement("img"), _el$22 = createElement("input");
-		insertNode(_el$20, _el$21);
-		insertNode(_el$20, _el$22);
-		setProp(_el$20, "id", "test");
-		setProp(_el$20, "class", "my-class");
-		setProp(_el$20, "data-testid", "element");
-		setProp(_el$20, "aria-label", "Accessible element");
-		setProp(_el$20, "role", "button");
-		setProp(_el$20, "tabIndex", 0);
-		setProp(_el$21, "src", "test.jpg");
-		setProp(_el$21, "alt", "test image");
-		setProp(_el$21, "width", "100");
-		setProp(_el$21, "height", "100");
-		setProp(_el$22, "type", "text");
-		setProp(_el$22, "placeholder", "Enter text");
-		setProp(_el$22, "required", true);
-		setProp(_el$22, "disabled", false);
-		return _el$20;
+		var _el$30 = createElement("div"), _el$31 = createElement("img"), _el$32 = createElement("input");
+		insertNode(_el$30, _el$31);
+		insertNode(_el$30, _el$32);
+		setProp(_el$30, "id", "test");
+		setProp(_el$30, "class", "my-class");
+		setProp(_el$30, "data-testid", "element");
+		setProp(_el$30, "aria-label", "Accessible element");
+		setProp(_el$30, "role", "button");
+		setProp(_el$30, "tabIndex", 0);
+		setProp(_el$31, "src", "test.jpg");
+		setProp(_el$31, "alt", "test image");
+		setProp(_el$31, "width", "100");
+		setProp(_el$31, "height", "100");
+		setProp(_el$32, "type", "text");
+		setProp(_el$32, "placeholder", "Enter text");
+		setProp(_el$32, "required", true);
+		setProp(_el$32, "disabled", false);
+		return _el$30;
 	})();
 }
 function TestSVGTemplates() {
 	return (() => {
-		var _el$23 = createElement("svg"), _el$24 = createElement("circle"), _el$25 = createElement("rect"), _el$26 = createElement("text");
-		insertNode(_el$23, _el$24);
-		insertNode(_el$23, _el$25);
-		insertNode(_el$23, _el$26);
-		setProp(_el$23, "width", "100");
-		setProp(_el$23, "height", "100");
-		setProp(_el$24, "cx", "50");
-		setProp(_el$24, "cy", "50");
-		setProp(_el$24, "r", "40");
-		setProp(_el$24, "fill", "red");
-		setProp(_el$25, "x", "10");
-		setProp(_el$25, "y", "10");
-		setProp(_el$25, "width", "30");
-		setProp(_el$25, "height", "30");
-		setProp(_el$25, "fill", "blue");
-		insertNode(_el$26, createTextNode(\`SVG Text\`));
-		setProp(_el$26, "x", "50");
-		setProp(_el$26, "y", "50");
-		setProp(_el$26, "text-anchor", "middle");
-		return _el$23;
+		var _el$33 = createElement("svg"), _el$34 = createElement("circle"), _el$35 = createElement("rect"), _el$36 = createElement("text");
+		insertNode(_el$33, _el$34);
+		insertNode(_el$33, _el$35);
+		insertNode(_el$33, _el$36);
+		setProp(_el$33, "width", "100");
+		setProp(_el$33, "height", "100");
+		setProp(_el$34, "cx", "50");
+		setProp(_el$34, "cy", "50");
+		setProp(_el$34, "r", "40");
+		setProp(_el$34, "fill", "red");
+		setProp(_el$35, "x", "10");
+		setProp(_el$35, "y", "10");
+		setProp(_el$35, "width", "30");
+		setProp(_el$35, "height", "30");
+		setProp(_el$35, "fill", "blue");
+		insertNode(_el$36, createTextNode(\`SVG Text\`));
+		setProp(_el$36, "x", "50");
+		setProp(_el$36, "y", "50");
+		setProp(_el$36, "text-anchor", "middle");
+		return _el$33;
 	})();
 }
 function TestSSRHeadElement() {
 	return (() => {
-		var _el$28 = createElement("head"), _el$29 = createElement("title"), _el$31 = createElement("meta"), _el$32 = createElement("meta");
-		insertNode(_el$28, _el$29);
-		insertNode(_el$28, _el$31);
-		insertNode(_el$28, _el$32);
-		insertNode(_el$29, createTextNode(\`SSR Test\`));
-		setProp(_el$31, "charset", "utf-8");
-		setProp(_el$32, "name", "viewport");
-		setProp(_el$32, "content", "width=device-width");
-		return _el$28;
+		var _el$38 = createElement("head"), _el$39 = createElement("title"), _el$41 = createElement("meta"), _el$42 = createElement("meta");
+		insertNode(_el$38, _el$39);
+		insertNode(_el$38, _el$41);
+		insertNode(_el$38, _el$42);
+		insertNode(_el$39, createTextNode(\`SSR Test\`));
+		setProp(_el$41, "charset", "utf-8");
+		setProp(_el$42, "name", "viewport");
+		setProp(_el$42, "content", "width=device-width");
+		return _el$38;
 	})();
 }
 function TestSSRScriptStyle() {
 	return (() => {
-		var _el$33 = createElement("div"), _el$34 = createElement("script"), _el$36 = createElement("style");
-		insertNode(_el$33, _el$34);
-		insertNode(_el$33, _el$36);
-		insertNode(_el$34, createTextNode(\`console.log('test');\`));
-		insertNode(_el$36, createTextNode(\`body \\{ margin: 0; }\`));
-		return _el$33;
+		var _el$43 = createElement("div"), _el$44 = createElement("script"), _el$46 = createElement("style");
+		insertNode(_el$43, _el$44);
+		insertNode(_el$43, _el$46);
+		insertNode(_el$44, createTextNode(\`console.log('test');\`));
+		insertNode(_el$46, createTextNode(\`body \\{ margin: 0; }\`));
+		return _el$43;
 	})();
 }
 function TestSSRHydration() {
 	return (() => {
-		var _el$38 = createElement("div"), _el$39 = createElement("p"), _el$41 = createElement("div"), _el$42 = createElement("ul");
-		insertNode(_el$38, _el$39);
-		insertNode(_el$38, _el$41);
-		insertNode(_el$38, _el$42);
-		insertNode(_el$39, createTextNode(\`Static content\`));
-		insert(_el$41, () => \`Dynamic content: \${Date.now()}\`);
-		insert(_el$42, () => [
+		var _el$48 = createElement("div"), _el$49 = createElement("p"), _el$51 = createElement("div"), _el$52 = createElement("ul");
+		insertNode(_el$48, _el$49);
+		insertNode(_el$48, _el$51);
+		insertNode(_el$48, _el$52);
+		insertNode(_el$49, createTextNode(\`Static content\`));
+		insert(_el$51, () => \`Dynamic content: \${Date.now()}\`);
+		insert(_el$52, () => [
 			1,
 			2,
 			3
 		].map((item) => (() => {
-			var _el$43 = createElement("li");
-			insertNode(_el$43, createTextNode(\`Item \`));
-			insert(_el$43, item, null);
-			return _el$43;
+			var _el$53 = createElement("li");
+			insertNode(_el$53, createTextNode(\`Item \`));
+			insert(_el$53, item, null);
+			return _el$53;
 		})()));
-		return _el$38;
+		return _el$48;
 	})();
 }
 function TestSSRSpreadAttributes() {
@@ -6723,61 +6815,61 @@ function TestSSRSpreadAttributes() {
 		"data-test": "value"
 	};
 	return (() => {
-		var _el$45 = createElement("div");
-		insertNode(_el$45, createTextNode(\`Spread attributes\`));
-		spread(_el$45, props, true);
-		return _el$45;
+		var _el$55 = createElement("div");
+		insertNode(_el$55, createTextNode(\`Spread attributes\`));
+		spread(_el$55, props, true);
+		return _el$55;
 	})();
 }
 function TestSSRSpecialElements() {
 	return (() => {
-		var _el$47 = createElement("table"), _el$48 = createElement("thead"), _el$49 = createElement("tr"), _el$50 = createElement("th"), _el$52 = createElement("th"), _el$54 = createElement("tbody"), _el$55 = createElement("tr"), _el$56 = createElement("td"), _el$58 = createElement("td");
-		insertNode(_el$47, _el$48);
-		insertNode(_el$47, _el$54);
-		insertNode(_el$48, _el$49);
-		insertNode(_el$49, _el$50);
-		insertNode(_el$49, _el$52);
-		insertNode(_el$50, createTextNode(\`Header 1\`));
-		insertNode(_el$52, createTextNode(\`Header 2\`));
-		insertNode(_el$54, _el$55);
-		insertNode(_el$55, _el$56);
-		insertNode(_el$55, _el$58);
-		insertNode(_el$56, createTextNode(\`Cell 1\`));
-		insertNode(_el$58, createTextNode(\`Cell 2\`));
-		return _el$47;
+		var _el$57 = createElement("table"), _el$58 = createElement("thead"), _el$59 = createElement("tr"), _el$60 = createElement("th"), _el$62 = createElement("th"), _el$64 = createElement("tbody"), _el$65 = createElement("tr"), _el$66 = createElement("td"), _el$68 = createElement("td");
+		insertNode(_el$57, _el$58);
+		insertNode(_el$57, _el$64);
+		insertNode(_el$58, _el$59);
+		insertNode(_el$59, _el$60);
+		insertNode(_el$59, _el$62);
+		insertNode(_el$60, createTextNode(\`Header 1\`));
+		insertNode(_el$62, createTextNode(\`Header 2\`));
+		insertNode(_el$64, _el$65);
+		insertNode(_el$65, _el$66);
+		insertNode(_el$65, _el$68);
+		insertNode(_el$66, createTextNode(\`Cell 1\`));
+		insertNode(_el$68, createTextNode(\`Cell 2\`));
+		return _el$57;
 	})();
 }
 function TestValidationScenarios() {
 	return (() => {
-		var _el$60 = createElement("div"), _el$61 = createElement("section"), _el$62 = createElement("article"), _el$63 = createElement("header"), _el$64 = createElement("h1"), _el$66 = createElement("main"), _el$67 = createElement("p"), _el$69 = createElement("footer"), _el$70 = createElement("small"), _el$72 = createElement("table"), _el$73 = createElement("tr"), _el$74 = createElement("td"), _el$76 = createElement("td"), _el$78 = createElement("img"), _el$79 = createElement("br"), _el$80 = createElement("hr");
-		insertNode(_el$60, _el$61);
-		insertNode(_el$60, _el$72);
-		insertNode(_el$60, _el$78);
-		insertNode(_el$60, _el$79);
-		insertNode(_el$60, _el$80);
-		insertNode(_el$61, _el$62);
-		insertNode(_el$62, _el$63);
-		insertNode(_el$62, _el$66);
-		insertNode(_el$62, _el$69);
-		insertNode(_el$63, _el$64);
-		insertNode(_el$64, createTextNode(\`Title\`));
-		insertNode(_el$66, _el$67);
-		insertNode(_el$67, createTextNode(\`Content\`));
-		insertNode(_el$69, _el$70);
-		insertNode(_el$70, createTextNode(\`Footer\`));
+		var _el$70 = createElement("div"), _el$71 = createElement("section"), _el$72 = createElement("article"), _el$73 = createElement("header"), _el$74 = createElement("h1"), _el$76 = createElement("main"), _el$77 = createElement("p"), _el$79 = createElement("footer"), _el$80 = createElement("small"), _el$82 = createElement("table"), _el$83 = createElement("tr"), _el$84 = createElement("td"), _el$86 = createElement("td"), _el$88 = createElement("img"), _el$89 = createElement("br"), _el$90 = createElement("hr");
+		insertNode(_el$70, _el$71);
+		insertNode(_el$70, _el$82);
+		insertNode(_el$70, _el$88);
+		insertNode(_el$70, _el$89);
+		insertNode(_el$70, _el$90);
+		insertNode(_el$71, _el$72);
 		insertNode(_el$72, _el$73);
+		insertNode(_el$72, _el$76);
+		insertNode(_el$72, _el$79);
 		insertNode(_el$73, _el$74);
-		insertNode(_el$73, _el$76);
-		insertNode(_el$74, createTextNode(\`Cell 1\`));
-		insertNode(_el$76, createTextNode(\`Cell 2\`));
-		setProp(_el$78, "src", "test.jpg");
-		setProp(_el$78, "alt", "test");
-		return _el$60;
+		insertNode(_el$74, createTextNode(\`Title\`));
+		insertNode(_el$76, _el$77);
+		insertNode(_el$77, createTextNode(\`Content\`));
+		insertNode(_el$79, _el$80);
+		insertNode(_el$80, createTextNode(\`Footer\`));
+		insertNode(_el$82, _el$83);
+		insertNode(_el$83, _el$84);
+		insertNode(_el$83, _el$86);
+		insertNode(_el$84, createTextNode(\`Cell 1\`));
+		insertNode(_el$86, createTextNode(\`Cell 2\`));
+		setProp(_el$88, "src", "test.jpg");
+		setProp(_el$88, "alt", "test");
+		return _el$70;
 	})();
 }
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with disabled delegation 1`] = `
@@ -7802,16 +7894,22 @@ function cleanChildren(parent, current, marker, replacement) {
 
 //#endregion
 //#region tests/fixtures/templates.tsx
-var _tmpl$ = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$6 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$7 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$8 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$9 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$0 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$1 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$10 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$11 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+function TestSvgWrap() {
+	return _tmpl$();
+}
+function TestNestedSvg() {
+	return _tmpl$2();
+}
 function TestEventDelegation() {
 	return (() => {
-		var _el$ = _tmpl$(), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling, _el$4 = _el$3.nextSibling, _el$5 = _el$4.nextSibling, _el$6 = _el$5.firstChild;
-		_el$2.addEventListener("click", () => console.log("click"));
-		_el$3.addEventListener("mouseover", () => console.log("hover"));
-		_el$4.addEventListener("input", (e) => console.log(e.target.value));
-		_el$5.addEventListener("submit", (e) => e.preventDefault());
-		_el$6.addEventListener("change", (e) => console.log(e.target.value));
-		return _el$;
+		var _el$3 = _tmpl$3(), _el$4 = _el$3.firstChild, _el$5 = _el$4.nextSibling, _el$6 = _el$5.nextSibling, _el$7 = _el$6.nextSibling, _el$8 = _el$7.firstChild;
+		_el$4.addEventListener("click", () => console.log("click"));
+		_el$5.addEventListener("mouseover", () => console.log("hover"));
+		_el$6.addEventListener("input", (e) => console.log(e.target.value));
+		_el$7.addEventListener("submit", (e) => e.preventDefault());
+		_el$8.addEventListener("change", (e) => console.log(e.target.value));
+		return _el$3;
 	})();
 }
 function TestComplexTemplates() {
@@ -7821,48 +7919,48 @@ function TestComplexTemplates() {
 		"c"
 	];
 	return (() => {
-		var _el$7 = _tmpl$2(), _el$9 = _el$7.firstChild.nextSibling;
-		_el$9.nextSibling;
-		insert(_el$7, _tmpl$3(), _el$9);
-		insert(_el$9, () => items.map((item) => (() => {
-			var _el$10 = _tmpl$4();
-			insert(_el$10, item);
-			return _el$10;
+		var _el$9 = _tmpl$4(), _el$1 = _el$9.firstChild.nextSibling;
+		_el$1.nextSibling;
+		insert(_el$9, _tmpl$5(), _el$1);
+		insert(_el$1, () => items.map((item) => (() => {
+			var _el$12 = _tmpl$6();
+			insert(_el$12, item);
+			return _el$12;
 		})()));
-		return _el$7;
+		return _el$9;
 	})();
 }
 function TestAttributeTemplates() {
 	return (() => {
-		var _el$11 = _tmpl$5(), _el$13 = _el$11.firstChild.nextSibling;
-		_el$13.disabled = false;
-		return _el$11;
+		var _el$13 = _tmpl$7(), _el$15 = _el$13.firstChild.nextSibling;
+		_el$15.disabled = false;
+		return _el$13;
 	})();
 }
 function TestSVGTemplates() {
-	return _tmpl$6();
+	return _tmpl$8();
 }
 function TestSSRHeadElement() {
-	return _tmpl$7();
+	return _tmpl$9();
 }
 function TestSSRScriptStyle() {
-	return _tmpl$8();
+	return _tmpl$0();
 }
 function TestSSRHydration() {
 	return (() => {
-		var _el$17 = _tmpl$9(), _el$19 = _el$17.firstChild.nextSibling, _el$20 = _el$19.nextSibling;
-		insert(_el$19, () => \`Dynamic content: \${Date.now()}\`);
-		insert(_el$20, () => [
+		var _el$19 = _tmpl$1(), _el$21 = _el$19.firstChild.nextSibling, _el$22 = _el$21.nextSibling;
+		insert(_el$21, () => \`Dynamic content: \${Date.now()}\`);
+		insert(_el$22, () => [
 			1,
 			2,
 			3
 		].map((item) => (() => {
-			var _el$21 = _tmpl$0();
-			_el$21.firstChild;
-			insert(_el$21, item, null);
-			return _el$21;
+			var _el$23 = _tmpl$10();
+			_el$23.firstChild;
+			insert(_el$23, item, null);
+			return _el$23;
 		})()));
-		return _el$17;
+		return _el$19;
 	})();
 }
 function TestSSRSpreadAttributes() {
@@ -7872,20 +7970,20 @@ function TestSSRSpreadAttributes() {
 		"data-test": "value"
 	};
 	return (() => {
-		var _el$23 = _tmpl$1();
-		spread(_el$23, props, false, true);
-		return _el$23;
+		var _el$25 = _tmpl$11();
+		spread(_el$25, props, false, true);
+		return _el$25;
 	})();
 }
 function TestSSRSpecialElements() {
-	return _tmpl$10();
+	return _tmpl$12();
 }
 function TestValidationScenarios() {
-	return _tmpl$11();
+	return _tmpl$13();
 }
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with disabled delegation 1`] = `
@@ -8910,16 +9008,22 @@ function cleanChildren(parent, current, marker, replacement) {
 
 //#endregion
 //#region tests/fixtures/templates.tsx
-var _tmpl$ = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$6 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$7 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$8 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$9 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$0 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$1 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$10 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$11 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+function TestSvgWrap() {
+	return _tmpl$();
+}
+function TestNestedSvg() {
+	return _tmpl$2();
+}
 function TestEventDelegation() {
 	return (() => {
-		var _el$ = _tmpl$(), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling, _el$4 = _el$3.nextSibling, _el$5 = _el$4.nextSibling, _el$6 = _el$5.firstChild;
-		_el$2.addEventListener("click", () => console.log("click"));
-		_el$3.addEventListener("mouseover", () => console.log("hover"));
-		_el$4.addEventListener("input", (e) => console.log(e.target.value));
-		_el$5.addEventListener("submit", (e) => e.preventDefault());
-		_el$6.addEventListener("change", (e) => console.log(e.target.value));
-		return _el$;
+		var _el$3 = _tmpl$3(), _el$4 = _el$3.firstChild, _el$5 = _el$4.nextSibling, _el$6 = _el$5.nextSibling, _el$7 = _el$6.nextSibling, _el$8 = _el$7.firstChild;
+		_el$4.addEventListener("click", () => console.log("click"));
+		_el$5.addEventListener("mouseover", () => console.log("hover"));
+		_el$6.addEventListener("input", (e) => console.log(e.target.value));
+		_el$7.addEventListener("submit", (e) => e.preventDefault());
+		_el$8.addEventListener("change", (e) => console.log(e.target.value));
+		return _el$3;
 	})();
 }
 function TestComplexTemplates() {
@@ -8929,48 +9033,48 @@ function TestComplexTemplates() {
 		"c"
 	];
 	return (() => {
-		var _el$7 = _tmpl$2(), _el$9 = _el$7.firstChild.nextSibling;
-		_el$9.nextSibling;
-		insert(_el$7, _tmpl$3(), _el$9);
-		insert(_el$9, () => items.map((item) => (() => {
-			var _el$10 = _tmpl$4();
-			insert(_el$10, item);
-			return _el$10;
+		var _el$9 = _tmpl$4(), _el$1 = _el$9.firstChild.nextSibling;
+		_el$1.nextSibling;
+		insert(_el$9, _tmpl$5(), _el$1);
+		insert(_el$1, () => items.map((item) => (() => {
+			var _el$12 = _tmpl$6();
+			insert(_el$12, item);
+			return _el$12;
 		})()));
-		return _el$7;
+		return _el$9;
 	})();
 }
 function TestAttributeTemplates() {
 	return (() => {
-		var _el$11 = _tmpl$5(), _el$13 = _el$11.firstChild.nextSibling;
-		_el$13.disabled = false;
-		return _el$11;
+		var _el$13 = _tmpl$7(), _el$15 = _el$13.firstChild.nextSibling;
+		_el$15.disabled = false;
+		return _el$13;
 	})();
 }
 function TestSVGTemplates() {
-	return _tmpl$6();
+	return _tmpl$8();
 }
 function TestSSRHeadElement() {
-	return _tmpl$7();
+	return _tmpl$9();
 }
 function TestSSRScriptStyle() {
-	return _tmpl$8();
+	return _tmpl$0();
 }
 function TestSSRHydration() {
 	return (() => {
-		var _el$17 = _tmpl$9(), _el$19 = _el$17.firstChild.nextSibling, _el$20 = _el$19.nextSibling;
-		insert(_el$19, () => \`Dynamic content: \${Date.now()}\`);
-		insert(_el$20, () => [
+		var _el$19 = _tmpl$1(), _el$21 = _el$19.firstChild.nextSibling, _el$22 = _el$21.nextSibling;
+		insert(_el$21, () => \`Dynamic content: \${Date.now()}\`);
+		insert(_el$22, () => [
 			1,
 			2,
 			3
 		].map((item) => (() => {
-			var _el$21 = _tmpl$0();
-			_el$21.firstChild;
-			insert(_el$21, item, null);
-			return _el$21;
+			var _el$23 = _tmpl$10();
+			_el$23.firstChild;
+			insert(_el$23, item, null);
+			return _el$23;
 		})()));
-		return _el$17;
+		return _el$19;
 	})();
 }
 function TestSSRSpreadAttributes() {
@@ -8980,20 +9084,20 @@ function TestSSRSpreadAttributes() {
 		"data-test": "value"
 	};
 	return (() => {
-		var _el$23 = _tmpl$1();
-		spread(_el$23, props, false, true);
-		return _el$23;
+		var _el$25 = _tmpl$11();
+		spread(_el$25, props, false, true);
+		return _el$25;
 	})();
 }
 function TestSSRSpecialElements() {
-	return _tmpl$10();
+	return _tmpl$12();
 }
 function TestValidationScenarios() {
-	return _tmpl$11();
+	return _tmpl$13();
 }
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with hydratable SSR 1`] = `
@@ -10224,56 +10328,62 @@ function NoHydration(props) {
 
 //#endregion
 //#region tests/fixtures/templates.tsx
-var _tmpl$ = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"], _tmpl$2 = [
+var _tmpl$ = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>"], _tmpl$2 = ["<div", "><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>"], _tmpl$3 = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"], _tmpl$4 = [
 	"<div",
 	" class=\\"container\\"><h1>Title</h1><!--$-->",
 	"<!--/--><ul>",
 	"</ul><div style=\\"",
 	"\\">Styled content</div></div>"
-], _tmpl$3 = ["<p", ">Conditional content</p>"], _tmpl$4 = [
+], _tmpl$5 = ["<p", ">Conditional content</p>"], _tmpl$6 = [
 	"<li",
 	">",
 	"</li>"
-], _tmpl$5 = ["<div", " id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>"], _tmpl$6 = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>"], _tmpl$7 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$8 = ["<div", "><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>"], _tmpl$9 = [
+], _tmpl$7 = ["<div", " id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>"], _tmpl$8 = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>"], _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$0 = ["<div", "><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>"], _tmpl$1 = [
 	"<div",
 	"><p>Static content</p><div>",
 	"</div><ul>",
 	"</ul></div>"
-], _tmpl$0 = [
+], _tmpl$10 = [
 	"<li",
 	">Item <!--$-->",
 	"<!--/--></li>"
-], _tmpl$1 = ["<table", "><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>"], _tmpl$10 = ["<div", "><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>"];
-function TestEventDelegation() {
+], _tmpl$11 = ["<table", "><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>"], _tmpl$12 = ["<div", "><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>"];
+function TestSvgWrap() {
 	return ssr(_tmpl$, ssrHydrationKey());
 }
+function TestNestedSvg() {
+	return ssr(_tmpl$2, ssrHydrationKey());
+}
+function TestEventDelegation() {
+	return ssr(_tmpl$3, ssrHydrationKey());
+}
 function TestComplexTemplates() {
-	return ssr(_tmpl$2, ssrHydrationKey(), _tmpl$3[0] + ssrHydrationKey() + _tmpl$3[1], escape([
+	return ssr(_tmpl$4, ssrHydrationKey(), _tmpl$5[0] + ssrHydrationKey() + _tmpl$5[1], escape([
 		"a",
 		"b",
 		"c"
-	].map((item) => ssr(_tmpl$4, ssrHydrationKey(), escape(item)))), ssrStyleProperty("color:", "red") + ssrStyleProperty(";font-size:", "16px"));
+	].map((item) => ssr(_tmpl$6, ssrHydrationKey(), escape(item)))), ssrStyleProperty("color:", "red") + ssrStyleProperty(";font-size:", "16px"));
 }
 function TestAttributeTemplates() {
-	return ssr(_tmpl$5, ssrHydrationKey());
+	return ssr(_tmpl$7, ssrHydrationKey());
 }
 function TestSVGTemplates() {
-	return ssr(_tmpl$6, ssrHydrationKey());
+	return ssr(_tmpl$8, ssrHydrationKey());
 }
 function TestSSRHeadElement() {
 	return createComponent(NoHydration, { get children() {
-		return ssr(_tmpl$7);
+		return ssr(_tmpl$9);
 	} });
 }
 function TestSSRScriptStyle() {
-	return ssr(_tmpl$8, ssrHydrationKey());
+	return ssr(_tmpl$0, ssrHydrationKey());
 }
 function TestSSRHydration() {
-	return ssr(_tmpl$9, ssrHydrationKey(), \`Dynamic content: \${escape(Date.now())}\`, escape([
+	return ssr(_tmpl$1, ssrHydrationKey(), \`Dynamic content: \${escape(Date.now())}\`, escape([
 		1,
 		2,
 		3
-	].map((item) => ssr(_tmpl$0, ssrHydrationKey(), escape(item)))));
+	].map((item) => ssr(_tmpl$10, ssrHydrationKey(), escape(item)))));
 }
 function TestSSRSpreadAttributes() {
 	return ssrElement("div", {
@@ -10283,14 +10393,14 @@ function TestSSRSpreadAttributes() {
 	}, () => "Spread attributes", true);
 }
 function TestSSRSpecialElements() {
-	return ssr(_tmpl$1, ssrHydrationKey());
+	return ssr(_tmpl$11, ssrHydrationKey());
 }
 function TestValidationScenarios() {
-	return ssr(_tmpl$10, ssrHydrationKey());
+	return ssr(_tmpl$12, ssrHydrationKey());
 }
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with hydratable SSR 1`] = `
@@ -11521,56 +11631,62 @@ function NoHydration(props) {
 
 //#endregion
 //#region tests/fixtures/templates.tsx
-var _tmpl$ = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"], _tmpl$2 = [
+var _tmpl$ = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>"], _tmpl$2 = ["<div", "><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>"], _tmpl$3 = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"], _tmpl$4 = [
 	"<div",
 	" class=\\"container\\"><h1>Title</h1><!--$-->",
 	"<!--/--><ul>",
 	"</ul><div style=\\"",
 	"\\">Styled content</div></div>"
-], _tmpl$3 = ["<p", ">Conditional content</p>"], _tmpl$4 = [
+], _tmpl$5 = ["<p", ">Conditional content</p>"], _tmpl$6 = [
 	"<li",
 	">",
 	"</li>"
-], _tmpl$5 = ["<div", " id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>"], _tmpl$6 = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>"], _tmpl$7 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$8 = ["<div", "><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>"], _tmpl$9 = [
+], _tmpl$7 = ["<div", " id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>"], _tmpl$8 = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>"], _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$0 = ["<div", "><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>"], _tmpl$1 = [
 	"<div",
 	"><p>Static content</p><div>",
 	"</div><ul>",
 	"</ul></div>"
-], _tmpl$0 = [
+], _tmpl$10 = [
 	"<li",
 	">Item <!--$-->",
 	"<!--/--></li>"
-], _tmpl$1 = ["<table", "><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>"], _tmpl$10 = ["<div", "><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>"];
-function TestEventDelegation() {
+], _tmpl$11 = ["<table", "><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>"], _tmpl$12 = ["<div", "><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>"];
+function TestSvgWrap() {
 	return ssr(_tmpl$, ssrHydrationKey());
 }
+function TestNestedSvg() {
+	return ssr(_tmpl$2, ssrHydrationKey());
+}
+function TestEventDelegation() {
+	return ssr(_tmpl$3, ssrHydrationKey());
+}
 function TestComplexTemplates() {
-	return ssr(_tmpl$2, ssrHydrationKey(), _tmpl$3[0] + ssrHydrationKey() + _tmpl$3[1], escape([
+	return ssr(_tmpl$4, ssrHydrationKey(), _tmpl$5[0] + ssrHydrationKey() + _tmpl$5[1], escape([
 		"a",
 		"b",
 		"c"
-	].map((item) => ssr(_tmpl$4, ssrHydrationKey(), escape(item)))), ssrStyleProperty("color:", "red") + ssrStyleProperty(";font-size:", "16px"));
+	].map((item) => ssr(_tmpl$6, ssrHydrationKey(), escape(item)))), ssrStyleProperty("color:", "red") + ssrStyleProperty(";font-size:", "16px"));
 }
 function TestAttributeTemplates() {
-	return ssr(_tmpl$5, ssrHydrationKey());
+	return ssr(_tmpl$7, ssrHydrationKey());
 }
 function TestSVGTemplates() {
-	return ssr(_tmpl$6, ssrHydrationKey());
+	return ssr(_tmpl$8, ssrHydrationKey());
 }
 function TestSSRHeadElement() {
 	return createComponent(NoHydration, { get children() {
-		return ssr(_tmpl$7);
+		return ssr(_tmpl$9);
 	} });
 }
 function TestSSRScriptStyle() {
-	return ssr(_tmpl$8, ssrHydrationKey());
+	return ssr(_tmpl$0, ssrHydrationKey());
 }
 function TestSSRHydration() {
-	return ssr(_tmpl$9, ssrHydrationKey(), \`Dynamic content: \${escape(Date.now())}\`, escape([
+	return ssr(_tmpl$1, ssrHydrationKey(), \`Dynamic content: \${escape(Date.now())}\`, escape([
 		1,
 		2,
 		3
-	].map((item) => ssr(_tmpl$0, ssrHydrationKey(), escape(item)))));
+	].map((item) => ssr(_tmpl$10, ssrHydrationKey(), escape(item)))));
 }
 function TestSSRSpreadAttributes() {
 	return ssrElement("div", {
@@ -11580,12 +11696,2112 @@ function TestSSRSpreadAttributes() {
 	}, () => "Spread attributes", true);
 }
 function TestSSRSpecialElements() {
-	return ssr(_tmpl$1, ssrHydrationKey());
+	return ssr(_tmpl$11, ssrHydrationKey());
 }
 function TestValidationScenarios() {
-	return ssr(_tmpl$10, ssrHydrationKey());
+	return ssr(_tmpl$12, ssrHydrationKey());
 }
 
 //#endregion
-export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestValidationScenarios };"
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
+`;
+
+exports[`rolldown-plugin-solid src should transform templates with universal and hydratable 1`] = `
+"//#region node_modules/solid-js/dist/solid.js
+const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+function setHydrateContext(context) {
+	sharedConfig.context = context;
+}
+function nextHydrateContext() {
+	return {
+		...sharedConfig.context,
+		id: sharedConfig.getNextContextId(),
+		count: 0
+	};
+}
+const equalFn = (a, b) => a === b;
+const $PROXY = Symbol("solid-proxy");
+const SUPPORTS_PROXY = typeof Proxy === "function";
+const signalOptions = { equals: equalFn };
+let ERROR = null;
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+var Owner = null;
+let Transition = null;
+let Scheduler = null;
+let ExternalSourceConfig = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createRoot(fn, detachedOwner) {
+	const listener = Listener, owner = Owner, unowned = fn.length === 0, current = detachedOwner === void 0 ? owner : detachedOwner, root = unowned ? UNOWNED : {
+		owned: null,
+		cleanups: null,
+		context: current ? current.context : null,
+		owner: current
+	}, updateFn = unowned ? fn : () => fn(() => untrack(() => cleanNode(root)));
+	Owner = root;
+	Listener = null;
+	try {
+		return runUpdates(updateFn, true);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+}
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value$1) => {
+		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
+		else value$1 = value$1(s.value);
+		return writeSignal(s, value$1);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createRenderEffect(fn, value, options) {
+	const c = createComputation(fn, value, false, STALE);
+	if (Scheduler && Transition && Transition.running) Updates.push(c);
+	else updateComputation(c);
+}
+function createMemo(fn, value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const c = createComputation(fn, value, true, 0);
+	c.observers = null;
+	c.observerSlots = null;
+	c.comparator = options.equals || void 0;
+	if (Scheduler && Transition && Transition.running) {
+		c.tState = STALE;
+		Updates.push(c);
+	} else updateComputation(c);
+	return readSignal.bind(c);
+}
+function untrack(fn) {
+	if (!ExternalSourceConfig && Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+function onCleanup(fn) {
+	if (Owner === null);
+	else if (Owner.cleanups === null) Owner.cleanups = [fn];
+	else Owner.cleanups.push(fn);
+	return fn;
+}
+function startTransition(fn) {
+	if (Transition && Transition.running) {
+		fn();
+		return Transition.done;
+	}
+	const l = Listener;
+	const o = Owner;
+	return Promise.resolve().then(() => {
+		Listener = l;
+		Owner = o;
+		let t;
+		if (Scheduler || SuspenseContext) {
+			t = Transition || (Transition = {
+				sources: /* @__PURE__ */ new Set(),
+				effects: [],
+				promises: /* @__PURE__ */ new Set(),
+				disposed: /* @__PURE__ */ new Set(),
+				queue: /* @__PURE__ */ new Set(),
+				running: true
+			});
+			t.done || (t.done = new Promise((res) => t.resolve = res));
+			t.running = true;
+		}
+		runUpdates(fn, false);
+		Listener = Owner = null;
+		return t ? t.done : void 0;
+	});
+}
+const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+let SuspenseContext;
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+	else {
+		const updates = Updates;
+		Updates = null;
+		runUpdates(() => lookUpstream(this), false);
+		Updates = updates;
+	}
+	if (Listener) {
+		const sSlot = this.observers ? this.observers.length : 0;
+		if (!Listener.sources) {
+			Listener.sources = [this];
+			Listener.sourceSlots = [sSlot];
+		} else {
+			Listener.sources.push(this);
+			Listener.sourceSlots.push(sSlot);
+		}
+		if (!this.observers) {
+			this.observers = [Listener];
+			this.observerSlots = [Listener.sources.length - 1];
+		} else {
+			this.observers.push(Listener);
+			this.observerSlots.push(Listener.sources.length - 1);
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) if (Transition && Transition.running) {
+			node.tState = STALE;
+			node.tOwned && node.tOwned.forEach(cleanNode);
+			node.tOwned = void 0;
+		} else {
+			node.state = STALE;
+			node.owned && node.owned.forEach(cleanNode);
+			node.owned = null;
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
+	else Owner.tOwned.push(c);
+	else if (!Owner.owned) Owner.owned = [c];
+	else Owner.owned.push(c);
+	if (ExternalSourceConfig && c.fn) {
+		const [track, trigger] = createSignal(void 0, { equals: false });
+		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
+		onCleanup(() => ordinary.dispose());
+		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
+		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
+		c.fn = (x) => {
+			track();
+			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
+		};
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
+		else runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e$1 of Effects) {
+				"tState" in e$1 && (e$1.state = e$1.tState);
+				delete e$1.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function scheduleQueue(queue) {
+	for (let i = 0; i < queue.length; i++) {
+		const item = queue[i];
+		const tasks = Transition.queue;
+		if (!tasks.has(item)) {
+			tasks.add(item);
+			Scheduler(() => {
+				tasks.delete(item);
+				runUpdates(() => {
+					Transition.running = true;
+					runTop(item);
+				}, false);
+				Transition && (Transition.running = false);
+			});
+		}
+	}
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function runErrors(err, fns, owner) {
+	try {
+		for (const f of fns) f(err);
+	} catch (e) {
+		handleError(e, owner && owner.owner || null);
+	}
+}
+function handleError(err, owner = Owner) {
+	const fns = ERROR && owner && owner.context && owner.context[ERROR];
+	const error = castError(err);
+	if (!fns) throw error;
+	if (Effects) Effects.push({
+		fn() {
+			runErrors(error, fns, owner);
+		},
+		state: STALE
+	});
+	else runErrors(error, fns, owner);
+}
+let hydrationEnabled = false;
+function createComponent$1(Comp, props) {
+	if (hydrationEnabled) {
+		if (sharedConfig.context) {
+			const c = sharedConfig.context;
+			setHydrateContext(nextHydrateContext());
+			const r = untrack(() => Comp(props || {}));
+			setHydrateContext(c);
+			return r;
+		}
+	}
+	return untrack(() => Comp(props || {}));
+}
+function trueFn() {
+	return true;
+}
+const propTraps = {
+	get(_, property, receiver) {
+		if (property === $PROXY) return receiver;
+		return _.get(property);
+	},
+	has(_, property) {
+		if (property === $PROXY) return true;
+		return _.has(property);
+	},
+	set: trueFn,
+	deleteProperty: trueFn,
+	getOwnPropertyDescriptor(_, property) {
+		return {
+			configurable: true,
+			enumerable: true,
+			get() {
+				return _.get(property);
+			},
+			set: trueFn,
+			deleteProperty: trueFn
+		};
+	},
+	ownKeys(_) {
+		return _.keys();
+	}
+};
+function resolveSource(s) {
+	return !(s = typeof s === "function" ? s() : s) ? {} : s;
+}
+function resolveSources() {
+	for (let i = 0, length = this.length; i < length; ++i) {
+		const v = this[i]();
+		if (v !== void 0) return v;
+	}
+}
+function mergeProps$1(...sources) {
+	let proxy = false;
+	for (let i = 0; i < sources.length; i++) {
+		const s = sources[i];
+		proxy = proxy || !!s && $PROXY in s;
+		sources[i] = typeof s === "function" ? (proxy = true, createMemo(s)) : s;
+	}
+	if (SUPPORTS_PROXY && proxy) return new Proxy({
+		get(property) {
+			for (let i = sources.length - 1; i >= 0; i--) {
+				const v = resolveSource(sources[i])[property];
+				if (v !== void 0) return v;
+			}
+		},
+		has(property) {
+			for (let i = sources.length - 1; i >= 0; i--) if (property in resolveSource(sources[i])) return true;
+			return false;
+		},
+		keys() {
+			const keys = [];
+			for (let i = 0; i < sources.length; i++) keys.push(...Object.keys(resolveSource(sources[i])));
+			return [...new Set(keys)];
+		}
+	}, propTraps);
+	const sourcesMap = {};
+	const defined = Object.create(null);
+	for (let i = sources.length - 1; i >= 0; i--) {
+		const source = sources[i];
+		if (!source) continue;
+		const sourceKeys = Object.getOwnPropertyNames(source);
+		for (let i$1 = sourceKeys.length - 1; i$1 >= 0; i$1--) {
+			const key = sourceKeys[i$1];
+			if (key === "__proto__" || key === "constructor") continue;
+			const desc = Object.getOwnPropertyDescriptor(source, key);
+			if (!defined[key]) defined[key] = desc.get ? {
+				enumerable: true,
+				configurable: true,
+				get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
+			} : desc.value !== void 0 ? desc : void 0;
+			else {
+				const sources$1 = sourcesMap[key];
+				if (sources$1) {
+					if (desc.get) sources$1.push(desc.get.bind(source));
+					else if (desc.value !== void 0) sources$1.push(() => desc.value);
+				}
+			}
+		}
+	}
+	const target = {};
+	const definedKeys = Object.keys(defined);
+	for (let i = definedKeys.length - 1; i >= 0; i--) {
+		const key = definedKeys[i], desc = defined[key];
+		if (desc && desc.get) Object.defineProperty(target, key, desc);
+		else target[key] = desc ? desc.value : void 0;
+	}
+	return target;
+}
+
+//#endregion
+//#region node_modules/solid-js/universal/dist/universal.js
+const memo$1 = (fn) => createMemo(() => fn());
+function createRenderer$1({ createElement: createElement$1, createTextNode: createTextNode$1, isTextNode, replaceText, insertNode: insertNode$1, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
+	function insert$1(parent, accessor, marker, initial) {
+		if (marker !== void 0 && !initial) initial = [];
+		if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+		createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+	}
+	function insertExpression(parent, value, current, marker, unwrapArray) {
+		while (typeof current === "function") current = current();
+		if (value === current) return current;
+		const t = typeof value, multi = marker !== void 0;
+		if (t === "string" || t === "number") {
+			if (t === "number") value = value.toString();
+			if (multi) {
+				let node = current[0];
+				if (node && isTextNode(node)) replaceText(node, value);
+				else node = createTextNode$1(value);
+				current = cleanChildren(parent, current, marker, node);
+			} else if (current !== "" && typeof current === "string") replaceText(getFirstChild(parent), current = value);
+			else {
+				cleanChildren(parent, current, marker, createTextNode$1(value));
+				current = value;
+			}
+		} else if (value == null || t === "boolean") current = cleanChildren(parent, current, marker);
+		else if (t === "function") {
+			createRenderEffect(() => {
+				let v = value();
+				while (typeof v === "function") v = v();
+				current = insertExpression(parent, v, current, marker);
+			});
+			return () => current;
+		} else if (Array.isArray(value)) {
+			const array = [];
+			if (normalizeIncomingArray(array, value, unwrapArray)) {
+				createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+				return () => current;
+			}
+			if (array.length === 0) {
+				const replacement = cleanChildren(parent, current, marker);
+				if (multi) return current = replacement;
+			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+			else if (current == null || current === "") appendNodes(parent, array);
+			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
+			current = array;
+		} else {
+			if (Array.isArray(current)) {
+				if (multi) return current = cleanChildren(parent, current, marker, value);
+				cleanChildren(parent, current, null, value);
+			} else if (current == null || current === "" || !getFirstChild(parent)) insertNode$1(parent, value);
+			else replaceNode(parent, value, getFirstChild(parent));
+			current = value;
+		}
+		return current;
+	}
+	function normalizeIncomingArray(normalized, array, unwrap) {
+		let dynamic = false;
+		for (let i = 0, len = array.length; i < len; i++) {
+			let item = array[i], t;
+			if (item == null || item === true || item === false);
+			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
+			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode$1(item));
+			else if (t === "function") if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
+			else normalized.push(item);
+		}
+		return dynamic;
+	}
+	function reconcileArrays(parentNode, a, b) {
+		let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = getNextSibling(a[aEnd - 1]), map = null;
+		while (aStart < aEnd || bStart < bEnd) {
+			if (a[aStart] === b[bStart]) {
+				aStart++;
+				bStart++;
+				continue;
+			}
+			while (a[aEnd - 1] === b[bEnd - 1]) {
+				aEnd--;
+				bEnd--;
+			}
+			if (aEnd === aStart) {
+				const node = bEnd < bLength ? bStart ? getNextSibling(b[bStart - 1]) : b[bEnd - bStart] : after;
+				while (bStart < bEnd) insertNode$1(parentNode, b[bStart++], node);
+			} else if (bEnd === bStart) while (aStart < aEnd) {
+				if (!map || !map.has(a[aStart])) removeNode(parentNode, a[aStart]);
+				aStart++;
+			}
+			else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+				const node = getNextSibling(a[--aEnd]);
+				insertNode$1(parentNode, b[bStart++], getNextSibling(a[aStart++]));
+				insertNode$1(parentNode, b[--bEnd], node);
+				a[aEnd] = b[bEnd];
+			} else {
+				if (!map) {
+					map = /* @__PURE__ */ new Map();
+					let i = bStart;
+					while (i < bEnd) map.set(b[i], i++);
+				}
+				const index = map.get(a[aStart]);
+				if (index != null) if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) insertNode$1(parentNode, b[bStart++], node);
+					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+				} else aStart++;
+				else removeNode(parentNode, a[aStart++]);
+			}
+		}
+	}
+	function cleanChildren(parent, current, marker, replacement) {
+		if (marker === void 0) {
+			let removed;
+			while (removed = getFirstChild(parent)) removeNode(parent, removed);
+			replacement && insertNode$1(parent, replacement);
+			return "";
+		}
+		const node = replacement || createTextNode$1("");
+		if (current.length) {
+			let inserted = false;
+			for (let i = current.length - 1; i >= 0; i--) {
+				const el = current[i];
+				if (node !== el) {
+					const isParent = getParentNode(el) === parent;
+					if (!inserted && !i) isParent ? replaceNode(parent, node, el) : insertNode$1(parent, node, marker);
+					else isParent && removeNode(parent, el);
+				} else inserted = true;
+			}
+		} else insertNode$1(parent, node, marker);
+		return [node];
+	}
+	function appendNodes(parent, array, marker) {
+		for (let i = 0, len = array.length; i < len; i++) insertNode$1(parent, array[i], marker);
+	}
+	function replaceNode(parent, newNode, oldNode) {
+		insertNode$1(parent, newNode, oldNode);
+		removeNode(parent, oldNode);
+	}
+	function spreadExpression(node, props, prevProps = {}, skipChildren) {
+		props || (props = {});
+		if (!skipChildren) createRenderEffect(() => prevProps.children = insertExpression(node, props.children, prevProps.children));
+		createRenderEffect(() => props.ref && props.ref(node));
+		createRenderEffect(() => {
+			for (const prop in props) {
+				if (prop === "children" || prop === "ref") continue;
+				const value = props[prop];
+				if (value === prevProps[prop]) continue;
+				setProperty(node, prop, value, prevProps[prop]);
+				prevProps[prop] = value;
+			}
+		});
+		return prevProps;
+	}
+	return {
+		render(code, element) {
+			let disposer;
+			createRoot((dispose) => {
+				disposer = dispose;
+				insert$1(element, code());
+			});
+			return disposer;
+		},
+		insert: insert$1,
+		spread(node, accessor, skipChildren) {
+			if (typeof accessor === "function") createRenderEffect((current) => spreadExpression(node, accessor(), current, skipChildren));
+			else spreadExpression(node, accessor, void 0, skipChildren);
+		},
+		createElement: createElement$1,
+		createTextNode: createTextNode$1,
+		insertNode: insertNode$1,
+		setProp(node, name, value, prev) {
+			setProperty(node, name, value, prev);
+			return value;
+		},
+		mergeProps: mergeProps$1,
+		effect: createRenderEffect,
+		memo: memo$1,
+		createComponent: createComponent$1,
+		use(fn, element, arg) {
+			return untrack(() => fn(element, arg));
+		}
+	};
+}
+function createRenderer(options) {
+	const renderer = createRenderer$1(options);
+	renderer.mergeProps = mergeProps$1;
+	return renderer;
+}
+
+//#endregion
+//#region tests/helpers/universal-mode-renderer.ts
+const { createComponent, createElement, createTextNode, effect, insert, insertNode, memo, mergeProps, render, setProp, spread, use } = createRenderer({
+	createElement() {},
+	createTextNode() {},
+	getFirstChild() {},
+	getNextSibling() {},
+	getParentNode() {},
+	insertNode() {},
+	isTextNode() {
+		return true;
+	},
+	removeNode() {},
+	replaceText() {},
+	setProperty() {}
+});
+
+//#endregion
+//#region tests/fixtures/templates.tsx
+function TestSvgWrap() {
+	return (() => {
+		var _el$ = createElement("svg"), _el$2 = createElement("circle"), _el$3 = createElement("foreignObject"), _el$4 = createElement("div"), _el$5 = createElement("p");
+		insertNode(_el$, _el$2);
+		insertNode(_el$, _el$3);
+		setProp(_el$, "width", "100");
+		setProp(_el$, "height", "100");
+		setProp(_el$2, "cx", "50");
+		setProp(_el$2, "cy", "50");
+		setProp(_el$2, "r", "40");
+		setProp(_el$2, "fill", "red");
+		insertNode(_el$3, _el$4);
+		setProp(_el$3, "x", "10");
+		setProp(_el$3, "y", "10");
+		setProp(_el$3, "width", "80");
+		setProp(_el$3, "height", "80");
+		insertNode(_el$4, _el$5);
+		insertNode(_el$5, createTextNode(\`HTML content inside SVG\`));
+		return _el$;
+	})();
+}
+function TestNestedSvg() {
+	return (() => {
+		var _el$7 = createElement("div"), _el$8 = createElement("svg"), _el$9 = createElement("g"), _el$0 = createElement("rect");
+		insertNode(_el$7, _el$8);
+		insertNode(_el$8, _el$9);
+		insertNode(_el$9, _el$0);
+		setProp(_el$0, "x", "0");
+		setProp(_el$0, "y", "0");
+		setProp(_el$0, "width", "100");
+		setProp(_el$0, "height", "100");
+		return _el$7;
+	})();
+}
+function TestEventDelegation() {
+	return (() => {
+		var _el$1 = createElement("div"), _el$10 = createElement("button"), _el$12 = createElement("div"), _el$14 = createElement("input"), _el$15 = createElement("form"), _el$16 = createElement("select"), _el$17 = createElement("option"), _el$19 = createElement("option");
+		insertNode(_el$1, _el$10);
+		insertNode(_el$1, _el$12);
+		insertNode(_el$1, _el$14);
+		insertNode(_el$1, _el$15);
+		insertNode(_el$10, createTextNode(\`Click me\`));
+		setProp(_el$10, "onClick", () => console.log("click"));
+		insertNode(_el$12, createTextNode(\`Hover me\`));
+		setProp(_el$12, "onMouseOver", () => console.log("hover"));
+		setProp(_el$14, "onInput", (e) => console.log(e.target.value));
+		insertNode(_el$15, _el$16);
+		setProp(_el$15, "onSubmit", (e) => e.preventDefault());
+		insertNode(_el$16, _el$17);
+		insertNode(_el$16, _el$19);
+		setProp(_el$16, "onChange", (e) => console.log(e.target.value));
+		insertNode(_el$17, createTextNode(\`Option 1\`));
+		setProp(_el$17, "value", "1");
+		insertNode(_el$19, createTextNode(\`Option 2\`));
+		setProp(_el$19, "value", "2");
+		return _el$1;
+	})();
+}
+function TestComplexTemplates() {
+	const items = [
+		"a",
+		"b",
+		"c"
+	];
+	return (() => {
+		var _el$21 = createElement("div"), _el$22 = createElement("h1"), _el$24 = createElement("ul"), _el$25 = createElement("div");
+		insertNode(_el$21, _el$22);
+		insertNode(_el$21, _el$24);
+		insertNode(_el$21, _el$25);
+		setProp(_el$21, "class", "container");
+		insertNode(_el$22, createTextNode(\`Title\`));
+		insert(_el$21, (() => {
+			var _el$27 = createElement("p");
+			insertNode(_el$27, createTextNode(\`Conditional content\`));
+			return _el$27;
+		})(), _el$24);
+		insert(_el$24, () => items.map((item) => (() => {
+			var _el$29 = createElement("li");
+			insert(_el$29, item);
+			return _el$29;
+		})()));
+		insertNode(_el$25, createTextNode(\`Styled content\`));
+		setProp(_el$25, "style", {
+			color: "red",
+			"font-size": "16px"
+		});
+		return _el$21;
+	})();
+}
+function TestAttributeTemplates() {
+	return (() => {
+		var _el$30 = createElement("div"), _el$31 = createElement("img"), _el$32 = createElement("input");
+		insertNode(_el$30, _el$31);
+		insertNode(_el$30, _el$32);
+		setProp(_el$30, "id", "test");
+		setProp(_el$30, "class", "my-class");
+		setProp(_el$30, "data-testid", "element");
+		setProp(_el$30, "aria-label", "Accessible element");
+		setProp(_el$30, "role", "button");
+		setProp(_el$30, "tabIndex", 0);
+		setProp(_el$31, "src", "test.jpg");
+		setProp(_el$31, "alt", "test image");
+		setProp(_el$31, "width", "100");
+		setProp(_el$31, "height", "100");
+		setProp(_el$32, "type", "text");
+		setProp(_el$32, "placeholder", "Enter text");
+		setProp(_el$32, "required", true);
+		setProp(_el$32, "disabled", false);
+		return _el$30;
+	})();
+}
+function TestSVGTemplates() {
+	return (() => {
+		var _el$33 = createElement("svg"), _el$34 = createElement("circle"), _el$35 = createElement("rect"), _el$36 = createElement("text");
+		insertNode(_el$33, _el$34);
+		insertNode(_el$33, _el$35);
+		insertNode(_el$33, _el$36);
+		setProp(_el$33, "width", "100");
+		setProp(_el$33, "height", "100");
+		setProp(_el$34, "cx", "50");
+		setProp(_el$34, "cy", "50");
+		setProp(_el$34, "r", "40");
+		setProp(_el$34, "fill", "red");
+		setProp(_el$35, "x", "10");
+		setProp(_el$35, "y", "10");
+		setProp(_el$35, "width", "30");
+		setProp(_el$35, "height", "30");
+		setProp(_el$35, "fill", "blue");
+		insertNode(_el$36, createTextNode(\`SVG Text\`));
+		setProp(_el$36, "x", "50");
+		setProp(_el$36, "y", "50");
+		setProp(_el$36, "text-anchor", "middle");
+		return _el$33;
+	})();
+}
+function TestSSRHeadElement() {
+	return (() => {
+		var _el$38 = createElement("head"), _el$39 = createElement("title"), _el$41 = createElement("meta"), _el$42 = createElement("meta");
+		insertNode(_el$38, _el$39);
+		insertNode(_el$38, _el$41);
+		insertNode(_el$38, _el$42);
+		insertNode(_el$39, createTextNode(\`SSR Test\`));
+		setProp(_el$41, "charset", "utf-8");
+		setProp(_el$42, "name", "viewport");
+		setProp(_el$42, "content", "width=device-width");
+		return _el$38;
+	})();
+}
+function TestSSRScriptStyle() {
+	return (() => {
+		var _el$43 = createElement("div"), _el$44 = createElement("script"), _el$46 = createElement("style");
+		insertNode(_el$43, _el$44);
+		insertNode(_el$43, _el$46);
+		insertNode(_el$44, createTextNode(\`console.log('test');\`));
+		insertNode(_el$46, createTextNode(\`body \\{ margin: 0; }\`));
+		return _el$43;
+	})();
+}
+function TestSSRHydration() {
+	return (() => {
+		var _el$48 = createElement("div"), _el$49 = createElement("p"), _el$51 = createElement("div"), _el$52 = createElement("ul");
+		insertNode(_el$48, _el$49);
+		insertNode(_el$48, _el$51);
+		insertNode(_el$48, _el$52);
+		insertNode(_el$49, createTextNode(\`Static content\`));
+		insert(_el$51, () => \`Dynamic content: \${Date.now()}\`);
+		insert(_el$52, () => [
+			1,
+			2,
+			3
+		].map((item) => (() => {
+			var _el$53 = createElement("li");
+			insertNode(_el$53, createTextNode(\`Item \`));
+			insert(_el$53, item, null);
+			return _el$53;
+		})()));
+		return _el$48;
+	})();
+}
+function TestSSRSpreadAttributes() {
+	const props = {
+		class: "dynamic-class",
+		id: "dynamic-id",
+		"data-test": "value"
+	};
+	return (() => {
+		var _el$55 = createElement("div");
+		insertNode(_el$55, createTextNode(\`Spread attributes\`));
+		spread(_el$55, props, true);
+		return _el$55;
+	})();
+}
+function TestSSRSpecialElements() {
+	return (() => {
+		var _el$57 = createElement("table"), _el$58 = createElement("thead"), _el$59 = createElement("tr"), _el$60 = createElement("th"), _el$62 = createElement("th"), _el$64 = createElement("tbody"), _el$65 = createElement("tr"), _el$66 = createElement("td"), _el$68 = createElement("td");
+		insertNode(_el$57, _el$58);
+		insertNode(_el$57, _el$64);
+		insertNode(_el$58, _el$59);
+		insertNode(_el$59, _el$60);
+		insertNode(_el$59, _el$62);
+		insertNode(_el$60, createTextNode(\`Header 1\`));
+		insertNode(_el$62, createTextNode(\`Header 2\`));
+		insertNode(_el$64, _el$65);
+		insertNode(_el$65, _el$66);
+		insertNode(_el$65, _el$68);
+		insertNode(_el$66, createTextNode(\`Cell 1\`));
+		insertNode(_el$68, createTextNode(\`Cell 2\`));
+		return _el$57;
+	})();
+}
+function TestValidationScenarios() {
+	return (() => {
+		var _el$70 = createElement("div"), _el$71 = createElement("section"), _el$72 = createElement("article"), _el$73 = createElement("header"), _el$74 = createElement("h1"), _el$76 = createElement("main"), _el$77 = createElement("p"), _el$79 = createElement("footer"), _el$80 = createElement("small"), _el$82 = createElement("table"), _el$83 = createElement("tr"), _el$84 = createElement("td"), _el$86 = createElement("td"), _el$88 = createElement("img"), _el$89 = createElement("br"), _el$90 = createElement("hr");
+		insertNode(_el$70, _el$71);
+		insertNode(_el$70, _el$82);
+		insertNode(_el$70, _el$88);
+		insertNode(_el$70, _el$89);
+		insertNode(_el$70, _el$90);
+		insertNode(_el$71, _el$72);
+		insertNode(_el$72, _el$73);
+		insertNode(_el$72, _el$76);
+		insertNode(_el$72, _el$79);
+		insertNode(_el$73, _el$74);
+		insertNode(_el$74, createTextNode(\`Title\`));
+		insertNode(_el$76, _el$77);
+		insertNode(_el$77, createTextNode(\`Content\`));
+		insertNode(_el$79, _el$80);
+		insertNode(_el$80, createTextNode(\`Footer\`));
+		insertNode(_el$82, _el$83);
+		insertNode(_el$83, _el$84);
+		insertNode(_el$83, _el$86);
+		insertNode(_el$84, createTextNode(\`Cell 1\`));
+		insertNode(_el$86, createTextNode(\`Cell 2\`));
+		setProp(_el$88, "src", "test.jpg");
+		setProp(_el$88, "alt", "test");
+		return _el$70;
+	})();
+}
+
+//#endregion
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
+`;
+
+exports[`rolldown-plugin-solid dist should transform templates with universal and hydratable 1`] = `
+"//#region node_modules/solid-js/dist/solid.js
+const sharedConfig = {
+	context: void 0,
+	registry: void 0,
+	effects: void 0,
+	done: false,
+	getContextId() {
+		return getContextId(this.context.count);
+	},
+	getNextContextId() {
+		return getContextId(this.context.count++);
+	}
+};
+function getContextId(count) {
+	const num = String(count), len = num.length - 1;
+	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
+}
+function setHydrateContext(context) {
+	sharedConfig.context = context;
+}
+function nextHydrateContext() {
+	return {
+		...sharedConfig.context,
+		id: sharedConfig.getNextContextId(),
+		count: 0
+	};
+}
+const equalFn = (a, b) => a === b;
+const $PROXY = Symbol("solid-proxy");
+const SUPPORTS_PROXY = typeof Proxy === "function";
+const signalOptions = { equals: equalFn };
+let ERROR = null;
+let runEffects = runQueue;
+const STALE = 1;
+const PENDING = 2;
+const UNOWNED = {
+	owned: null,
+	cleanups: null,
+	context: null,
+	owner: null
+};
+var Owner = null;
+let Transition = null;
+let Scheduler = null;
+let ExternalSourceConfig = null;
+let Listener = null;
+let Updates = null;
+let Effects = null;
+let ExecCount = 0;
+function createRoot(fn, detachedOwner) {
+	const listener = Listener, owner = Owner, unowned = fn.length === 0, current = detachedOwner === void 0 ? owner : detachedOwner, root = unowned ? UNOWNED : {
+		owned: null,
+		cleanups: null,
+		context: current ? current.context : null,
+		owner: current
+	}, updateFn = unowned ? fn : () => fn(() => untrack(() => cleanNode(root)));
+	Owner = root;
+	Listener = null;
+	try {
+		return runUpdates(updateFn, true);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+}
+function createSignal(value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const s = {
+		value,
+		observers: null,
+		observerSlots: null,
+		comparator: options.equals || void 0
+	};
+	const setter = (value$1) => {
+		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
+		else value$1 = value$1(s.value);
+		return writeSignal(s, value$1);
+	};
+	return [readSignal.bind(s), setter];
+}
+function createRenderEffect(fn, value, options) {
+	const c = createComputation(fn, value, false, STALE);
+	if (Scheduler && Transition && Transition.running) Updates.push(c);
+	else updateComputation(c);
+}
+function createMemo(fn, value, options) {
+	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
+	const c = createComputation(fn, value, true, 0);
+	c.observers = null;
+	c.observerSlots = null;
+	c.comparator = options.equals || void 0;
+	if (Scheduler && Transition && Transition.running) {
+		c.tState = STALE;
+		Updates.push(c);
+	} else updateComputation(c);
+	return readSignal.bind(c);
+}
+function untrack(fn) {
+	if (!ExternalSourceConfig && Listener === null) return fn();
+	const listener = Listener;
+	Listener = null;
+	try {
+		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
+		return fn();
+	} finally {
+		Listener = listener;
+	}
+}
+function onCleanup(fn) {
+	if (Owner === null);
+	else if (Owner.cleanups === null) Owner.cleanups = [fn];
+	else Owner.cleanups.push(fn);
+	return fn;
+}
+function startTransition(fn) {
+	if (Transition && Transition.running) {
+		fn();
+		return Transition.done;
+	}
+	const l = Listener;
+	const o = Owner;
+	return Promise.resolve().then(() => {
+		Listener = l;
+		Owner = o;
+		let t;
+		if (Scheduler || SuspenseContext) {
+			t = Transition || (Transition = {
+				sources: /* @__PURE__ */ new Set(),
+				effects: [],
+				promises: /* @__PURE__ */ new Set(),
+				disposed: /* @__PURE__ */ new Set(),
+				queue: /* @__PURE__ */ new Set(),
+				running: true
+			});
+			t.done || (t.done = new Promise((res) => t.resolve = res));
+			t.running = true;
+		}
+		runUpdates(fn, false);
+		Listener = Owner = null;
+		return t ? t.done : void 0;
+	});
+}
+const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+let SuspenseContext;
+function readSignal() {
+	const runningTransition = Transition && Transition.running;
+	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+	else {
+		const updates = Updates;
+		Updates = null;
+		runUpdates(() => lookUpstream(this), false);
+		Updates = updates;
+	}
+	if (Listener) {
+		const sSlot = this.observers ? this.observers.length : 0;
+		if (!Listener.sources) {
+			Listener.sources = [this];
+			Listener.sourceSlots = [sSlot];
+		} else {
+			Listener.sources.push(this);
+			Listener.sourceSlots.push(sSlot);
+		}
+		if (!this.observers) {
+			this.observers = [Listener];
+			this.observerSlots = [Listener.sources.length - 1];
+		} else {
+			this.observers.push(Listener);
+			this.observerSlots.push(Listener.sources.length - 1);
+		}
+	}
+	if (runningTransition && Transition.sources.has(this)) return this.tValue;
+	return this.value;
+}
+function writeSignal(node, value, isComp) {
+	let current = Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value;
+	if (!node.comparator || !node.comparator(current, value)) {
+		if (Transition) {
+			const TransitionRunning = Transition.running;
+			if (TransitionRunning || !isComp && Transition.sources.has(node)) {
+				Transition.sources.add(node);
+				node.tValue = value;
+			}
+			if (!TransitionRunning) node.value = value;
+		} else node.value = value;
+		if (node.observers && node.observers.length) runUpdates(() => {
+			for (let i = 0; i < node.observers.length; i += 1) {
+				const o = node.observers[i];
+				const TransitionRunning = Transition && Transition.running;
+				if (TransitionRunning && Transition.disposed.has(o)) continue;
+				if (TransitionRunning ? !o.tState : !o.state) {
+					if (o.pure) Updates.push(o);
+					else Effects.push(o);
+					if (o.observers) markDownstream(o);
+				}
+				if (!TransitionRunning) o.state = STALE;
+				else o.tState = STALE;
+			}
+			if (Updates.length > 1e6) {
+				Updates = [];
+				throw new Error();
+			}
+		}, false);
+	}
+	return value;
+}
+function updateComputation(node) {
+	if (!node.fn) return;
+	cleanNode(node);
+	const time = ExecCount;
+	runComputation(node, Transition && Transition.running && Transition.sources.has(node) ? node.tValue : node.value, time);
+	if (Transition && !Transition.running && Transition.sources.has(node)) queueMicrotask(() => {
+		runUpdates(() => {
+			Transition && (Transition.running = true);
+			Listener = Owner = node;
+			runComputation(node, node.tValue, time);
+			Listener = Owner = null;
+		}, false);
+	});
+}
+function runComputation(node, value, time) {
+	let nextValue;
+	const owner = Owner, listener = Listener;
+	Listener = Owner = node;
+	try {
+		nextValue = node.fn(value);
+	} catch (err) {
+		if (node.pure) if (Transition && Transition.running) {
+			node.tState = STALE;
+			node.tOwned && node.tOwned.forEach(cleanNode);
+			node.tOwned = void 0;
+		} else {
+			node.state = STALE;
+			node.owned && node.owned.forEach(cleanNode);
+			node.owned = null;
+		}
+		node.updatedAt = time + 1;
+		return handleError(err);
+	} finally {
+		Listener = listener;
+		Owner = owner;
+	}
+	if (!node.updatedAt || node.updatedAt <= time) {
+		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
+		else if (Transition && Transition.running && node.pure) {
+			Transition.sources.add(node);
+			node.tValue = nextValue;
+		} else node.value = nextValue;
+		node.updatedAt = time;
+	}
+}
+function createComputation(fn, init, pure, state = STALE, options) {
+	const c = {
+		fn,
+		state,
+		updatedAt: null,
+		owned: null,
+		sources: null,
+		sourceSlots: null,
+		cleanups: null,
+		value: init,
+		owner: Owner,
+		context: Owner ? Owner.context : null,
+		pure
+	};
+	if (Transition && Transition.running) {
+		c.state = 0;
+		c.tState = state;
+	}
+	if (Owner === null);
+	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
+	else Owner.tOwned.push(c);
+	else if (!Owner.owned) Owner.owned = [c];
+	else Owner.owned.push(c);
+	if (ExternalSourceConfig && c.fn) {
+		const [track, trigger] = createSignal(void 0, { equals: false });
+		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
+		onCleanup(() => ordinary.dispose());
+		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
+		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
+		c.fn = (x) => {
+			track();
+			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
+		};
+	}
+	return c;
+}
+function runTop(node) {
+	const runningTransition = Transition && Transition.running;
+	if ((runningTransition ? node.tState : node.state) === 0) return;
+	if ((runningTransition ? node.tState : node.state) === PENDING) return lookUpstream(node);
+	if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
+	const ancestors = [node];
+	while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
+		if (runningTransition && Transition.disposed.has(node)) return;
+		if (runningTransition ? node.tState : node.state) ancestors.push(node);
+	}
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		node = ancestors[i];
+		if (runningTransition) {
+			let top = node, prev = ancestors[i + 1];
+			while ((top = top.owner) && top !== prev) if (Transition.disposed.has(top)) return;
+		}
+		if ((runningTransition ? node.tState : node.state) === STALE) updateComputation(node);
+		else if ((runningTransition ? node.tState : node.state) === PENDING) {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(node, ancestors[0]), false);
+			Updates = updates;
+		}
+	}
+}
+function runUpdates(fn, init) {
+	if (Updates) return fn();
+	let wait = false;
+	if (!init) Updates = [];
+	if (Effects) wait = true;
+	else Effects = [];
+	ExecCount++;
+	try {
+		const res = fn();
+		completeUpdates(wait);
+		return res;
+	} catch (err) {
+		if (!wait) Effects = null;
+		Updates = null;
+		handleError(err);
+	}
+}
+function completeUpdates(wait) {
+	if (Updates) {
+		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
+		else runQueue(Updates);
+		Updates = null;
+	}
+	if (wait) return;
+	let res;
+	if (Transition) {
+		if (!Transition.promises.size && !Transition.queue.size) {
+			const sources = Transition.sources;
+			const disposed = Transition.disposed;
+			Effects.push.apply(Effects, Transition.effects);
+			res = Transition.resolve;
+			for (const e$1 of Effects) {
+				"tState" in e$1 && (e$1.state = e$1.tState);
+				delete e$1.tState;
+			}
+			Transition = null;
+			runUpdates(() => {
+				for (const d of disposed) cleanNode(d);
+				for (const v of sources) {
+					v.value = v.tValue;
+					if (v.owned) for (let i = 0, len = v.owned.length; i < len; i++) cleanNode(v.owned[i]);
+					if (v.tOwned) v.owned = v.tOwned;
+					delete v.tValue;
+					delete v.tOwned;
+					v.tState = 0;
+				}
+				setTransPending(false);
+			}, false);
+		} else if (Transition.running) {
+			Transition.running = false;
+			Transition.effects.push.apply(Transition.effects, Effects);
+			Effects = null;
+			setTransPending(true);
+			return;
+		}
+	}
+	const e = Effects;
+	Effects = null;
+	if (e.length) runUpdates(() => runEffects(e), false);
+	if (res) res();
+}
+function runQueue(queue) {
+	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
+}
+function scheduleQueue(queue) {
+	for (let i = 0; i < queue.length; i++) {
+		const item = queue[i];
+		const tasks = Transition.queue;
+		if (!tasks.has(item)) {
+			tasks.add(item);
+			Scheduler(() => {
+				tasks.delete(item);
+				runUpdates(() => {
+					Transition.running = true;
+					runTop(item);
+				}, false);
+				Transition && (Transition.running = false);
+			});
+		}
+	}
+}
+function lookUpstream(node, ignore) {
+	const runningTransition = Transition && Transition.running;
+	if (runningTransition) node.tState = 0;
+	else node.state = 0;
+	for (let i = 0; i < node.sources.length; i += 1) {
+		const source = node.sources[i];
+		if (source.sources) {
+			const state = runningTransition ? source.tState : source.state;
+			if (state === STALE) {
+				if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+			} else if (state === PENDING) lookUpstream(source, ignore);
+		}
+	}
+}
+function markDownstream(node) {
+	const runningTransition = Transition && Transition.running;
+	for (let i = 0; i < node.observers.length; i += 1) {
+		const o = node.observers[i];
+		if (runningTransition ? !o.tState : !o.state) {
+			if (runningTransition) o.tState = PENDING;
+			else o.state = PENDING;
+			if (o.pure) Updates.push(o);
+			else Effects.push(o);
+			o.observers && markDownstream(o);
+		}
+	}
+}
+function cleanNode(node) {
+	let i;
+	if (node.sources) while (node.sources.length) {
+		const source = node.sources.pop(), index = node.sourceSlots.pop(), obs = source.observers;
+		if (obs && obs.length) {
+			const n = obs.pop(), s = source.observerSlots.pop();
+			if (index < obs.length) {
+				n.sourceSlots[s] = index;
+				obs[index] = n;
+				source.observerSlots[index] = s;
+			}
+		}
+	}
+	if (node.tOwned) {
+		for (i = node.tOwned.length - 1; i >= 0; i--) cleanNode(node.tOwned[i]);
+		delete node.tOwned;
+	}
+	if (Transition && Transition.running && node.pure) reset(node, true);
+	else if (node.owned) {
+		for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
+		node.owned = null;
+	}
+	if (node.cleanups) {
+		for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
+		node.cleanups = null;
+	}
+	if (Transition && Transition.running) node.tState = 0;
+	else node.state = 0;
+}
+function reset(node, top) {
+	if (!top) {
+		node.tState = 0;
+		Transition.disposed.add(node);
+	}
+	if (node.owned) for (let i = 0; i < node.owned.length; i++) reset(node.owned[i]);
+}
+function castError(err) {
+	if (err instanceof Error) return err;
+	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
+}
+function runErrors(err, fns, owner) {
+	try {
+		for (const f of fns) f(err);
+	} catch (e) {
+		handleError(e, owner && owner.owner || null);
+	}
+}
+function handleError(err, owner = Owner) {
+	const fns = ERROR && owner && owner.context && owner.context[ERROR];
+	const error = castError(err);
+	if (!fns) throw error;
+	if (Effects) Effects.push({
+		fn() {
+			runErrors(error, fns, owner);
+		},
+		state: STALE
+	});
+	else runErrors(error, fns, owner);
+}
+let hydrationEnabled = false;
+function createComponent$1(Comp, props) {
+	if (hydrationEnabled) {
+		if (sharedConfig.context) {
+			const c = sharedConfig.context;
+			setHydrateContext(nextHydrateContext());
+			const r = untrack(() => Comp(props || {}));
+			setHydrateContext(c);
+			return r;
+		}
+	}
+	return untrack(() => Comp(props || {}));
+}
+function trueFn() {
+	return true;
+}
+const propTraps = {
+	get(_, property, receiver) {
+		if (property === $PROXY) return receiver;
+		return _.get(property);
+	},
+	has(_, property) {
+		if (property === $PROXY) return true;
+		return _.has(property);
+	},
+	set: trueFn,
+	deleteProperty: trueFn,
+	getOwnPropertyDescriptor(_, property) {
+		return {
+			configurable: true,
+			enumerable: true,
+			get() {
+				return _.get(property);
+			},
+			set: trueFn,
+			deleteProperty: trueFn
+		};
+	},
+	ownKeys(_) {
+		return _.keys();
+	}
+};
+function resolveSource(s) {
+	return !(s = typeof s === "function" ? s() : s) ? {} : s;
+}
+function resolveSources() {
+	for (let i = 0, length = this.length; i < length; ++i) {
+		const v = this[i]();
+		if (v !== void 0) return v;
+	}
+}
+function mergeProps$1(...sources) {
+	let proxy = false;
+	for (let i = 0; i < sources.length; i++) {
+		const s = sources[i];
+		proxy = proxy || !!s && $PROXY in s;
+		sources[i] = typeof s === "function" ? (proxy = true, createMemo(s)) : s;
+	}
+	if (SUPPORTS_PROXY && proxy) return new Proxy({
+		get(property) {
+			for (let i = sources.length - 1; i >= 0; i--) {
+				const v = resolveSource(sources[i])[property];
+				if (v !== void 0) return v;
+			}
+		},
+		has(property) {
+			for (let i = sources.length - 1; i >= 0; i--) if (property in resolveSource(sources[i])) return true;
+			return false;
+		},
+		keys() {
+			const keys = [];
+			for (let i = 0; i < sources.length; i++) keys.push(...Object.keys(resolveSource(sources[i])));
+			return [...new Set(keys)];
+		}
+	}, propTraps);
+	const sourcesMap = {};
+	const defined = Object.create(null);
+	for (let i = sources.length - 1; i >= 0; i--) {
+		const source = sources[i];
+		if (!source) continue;
+		const sourceKeys = Object.getOwnPropertyNames(source);
+		for (let i$1 = sourceKeys.length - 1; i$1 >= 0; i$1--) {
+			const key = sourceKeys[i$1];
+			if (key === "__proto__" || key === "constructor") continue;
+			const desc = Object.getOwnPropertyDescriptor(source, key);
+			if (!defined[key]) defined[key] = desc.get ? {
+				enumerable: true,
+				configurable: true,
+				get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
+			} : desc.value !== void 0 ? desc : void 0;
+			else {
+				const sources$1 = sourcesMap[key];
+				if (sources$1) {
+					if (desc.get) sources$1.push(desc.get.bind(source));
+					else if (desc.value !== void 0) sources$1.push(() => desc.value);
+				}
+			}
+		}
+	}
+	const target = {};
+	const definedKeys = Object.keys(defined);
+	for (let i = definedKeys.length - 1; i >= 0; i--) {
+		const key = definedKeys[i], desc = defined[key];
+		if (desc && desc.get) Object.defineProperty(target, key, desc);
+		else target[key] = desc ? desc.value : void 0;
+	}
+	return target;
+}
+
+//#endregion
+//#region node_modules/solid-js/universal/dist/universal.js
+const memo$1 = (fn) => createMemo(() => fn());
+function createRenderer$1({ createElement: createElement$1, createTextNode: createTextNode$1, isTextNode, replaceText, insertNode: insertNode$1, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
+	function insert$1(parent, accessor, marker, initial) {
+		if (marker !== void 0 && !initial) initial = [];
+		if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
+		createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
+	}
+	function insertExpression(parent, value, current, marker, unwrapArray) {
+		while (typeof current === "function") current = current();
+		if (value === current) return current;
+		const t = typeof value, multi = marker !== void 0;
+		if (t === "string" || t === "number") {
+			if (t === "number") value = value.toString();
+			if (multi) {
+				let node = current[0];
+				if (node && isTextNode(node)) replaceText(node, value);
+				else node = createTextNode$1(value);
+				current = cleanChildren(parent, current, marker, node);
+			} else if (current !== "" && typeof current === "string") replaceText(getFirstChild(parent), current = value);
+			else {
+				cleanChildren(parent, current, marker, createTextNode$1(value));
+				current = value;
+			}
+		} else if (value == null || t === "boolean") current = cleanChildren(parent, current, marker);
+		else if (t === "function") {
+			createRenderEffect(() => {
+				let v = value();
+				while (typeof v === "function") v = v();
+				current = insertExpression(parent, v, current, marker);
+			});
+			return () => current;
+		} else if (Array.isArray(value)) {
+			const array = [];
+			if (normalizeIncomingArray(array, value, unwrapArray)) {
+				createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
+				return () => current;
+			}
+			if (array.length === 0) {
+				const replacement = cleanChildren(parent, current, marker);
+				if (multi) return current = replacement;
+			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+			else if (current == null || current === "") appendNodes(parent, array);
+			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
+			current = array;
+		} else {
+			if (Array.isArray(current)) {
+				if (multi) return current = cleanChildren(parent, current, marker, value);
+				cleanChildren(parent, current, null, value);
+			} else if (current == null || current === "" || !getFirstChild(parent)) insertNode$1(parent, value);
+			else replaceNode(parent, value, getFirstChild(parent));
+			current = value;
+		}
+		return current;
+	}
+	function normalizeIncomingArray(normalized, array, unwrap) {
+		let dynamic = false;
+		for (let i = 0, len = array.length; i < len; i++) {
+			let item = array[i], t;
+			if (item == null || item === true || item === false);
+			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
+			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode$1(item));
+			else if (t === "function") if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
+			else normalized.push(item);
+		}
+		return dynamic;
+	}
+	function reconcileArrays(parentNode, a, b) {
+		let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = getNextSibling(a[aEnd - 1]), map = null;
+		while (aStart < aEnd || bStart < bEnd) {
+			if (a[aStart] === b[bStart]) {
+				aStart++;
+				bStart++;
+				continue;
+			}
+			while (a[aEnd - 1] === b[bEnd - 1]) {
+				aEnd--;
+				bEnd--;
+			}
+			if (aEnd === aStart) {
+				const node = bEnd < bLength ? bStart ? getNextSibling(b[bStart - 1]) : b[bEnd - bStart] : after;
+				while (bStart < bEnd) insertNode$1(parentNode, b[bStart++], node);
+			} else if (bEnd === bStart) while (aStart < aEnd) {
+				if (!map || !map.has(a[aStart])) removeNode(parentNode, a[aStart]);
+				aStart++;
+			}
+			else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
+				const node = getNextSibling(a[--aEnd]);
+				insertNode$1(parentNode, b[bStart++], getNextSibling(a[aStart++]));
+				insertNode$1(parentNode, b[--bEnd], node);
+				a[aEnd] = b[bEnd];
+			} else {
+				if (!map) {
+					map = /* @__PURE__ */ new Map();
+					let i = bStart;
+					while (i < bEnd) map.set(b[i], i++);
+				}
+				const index = map.get(a[aStart]);
+				if (index != null) if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) insertNode$1(parentNode, b[bStart++], node);
+					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+				} else aStart++;
+				else removeNode(parentNode, a[aStart++]);
+			}
+		}
+	}
+	function cleanChildren(parent, current, marker, replacement) {
+		if (marker === void 0) {
+			let removed;
+			while (removed = getFirstChild(parent)) removeNode(parent, removed);
+			replacement && insertNode$1(parent, replacement);
+			return "";
+		}
+		const node = replacement || createTextNode$1("");
+		if (current.length) {
+			let inserted = false;
+			for (let i = current.length - 1; i >= 0; i--) {
+				const el = current[i];
+				if (node !== el) {
+					const isParent = getParentNode(el) === parent;
+					if (!inserted && !i) isParent ? replaceNode(parent, node, el) : insertNode$1(parent, node, marker);
+					else isParent && removeNode(parent, el);
+				} else inserted = true;
+			}
+		} else insertNode$1(parent, node, marker);
+		return [node];
+	}
+	function appendNodes(parent, array, marker) {
+		for (let i = 0, len = array.length; i < len; i++) insertNode$1(parent, array[i], marker);
+	}
+	function replaceNode(parent, newNode, oldNode) {
+		insertNode$1(parent, newNode, oldNode);
+		removeNode(parent, oldNode);
+	}
+	function spreadExpression(node, props, prevProps = {}, skipChildren) {
+		props || (props = {});
+		if (!skipChildren) createRenderEffect(() => prevProps.children = insertExpression(node, props.children, prevProps.children));
+		createRenderEffect(() => props.ref && props.ref(node));
+		createRenderEffect(() => {
+			for (const prop in props) {
+				if (prop === "children" || prop === "ref") continue;
+				const value = props[prop];
+				if (value === prevProps[prop]) continue;
+				setProperty(node, prop, value, prevProps[prop]);
+				prevProps[prop] = value;
+			}
+		});
+		return prevProps;
+	}
+	return {
+		render(code, element) {
+			let disposer;
+			createRoot((dispose) => {
+				disposer = dispose;
+				insert$1(element, code());
+			});
+			return disposer;
+		},
+		insert: insert$1,
+		spread(node, accessor, skipChildren) {
+			if (typeof accessor === "function") createRenderEffect((current) => spreadExpression(node, accessor(), current, skipChildren));
+			else spreadExpression(node, accessor, void 0, skipChildren);
+		},
+		createElement: createElement$1,
+		createTextNode: createTextNode$1,
+		insertNode: insertNode$1,
+		setProp(node, name, value, prev) {
+			setProperty(node, name, value, prev);
+			return value;
+		},
+		mergeProps: mergeProps$1,
+		effect: createRenderEffect,
+		memo: memo$1,
+		createComponent: createComponent$1,
+		use(fn, element, arg) {
+			return untrack(() => fn(element, arg));
+		}
+	};
+}
+function createRenderer(options) {
+	const renderer = createRenderer$1(options);
+	renderer.mergeProps = mergeProps$1;
+	return renderer;
+}
+
+//#endregion
+//#region tests/helpers/universal-mode-renderer.ts
+const { createComponent, createElement, createTextNode, effect, insert, insertNode, memo, mergeProps, render, setProp, spread, use } = createRenderer({
+	createElement() {},
+	createTextNode() {},
+	getFirstChild() {},
+	getNextSibling() {},
+	getParentNode() {},
+	insertNode() {},
+	isTextNode() {
+		return true;
+	},
+	removeNode() {},
+	replaceText() {},
+	setProperty() {}
+});
+
+//#endregion
+//#region tests/fixtures/templates.tsx
+function TestSvgWrap() {
+	return (() => {
+		var _el$ = createElement("svg"), _el$2 = createElement("circle"), _el$3 = createElement("foreignObject"), _el$4 = createElement("div"), _el$5 = createElement("p");
+		insertNode(_el$, _el$2);
+		insertNode(_el$, _el$3);
+		setProp(_el$, "width", "100");
+		setProp(_el$, "height", "100");
+		setProp(_el$2, "cx", "50");
+		setProp(_el$2, "cy", "50");
+		setProp(_el$2, "r", "40");
+		setProp(_el$2, "fill", "red");
+		insertNode(_el$3, _el$4);
+		setProp(_el$3, "x", "10");
+		setProp(_el$3, "y", "10");
+		setProp(_el$3, "width", "80");
+		setProp(_el$3, "height", "80");
+		insertNode(_el$4, _el$5);
+		insertNode(_el$5, createTextNode(\`HTML content inside SVG\`));
+		return _el$;
+	})();
+}
+function TestNestedSvg() {
+	return (() => {
+		var _el$7 = createElement("div"), _el$8 = createElement("svg"), _el$9 = createElement("g"), _el$0 = createElement("rect");
+		insertNode(_el$7, _el$8);
+		insertNode(_el$8, _el$9);
+		insertNode(_el$9, _el$0);
+		setProp(_el$0, "x", "0");
+		setProp(_el$0, "y", "0");
+		setProp(_el$0, "width", "100");
+		setProp(_el$0, "height", "100");
+		return _el$7;
+	})();
+}
+function TestEventDelegation() {
+	return (() => {
+		var _el$1 = createElement("div"), _el$10 = createElement("button"), _el$12 = createElement("div"), _el$14 = createElement("input"), _el$15 = createElement("form"), _el$16 = createElement("select"), _el$17 = createElement("option"), _el$19 = createElement("option");
+		insertNode(_el$1, _el$10);
+		insertNode(_el$1, _el$12);
+		insertNode(_el$1, _el$14);
+		insertNode(_el$1, _el$15);
+		insertNode(_el$10, createTextNode(\`Click me\`));
+		setProp(_el$10, "onClick", () => console.log("click"));
+		insertNode(_el$12, createTextNode(\`Hover me\`));
+		setProp(_el$12, "onMouseOver", () => console.log("hover"));
+		setProp(_el$14, "onInput", (e) => console.log(e.target.value));
+		insertNode(_el$15, _el$16);
+		setProp(_el$15, "onSubmit", (e) => e.preventDefault());
+		insertNode(_el$16, _el$17);
+		insertNode(_el$16, _el$19);
+		setProp(_el$16, "onChange", (e) => console.log(e.target.value));
+		insertNode(_el$17, createTextNode(\`Option 1\`));
+		setProp(_el$17, "value", "1");
+		insertNode(_el$19, createTextNode(\`Option 2\`));
+		setProp(_el$19, "value", "2");
+		return _el$1;
+	})();
+}
+function TestComplexTemplates() {
+	const items = [
+		"a",
+		"b",
+		"c"
+	];
+	return (() => {
+		var _el$21 = createElement("div"), _el$22 = createElement("h1"), _el$24 = createElement("ul"), _el$25 = createElement("div");
+		insertNode(_el$21, _el$22);
+		insertNode(_el$21, _el$24);
+		insertNode(_el$21, _el$25);
+		setProp(_el$21, "class", "container");
+		insertNode(_el$22, createTextNode(\`Title\`));
+		insert(_el$21, (() => {
+			var _el$27 = createElement("p");
+			insertNode(_el$27, createTextNode(\`Conditional content\`));
+			return _el$27;
+		})(), _el$24);
+		insert(_el$24, () => items.map((item) => (() => {
+			var _el$29 = createElement("li");
+			insert(_el$29, item);
+			return _el$29;
+		})()));
+		insertNode(_el$25, createTextNode(\`Styled content\`));
+		setProp(_el$25, "style", {
+			color: "red",
+			"font-size": "16px"
+		});
+		return _el$21;
+	})();
+}
+function TestAttributeTemplates() {
+	return (() => {
+		var _el$30 = createElement("div"), _el$31 = createElement("img"), _el$32 = createElement("input");
+		insertNode(_el$30, _el$31);
+		insertNode(_el$30, _el$32);
+		setProp(_el$30, "id", "test");
+		setProp(_el$30, "class", "my-class");
+		setProp(_el$30, "data-testid", "element");
+		setProp(_el$30, "aria-label", "Accessible element");
+		setProp(_el$30, "role", "button");
+		setProp(_el$30, "tabIndex", 0);
+		setProp(_el$31, "src", "test.jpg");
+		setProp(_el$31, "alt", "test image");
+		setProp(_el$31, "width", "100");
+		setProp(_el$31, "height", "100");
+		setProp(_el$32, "type", "text");
+		setProp(_el$32, "placeholder", "Enter text");
+		setProp(_el$32, "required", true);
+		setProp(_el$32, "disabled", false);
+		return _el$30;
+	})();
+}
+function TestSVGTemplates() {
+	return (() => {
+		var _el$33 = createElement("svg"), _el$34 = createElement("circle"), _el$35 = createElement("rect"), _el$36 = createElement("text");
+		insertNode(_el$33, _el$34);
+		insertNode(_el$33, _el$35);
+		insertNode(_el$33, _el$36);
+		setProp(_el$33, "width", "100");
+		setProp(_el$33, "height", "100");
+		setProp(_el$34, "cx", "50");
+		setProp(_el$34, "cy", "50");
+		setProp(_el$34, "r", "40");
+		setProp(_el$34, "fill", "red");
+		setProp(_el$35, "x", "10");
+		setProp(_el$35, "y", "10");
+		setProp(_el$35, "width", "30");
+		setProp(_el$35, "height", "30");
+		setProp(_el$35, "fill", "blue");
+		insertNode(_el$36, createTextNode(\`SVG Text\`));
+		setProp(_el$36, "x", "50");
+		setProp(_el$36, "y", "50");
+		setProp(_el$36, "text-anchor", "middle");
+		return _el$33;
+	})();
+}
+function TestSSRHeadElement() {
+	return (() => {
+		var _el$38 = createElement("head"), _el$39 = createElement("title"), _el$41 = createElement("meta"), _el$42 = createElement("meta");
+		insertNode(_el$38, _el$39);
+		insertNode(_el$38, _el$41);
+		insertNode(_el$38, _el$42);
+		insertNode(_el$39, createTextNode(\`SSR Test\`));
+		setProp(_el$41, "charset", "utf-8");
+		setProp(_el$42, "name", "viewport");
+		setProp(_el$42, "content", "width=device-width");
+		return _el$38;
+	})();
+}
+function TestSSRScriptStyle() {
+	return (() => {
+		var _el$43 = createElement("div"), _el$44 = createElement("script"), _el$46 = createElement("style");
+		insertNode(_el$43, _el$44);
+		insertNode(_el$43, _el$46);
+		insertNode(_el$44, createTextNode(\`console.log('test');\`));
+		insertNode(_el$46, createTextNode(\`body \\{ margin: 0; }\`));
+		return _el$43;
+	})();
+}
+function TestSSRHydration() {
+	return (() => {
+		var _el$48 = createElement("div"), _el$49 = createElement("p"), _el$51 = createElement("div"), _el$52 = createElement("ul");
+		insertNode(_el$48, _el$49);
+		insertNode(_el$48, _el$51);
+		insertNode(_el$48, _el$52);
+		insertNode(_el$49, createTextNode(\`Static content\`));
+		insert(_el$51, () => \`Dynamic content: \${Date.now()}\`);
+		insert(_el$52, () => [
+			1,
+			2,
+			3
+		].map((item) => (() => {
+			var _el$53 = createElement("li");
+			insertNode(_el$53, createTextNode(\`Item \`));
+			insert(_el$53, item, null);
+			return _el$53;
+		})()));
+		return _el$48;
+	})();
+}
+function TestSSRSpreadAttributes() {
+	const props = {
+		class: "dynamic-class",
+		id: "dynamic-id",
+		"data-test": "value"
+	};
+	return (() => {
+		var _el$55 = createElement("div");
+		insertNode(_el$55, createTextNode(\`Spread attributes\`));
+		spread(_el$55, props, true);
+		return _el$55;
+	})();
+}
+function TestSSRSpecialElements() {
+	return (() => {
+		var _el$57 = createElement("table"), _el$58 = createElement("thead"), _el$59 = createElement("tr"), _el$60 = createElement("th"), _el$62 = createElement("th"), _el$64 = createElement("tbody"), _el$65 = createElement("tr"), _el$66 = createElement("td"), _el$68 = createElement("td");
+		insertNode(_el$57, _el$58);
+		insertNode(_el$57, _el$64);
+		insertNode(_el$58, _el$59);
+		insertNode(_el$59, _el$60);
+		insertNode(_el$59, _el$62);
+		insertNode(_el$60, createTextNode(\`Header 1\`));
+		insertNode(_el$62, createTextNode(\`Header 2\`));
+		insertNode(_el$64, _el$65);
+		insertNode(_el$65, _el$66);
+		insertNode(_el$65, _el$68);
+		insertNode(_el$66, createTextNode(\`Cell 1\`));
+		insertNode(_el$68, createTextNode(\`Cell 2\`));
+		return _el$57;
+	})();
+}
+function TestValidationScenarios() {
+	return (() => {
+		var _el$70 = createElement("div"), _el$71 = createElement("section"), _el$72 = createElement("article"), _el$73 = createElement("header"), _el$74 = createElement("h1"), _el$76 = createElement("main"), _el$77 = createElement("p"), _el$79 = createElement("footer"), _el$80 = createElement("small"), _el$82 = createElement("table"), _el$83 = createElement("tr"), _el$84 = createElement("td"), _el$86 = createElement("td"), _el$88 = createElement("img"), _el$89 = createElement("br"), _el$90 = createElement("hr");
+		insertNode(_el$70, _el$71);
+		insertNode(_el$70, _el$82);
+		insertNode(_el$70, _el$88);
+		insertNode(_el$70, _el$89);
+		insertNode(_el$70, _el$90);
+		insertNode(_el$71, _el$72);
+		insertNode(_el$72, _el$73);
+		insertNode(_el$72, _el$76);
+		insertNode(_el$72, _el$79);
+		insertNode(_el$73, _el$74);
+		insertNode(_el$74, createTextNode(\`Title\`));
+		insertNode(_el$76, _el$77);
+		insertNode(_el$77, createTextNode(\`Content\`));
+		insertNode(_el$79, _el$80);
+		insertNode(_el$80, createTextNode(\`Footer\`));
+		insertNode(_el$82, _el$83);
+		insertNode(_el$83, _el$84);
+		insertNode(_el$83, _el$86);
+		insertNode(_el$84, createTextNode(\`Cell 1\`));
+		insertNode(_el$86, createTextNode(\`Cell 2\`));
+		setProp(_el$88, "src", "test.jpg");
+		setProp(_el$88, "alt", "test");
+		return _el$70;
+	})();
+}
+
+//#endregion
+export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };"
 `;
