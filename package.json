@@ -21,7 +21,7 @@
     "build": "tsdown",
     "lint": "biome lint",
     "format": "biome check --write --linter-enabled=false",
-    "test": "bun test",
+    "test": "bun test --coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

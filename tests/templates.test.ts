@@ -13,6 +13,16 @@ createFixtureTest("templates with universal", "templates.tsx", {
   },
 });
 
+createFixtureTest("templates with universal and hydratable", "templates.tsx", {
+  plugin: {
+    solid: {
+      generate: "universal",
+      moduleName: "#universal-mode-renderer",
+      hydratable: true,
+    },
+  },
+});
+
 createFixtureTest("templates with disabled delegation", "templates.tsx", {
   plugin: { solid: { delegateEvents: false } },
 });

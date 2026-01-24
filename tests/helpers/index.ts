@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, spyOn } from "bun:test";
 
 import { resolve } from "node:path";
 import { build } from "rolldown";
@@ -12,6 +12,9 @@ interface FixtureOptions {
   platform?: "browser" | "node";
   plugin?: Parameters<typeof solidPluginSrc>[0];
 }
+
+spyOn(console, "log").mockImplementation(() => {});
+spyOn(console, "warn").mockImplementation(() => {});
 
 export function createFixtureTest(
   name: string,
