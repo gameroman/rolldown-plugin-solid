@@ -1,5 +1,4 @@
 import type { PluginPass } from "@babel/core";
-// @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
 import type { Binding, NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
@@ -15,8 +14,8 @@ import syntaxTypeScript from "./plugin-syntax-typescript";
 function isInType(path: NodePath) {
   switch (path.parent.type) {
     case "TSTypeReference":
-    case "TSExpressionWithTypeArguments":
-    case "TSExpressionWithTypeArguments":
+    case "TSClassImplements":
+    case "TSInterfaceHeritage":
     case "TSTypeQuery":
       return true;
     case "TSQualifiedName":
@@ -367,9 +366,6 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
               const binding = stmt.scope.getBinding(id.name);
               if (
                 binding &&
-                (undefined ||
-                  // @ts-ignore(Babel 7 vs Babel 8) Babel 7 AST
-                  !stmt.node.isExport) &&
                 isImportTypeOnly({
                   binding,
                   programPath: path,
@@ -429,7 +425,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
           return;
         }
 
-        if (undefined && t.isTSImportEqualsDeclaration(path.node.declaration)) {
+        if (t.isTSImportEqualsDeclaration(path.node.declaration)) {
           return;
         }
 
@@ -562,7 +558,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
         if (node.typeParameters) node.typeParameters = null;
 
-        if (node.superTypeParameters) node.superTypeParameters = null;
+        if (node.superTypeArguments) node.superTypeArguments = null;
 
         if (node.implements) node.implements = null;
         if (node.abstract) node.abstract = null;
@@ -678,10 +674,9 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         path.replaceWith(path.node.expression);
       },
 
-      [`TSAsExpression${
-        // Added in Babel 7.20.0
-        t.tsSatisfiesExpression ? "|TSSatisfiesExpression" : ""
-      }`](path: NodePath<t.TSAsExpression | t.TSSatisfiesExpression>) {
+      ["TSAsExpression|TSSatisfiesExpression"](
+        path: NodePath<t.TSAsExpression | t.TSSatisfiesExpression>,
+      ) {
         let { node }: { node: t.Expression } = path;
         do {
           node = node.expression;
@@ -689,21 +684,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         path.replaceWith(node);
       },
 
-      [undefined
-        ? "TSNonNullExpression|TSInstantiationExpression"
-        : /* This has been introduced in Babel 7.18.0
-                     We use api.types.* and not t.* for feature detection,
-                     because the Babel version that is running this plugin
-                     (where we check if the visitor is valid) might be different
-                     from the Babel version that we resolve with `import "@babel/core"`.
-                     This happens, for example, with Next.js that bundled `@babel/core`
-                     but allows loading unbundled plugin (which cannot obviously import
-                     the bundled `@babel/core` version).
-                   */
-
-          api.types.tsInstantiationExpression
-          ? "TSNonNullExpression|TSInstantiationExpression"
-          : "TSNonNullExpression"](
+      ["TSNonNullExpression|TSInstantiationExpression"](
         path: NodePath<t.TSNonNullExpression | t.TSInstantiationExpression>,
       ) {
         path.replaceWith(path.node.expression);
@@ -712,35 +693,35 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
       CallExpression(path) {
         {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          path.node.typeArguments = null;
         }
       },
 
       OptionalCallExpression(path) {
         {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          path.node.typeArguments = null;
         }
       },
 
       NewExpression(path) {
         {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          path.node.typeArguments = null;
         }
       },
 
       JSXOpeningElement(path) {
         {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          path.node.typeArguments = null;
         }
       },
 
       TaggedTemplateExpression(path) {
         {
           // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          path.node.typeArguments = null;
         }
       },
     },
