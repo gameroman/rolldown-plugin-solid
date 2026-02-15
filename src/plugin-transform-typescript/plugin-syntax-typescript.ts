@@ -32,24 +32,22 @@ const syntaxTypeScript = declare((api, opts: Options) => {
     name: "syntax-typescript",
 
     manipulateOptions(opts, parserOpts) {
-      if (true) {
-        const { plugins } = parserOpts;
-        // If the Flow syntax plugin already ran, remove it since Typescript
-        // takes priority.
-        removePlugin(plugins, "flow");
+      const { plugins } = parserOpts;
+      // If the Flow syntax plugin already ran, remove it since Typescript
+      // takes priority.
+      removePlugin(plugins, "flow");
 
-        // If the JSX syntax plugin already ran, remove it because JSX handling
-        // in TS depends on the extensions, and is purely dependent on 'isTSX'.
-        removePlugin(plugins, "jsx");
+      // If the JSX syntax plugin already ran, remove it because JSX handling
+      // in TS depends on the extensions, and is purely dependent on 'isTSX'.
+      removePlugin(plugins, "jsx");
 
-        // These are now enabled by default in @babel/parser, but we push
-        // them for compat with older versions.
-        // @ts-ignore(Babel 7 vs Babel 8) These plugins have been removed
-        plugins.push("objectRestSpread", "classProperties");
+      // These are now enabled by default in @babel/parser, but we push
+      // them for compat with older versions.
+      // @ts-ignore(Babel 7 vs Babel 8) These plugins have been removed
+      plugins.push("objectRestSpread", "classProperties");
 
-        if (isTSX) {
-          plugins.push("jsx");
-        }
+      if (isTSX) {
+        plugins.push("jsx");
       }
 
       parserOpts.plugins.push([
