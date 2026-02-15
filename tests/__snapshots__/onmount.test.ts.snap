@@ -56,10 +56,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -339,9 +339,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -894,10 +894,9 @@ const OnMountExample = () => {
 		return _el$1;
 	})();
 };
-var onmount_default = OnMountExample;
 
 //#endregion
-export { onmount_default as default };"
+export { OnMountExample as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with onMount 1`] = `
@@ -956,10 +955,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -1239,9 +1238,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -1794,8 +1793,7 @@ const OnMountExample = () => {
 		return _el$1;
 	})();
 };
-var onmount_default = OnMountExample;
 
 //#endregion
-export { onmount_default as default };"
+export { OnMountExample as default };"
 `;

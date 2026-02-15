@@ -73,10 +73,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -342,9 +342,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -735,13 +735,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -930,18 +930,18 @@ function cleanChildren(parent, current, marker, replacement) {
 //#endregion
 //#region tests/fixtures/typescript-generics.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div>Status: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div>Pending...\`), _tmpl$3 = /* @__PURE__ */ template(\`<div>Loading...\`), _tmpl$4 = /* @__PURE__ */ template(\`<div>Success!\`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Error!\`), _tmpl$6 = /* @__PURE__ */ template(\`<div>Unknown\`), _tmpl$7 = /* @__PURE__ */ template(\`<input type=text>\`), _tmpl$8 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$9 = /* @__PURE__ */ template(\`<li>\`), _tmpl$0 = /* @__PURE__ */ template(\`<div>Error: \`), _tmpl$1 = /* @__PURE__ */ template(\`<li><span></span><button>Update\`), _tmpl$10 = /* @__PURE__ */ template(\`<span>(<!>)\`), _tmpl$11 = /* @__PURE__ */ template(\`<span>\`), _tmpl$12 = /* @__PURE__ */ template(\`<span>Number: \`);
-var Status = /* @__PURE__ */ function(Status$1) {
-	Status$1[Status$1["Pending"] = 0] = "Pending";
-	Status$1[Status$1["Loading"] = 1] = "Loading";
-	Status$1[Status$1["Success"] = 2] = "Success";
-	Status$1[Status$1["Error"] = 3] = "Error";
-	return Status$1;
+var Status = /* @__PURE__ */ function(Status) {
+	Status[Status["Pending"] = 0] = "Pending";
+	Status[Status["Loading"] = 1] = "Loading";
+	Status[Status["Success"] = 2] = "Success";
+	Status[Status["Error"] = 3] = "Error";
+	return Status;
 }(Status || {});
-var Colors = /* @__PURE__ */ function(Colors$1) {
-	Colors$1["Red"] = "#FF0000";
-	Colors$1["Green"] = "#00FF00";
-	Colors$1["Blue"] = "#0000FF";
-	return Colors$1;
+var Colors = /* @__PURE__ */ function(Colors) {
+	Colors["Red"] = "#FF0000";
+	Colors["Green"] = "#00FF00";
+	Colors["Blue"] = "#0000FF";
+	return Colors;
 }(Colors || {});
 function TestConstEnum() {
 	const status = Status.Loading;
@@ -1161,10 +1161,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -1430,9 +1430,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -1823,13 +1823,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -2018,18 +2018,18 @@ function cleanChildren(parent, current, marker, replacement) {
 //#endregion
 //#region tests/fixtures/typescript-generics.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div>Status: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div>Pending...\`), _tmpl$3 = /* @__PURE__ */ template(\`<div>Loading...\`), _tmpl$4 = /* @__PURE__ */ template(\`<div>Success!\`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Error!\`), _tmpl$6 = /* @__PURE__ */ template(\`<div>Unknown\`), _tmpl$7 = /* @__PURE__ */ template(\`<input type=text>\`), _tmpl$8 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$9 = /* @__PURE__ */ template(\`<li>\`), _tmpl$0 = /* @__PURE__ */ template(\`<div>Error: \`), _tmpl$1 = /* @__PURE__ */ template(\`<li><span></span><button>Update\`), _tmpl$10 = /* @__PURE__ */ template(\`<span>(<!>)\`), _tmpl$11 = /* @__PURE__ */ template(\`<span>\`), _tmpl$12 = /* @__PURE__ */ template(\`<span>Number: \`);
-var Status = /* @__PURE__ */ function(Status$1) {
-	Status$1[Status$1["Pending"] = 0] = "Pending";
-	Status$1[Status$1["Loading"] = 1] = "Loading";
-	Status$1[Status$1["Success"] = 2] = "Success";
-	Status$1[Status$1["Error"] = 3] = "Error";
-	return Status$1;
+var Status = /* @__PURE__ */ function(Status) {
+	Status[Status["Pending"] = 0] = "Pending";
+	Status[Status["Loading"] = 1] = "Loading";
+	Status[Status["Success"] = 2] = "Success";
+	Status[Status["Error"] = 3] = "Error";
+	return Status;
 }(Status || {});
-var Colors = /* @__PURE__ */ function(Colors$1) {
-	Colors$1["Red"] = "#FF0000";
-	Colors$1["Green"] = "#00FF00";
-	Colors$1["Blue"] = "#0000FF";
-	return Colors$1;
+var Colors = /* @__PURE__ */ function(Colors) {
+	Colors["Red"] = "#FF0000";
+	Colors["Green"] = "#00FF00";
+	Colors["Blue"] = "#0000FF";
+	return Colors;
 }(Colors || {});
 function TestConstEnum() {
 	const status = Status.Loading;

@@ -72,10 +72,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -162,13 +162,13 @@ function useContext(context) {
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
 }
 function children(fn) {
-	const children$1 = createMemo(fn);
-	const memo$1 = createMemo(() => resolveChildren(children$1()));
-	memo$1.toArray = () => {
-		const c = memo$1();
+	const children = createMemo(fn);
+	const memo = createMemo(() => resolveChildren(children()));
+	memo.toArray = () => {
+		const c = memo();
 		return Array.isArray(c) ? c : c != null ? [c] : [];
 	};
-	return memo$1;
+	return memo;
 }
 let SuspenseContext;
 function getSuspenseContext() {
@@ -372,9 +372,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -508,17 +508,17 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i = 0; i < children$1.length; i++) {
-			const result = resolveChildren(children$1[i]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id, options) {
 	return function provider(props) {
@@ -549,7 +549,7 @@ function createComponent(Comp, props) {
 const SuspenseListContext = /* @__PURE__ */ createContext();
 function Suspense(props) {
 	let counter = 0, show, ctx, p, flicker, error;
-	const [inFallback, setFallback] = createSignal(false), SuspenseContext$1 = getSuspenseContext(), store = {
+	const [inFallback, setFallback] = createSignal(false), SuspenseContext = getSuspenseContext(), store = {
 		increment: () => {
 			if (++counter === 1) setFallback(true);
 		},
@@ -584,7 +584,7 @@ function Suspense(props) {
 	if (listContext) show = listContext.register(store.inFallback);
 	let dispose;
 	onCleanup(() => dispose && dispose());
-	return createComponent(SuspenseContext$1.Provider, {
+	return createComponent(SuspenseContext.Provider, {
 		value: store,
 		get children() {
 			return createMemo(() => {
@@ -598,8 +598,8 @@ function Suspense(props) {
 				if (ctx && p === "$$f") setHydrateContext();
 				const rendered = createMemo(() => props.children);
 				return createMemo((prev) => {
-					const inFallback$1 = store.inFallback(), { showContent = true, showFallback = true } = show ? show() : {};
-					if ((!inFallback$1 || p && p !== "$$f") && showContent) {
+					const inFallback = store.inFallback(), { showContent = true, showFallback = true } = show ? show() : {};
+					if ((!inFallback || p && p !== "$$f") && showContent) {
 						store.resolved = true;
 						dispose && dispose();
 						dispose = ctx = p = void 0;
@@ -775,13 +775,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -1025,11 +1025,10 @@ const SuspenseDemo = () => {
 		return _el$6;
 	})();
 };
-var suspense_default = SuspenseDemo;
 delegateEvents(["click"]);
 
 //#endregion
-export { suspense_default as default };"
+export { SuspenseDemo as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with Suspense 1`] = `
@@ -1104,10 +1103,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -1194,13 +1193,13 @@ function useContext(context) {
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
 }
 function children(fn) {
-	const children$1 = createMemo(fn);
-	const memo$1 = createMemo(() => resolveChildren(children$1()));
-	memo$1.toArray = () => {
-		const c = memo$1();
+	const children = createMemo(fn);
+	const memo = createMemo(() => resolveChildren(children()));
+	memo.toArray = () => {
+		const c = memo();
 		return Array.isArray(c) ? c : c != null ? [c] : [];
 	};
-	return memo$1;
+	return memo;
 }
 let SuspenseContext;
 function getSuspenseContext() {
@@ -1404,9 +1403,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -1540,17 +1539,17 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i = 0; i < children$1.length; i++) {
-			const result = resolveChildren(children$1[i]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id, options) {
 	return function provider(props) {
@@ -1581,7 +1580,7 @@ function createComponent(Comp, props) {
 const SuspenseListContext = /* @__PURE__ */ createContext();
 function Suspense(props) {
 	let counter = 0, show, ctx, p, flicker, error;
-	const [inFallback, setFallback] = createSignal(false), SuspenseContext$1 = getSuspenseContext(), store = {
+	const [inFallback, setFallback] = createSignal(false), SuspenseContext = getSuspenseContext(), store = {
 		increment: () => {
 			if (++counter === 1) setFallback(true);
 		},
@@ -1616,7 +1615,7 @@ function Suspense(props) {
 	if (listContext) show = listContext.register(store.inFallback);
 	let dispose;
 	onCleanup(() => dispose && dispose());
-	return createComponent(SuspenseContext$1.Provider, {
+	return createComponent(SuspenseContext.Provider, {
 		value: store,
 		get children() {
 			return createMemo(() => {
@@ -1630,8 +1629,8 @@ function Suspense(props) {
 				if (ctx && p === "$$f") setHydrateContext();
 				const rendered = createMemo(() => props.children);
 				return createMemo((prev) => {
-					const inFallback$1 = store.inFallback(), { showContent = true, showFallback = true } = show ? show() : {};
-					if ((!inFallback$1 || p && p !== "$$f") && showContent) {
+					const inFallback = store.inFallback(), { showContent = true, showFallback = true } = show ? show() : {};
+					if ((!inFallback || p && p !== "$$f") && showContent) {
 						store.resolved = true;
 						dispose && dispose();
 						dispose = ctx = p = void 0;
@@ -1807,13 +1806,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -2057,9 +2056,8 @@ const SuspenseDemo = () => {
 		return _el$6;
 	})();
 };
-var suspense_default = SuspenseDemo;
 delegateEvents(["click"]);
 
 //#endregion
-export { suspense_default as default };"
+export { SuspenseDemo as default };"
 `;

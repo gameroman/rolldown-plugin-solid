@@ -47,10 +47,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -99,7 +99,7 @@ function createResource(pSource, pFetcher, pOptions) {
 		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
 		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
 	}
-	function loadEnd(p, v, error$1, key) {
+	function loadEnd(p, v, error, key) {
 		if (pr === p) {
 			pr = null;
 			key !== void 0 && (resolved = true);
@@ -110,9 +110,9 @@ function createResource(pSource, pFetcher, pOptions) {
 				loadedUnderTransition = false;
 				runUpdates(() => {
 					Transition.running = true;
-					completeLoad(v, error$1);
+					completeLoad(v, error);
 				}, false);
-			} else completeLoad(v, error$1);
+			} else completeLoad(v, error);
 		}
 		return v;
 	}
@@ -150,7 +150,7 @@ function createResource(pSource, pFetcher, pOptions) {
 			return;
 		}
 		if (Transition && pr) Transition.promises.delete(pr);
-		let error$1;
+		let error;
 		const p = initP !== NO_INIT ? initP : untrack(() => {
 			try {
 				return fetcher(lookup, {
@@ -158,11 +158,11 @@ function createResource(pSource, pFetcher, pOptions) {
 					refetching
 				});
 			} catch (fetcherError) {
-				error$1 = fetcherError;
+				error = fetcherError;
 			}
 		});
-		if (error$1 !== void 0) {
-			loadEnd(pr, void 0, castError(error$1), lookup);
+		if (error !== void 0) {
+			loadEnd(pr, void 0, castError(error), lookup);
 			return;
 		} else if (!isPromise(p)) {
 			loadEnd(pr, p, void 0, lookup);
@@ -467,9 +467,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -920,10 +920,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-var config_test_default = App;
 
 //#endregion
-export { config_test_default as default };"
+export { App as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform custom builtIns configuration 1`] = `
@@ -973,10 +972,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -1025,7 +1024,7 @@ function createResource(pSource, pFetcher, pOptions) {
 		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
 		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
 	}
-	function loadEnd(p, v, error$1, key) {
+	function loadEnd(p, v, error, key) {
 		if (pr === p) {
 			pr = null;
 			key !== void 0 && (resolved = true);
@@ -1036,9 +1035,9 @@ function createResource(pSource, pFetcher, pOptions) {
 				loadedUnderTransition = false;
 				runUpdates(() => {
 					Transition.running = true;
-					completeLoad(v, error$1);
+					completeLoad(v, error);
 				}, false);
-			} else completeLoad(v, error$1);
+			} else completeLoad(v, error);
 		}
 		return v;
 	}
@@ -1076,7 +1075,7 @@ function createResource(pSource, pFetcher, pOptions) {
 			return;
 		}
 		if (Transition && pr) Transition.promises.delete(pr);
-		let error$1;
+		let error;
 		const p = initP !== NO_INIT ? initP : untrack(() => {
 			try {
 				return fetcher(lookup, {
@@ -1084,11 +1083,11 @@ function createResource(pSource, pFetcher, pOptions) {
 					refetching
 				});
 			} catch (fetcherError) {
-				error$1 = fetcherError;
+				error = fetcherError;
 			}
 		});
-		if (error$1 !== void 0) {
-			loadEnd(pr, void 0, castError(error$1), lookup);
+		if (error !== void 0) {
+			loadEnd(pr, void 0, castError(error), lookup);
 			return;
 		} else if (!isPromise(p)) {
 			loadEnd(pr, p, void 0, lookup);
@@ -1393,9 +1392,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -1846,10 +1845,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-var config_test_default = App;
 
 //#endregion
-export { config_test_default as default };"
+export { App as default };"
 `;
 
 exports[`rolldown-plugin-solid src should transform SSR generate mode 1`] = `
@@ -1864,39 +1862,39 @@ function handleError(err, owner = Owner) {
 	const error = castError(err);
 	if (!fns) throw error;
 	try {
-		for (const f$1 of fns) f$1(error);
+		for (const f of fns) f(error);
 	} catch (e) {
 		handleError(e, owner && owner.owner || null);
 	}
 }
 let Owner = null;
 function createOwner() {
-	const o$2 = {
+	const o = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
-	else Owner.owned.push(o$2);
-	return o$2;
+	if (Owner) if (!Owner.owned) Owner.owned = [o];
+	else Owner.owned.push(o);
+	return o;
 }
 function createSignal(value, options) {
-	return [() => value, (v$2) => {
-		return value = typeof v$2 === "function" ? v$2(value) : v$2;
+	return [() => value, (v) => {
+		return value = typeof v === "function" ? v(value) : v;
 	}];
 }
 function createMemo(fn, value) {
 	Owner = createOwner();
-	let v$2;
+	let v;
 	try {
-		v$2 = fn(value);
+		v = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$2;
+	return () => v;
 }
 function createContext(defaultValue) {
 	const id = Symbol("context");
@@ -1912,22 +1910,22 @@ function useContext(context) {
 function children(fn) {
 	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$2 = memo();
-		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
+		const c = memo();
+		return Array.isArray(c) ? c : c != null ? [c] : [];
 	};
 	return memo;
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i$1 = 0; i$1 < children$1.length; i$1++) {
-			const result = resolveChildren(children$1[i$1]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id) {
 	return function provider(props) {
@@ -1967,7 +1965,7 @@ function createResource(source, fetcher, options = {}) {
 	const id = sharedConfig.getNextContextId();
 	let resource = {};
 	let value = options.storage ? options.storage(options.initialValue)[0]() : options.initialValue;
-	let p$1;
+	let p;
 	let error;
 	if (sharedConfig.context.async && options.ssrLoadFrom !== "initial") {
 		resource = sharedConfig.context.resources[id] || (sharedConfig.context.resources[id] = {});
@@ -2022,59 +2020,59 @@ function createResource(source, fetcher, options = {}) {
 		} finally {
 			resourceContext = null;
 		}
-		if (!p$1) {
+		if (!p) {
 			if (lookup == null || lookup === false) return;
-			p$1 = fetcher(lookup, { value });
+			p = fetcher(lookup, { value });
 		}
-		if (p$1 != void 0 && typeof p$1 === "object" && "then" in p$1) {
+		if (p != void 0 && typeof p === "object" && "then" in p) {
 			read._loading = true;
 			read.state = "pending";
-			p$1 = p$1.then((res) => {
+			p = p.then((res) => {
 				read._loading = false;
 				read.state = "ready";
 				ctx.resources[id].data = res;
-				p$1 = null;
+				p = null;
 				notifySuspense(contexts);
 				return res;
 			}).catch((err) => {
 				read._loading = false;
 				read.state = "errored";
 				read.error = error = castError(err);
-				p$1 = null;
+				p = null;
 				notifySuspense(contexts);
 				throw error;
 			});
-			if (ctx.serialize) ctx.serialize(id, p$1, options.deferStream);
-			return p$1;
+			if (ctx.serialize) ctx.serialize(id, p, options.deferStream);
+			return p;
 		}
-		ctx.resources[id].data = p$1;
-		if (ctx.serialize) ctx.serialize(id, p$1);
-		p$1 = null;
+		ctx.resources[id].data = p;
+		if (ctx.serialize) ctx.serialize(id, p);
+		p = null;
 		return ctx.resources[id].data;
 	}
 	if (options.ssrLoadFrom !== "initial") load();
 	const ref = [read, {
 		refetch: load,
-		mutate: (v$2) => value = v$2
+		mutate: (v) => value = v
 	}];
-	if (p$1) resource.ref = ref;
+	if (p) resource.ref = ref;
 	return ref;
 }
-function suspenseComplete(c$2) {
-	for (const r of c$2.resources.values()) if (r._loading) return false;
+function suspenseComplete(c) {
+	for (const r of c.resources.values()) if (r._loading) return false;
 	return true;
 }
 function notifySuspense(contexts) {
-	for (const c$2 of contexts) {
-		if (!suspenseComplete(c$2)) continue;
-		c$2.completed();
-		contexts.delete(c$2);
+	for (const c of contexts) {
+		if (!suspenseComplete(c)) continue;
+		c.completed();
+		contexts.delete(c);
 	}
 }
 
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
 var rt = {
 	0: "Symbol.asyncIterator",
@@ -2137,20 +2135,20 @@ var rt = {
 	6: Number.NEGATIVE_INFINITY,
 	7: NaN
 };
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
 		i: r,
 		s: t,
-		c: n$1,
+		c: n,
 		m: a,
 		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
 		o: S,
-		l: d$1
+		l: d
 	};
 }
 function F(e) {
@@ -2195,29 +2193,29 @@ var re = () => {
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 }, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
 	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
 		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
 		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
 }, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
+	let t = 0, n = {
+		[e]: () => n,
 		next: () => {
 			if (t > r.d) return {
 				done: !0,
@@ -2231,69 +2229,69 @@ var re = () => {
 			};
 		}
 	};
-	return n$1;
+	return n;
 }, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
 			done: !0,
 			value: void 0
 		});
 	};
 	t.on({
 		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !1,
 				value: S
-			}), i$1.push(S);
+			}), i.push(S);
 		},
 		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
 		},
 		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !0,
 				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
+			}), l(), a = i.length, i.push(S);
 		}
 	});
-	let g$1 = {
-		[e]: () => g$1,
+	let g = {
+		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
+				let K = n++;
+				if (K >= i.length) {
 					let et = r();
-					return u$1.push(et), et.p;
+					return u.push(et), et.p;
 				}
 				return {
 					done: !1,
-					value: i$1[K$1]
+					value: i[K]
 				};
 			}
-			if (n$1 > a) return {
+			if (n > a) return {
 				done: !0,
 				value: void 0
 			};
-			let S = n$1++, d$1 = i$1[S];
+			let S = n++, d = i[S];
 			if (S !== a) return {
 				done: !1,
-				value: d$1
+				value: d
 			};
-			if (s) throw d$1;
+			if (s) throw d;
 			return {
 				done: !0,
-				value: d$1
+				value: d
 			};
 		}
 	};
-	return g$1;
+	return g;
 }, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
 }, Et = Or.toString();
 var An = Pr(C);
 function te$1() {
@@ -3027,9 +3025,9 @@ const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
-		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
-			result += t[i$1];
-			const node = nodes[i$1];
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
 			if (node !== void 0) result += resolveSSRNode(node);
 		}
 		t = result + t[nodes.length];
@@ -3042,7 +3040,7 @@ function escape(s, attr) {
 		if (!attr && t === "function") return escape(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i$1 = 0; i$1 < s.length; i$1++) s[i$1] = escape(s[i$1]);
+			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
 		if (attr && t === "boolean") return String(s);
@@ -3086,9 +3084,9 @@ function resolveSSRNode(node, top) {
 	if (Array.isArray(node)) {
 		let prev = {};
 		let mapped = "";
-		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
-			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
-			mapped += resolveSSRNode(prev = node[i$1]);
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
 		}
 		return mapped;
 	}
@@ -3117,10 +3115,9 @@ const App = () => {
 	const [user] = createResource(userId, asyncFetchUser);
 	return ssr(_tmpl$, user.loading && _tmpl$2, user.error && ssr(_tmpl$3, escape(user.error.message)), user() && ssr(_tmpl$4, escape(user()?.name)));
 };
-var config_test_default = App;
 
 //#endregion
-export { config_test_default as default };"
+export { App as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform SSR generate mode 1`] = `
@@ -3135,39 +3132,39 @@ function handleError(err, owner = Owner) {
 	const error = castError(err);
 	if (!fns) throw error;
 	try {
-		for (const f$1 of fns) f$1(error);
+		for (const f of fns) f(error);
 	} catch (e) {
 		handleError(e, owner && owner.owner || null);
 	}
 }
 let Owner = null;
 function createOwner() {
-	const o$2 = {
+	const o = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
-	else Owner.owned.push(o$2);
-	return o$2;
+	if (Owner) if (!Owner.owned) Owner.owned = [o];
+	else Owner.owned.push(o);
+	return o;
 }
 function createSignal(value, options) {
-	return [() => value, (v$2) => {
-		return value = typeof v$2 === "function" ? v$2(value) : v$2;
+	return [() => value, (v) => {
+		return value = typeof v === "function" ? v(value) : v;
 	}];
 }
 function createMemo(fn, value) {
 	Owner = createOwner();
-	let v$2;
+	let v;
 	try {
-		v$2 = fn(value);
+		v = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$2;
+	return () => v;
 }
 function createContext(defaultValue) {
 	const id = Symbol("context");
@@ -3183,22 +3180,22 @@ function useContext(context) {
 function children(fn) {
 	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$2 = memo();
-		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
+		const c = memo();
+		return Array.isArray(c) ? c : c != null ? [c] : [];
 	};
 	return memo;
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i$1 = 0; i$1 < children$1.length; i$1++) {
-			const result = resolveChildren(children$1[i$1]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id) {
 	return function provider(props) {
@@ -3238,7 +3235,7 @@ function createResource(source, fetcher, options = {}) {
 	const id = sharedConfig.getNextContextId();
 	let resource = {};
 	let value = options.storage ? options.storage(options.initialValue)[0]() : options.initialValue;
-	let p$1;
+	let p;
 	let error;
 	if (sharedConfig.context.async && options.ssrLoadFrom !== "initial") {
 		resource = sharedConfig.context.resources[id] || (sharedConfig.context.resources[id] = {});
@@ -3293,59 +3290,59 @@ function createResource(source, fetcher, options = {}) {
 		} finally {
 			resourceContext = null;
 		}
-		if (!p$1) {
+		if (!p) {
 			if (lookup == null || lookup === false) return;
-			p$1 = fetcher(lookup, { value });
+			p = fetcher(lookup, { value });
 		}
-		if (p$1 != void 0 && typeof p$1 === "object" && "then" in p$1) {
+		if (p != void 0 && typeof p === "object" && "then" in p) {
 			read._loading = true;
 			read.state = "pending";
-			p$1 = p$1.then((res) => {
+			p = p.then((res) => {
 				read._loading = false;
 				read.state = "ready";
 				ctx.resources[id].data = res;
-				p$1 = null;
+				p = null;
 				notifySuspense(contexts);
 				return res;
 			}).catch((err) => {
 				read._loading = false;
 				read.state = "errored";
 				read.error = error = castError(err);
-				p$1 = null;
+				p = null;
 				notifySuspense(contexts);
 				throw error;
 			});
-			if (ctx.serialize) ctx.serialize(id, p$1, options.deferStream);
-			return p$1;
+			if (ctx.serialize) ctx.serialize(id, p, options.deferStream);
+			return p;
 		}
-		ctx.resources[id].data = p$1;
-		if (ctx.serialize) ctx.serialize(id, p$1);
-		p$1 = null;
+		ctx.resources[id].data = p;
+		if (ctx.serialize) ctx.serialize(id, p);
+		p = null;
 		return ctx.resources[id].data;
 	}
 	if (options.ssrLoadFrom !== "initial") load();
 	const ref = [read, {
 		refetch: load,
-		mutate: (v$2) => value = v$2
+		mutate: (v) => value = v
 	}];
-	if (p$1) resource.ref = ref;
+	if (p) resource.ref = ref;
 	return ref;
 }
-function suspenseComplete(c$2) {
-	for (const r of c$2.resources.values()) if (r._loading) return false;
+function suspenseComplete(c) {
+	for (const r of c.resources.values()) if (r._loading) return false;
 	return true;
 }
 function notifySuspense(contexts) {
-	for (const c$2 of contexts) {
-		if (!suspenseComplete(c$2)) continue;
-		c$2.completed();
-		contexts.delete(c$2);
+	for (const c of contexts) {
+		if (!suspenseComplete(c)) continue;
+		c.completed();
+		contexts.delete(c);
 	}
 }
 
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
 var rt = {
 	0: "Symbol.asyncIterator",
@@ -3408,20 +3405,20 @@ var rt = {
 	6: Number.NEGATIVE_INFINITY,
 	7: NaN
 };
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
 		i: r,
 		s: t,
-		c: n$1,
+		c: n,
 		m: a,
 		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
 		o: S,
-		l: d$1
+		l: d
 	};
 }
 function F(e) {
@@ -3466,29 +3463,29 @@ var re = () => {
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 }, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
 	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
 		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
 		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
 }, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
+	let t = 0, n = {
+		[e]: () => n,
 		next: () => {
 			if (t > r.d) return {
 				done: !0,
@@ -3502,69 +3499,69 @@ var re = () => {
 			};
 		}
 	};
-	return n$1;
+	return n;
 }, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
 			done: !0,
 			value: void 0
 		});
 	};
 	t.on({
 		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !1,
 				value: S
-			}), i$1.push(S);
+			}), i.push(S);
 		},
 		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
 		},
 		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !0,
 				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
+			}), l(), a = i.length, i.push(S);
 		}
 	});
-	let g$1 = {
-		[e]: () => g$1,
+	let g = {
+		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
+				let K = n++;
+				if (K >= i.length) {
 					let et = r();
-					return u$1.push(et), et.p;
+					return u.push(et), et.p;
 				}
 				return {
 					done: !1,
-					value: i$1[K$1]
+					value: i[K]
 				};
 			}
-			if (n$1 > a) return {
+			if (n > a) return {
 				done: !0,
 				value: void 0
 			};
-			let S = n$1++, d$1 = i$1[S];
+			let S = n++, d = i[S];
 			if (S !== a) return {
 				done: !1,
-				value: d$1
+				value: d
 			};
-			if (s) throw d$1;
+			if (s) throw d;
 			return {
 				done: !0,
-				value: d$1
+				value: d
 			};
 		}
 	};
-	return g$1;
+	return g;
 }, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
 }, Et = Or.toString();
 var An = Pr(C);
 function te$1() {
@@ -4298,9 +4295,9 @@ const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
-		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
-			result += t[i$1];
-			const node = nodes[i$1];
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
 			if (node !== void 0) result += resolveSSRNode(node);
 		}
 		t = result + t[nodes.length];
@@ -4313,7 +4310,7 @@ function escape(s, attr) {
 		if (!attr && t === "function") return escape(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i$1 = 0; i$1 < s.length; i$1++) s[i$1] = escape(s[i$1]);
+			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
 		if (attr && t === "boolean") return String(s);
@@ -4357,9 +4354,9 @@ function resolveSSRNode(node, top) {
 	if (Array.isArray(node)) {
 		let prev = {};
 		let mapped = "";
-		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
-			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
-			mapped += resolveSSRNode(prev = node[i$1]);
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
 		}
 		return mapped;
 	}
@@ -4388,10 +4385,9 @@ const App = () => {
 	const [user] = createResource(userId, asyncFetchUser);
 	return ssr(_tmpl$, user.loading && _tmpl$2, user.error && ssr(_tmpl$3, escape(user.error.message)), user() && ssr(_tmpl$4, escape(user()?.name)));
 };
-var config_test_default = App;
 
 //#endregion
-export { config_test_default as default };"
+export { App as default };"
 `;
 
 exports[`rolldown-plugin-solid src should transform custom generated with hydratable 1`] = `
@@ -4441,10 +4437,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -4493,7 +4489,7 @@ function createResource(pSource, pFetcher, pOptions) {
 		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
 		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
 	}
-	function loadEnd(p, v, error$1, key) {
+	function loadEnd(p, v, error, key) {
 		if (pr === p) {
 			pr = null;
 			key !== void 0 && (resolved = true);
@@ -4504,9 +4500,9 @@ function createResource(pSource, pFetcher, pOptions) {
 				loadedUnderTransition = false;
 				runUpdates(() => {
 					Transition.running = true;
-					completeLoad(v, error$1);
+					completeLoad(v, error);
 				}, false);
-			} else completeLoad(v, error$1);
+			} else completeLoad(v, error);
 		}
 		return v;
 	}
@@ -4544,7 +4540,7 @@ function createResource(pSource, pFetcher, pOptions) {
 			return;
 		}
 		if (Transition && pr) Transition.promises.delete(pr);
-		let error$1;
+		let error;
 		const p = initP !== NO_INIT ? initP : untrack(() => {
 			try {
 				return fetcher(lookup, {
@@ -4552,11 +4548,11 @@ function createResource(pSource, pFetcher, pOptions) {
 					refetching
 				});
 			} catch (fetcherError) {
-				error$1 = fetcherError;
+				error = fetcherError;
 			}
 		});
-		if (error$1 !== void 0) {
-			loadEnd(pr, void 0, castError(error$1), lookup);
+		if (error !== void 0) {
+			loadEnd(pr, void 0, castError(error), lookup);
 			return;
 		} else if (!isPromise(p)) {
 			loadEnd(pr, p, void 0, lookup);
@@ -4861,9 +4857,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -5152,9 +5148,9 @@ function insert(parent, accessor, marker, initial) {
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
 }
-function getNextElement(template$1) {
+function getNextElement(template) {
 	let node, key;
-	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template$1();
+	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template();
 	if (sharedConfig.completed) sharedConfig.completed.add(node);
 	sharedConfig.registry.delete(key);
 	return node;
@@ -5338,10 +5334,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-var config_test_default = App;
 
 //#endregion
-export { config_test_default as default };"
+export { App as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform custom generated with hydratable 1`] = `
@@ -5391,10 +5386,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -5443,7 +5438,7 @@ function createResource(pSource, pFetcher, pOptions) {
 		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
 		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
 	}
-	function loadEnd(p, v, error$1, key) {
+	function loadEnd(p, v, error, key) {
 		if (pr === p) {
 			pr = null;
 			key !== void 0 && (resolved = true);
@@ -5454,9 +5449,9 @@ function createResource(pSource, pFetcher, pOptions) {
 				loadedUnderTransition = false;
 				runUpdates(() => {
 					Transition.running = true;
-					completeLoad(v, error$1);
+					completeLoad(v, error);
 				}, false);
-			} else completeLoad(v, error$1);
+			} else completeLoad(v, error);
 		}
 		return v;
 	}
@@ -5494,7 +5489,7 @@ function createResource(pSource, pFetcher, pOptions) {
 			return;
 		}
 		if (Transition && pr) Transition.promises.delete(pr);
-		let error$1;
+		let error;
 		const p = initP !== NO_INIT ? initP : untrack(() => {
 			try {
 				return fetcher(lookup, {
@@ -5502,11 +5497,11 @@ function createResource(pSource, pFetcher, pOptions) {
 					refetching
 				});
 			} catch (fetcherError) {
-				error$1 = fetcherError;
+				error = fetcherError;
 			}
 		});
-		if (error$1 !== void 0) {
-			loadEnd(pr, void 0, castError(error$1), lookup);
+		if (error !== void 0) {
+			loadEnd(pr, void 0, castError(error), lookup);
 			return;
 		} else if (!isPromise(p)) {
 			loadEnd(pr, p, void 0, lookup);
@@ -5811,9 +5806,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -6102,9 +6097,9 @@ function insert(parent, accessor, marker, initial) {
 	if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 	createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
 }
-function getNextElement(template$1) {
+function getNextElement(template) {
 	let node, key;
-	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template$1();
+	if (!isHydrating() || !(node = sharedConfig.registry.get(key = getHydrationKey()))) return template();
 	if (sharedConfig.completed) sharedConfig.completed.add(node);
 	sharedConfig.registry.delete(key);
 	return node;
@@ -6288,10 +6283,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-var config_test_default = App;
 
 //#endregion
-export { config_test_default as default };"
+export { App as default };"
 `;
 
 exports[`rolldown-plugin-solid src should transform minimal builtIns 1`] = `
@@ -6341,10 +6335,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -6393,7 +6387,7 @@ function createResource(pSource, pFetcher, pOptions) {
 		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
 		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
 	}
-	function loadEnd(p, v, error$1, key) {
+	function loadEnd(p, v, error, key) {
 		if (pr === p) {
 			pr = null;
 			key !== void 0 && (resolved = true);
@@ -6404,9 +6398,9 @@ function createResource(pSource, pFetcher, pOptions) {
 				loadedUnderTransition = false;
 				runUpdates(() => {
 					Transition.running = true;
-					completeLoad(v, error$1);
+					completeLoad(v, error);
 				}, false);
-			} else completeLoad(v, error$1);
+			} else completeLoad(v, error);
 		}
 		return v;
 	}
@@ -6444,7 +6438,7 @@ function createResource(pSource, pFetcher, pOptions) {
 			return;
 		}
 		if (Transition && pr) Transition.promises.delete(pr);
-		let error$1;
+		let error;
 		const p = initP !== NO_INIT ? initP : untrack(() => {
 			try {
 				return fetcher(lookup, {
@@ -6452,11 +6446,11 @@ function createResource(pSource, pFetcher, pOptions) {
 					refetching
 				});
 			} catch (fetcherError) {
-				error$1 = fetcherError;
+				error = fetcherError;
 			}
 		});
-		if (error$1 !== void 0) {
-			loadEnd(pr, void 0, castError(error$1), lookup);
+		if (error !== void 0) {
+			loadEnd(pr, void 0, castError(error), lookup);
 			return;
 		} else if (!isPromise(p)) {
 			loadEnd(pr, p, void 0, lookup);
@@ -6761,9 +6755,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -7214,10 +7208,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-var config_test_default = App;
 
 //#endregion
-export { config_test_default as default };"
+export { App as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform minimal builtIns 1`] = `
@@ -7267,10 +7260,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -7319,7 +7312,7 @@ function createResource(pSource, pFetcher, pOptions) {
 		if (options.ssrLoadFrom === "initial") initP = options.initialValue;
 		else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
 	}
-	function loadEnd(p, v, error$1, key) {
+	function loadEnd(p, v, error, key) {
 		if (pr === p) {
 			pr = null;
 			key !== void 0 && (resolved = true);
@@ -7330,9 +7323,9 @@ function createResource(pSource, pFetcher, pOptions) {
 				loadedUnderTransition = false;
 				runUpdates(() => {
 					Transition.running = true;
-					completeLoad(v, error$1);
+					completeLoad(v, error);
 				}, false);
-			} else completeLoad(v, error$1);
+			} else completeLoad(v, error);
 		}
 		return v;
 	}
@@ -7370,7 +7363,7 @@ function createResource(pSource, pFetcher, pOptions) {
 			return;
 		}
 		if (Transition && pr) Transition.promises.delete(pr);
-		let error$1;
+		let error;
 		const p = initP !== NO_INIT ? initP : untrack(() => {
 			try {
 				return fetcher(lookup, {
@@ -7378,11 +7371,11 @@ function createResource(pSource, pFetcher, pOptions) {
 					refetching
 				});
 			} catch (fetcherError) {
-				error$1 = fetcherError;
+				error = fetcherError;
 			}
 		});
-		if (error$1 !== void 0) {
-			loadEnd(pr, void 0, castError(error$1), lookup);
+		if (error !== void 0) {
+			loadEnd(pr, void 0, castError(error), lookup);
 			return;
 		} else if (!isPromise(p)) {
 			loadEnd(pr, p, void 0, lookup);
@@ -7687,9 +7680,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -8140,8 +8133,7 @@ const App = () => {
 		return _el$;
 	})();
 };
-var config_test_default = App;
 
 //#endregion
-export { config_test_default as default };"
+export { App as default };"
 `;

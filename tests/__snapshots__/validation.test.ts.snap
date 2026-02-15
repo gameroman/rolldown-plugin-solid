@@ -280,7 +280,7 @@ export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements
 
 exports[`rolldown-plugin-solid src should transform complex HTML with SSR 1`] = `
 "//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
 var rt = {
 	0: "Symbol.asyncIterator",
@@ -343,20 +343,20 @@ var rt = {
 	6: Number.NEGATIVE_INFINITY,
 	7: NaN
 };
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
 		i: r,
 		s: t,
-		c: n$1,
+		c: n,
 		m: a,
 		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
 		o: S,
-		l: d$1
+		l: d
 	};
 }
 function F(e) {
@@ -401,29 +401,29 @@ var re = () => {
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 }, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
 	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
 		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
 		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
 }, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
+	let t = 0, n = {
+		[e]: () => n,
 		next: () => {
 			if (t > r.d) return {
 				done: !0,
@@ -437,69 +437,69 @@ var re = () => {
 			};
 		}
 	};
-	return n$1;
+	return n;
 }, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
 			done: !0,
 			value: void 0
 		});
 	};
 	t.on({
 		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !1,
 				value: S
-			}), i$1.push(S);
+			}), i.push(S);
 		},
 		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
 		},
 		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !0,
 				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
+			}), l(), a = i.length, i.push(S);
 		}
 	});
-	let g$1 = {
-		[e]: () => g$1,
+	let g = {
+		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
+				let K = n++;
+				if (K >= i.length) {
 					let et = r();
-					return u$1.push(et), et.p;
+					return u.push(et), et.p;
 				}
 				return {
 					done: !1,
-					value: i$1[K$1]
+					value: i[K]
 				};
 			}
-			if (n$1 > a) return {
+			if (n > a) return {
 				done: !0,
 				value: void 0
 			};
-			let S = n$1++, d$1 = i$1[S];
+			let S = n++, d = i[S];
 			if (S !== a) return {
 				done: !1,
-				value: d$1
+				value: d
 			};
-			if (s) throw d$1;
+			if (s) throw d;
 			return {
 				done: !0,
-				value: d$1
+				value: d
 			};
 		}
 	};
-	return g$1;
+	return g;
 }, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
 }, Et = Or.toString();
 var An = Pr(C);
 function te$1() {
@@ -1233,9 +1233,9 @@ const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
-		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
-			result += t[i$1];
-			const node = nodes[i$1];
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
 			if (node !== void 0) result += resolveSSRNode(node);
 		}
 		t = result + t[nodes.length];
@@ -1249,9 +1249,9 @@ function resolveSSRNode(node, top) {
 	if (Array.isArray(node)) {
 		let prev = {};
 		let mapped = "";
-		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
-			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
-			mapped += resolveSSRNode(prev = node[i$1]);
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
 		}
 		return mapped;
 	}
@@ -1282,7 +1282,7 @@ export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements
 
 exports[`rolldown-plugin-solid dist should transform complex HTML with SSR 1`] = `
 "//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
 var rt = {
 	0: "Symbol.asyncIterator",
@@ -1345,20 +1345,20 @@ var rt = {
 	6: Number.NEGATIVE_INFINITY,
 	7: NaN
 };
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
 		i: r,
 		s: t,
-		c: n$1,
+		c: n,
 		m: a,
 		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
 		o: S,
-		l: d$1
+		l: d
 	};
 }
 function F(e) {
@@ -1403,29 +1403,29 @@ var re = () => {
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 }, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
 	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
 		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
 		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
 }, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
+	let t = 0, n = {
+		[e]: () => n,
 		next: () => {
 			if (t > r.d) return {
 				done: !0,
@@ -1439,69 +1439,69 @@ var re = () => {
 			};
 		}
 	};
-	return n$1;
+	return n;
 }, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
 			done: !0,
 			value: void 0
 		});
 	};
 	t.on({
 		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !1,
 				value: S
-			}), i$1.push(S);
+			}), i.push(S);
 		},
 		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
 		},
 		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !0,
 				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
+			}), l(), a = i.length, i.push(S);
 		}
 	});
-	let g$1 = {
-		[e]: () => g$1,
+	let g = {
+		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
+				let K = n++;
+				if (K >= i.length) {
 					let et = r();
-					return u$1.push(et), et.p;
+					return u.push(et), et.p;
 				}
 				return {
 					done: !1,
-					value: i$1[K$1]
+					value: i[K]
 				};
 			}
-			if (n$1 > a) return {
+			if (n > a) return {
 				done: !0,
 				value: void 0
 			};
-			let S = n$1++, d$1 = i$1[S];
+			let S = n++, d = i[S];
 			if (S !== a) return {
 				done: !1,
-				value: d$1
+				value: d
 			};
-			if (s) throw d$1;
+			if (s) throw d;
 			return {
 				done: !0,
-				value: d$1
+				value: d
 			};
 		}
 	};
-	return g$1;
+	return g;
 }, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
 }, Et = Or.toString();
 var An = Pr(C);
 function te$1() {
@@ -2235,9 +2235,9 @@ const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
-		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
-			result += t[i$1];
-			const node = nodes[i$1];
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
 			if (node !== void 0) result += resolveSSRNode(node);
 		}
 		t = result + t[nodes.length];
@@ -2251,9 +2251,9 @@ function resolveSSRNode(node, top) {
 	if (Array.isArray(node)) {
 		let prev = {};
 		let mapped = "";
-		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
-			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
-			mapped += resolveSSRNode(prev = node[i$1]);
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
 		}
 		return mapped;
 	}
@@ -2356,10 +2356,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -2625,9 +2625,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -2842,8 +2842,8 @@ function mergeProps$1(...sources) {
 		const source = sources[i];
 		if (!source) continue;
 		const sourceKeys = Object.getOwnPropertyNames(source);
-		for (let i$1 = sourceKeys.length - 1; i$1 >= 0; i$1--) {
-			const key = sourceKeys[i$1];
+		for (let i = sourceKeys.length - 1; i >= 0; i--) {
+			const key = sourceKeys[i];
 			if (key === "__proto__" || key === "constructor") continue;
 			const desc = Object.getOwnPropertyDescriptor(source, key);
 			if (!defined[key]) defined[key] = desc.get ? {
@@ -2852,10 +2852,10 @@ function mergeProps$1(...sources) {
 				get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
 			} : desc.value !== void 0 ? desc : void 0;
 			else {
-				const sources$1 = sourcesMap[key];
-				if (sources$1) {
-					if (desc.get) sources$1.push(desc.get.bind(source));
-					else if (desc.value !== void 0) sources$1.push(() => desc.value);
+				const sources = sourcesMap[key];
+				if (sources) {
+					if (desc.get) sources.push(desc.get.bind(source));
+					else if (desc.value !== void 0) sources.push(() => desc.value);
 				}
 			}
 		}
@@ -2873,8 +2873,8 @@ function mergeProps$1(...sources) {
 //#endregion
 //#region node_modules/solid-js/universal/dist/universal.js
 const memo$1 = (fn) => createMemo(() => fn());
-function createRenderer$1({ createElement: createElement$1, createTextNode: createTextNode$1, isTextNode, replaceText, insertNode: insertNode$1, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
-	function insert$1(parent, accessor, marker, initial) {
+function createRenderer$1({ createElement, createTextNode, isTextNode, replaceText, insertNode, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
+	function insert(parent, accessor, marker, initial) {
 		if (marker !== void 0 && !initial) initial = [];
 		if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 		createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
@@ -2888,11 +2888,11 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			if (multi) {
 				let node = current[0];
 				if (node && isTextNode(node)) replaceText(node, value);
-				else node = createTextNode$1(value);
+				else node = createTextNode(value);
 				current = cleanChildren(parent, current, marker, node);
 			} else if (current !== "" && typeof current === "string") replaceText(getFirstChild(parent), current = value);
 			else {
-				cleanChildren(parent, current, marker, createTextNode$1(value));
+				cleanChildren(parent, current, marker, createTextNode(value));
 				current = value;
 			}
 		} else if (value == null || t === "boolean") current = cleanChildren(parent, current, marker);
@@ -2921,7 +2921,7 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			if (Array.isArray(current)) {
 				if (multi) return current = cleanChildren(parent, current, marker, value);
 				cleanChildren(parent, current, null, value);
-			} else if (current == null || current === "" || !getFirstChild(parent)) insertNode$1(parent, value);
+			} else if (current == null || current === "" || !getFirstChild(parent)) insertNode(parent, value);
 			else replaceNode(parent, value, getFirstChild(parent));
 			current = value;
 		}
@@ -2933,7 +2933,7 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			let item = array[i], t;
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
-			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode$1(item));
+			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
 			else if (t === "function") if (unwrap) {
 				while (typeof item === "function") item = item();
 				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
@@ -2959,15 +2959,15 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			}
 			if (aEnd === aStart) {
 				const node = bEnd < bLength ? bStart ? getNextSibling(b[bStart - 1]) : b[bEnd - bStart] : after;
-				while (bStart < bEnd) insertNode$1(parentNode, b[bStart++], node);
+				while (bStart < bEnd) insertNode(parentNode, b[bStart++], node);
 			} else if (bEnd === bStart) while (aStart < aEnd) {
 				if (!map || !map.has(a[aStart])) removeNode(parentNode, a[aStart]);
 				aStart++;
 			}
 			else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
 				const node = getNextSibling(a[--aEnd]);
-				insertNode$1(parentNode, b[bStart++], getNextSibling(a[aStart++]));
-				insertNode$1(parentNode, b[--bEnd], node);
+				insertNode(parentNode, b[bStart++], getNextSibling(a[aStart++]));
+				insertNode(parentNode, b[--bEnd], node);
 				a[aEnd] = b[bEnd];
 			} else {
 				if (!map) {
@@ -2984,7 +2984,7 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 					}
 					if (sequence > index - bStart) {
 						const node = a[aStart];
-						while (bStart < index) insertNode$1(parentNode, b[bStart++], node);
+						while (bStart < index) insertNode(parentNode, b[bStart++], node);
 					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
 				} else aStart++;
 				else removeNode(parentNode, a[aStart++]);
@@ -2995,28 +2995,28 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 		if (marker === void 0) {
 			let removed;
 			while (removed = getFirstChild(parent)) removeNode(parent, removed);
-			replacement && insertNode$1(parent, replacement);
+			replacement && insertNode(parent, replacement);
 			return "";
 		}
-		const node = replacement || createTextNode$1("");
+		const node = replacement || createTextNode("");
 		if (current.length) {
 			let inserted = false;
 			for (let i = current.length - 1; i >= 0; i--) {
 				const el = current[i];
 				if (node !== el) {
 					const isParent = getParentNode(el) === parent;
-					if (!inserted && !i) isParent ? replaceNode(parent, node, el) : insertNode$1(parent, node, marker);
+					if (!inserted && !i) isParent ? replaceNode(parent, node, el) : insertNode(parent, node, marker);
 					else isParent && removeNode(parent, el);
 				} else inserted = true;
 			}
-		} else insertNode$1(parent, node, marker);
+		} else insertNode(parent, node, marker);
 		return [node];
 	}
 	function appendNodes(parent, array, marker) {
-		for (let i = 0, len = array.length; i < len; i++) insertNode$1(parent, array[i], marker);
+		for (let i = 0, len = array.length; i < len; i++) insertNode(parent, array[i], marker);
 	}
 	function replaceNode(parent, newNode, oldNode) {
-		insertNode$1(parent, newNode, oldNode);
+		insertNode(parent, newNode, oldNode);
 		removeNode(parent, oldNode);
 	}
 	function spreadExpression(node, props, prevProps = {}, skipChildren) {
@@ -3039,18 +3039,18 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			let disposer;
 			createRoot((dispose) => {
 				disposer = dispose;
-				insert$1(element, code());
+				insert(element, code());
 			});
 			return disposer;
 		},
-		insert: insert$1,
+		insert,
 		spread(node, accessor, skipChildren) {
 			if (typeof accessor === "function") createRenderEffect((current) => spreadExpression(node, accessor(), current, skipChildren));
 			else spreadExpression(node, accessor, void 0, skipChildren);
 		},
-		createElement: createElement$1,
-		createTextNode: createTextNode$1,
-		insertNode: insertNode$1,
+		createElement,
+		createTextNode,
+		insertNode,
 		setProp(node, name, value, prev) {
 			setProperty(node, name, value, prev);
 			return value;
@@ -3212,10 +3212,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -3481,9 +3481,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -3698,8 +3698,8 @@ function mergeProps$1(...sources) {
 		const source = sources[i];
 		if (!source) continue;
 		const sourceKeys = Object.getOwnPropertyNames(source);
-		for (let i$1 = sourceKeys.length - 1; i$1 >= 0; i$1--) {
-			const key = sourceKeys[i$1];
+		for (let i = sourceKeys.length - 1; i >= 0; i--) {
+			const key = sourceKeys[i];
 			if (key === "__proto__" || key === "constructor") continue;
 			const desc = Object.getOwnPropertyDescriptor(source, key);
 			if (!defined[key]) defined[key] = desc.get ? {
@@ -3708,10 +3708,10 @@ function mergeProps$1(...sources) {
 				get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
 			} : desc.value !== void 0 ? desc : void 0;
 			else {
-				const sources$1 = sourcesMap[key];
-				if (sources$1) {
-					if (desc.get) sources$1.push(desc.get.bind(source));
-					else if (desc.value !== void 0) sources$1.push(() => desc.value);
+				const sources = sourcesMap[key];
+				if (sources) {
+					if (desc.get) sources.push(desc.get.bind(source));
+					else if (desc.value !== void 0) sources.push(() => desc.value);
 				}
 			}
 		}
@@ -3729,8 +3729,8 @@ function mergeProps$1(...sources) {
 //#endregion
 //#region node_modules/solid-js/universal/dist/universal.js
 const memo$1 = (fn) => createMemo(() => fn());
-function createRenderer$1({ createElement: createElement$1, createTextNode: createTextNode$1, isTextNode, replaceText, insertNode: insertNode$1, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
-	function insert$1(parent, accessor, marker, initial) {
+function createRenderer$1({ createElement, createTextNode, isTextNode, replaceText, insertNode, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
+	function insert(parent, accessor, marker, initial) {
 		if (marker !== void 0 && !initial) initial = [];
 		if (typeof accessor !== "function") return insertExpression(parent, accessor, initial, marker);
 		createRenderEffect((current) => insertExpression(parent, accessor(), current, marker), initial);
@@ -3744,11 +3744,11 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			if (multi) {
 				let node = current[0];
 				if (node && isTextNode(node)) replaceText(node, value);
-				else node = createTextNode$1(value);
+				else node = createTextNode(value);
 				current = cleanChildren(parent, current, marker, node);
 			} else if (current !== "" && typeof current === "string") replaceText(getFirstChild(parent), current = value);
 			else {
-				cleanChildren(parent, current, marker, createTextNode$1(value));
+				cleanChildren(parent, current, marker, createTextNode(value));
 				current = value;
 			}
 		} else if (value == null || t === "boolean") current = cleanChildren(parent, current, marker);
@@ -3777,7 +3777,7 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			if (Array.isArray(current)) {
 				if (multi) return current = cleanChildren(parent, current, marker, value);
 				cleanChildren(parent, current, null, value);
-			} else if (current == null || current === "" || !getFirstChild(parent)) insertNode$1(parent, value);
+			} else if (current == null || current === "" || !getFirstChild(parent)) insertNode(parent, value);
 			else replaceNode(parent, value, getFirstChild(parent));
 			current = value;
 		}
@@ -3789,7 +3789,7 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			let item = array[i], t;
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
-			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode$1(item));
+			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
 			else if (t === "function") if (unwrap) {
 				while (typeof item === "function") item = item();
 				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
@@ -3815,15 +3815,15 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			}
 			if (aEnd === aStart) {
 				const node = bEnd < bLength ? bStart ? getNextSibling(b[bStart - 1]) : b[bEnd - bStart] : after;
-				while (bStart < bEnd) insertNode$1(parentNode, b[bStart++], node);
+				while (bStart < bEnd) insertNode(parentNode, b[bStart++], node);
 			} else if (bEnd === bStart) while (aStart < aEnd) {
 				if (!map || !map.has(a[aStart])) removeNode(parentNode, a[aStart]);
 				aStart++;
 			}
 			else if (a[aStart] === b[bEnd - 1] && b[bStart] === a[aEnd - 1]) {
 				const node = getNextSibling(a[--aEnd]);
-				insertNode$1(parentNode, b[bStart++], getNextSibling(a[aStart++]));
-				insertNode$1(parentNode, b[--bEnd], node);
+				insertNode(parentNode, b[bStart++], getNextSibling(a[aStart++]));
+				insertNode(parentNode, b[--bEnd], node);
 				a[aEnd] = b[bEnd];
 			} else {
 				if (!map) {
@@ -3840,7 +3840,7 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 					}
 					if (sequence > index - bStart) {
 						const node = a[aStart];
-						while (bStart < index) insertNode$1(parentNode, b[bStart++], node);
+						while (bStart < index) insertNode(parentNode, b[bStart++], node);
 					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
 				} else aStart++;
 				else removeNode(parentNode, a[aStart++]);
@@ -3851,28 +3851,28 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 		if (marker === void 0) {
 			let removed;
 			while (removed = getFirstChild(parent)) removeNode(parent, removed);
-			replacement && insertNode$1(parent, replacement);
+			replacement && insertNode(parent, replacement);
 			return "";
 		}
-		const node = replacement || createTextNode$1("");
+		const node = replacement || createTextNode("");
 		if (current.length) {
 			let inserted = false;
 			for (let i = current.length - 1; i >= 0; i--) {
 				const el = current[i];
 				if (node !== el) {
 					const isParent = getParentNode(el) === parent;
-					if (!inserted && !i) isParent ? replaceNode(parent, node, el) : insertNode$1(parent, node, marker);
+					if (!inserted && !i) isParent ? replaceNode(parent, node, el) : insertNode(parent, node, marker);
 					else isParent && removeNode(parent, el);
 				} else inserted = true;
 			}
-		} else insertNode$1(parent, node, marker);
+		} else insertNode(parent, node, marker);
 		return [node];
 	}
 	function appendNodes(parent, array, marker) {
-		for (let i = 0, len = array.length; i < len; i++) insertNode$1(parent, array[i], marker);
+		for (let i = 0, len = array.length; i < len; i++) insertNode(parent, array[i], marker);
 	}
 	function replaceNode(parent, newNode, oldNode) {
-		insertNode$1(parent, newNode, oldNode);
+		insertNode(parent, newNode, oldNode);
 		removeNode(parent, oldNode);
 	}
 	function spreadExpression(node, props, prevProps = {}, skipChildren) {
@@ -3895,18 +3895,18 @@ function createRenderer$1({ createElement: createElement$1, createTextNode: crea
 			let disposer;
 			createRoot((dispose) => {
 				disposer = dispose;
-				insert$1(element, code());
+				insert(element, code());
 			});
 			return disposer;
 		},
-		insert: insert$1,
+		insert,
 		spread(node, accessor, skipChildren) {
 			if (typeof accessor === "function") createRenderEffect((current) => spreadExpression(node, accessor(), current, skipChildren));
 			else spreadExpression(node, accessor, void 0, skipChildren);
 		},
-		createElement: createElement$1,
-		createTextNode: createTextNode$1,
-		insertNode: insertNode$1,
+		createElement,
+		createTextNode,
+		insertNode,
 		setProp(node, name, value, prev) {
 			setProperty(node, name, value, prev);
 			return value;
@@ -4040,10 +4040,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -4297,9 +4297,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -4583,13 +4583,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -4831,10 +4831,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -5088,9 +5088,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -5374,13 +5374,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }

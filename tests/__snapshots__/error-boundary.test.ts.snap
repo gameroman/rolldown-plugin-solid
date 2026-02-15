@@ -56,10 +56,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -341,9 +341,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -657,13 +657,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -895,12 +895,12 @@ const NestedErrorComponent = () => {
 		_el$10.$$click = () => setLevel((l) => l + 1);
 		insert(_el$10, level, _el$13);
 		insert(_el$0, createComponent(ErrorBoundary, {
-			fallback: (err, reset$1) => (() => {
+			fallback: (err, reset) => (() => {
 				var _el$14 = _tmpl$5(), _el$15 = _el$14.firstChild;
 				_el$15.firstChild;
 				var _el$17 = _el$15.nextSibling;
 				insert(_el$15, () => err.message, null);
-				addEventListener(_el$17, "click", reset$1, true);
+				addEventListener(_el$17, "click", reset, true);
 				return _el$14;
 			})(),
 			get children() {
@@ -915,12 +915,12 @@ const ErrorBoundaryDemo = () => {
 		var _el$18 = _tmpl$6();
 		_el$18.firstChild;
 		insert(_el$18, createComponent(ErrorBoundary, {
-			fallback: (err, reset$1) => (() => {
+			fallback: (err, reset) => (() => {
 				var _el$20 = _tmpl$7(), _el$22 = _el$20.firstChild.nextSibling;
 				_el$22.firstChild;
 				var _el$24 = _el$22.nextSibling;
 				insert(_el$22, () => err.message, null);
-				addEventListener(_el$24, "click", reset$1, true);
+				addEventListener(_el$24, "click", reset, true);
 				return _el$20;
 			})(),
 			get children() {
@@ -934,11 +934,10 @@ const ErrorBoundaryDemo = () => {
 		return _el$18;
 	})();
 };
-var error_boundary_default = ErrorBoundaryDemo;
 delegateEvents(["click"]);
 
 //#endregion
-export { error_boundary_default as default };"
+export { ErrorBoundaryDemo as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with ErrorBoundary 1`] = `
@@ -997,10 +996,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -1282,9 +1281,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -1598,13 +1597,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -1836,12 +1835,12 @@ const NestedErrorComponent = () => {
 		_el$10.$$click = () => setLevel((l) => l + 1);
 		insert(_el$10, level, _el$13);
 		insert(_el$0, createComponent(ErrorBoundary, {
-			fallback: (err, reset$1) => (() => {
+			fallback: (err, reset) => (() => {
 				var _el$14 = _tmpl$5(), _el$15 = _el$14.firstChild;
 				_el$15.firstChild;
 				var _el$17 = _el$15.nextSibling;
 				insert(_el$15, () => err.message, null);
-				addEventListener(_el$17, "click", reset$1, true);
+				addEventListener(_el$17, "click", reset, true);
 				return _el$14;
 			})(),
 			get children() {
@@ -1856,12 +1855,12 @@ const ErrorBoundaryDemo = () => {
 		var _el$18 = _tmpl$6();
 		_el$18.firstChild;
 		insert(_el$18, createComponent(ErrorBoundary, {
-			fallback: (err, reset$1) => (() => {
+			fallback: (err, reset) => (() => {
 				var _el$20 = _tmpl$7(), _el$22 = _el$20.firstChild.nextSibling;
 				_el$22.firstChild;
 				var _el$24 = _el$22.nextSibling;
 				insert(_el$22, () => err.message, null);
-				addEventListener(_el$24, "click", reset$1, true);
+				addEventListener(_el$24, "click", reset, true);
 				return _el$20;
 			})(),
 			get children() {
@@ -1875,9 +1874,8 @@ const ErrorBoundaryDemo = () => {
 		return _el$18;
 	})();
 };
-var error_boundary_default = ErrorBoundaryDemo;
 delegateEvents(["click"]);
 
 //#endregion
-export { error_boundary_default as default };"
+export { ErrorBoundaryDemo as default };"
 `;

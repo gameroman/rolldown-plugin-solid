@@ -56,10 +56,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -142,8 +142,8 @@ function useContext(context) {
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
 }
 function children(fn) {
-	const children$1 = createMemo(fn);
-	const memo = createMemo(() => resolveChildren(children$1()));
+	const children = createMemo(fn);
+	const memo = createMemo(() => resolveChildren(children()));
 	memo.toArray = () => {
 		const c = memo();
 		return Array.isArray(c) ? c : c != null ? [c] : [];
@@ -349,9 +349,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -485,17 +485,17 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i = 0; i < children$1.length; i++) {
-			const result = resolveChildren(children$1[i]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id, options) {
 	return function provider(props) {
@@ -673,13 +673,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -964,11 +964,10 @@ const WebComponentsIntegration = () => {
 		return _el$15;
 	} });
 };
-var web_components_default = WebComponentsIntegration;
 delegateEvents(["click"]);
 
 //#endregion
-export { web_components_default as default };"
+export { WebComponentsIntegration as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform web components with contextToCustomElements enabled 1`] = `
@@ -1027,10 +1026,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -1113,8 +1112,8 @@ function useContext(context) {
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
 }
 function children(fn) {
-	const children$1 = createMemo(fn);
-	const memo = createMemo(() => resolveChildren(children$1()));
+	const children = createMemo(fn);
+	const memo = createMemo(() => resolveChildren(children()));
 	memo.toArray = () => {
 		const c = memo();
 		return Array.isArray(c) ? c : c != null ? [c] : [];
@@ -1320,9 +1319,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -1456,17 +1455,17 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i = 0; i < children$1.length; i++) {
-			const result = resolveChildren(children$1[i]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id, options) {
 	return function provider(props) {
@@ -1644,13 +1643,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -1935,11 +1934,10 @@ const WebComponentsIntegration = () => {
 		return _el$15;
 	} });
 };
-var web_components_default = WebComponentsIntegration;
 delegateEvents(["click"]);
 
 //#endregion
-export { web_components_default as default };"
+export { WebComponentsIntegration as default };"
 `;
 
 exports[`rolldown-plugin-solid src should transform web components with contextToCustomElements disabled 1`] = `
@@ -1998,10 +1996,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -2081,8 +2079,8 @@ function useContext(context) {
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
 }
 function children(fn) {
-	const children$1 = createMemo(fn);
-	const memo = createMemo(() => resolveChildren(children$1()));
+	const children = createMemo(fn);
+	const memo = createMemo(() => resolveChildren(children()));
 	memo.toArray = () => {
 		const c = memo();
 		return Array.isArray(c) ? c : c != null ? [c] : [];
@@ -2288,9 +2286,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -2424,17 +2422,17 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i = 0; i < children$1.length; i++) {
-			const result = resolveChildren(children$1[i]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id, options) {
 	return function provider(props) {
@@ -2612,13 +2610,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -2901,11 +2899,10 @@ const WebComponentsIntegration = () => {
 		return _el$13;
 	} });
 };
-var web_components_default = WebComponentsIntegration;
 delegateEvents(["click"]);
 
 //#endregion
-export { web_components_default as default };"
+export { WebComponentsIntegration as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform web components with contextToCustomElements disabled 1`] = `
@@ -2964,10 +2961,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -3047,8 +3044,8 @@ function useContext(context) {
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
 }
 function children(fn) {
-	const children$1 = createMemo(fn);
-	const memo = createMemo(() => resolveChildren(children$1()));
+	const children = createMemo(fn);
+	const memo = createMemo(() => resolveChildren(children()));
 	memo.toArray = () => {
 		const c = memo();
 		return Array.isArray(c) ? c : c != null ? [c] : [];
@@ -3254,9 +3251,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -3390,17 +3387,17 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i = 0; i < children$1.length; i++) {
-			const result = resolveChildren(children$1[i]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id, options) {
 	return function provider(props) {
@@ -3578,13 +3575,13 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-function delegateEvents(eventNames, document$1 = window.document) {
-	const e = document$1[$$EVENTS] || (document$1[$$EVENTS] = /* @__PURE__ */ new Set());
+function delegateEvents(eventNames, document = window.document) {
+	const e = document[$$EVENTS] || (document[$$EVENTS] = /* @__PURE__ */ new Set());
 	for (let i = 0, l = eventNames.length; i < l; i++) {
 		const name = eventNames[i];
 		if (!e.has(name)) {
 			e.add(name);
-			document$1.addEventListener(name, eventHandler);
+			document.addEventListener(name, eventHandler);
 		}
 	}
 }
@@ -3867,11 +3864,10 @@ const WebComponentsIntegration = () => {
 		return _el$13;
 	} });
 };
-var web_components_default = WebComponentsIntegration;
 delegateEvents(["click"]);
 
 //#endregion
-export { web_components_default as default };"
+export { WebComponentsIntegration as default };"
 `;
 
 exports[`rolldown-plugin-solid src should transform web components with SSR mode 1`] = `
@@ -3930,10 +3926,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -4013,8 +4009,8 @@ function useContext(context) {
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
 }
 function children(fn) {
-	const children$1 = createMemo(fn);
-	const memo = createMemo(() => resolveChildren(children$1()));
+	const children = createMemo(fn);
+	const memo = createMemo(() => resolveChildren(children()));
 	memo.toArray = () => {
 		const c = memo();
 		return Array.isArray(c) ? c : c != null ? [c] : [];
@@ -4220,9 +4216,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -4356,17 +4352,17 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i = 0; i < children$1.length; i++) {
-			const result = resolveChildren(children$1[i]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id, options) {
 	return function provider(props) {
@@ -4555,10 +4551,9 @@ const WebComponentsIntegration = () => {
 		return ssr(_tmpl$5, ssrHydrationKey(), escape(createComponent(RegularSolidComponent, {})), escape(createComponent(CustomElementWrapper, {})), escape(createComponent(NestedContextTest, {})), ssrStyle(\`padding: 1rem; margin: 1rem; border: 1px solid #ccc; border-radius: 4px;\`), ssrStyle(\`background: var(--theme-bg, #fff); color: var(--theme-color, #000); padding: 1rem;\`));
 	} });
 };
-var web_components_default = WebComponentsIntegration;
 
 //#endregion
-export { web_components_default as default };"
+export { WebComponentsIntegration as default };"
 `;
 
 exports[`rolldown-plugin-solid dist should transform web components with SSR mode 1`] = `
@@ -4617,10 +4612,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -4700,8 +4695,8 @@ function useContext(context) {
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
 }
 function children(fn) {
-	const children$1 = createMemo(fn);
-	const memo = createMemo(() => resolveChildren(children$1()));
+	const children = createMemo(fn);
+	const memo = createMemo(() => resolveChildren(children()));
 	memo.toArray = () => {
 		const c = memo();
 		return Array.isArray(c) ? c : c != null ? [c] : [];
@@ -4907,9 +4902,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -5043,17 +5038,17 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i = 0; i < children$1.length; i++) {
-			const result = resolveChildren(children$1[i]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id, options) {
 	return function provider(props) {
@@ -5242,8 +5237,7 @@ const WebComponentsIntegration = () => {
 		return ssr(_tmpl$5, ssrHydrationKey(), escape(createComponent(RegularSolidComponent, {})), escape(createComponent(CustomElementWrapper, {})), escape(createComponent(NestedContextTest, {})), ssrStyle(\`padding: 1rem; margin: 1rem; border: 1px solid #ccc; border-radius: 4px;\`), ssrStyle(\`background: var(--theme-bg, #fff); color: var(--theme-color, #000); padding: 1rem;\`));
 	} });
 };
-var web_components_default = WebComponentsIntegration;
 
 //#endregion
-export { web_components_default as default };"
+export { WebComponentsIntegration as default };"
 `;

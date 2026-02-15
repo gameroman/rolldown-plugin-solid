@@ -12,7 +12,7 @@ function handleError(err, owner = Owner) {
 	const error = castError(err);
 	if (!fns) throw error;
 	try {
-		for (const f$2 of fns) f$2(error);
+		for (const f of fns) f(error);
 	} catch (e) {
 		handleError(e, owner && owner.owner || null);
 	}
@@ -25,18 +25,18 @@ const UNOWNED = {
 };
 let Owner = null;
 function createOwner() {
-	const o$2 = {
+	const o = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
-	else Owner.owned.push(o$2);
-	return o$2;
+	if (Owner) if (!Owner.owned) Owner.owned = [o];
+	else Owner.owned.push(o);
+	return o;
 }
-function createRoot(fn$1, detachedOwner) {
-	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn$1.length === 0 ? UNOWNED : {
+function createRoot(fn, detachedOwner) {
+	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn.length === 0 ? UNOWNED : {
 		context: current ? current.context : null,
 		owner: current,
 		owned: null,
@@ -45,7 +45,7 @@ function createRoot(fn$1, detachedOwner) {
 	Owner = root;
 	let result;
 	try {
-		result = fn$1(fn$1.length === 0 ? () => {} : () => cleanNode(root));
+		result = fn(fn.length === 0 ? () => {} : () => cleanNode(root));
 	} catch (err) {
 		handleError(err);
 	} finally {
@@ -54,29 +54,29 @@ function createRoot(fn$1, detachedOwner) {
 	return result;
 }
 function createSignal(value, options) {
-	return [() => value, (v$2) => {
-		return value = typeof v$2 === "function" ? v$2(value) : v$2;
+	return [() => value, (v) => {
+		return value = typeof v === "function" ? v(value) : v;
 	}];
 }
-function createMemo(fn$1, value) {
+function createMemo(fn, value) {
 	Owner = createOwner();
-	let v$2;
+	let v;
 	try {
-		v$2 = fn$1(value);
+		v = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$2;
+	return () => v;
 }
 function cleanNode(node) {
 	if (node.owned) {
-		for (let i$1 = 0; i$1 < node.owned.length; i$1++) cleanNode(node.owned[i$1]);
+		for (let i = 0; i < node.owned.length; i++) cleanNode(node.owned[i]);
 		node.owned = null;
 	}
 	if (node.cleanups) {
-		for (let i$1 = 0; i$1 < node.cleanups.length; i$1++) node.cleanups[i$1]();
+		for (let i = 0; i < node.cleanups.length; i++) node.cleanups[i]();
 		node.cleanups = null;
 	}
 }
@@ -88,25 +88,25 @@ function createContext(defaultValue) {
 		defaultValue
 	};
 }
-function children(fn$1) {
-	const memo = createMemo(() => resolveChildren(fn$1()));
+function children(fn) {
+	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$2 = memo();
-		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
+		const c = memo();
+		return Array.isArray(c) ? c : c != null ? [c] : [];
 	};
 	return memo;
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i$1 = 0; i$1 < children$1.length; i$1++) {
-			const result = resolveChildren(children$1[i$1]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id) {
 	return function provider(props) {
@@ -138,7 +138,7 @@ const SuspenseContext = createContext();
 
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
 var rt = {
 	0: "Symbol.asyncIterator",
@@ -218,20 +218,20 @@ var Ce = {
 	5: TypeError,
 	6: URIError
 };
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
 		i: r,
 		s: t,
-		c: n$1,
+		c: n,
 		m: a,
 		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
 		o: S,
-		l: d$1
+		l: d
 	};
 }
 function F(e) {
@@ -255,8 +255,8 @@ function fn(e) {
 	}
 }
 function y$1(e) {
-	let r = "", t = 0, n$1;
-	for (let a = 0, s = e.length; a < s; a++) n$1 = fn(e[a]), n$1 && (r += e.slice(t, a) + n$1, t = a + 1);
+	let r = "", t = 0, n;
+	for (let a = 0, s = e.length; a < s; a++) n = fn(e[a]), n && (r += e.slice(t, a) + n, t = a + 1);
 	return t === 0 ? r = e : r += e.slice(t), r;
 }
 var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
@@ -300,8 +300,8 @@ function gn(e) {
 	return e.name !== r ? { name: e.name } : e.constructor.name !== r ? { name: e.constructor.name } : {};
 }
 function $$1(e, r) {
-	let t = gn(e), n$1 = Object.getOwnPropertyNames(e);
-	for (let a = 0, s = n$1.length, i$1; a < s; a++) i$1 = n$1[a], i$1 !== "name" && i$1 !== "message" && (i$1 === "stack" ? r & 4 && (t = t || {}, t[i$1] = e[i$1]) : (t = t || {}, t[i$1] = e[i$1]));
+	let t = gn(e), n = Object.getOwnPropertyNames(e);
+	for (let a = 0, s = n.length, i; a < s; a++) i = n[a], i !== "name" && i !== "message" && (i === "stack" ? r & 4 && (t = t || {}, t[i] = e[i]) : (t = t || {}, t[i] = e[i]));
 	return t;
 }
 function Oe(e) {
@@ -381,8 +381,8 @@ function We(e, r) {
 function Ge(e, r) {
 	return c$1(34, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
-function Ke(e, r, t, n$1) {
-	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n$1);
+function Ke(e, r, t, n) {
+	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n);
 }
 var { toString: ys } = Object.prototype;
 var yn = {
@@ -394,9 +394,9 @@ function Nn(e) {
 	return \`Seroval Error (step: \${yn[e]})\`;
 }
 var bn = (e, r) => Nn(e), Se = class extends Error {
-	constructor(t, n$1) {
-		super(bn(t, n$1));
-		this.cause = n$1;
+	constructor(t, n) {
+		super(bn(t, n));
+		this.cause = n;
 	}
 }, z = class extends Se {
 	constructor(r) {
@@ -477,29 +477,29 @@ var re = () => {
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 }, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
 	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
 		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
 		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
 }, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
+	let t = 0, n = {
+		[e]: () => n,
 		next: () => {
 			if (t > r.d) return {
 				done: !0,
@@ -513,69 +513,69 @@ var re = () => {
 			};
 		}
 	};
-	return n$1;
+	return n;
 }, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
 			done: !0,
 			value: void 0
 		});
 	};
 	t.on({
 		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !1,
 				value: S
-			}), i$1.push(S);
+			}), i.push(S);
 		},
 		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
 		},
 		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !0,
 				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
+			}), l(), a = i.length, i.push(S);
 		}
 	});
-	let g$1 = {
-		[e]: () => g$1,
+	let g = {
+		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
+				let K = n++;
+				if (K >= i.length) {
 					let et = r();
-					return u$1.push(et), et.p;
+					return u.push(et), et.p;
 				}
 				return {
 					done: !1,
-					value: i$1[K$1]
+					value: i[K]
 				};
 			}
-			if (n$1 > a) return {
+			if (n > a) return {
 				done: !0,
 				value: void 0
 			};
-			let S = n$1++, d$1 = i$1[S];
+			let S = n++, d = i[S];
 			if (S !== a) return {
 				done: !1,
-				value: d$1
+				value: d
 			};
-			if (s) throw d$1;
+			if (s) throw d;
 			return {
 				done: !0,
-				value: d$1
+				value: d
 			};
 		}
 	};
-	return g$1;
+	return g;
 }, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
 }, Et = Or.toString();
 function Ze(e) {
 	return "__SEROVAL_SEQUENCE__" in e;
@@ -589,17 +589,17 @@ function Tr(e, r, t) {
 	};
 }
 function $e(e) {
-	let r = [], t = -1, n$1 = -1, a = e[C]();
+	let r = [], t = -1, n = -1, a = e[C]();
 	for (;;) try {
 		let s = a.next();
 		if (r.push(s.value), s.done) {
-			n$1 = r.length - 1;
+			n = r.length - 1;
 			break;
 		}
 	} catch (s) {
 		t = r.length, r.push(s);
 	}
-	return Tr(r, t, n$1);
+	return Tr(r, t, n);
 }
 var An = Pr(C);
 var Rt = {}, Pt = {};
@@ -626,15 +626,15 @@ function te$1() {
 }
 function Xe(e) {
 	let r = te$1(), t = e[v$1]();
-	async function n$1() {
+	async function n() {
 		try {
 			let a = await t.next();
-			a.done ? r.return(a.value) : (r.next(a.value), await n$1());
+			a.done ? r.return(a.value) : (r.next(a.value), await n());
 		} catch (a) {
 			r.throw(a);
 		}
 	}
-	return n$1().catch(() => {}), r;
+	return n().catch(() => {}), r;
 }
 var En = xr(v$1, re);
 function pe$1(e, r) {
@@ -689,21 +689,21 @@ function rr(e) {
 	let r = Qe(e, Pt);
 	return r.type === 1 ? r.value : c$1(29, r.value, o$1, o$1, o$1, o$1, o$1, [k(e, 1), I(e, v$1)], o$1, o$1, o$1, o$1);
 }
-function tr(e, r, t, n$1) {
-	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n$1, o$1, o$1, o$1, o$1, Oe(r), o$1);
+function tr(e, r, t, n) {
+	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n, o$1, o$1, o$1, o$1, Oe(r), o$1);
 }
-function nr(e, r, t, n$1) {
+function nr(e, r, t, n) {
 	return c$1(8, r, o$1, o$1, o$1, o$1, {
 		k: t,
-		v: n$1
+		v: n
 	}, o$1, k(e, 0), o$1, o$1, o$1);
 }
 function ht(e, r, t) {
 	return c$1(22, r, t, o$1, o$1, o$1, o$1, o$1, k(e, 1), o$1, o$1, o$1);
 }
 function or(e, r, t) {
-	let n$1 = new Uint8Array(t), a = "";
-	for (let s = 0, i$1 = n$1.length; s < i$1; s++) a += String.fromCharCode(n$1[s]);
+	let n = new Uint8Array(t), a = "";
+	for (let s = 0, i = n.length; s < i; s++) a += String.fromCharCode(n[s]);
 	return c$1(19, r, y$1(btoa(a)), o$1, o$1, o$1, o$1, o$1, k(e, 5), o$1, o$1, o$1);
 }
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
@@ -711,7 +711,7 @@ function ni(e) {
 	return e;
 }
 function kt(e, r) {
-	for (let t = 0, n$1 = r.length; t < n$1; t++) {
+	for (let t = 0, n = r.length; t < n; t++) {
 		let a = r[t];
 		e.has(a) || (e.add(a), a.extends && kt(e, a.extends));
 	}
@@ -750,33 +750,33 @@ function ye(e) {
 }
 function Po(e) {
 	let r = [], t = e[0];
-	for (let n$1 = 1, a = e.length, s, i$1 = t; n$1 < a; n$1++) s = e[n$1], s.t === 0 && s.v === i$1.v ? t = {
+	for (let n = 1, a = e.length, s, i = t; n < a; n++) s = e[n], s.t === 0 && s.v === i.v ? t = {
 		t: 0,
 		s: s.s,
 		k: o$1,
 		v: ye(t)
-	} : s.t === 2 && s.s === i$1.s ? t = {
+	} : s.t === 2 && s.s === i.s ? t = {
 		t: 2,
 		s: ye(t),
 		k: s.k,
 		v: s.v
-	} : s.t === 1 && s.s === i$1.s ? t = {
+	} : s.t === 1 && s.s === i.s ? t = {
 		t: 1,
 		s: ye(t),
 		k: o$1,
 		v: s.v
-	} : s.t === 3 && s.s === i$1.s ? t = {
+	} : s.t === 3 && s.s === i.s ? t = {
 		t: 3,
 		s: ye(t),
 		k: s.k,
 		v: o$1
-	} : (r.push(t), t = s), i$1 = s;
+	} : (r.push(t), t = s), i = s;
 	return r.push(t), r;
 }
 function tn(e) {
 	if (e.length) {
 		let r = "", t = Po(e);
-		for (let n$1 = 0, a = t.length; n$1 < a; n$1++) r += ye(t[n$1]) + ",";
+		for (let n = 0, a = t.length; n < a; n++) r += ye(t[n]) + ",";
 		return r;
 	}
 	return o$1;
@@ -817,8 +817,8 @@ var Mr = class {
 function ko(e, r) {
 	let t = e.valid.get(r);
 	t ?? (t = e.valid.size, e.valid.set(r, t));
-	let n$1 = e.vars[t];
-	return n$1 ?? (n$1 = Br(t), e.vars[t] = n$1), n$1;
+	let n = e.vars[t];
+	return n ?? (n = Br(t), e.vars[t] = n), n;
 }
 function Do(e) {
 	return ce + "[" + e + "]";
@@ -840,8 +840,8 @@ function jr(e, r, t) {
 }
 function Fo(e) {
 	let r = "";
-	for (let t = 0, n$1 = e.flags, a = n$1.length; t < a; t++) {
-		let s = n$1[t];
+	for (let t = 0, n = e.flags, a = n.length; t < a; t++) {
+		let s = n[t];
 		r += zo[s.type] + "(" + s.value + "),";
 	}
 	return r;
@@ -866,12 +866,12 @@ function Bo(e, r, t) {
 		v: t
 	});
 }
-function ge(e, r, t, n$1) {
+function ge(e, r, t, n) {
 	e.base.assignments.push({
 		t: 2,
 		s: m$1(e, r),
 		k: t,
-		v: n$1
+		v: n
 	});
 }
 function Zt(e, r, t) {
@@ -882,14 +882,14 @@ function Zt(e, r, t) {
 		v: o$1
 	});
 }
-function Ne(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + "[" + t + "]", n$1);
+function Ne(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + "[" + t + "]", n);
 }
-function Ur(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + "." + t, n$1);
+function Ur(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + "." + t, n);
 }
-function Vo(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + ".v[" + t + "]", n$1);
+function Vo(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + ".v[" + t + "]", n);
 }
 function D$1(e, r) {
 	return r.t === 4 && e.stack.includes(r.i);
@@ -900,83 +900,83 @@ function se(e, r, t) {
 function Mo(e) {
 	return U + ".get(\\"" + e.s + "\\")";
 }
-function $t(e, r, t, n$1) {
-	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n$1, m$1(e, t.i)), "") : f$1(e, t) : "";
+function $t(e, r, t, n) {
+	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n, m$1(e, t.i)), "") : f$1(e, t) : "";
 }
 function Lo(e, r) {
-	let t = r.i, n$1 = r.a, a = n$1.length;
+	let t = r.i, n = r.a, a = n.length;
 	if (a > 0) {
 		e.base.stack.push(t);
-		let s = $t(e, t, n$1[0], 0), i$1 = s === "";
-		for (let u$1 = 1, l$1; u$1 < a; u$1++) l$1 = $t(e, t, n$1[u$1], u$1), s += "," + l$1, i$1 = l$1 === "";
-		return e.base.stack.pop(), jr(e, r.o, r.i), "[" + s + (i$1 ? ",]" : "]");
+		let s = $t(e, t, n[0], 0), i = s === "";
+		for (let u = 1, l; u < a; u++) l = $t(e, t, n[u], u), s += "," + l, i = l === "";
+		return e.base.stack.pop(), jr(e, r.o, r.i), "[" + s + (i ? ",]" : "]");
 	}
 	return "[]";
 }
-function Xt(e, r, t, n$1) {
+function Xt(e, r, t, n) {
 	if (typeof t == "string") {
 		let a = Number(t), s = a >= 0 && a.toString() === t || Vr(t);
-		if (D$1(e.base, n$1)) {
-			let i$1 = m$1(e, n$1.i);
-			return O$1(e.base, r.i), s && a !== a ? Ur(e, r.i, t, i$1) : Ne(e, r.i, s ? t : "\\"" + t + "\\"", i$1), "";
+		if (D$1(e.base, n)) {
+			let i = m$1(e, n.i);
+			return O$1(e.base, r.i), s && a !== a ? Ur(e, r.i, t, i) : Ne(e, r.i, s ? t : "\\"" + t + "\\"", i), "";
 		}
-		return (s ? t : "\\"" + t + "\\"") + ":" + f$1(e, n$1);
+		return (s ? t : "\\"" + t + "\\"") + ":" + f$1(e, n);
 	}
-	return "[" + f$1(e, t) + "]:" + f$1(e, n$1);
+	return "[" + f$1(e, t) + "]:" + f$1(e, n);
 }
 function an(e, r, t) {
-	let n$1 = t.k, a = n$1.length;
+	let n = t.k, a = n.length;
 	if (a > 0) {
 		let s = t.v;
 		e.base.stack.push(r.i);
-		let i$1 = Xt(e, r, n$1[0], s[0]);
-		for (let u$1 = 1, l$1 = i$1; u$1 < a; u$1++) l$1 = Xt(e, r, n$1[u$1], s[u$1]), i$1 += (l$1 && i$1 && ",") + l$1;
-		return e.base.stack.pop(), "{" + i$1 + "}";
+		let i = Xt(e, r, n[0], s[0]);
+		for (let u = 1, l = i; u < a; u++) l = Xt(e, r, n[u], s[u]), i += (l && i && ",") + l;
+		return e.base.stack.pop(), "{" + i + "}";
 	}
 	return "{}";
 }
 function Uo(e, r) {
 	return jr(e, r.o, r.i), an(e, r, r.p);
 }
-function jo(e, r, t, n$1) {
+function jo(e, r, t, n) {
 	let a = an(e, r, t);
-	return a !== "{}" ? "Object.assign(" + n$1 + "," + a + ")" : n$1;
+	return a !== "{}" ? "Object.assign(" + n + "," + a + ")" : n;
 }
-function Yo(e, r, t, n$1, a) {
-	let s = e.base, i$1 = f$1(e, a), u$1 = Number(n$1), l$1 = u$1 >= 0 && u$1.toString() === n$1 || Vr(n$1);
-	if (D$1(s, a)) l$1 && u$1 !== u$1 ? Ur(e, r.i, n$1, i$1) : Ne(e, r.i, l$1 ? n$1 : "\\"" + n$1 + "\\"", i$1);
+function Yo(e, r, t, n, a) {
+	let s = e.base, i = f$1(e, a), u = Number(n), l = u >= 0 && u.toString() === n || Vr(n);
+	if (D$1(s, a)) l && u !== u ? Ur(e, r.i, n, i) : Ne(e, r.i, l ? n : "\\"" + n + "\\"", i);
 	else {
-		let g$1 = s.assignments;
-		s.assignments = t, l$1 && u$1 !== u$1 ? Ur(e, r.i, n$1, i$1) : Ne(e, r.i, l$1 ? n$1 : "\\"" + n$1 + "\\"", i$1), s.assignments = g$1;
+		let g = s.assignments;
+		s.assignments = t, l && u !== u ? Ur(e, r.i, n, i) : Ne(e, r.i, l ? n : "\\"" + n + "\\"", i), s.assignments = g;
 	}
 }
-function qo(e, r, t, n$1, a) {
-	if (typeof n$1 == "string") Yo(e, r, t, n$1, a);
+function qo(e, r, t, n, a) {
+	if (typeof n == "string") Yo(e, r, t, n, a);
 	else {
-		let s = e.base, i$1 = s.stack;
+		let s = e.base, i = s.stack;
 		s.stack = [];
-		let u$1 = f$1(e, a);
-		s.stack = i$1;
-		let l$1 = s.assignments;
-		s.assignments = t, Ne(e, r.i, f$1(e, n$1), u$1), s.assignments = l$1;
+		let u = f$1(e, a);
+		s.stack = i;
+		let l = s.assignments;
+		s.assignments = t, Ne(e, r.i, f$1(e, n), u), s.assignments = l;
 	}
 }
 function Wo(e, r, t) {
-	let n$1 = t.k, a = n$1.length;
+	let n = t.k, a = n.length;
 	if (a > 0) {
-		let s = [], i$1 = t.v;
+		let s = [], i = t.v;
 		e.base.stack.push(r.i);
-		for (let u$1 = 0; u$1 < a; u$1++) qo(e, r, s, n$1[u$1], i$1[u$1]);
+		for (let u = 0; u < a; u++) qo(e, r, s, n[u], i[u]);
 		return e.base.stack.pop(), tn(s);
 	}
 	return o$1;
 }
 function qr(e, r, t) {
 	if (r.p) {
-		let n$1 = e.base;
-		if (n$1.features & 8) t = jo(e, r, r.p, t);
+		let n = e.base;
+		if (n.features & 8) t = jo(e, r, r.p, t);
 		else {
-			O$1(n$1, r.i);
+			O$1(n, r.i);
 			let a = Wo(e, r, r.p);
 			if (a) return "(" + se(e, r.i, t) + "," + a + m$1(e, r.i) + ")";
 		}
@@ -994,52 +994,52 @@ function Ho(e, r) {
 	throw new w$1(r);
 }
 function Qt(e, r, t) {
-	let n$1 = e.base;
-	return D$1(n$1, t) ? (O$1(n$1, r), Bo(e, r, m$1(e, t.i)), "") : f$1(e, t);
+	let n = e.base;
+	return D$1(n, t) ? (O$1(n, r), Bo(e, r, m$1(e, t.i)), "") : f$1(e, t);
 }
 function Jo(e, r) {
-	let t = Oo, n$1 = r.a, a = n$1.length, s = r.i;
+	let t = Oo, n = r.a, a = n.length, s = r.i;
 	if (a > 0) {
 		e.base.stack.push(s);
-		let i$1 = Qt(e, s, n$1[0]);
-		for (let u$1 = 1, l$1 = i$1; u$1 < a; u$1++) l$1 = Qt(e, s, n$1[u$1]), i$1 += (l$1 && i$1 && ",") + l$1;
-		e.base.stack.pop(), i$1 && (t += "([" + i$1 + "])");
+		let i = Qt(e, s, n[0]);
+		for (let u = 1, l = i; u < a; u++) l = Qt(e, s, n[u]), i += (l && i && ",") + l;
+		e.base.stack.pop(), i && (t += "([" + i + "])");
 	}
 	return t;
 }
-function en(e, r, t, n$1, a) {
+function en(e, r, t, n, a) {
 	let s = e.base;
 	if (D$1(s, t)) {
-		let i$1 = m$1(e, t.i);
-		if (O$1(s, r), D$1(s, n$1)) return ge(e, r, i$1, m$1(e, n$1.i)), "";
-		if (n$1.t !== 4 && n$1.i != null && Lr(s, n$1.i)) {
-			let l$1 = "(" + f$1(e, n$1) + ",[" + a + "," + a + "])";
-			return ge(e, r, i$1, m$1(e, n$1.i)), Zt(e, r, a), l$1;
+		let i = m$1(e, t.i);
+		if (O$1(s, r), D$1(s, n)) return ge(e, r, i, m$1(e, n.i)), "";
+		if (n.t !== 4 && n.i != null && Lr(s, n.i)) {
+			let l = "(" + f$1(e, n) + ",[" + a + "," + a + "])";
+			return ge(e, r, i, m$1(e, n.i)), Zt(e, r, a), l;
 		}
-		let u$1 = s.stack;
-		return s.stack = [], ge(e, r, i$1, f$1(e, n$1)), s.stack = u$1, "";
+		let u = s.stack;
+		return s.stack = [], ge(e, r, i, f$1(e, n)), s.stack = u, "";
 	}
-	if (D$1(s, n$1)) {
-		let i$1 = m$1(e, n$1.i);
+	if (D$1(s, n)) {
+		let i = m$1(e, n.i);
 		if (O$1(s, r), t.t !== 4 && t.i != null && Lr(s, t.i)) {
-			let l$1 = "(" + f$1(e, t) + ",[" + a + "," + a + "])";
-			return ge(e, r, m$1(e, t.i), i$1), Zt(e, r, a), l$1;
+			let l = "(" + f$1(e, t) + ",[" + a + "," + a + "])";
+			return ge(e, r, m$1(e, t.i), i), Zt(e, r, a), l;
 		}
-		let u$1 = s.stack;
-		return s.stack = [], ge(e, r, f$1(e, t), i$1), s.stack = u$1, "";
+		let u = s.stack;
+		return s.stack = [], ge(e, r, f$1(e, t), i), s.stack = u, "";
 	}
-	return "[" + f$1(e, t) + "," + f$1(e, n$1) + "]";
+	return "[" + f$1(e, t) + "," + f$1(e, n) + "]";
 }
 function Zo(e, r) {
-	let t = To, n$1 = r.e.k, a = n$1.length, s = r.i, i$1 = r.f, u$1 = m$1(e, i$1.i), l$1 = e.base;
+	let t = To, n = r.e.k, a = n.length, s = r.i, i = r.f, u = m$1(e, i.i), l = e.base;
 	if (a > 0) {
-		let g$1 = r.e.v;
-		l$1.stack.push(s);
-		let S = en(e, s, n$1[0], g$1[0], u$1);
-		for (let d$1 = 1, K$1 = S; d$1 < a; d$1++) K$1 = en(e, s, n$1[d$1], g$1[d$1], u$1), S += (K$1 && S && ",") + K$1;
-		l$1.stack.pop(), S && (t += "([" + S + "])");
+		let g = r.e.v;
+		l.stack.push(s);
+		let S = en(e, s, n[0], g[0], u);
+		for (let d = 1, K = S; d < a; d++) K = en(e, s, n[d], g[d], u), S += (K && S && ",") + K;
+		l.stack.pop(), S && (t += "([" + S + "])");
 	}
-	return i$1.t === 26 && (O$1(l$1, i$1.i), t = "(" + f$1(e, i$1) + "," + t + ")"), t;
+	return i.t === 26 && (O$1(l, i.i), t = "(" + f$1(e, i) + "," + t + ")"), t;
 }
 function $o(e, r) {
 	return W(e, r.f) + "(\\"" + r.s + "\\")";
@@ -1053,21 +1053,21 @@ function Qo(e, r) {
 function ea(e, r) {
 	let t = r.i;
 	e.base.stack.push(t);
-	let n$1 = qr(e, r, "new AggregateError([],\\"" + r.m + "\\")");
-	return e.base.stack.pop(), n$1;
+	let n = qr(e, r, "new AggregateError([],\\"" + r.m + "\\")");
+	return e.base.stack.pop(), n;
 }
 function ra(e, r) {
 	return qr(e, r, "new " + Ce[r.s] + "(\\"" + r.m + "\\")");
 }
 function ta(e, r) {
-	let t, n$1 = r.f, a = r.i, s = r.s ? wo : ho, i$1 = e.base;
-	if (D$1(i$1, n$1)) {
-		let u$1 = m$1(e, n$1.i);
-		t = s + (r.s ? "().then(" + sr([], u$1) + ")" : "().catch(" + Wt([], "throw " + u$1) + ")");
+	let t, n = r.f, a = r.i, s = r.s ? wo : ho, i = e.base;
+	if (D$1(i, n)) {
+		let u = m$1(e, n.i);
+		t = s + (r.s ? "().then(" + sr([], u) + ")" : "().catch(" + Wt([], "throw " + u) + ")");
 	} else {
-		i$1.stack.push(a);
-		let u$1 = f$1(e, n$1);
-		i$1.stack.pop(), t = s + "(" + u$1 + ")";
+		i.stack.push(a);
+		let u = f$1(e, n);
+		i.stack.pop(), t = s + "(" + u + ")";
 	}
 	return t;
 }
@@ -1092,33 +1092,33 @@ function sa(e, r) {
 }
 function ia(e, r) {
 	let t = e.base.plugins;
-	if (t) for (let n$1 = 0, a = t.length; n$1 < a; n$1++) {
-		let s = t[n$1];
+	if (t) for (let n = 0, a = t.length; n < a; n++) {
+		let s = t[n];
 		if (s.tag === r.c) return e.child ??= new Mr(e), s.serialize(r.s, e.child, { id: r.i });
 	}
 	throw new Q(r.c);
 }
 function ua(e, r) {
-	let t = "", n$1 = !1;
-	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
+	let t = "", n = !1;
+	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n && (t += ")"), t;
 }
 function la(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
 }
 function ca(e, r) {
-	let t = r.a[0], n$1 = r.a[1], a = e.base, s = "";
-	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n$1.t !== 4 && (O$1(a, n$1.i), s += (s ? "," : "(") + f$1(e, n$1)), s && (s += ",");
-	let i$1 = se(e, r.i, "(" + At + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
-	return s ? s + i$1 + ")" : i$1;
+	let t = r.a[0], n = r.a[1], a = e.base, s = "";
+	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n.t !== 4 && (O$1(a, n.i), s += (s ? "," : "(") + f$1(e, n)), s && (s += ",");
+	let i = se(e, r.i, "(" + At + ")(" + m$1(e, n.i) + "," + m$1(e, t.i) + ")");
+	return s ? s + i + ")" : i;
 }
 function fa(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
 }
 function Sa(e, r) {
-	let t = se(e, r.i, W(e, r.f) + "()"), n$1 = r.a.length;
-	if (n$1) {
+	let t = se(e, r.i, W(e, r.f) + "()"), n = r.a.length;
+	if (n) {
 		let a = f$1(e, r.a[0]);
-		for (let s = 1; s < n$1; s++) a += "," + f$1(e, r.a[s]);
+		for (let s = 1; s < n; s++) a += "," + f$1(e, r.a[s]);
 		return "(" + t + "," + a + "," + m$1(e, r.i) + ")";
 	}
 	return t;
@@ -1132,16 +1132,16 @@ function pa(e, r) {
 function da(e, r) {
 	return m$1(e, r.i) + ".return(" + f$1(e, r.f) + ")";
 }
-function rn(e, r, t, n$1) {
+function rn(e, r, t, n) {
 	let a = e.base;
-	return D$1(a, n$1) ? (O$1(a, r), Vo(e, r, t, m$1(e, n$1.i)), "") : f$1(e, n$1);
+	return D$1(a, n) ? (O$1(a, r), Vo(e, r, t, m$1(e, n.i)), "") : f$1(e, n);
 }
 function ga(e, r) {
-	let t = r.a, n$1 = t.length, a = r.i;
-	if (n$1 > 0) {
+	let t = r.a, n = t.length, a = r.i;
+	if (n > 0) {
 		e.base.stack.push(a);
 		let s = rn(e, a, 0, t[0]);
-		for (let i$1 = 1, u$1 = s; i$1 < n$1; i$1++) u$1 = rn(e, a, i$1, t[i$1]), s += (u$1 && s && ",") + u$1;
+		for (let i = 1, u = s; i < n; i++) u = rn(e, a, i, t[i]), s += (u && s && ",") + u;
 		if (e.base.stack.pop(), s) return "{__SEROVAL_SEQUENCE__:!0,v:[" + s + "],t:" + r.s + ",d:" + r.l + "}";
 	}
 	return "{__SEROVAL_SEQUENCE__:!0,v:[],t:-1,d:0}";
@@ -1193,12 +1193,12 @@ function f$1(e, r) {
 	}
 }
 function cr(e, r) {
-	let t = f$1(e, r), n$1 = r.i;
-	if (n$1 == null) return t;
-	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce, l$1 = a ? "(" + t + "," + a + s + ")" : t;
-	if (u$1 === "") return r.t === 10 && !a ? "(" + l$1 + ")" : l$1;
-	let g$1 = i$1 == null ? "()" : "(" + ce + "[\\"" + y$1(i$1) + "\\"])";
-	return "(" + sr([u$1], l$1) + ")" + g$1;
+	let t = f$1(e, r), n = r.i;
+	if (n == null) return t;
+	let a = on(e.base), s = m$1(e, n), i = e.state.scopeId, u = i == null ? "" : ce, l = a ? "(" + t + "," + a + s + ")" : t;
+	if (u === "") return r.t === 10 && !a ? "(" + l + ")" : l;
+	let g = i == null ? "()" : "(" + ce + "[\\"" + y$1(i) + "\\"])";
+	return "(" + sr([u], l) + ")" + g;
 }
 var Gr = class {
 	constructor(r, t) {
@@ -1254,74 +1254,74 @@ function Hr(e) {
 	};
 }
 function ba(e, r, t) {
-	let n$1 = [];
-	for (let a = 0, s = t.length; a < s; a++) a in t ? n$1[a] = E$1(e, r, t[a]) : n$1[a] = 0;
-	return n$1;
+	let n = [];
+	for (let a = 0, s = t.length; a < s; a++) a in t ? n[a] = E$1(e, r, t[a]) : n[a] = 0;
+	return n;
 }
-function va(e, r, t, n$1) {
-	return _e(t, n$1, ba(e, r, n$1));
+function va(e, r, t, n) {
+	return _e(t, n, ba(e, r, n));
 }
 function Jr(e, r, t) {
-	let n$1 = Object.entries(t), a = [], s = [];
-	for (let i$1 = 0, u$1 = n$1.length; i$1 < u$1; i$1++) a.push(y$1(n$1[i$1][0])), s.push(E$1(e, r, n$1[i$1][1]));
+	let n = Object.entries(t), a = [], s = [];
+	for (let i = 0, u = n.length; i < u; i++) a.push(y$1(n[i][0])), s.push(E$1(e, r, n[i][1]));
 	return C in t && (a.push(I(e.base, C)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$1 in t && (a.push(I(e.base, v$1)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$1() : Xe(t))))), P$1 in t && (a.push(I(e.base, P$1)), s.push(X(t[P$1]))), R in t && (a.push(I(e.base, R)), s.push(t[R] ? J : Z)), {
 		k: a,
 		v: s
 	};
 }
-function Wr(e, r, t, n$1, a) {
-	return tr(t, n$1, a, Jr(e, r, n$1));
+function Wr(e, r, t, n, a) {
+	return tr(t, n, a, Jr(e, r, n));
 }
-function Ca(e, r, t, n$1) {
-	return ke(t, E$1(e, r, n$1.valueOf()));
+function Ca(e, r, t, n) {
+	return ke(t, E$1(e, r, n.valueOf()));
 }
-function Aa(e, r, t, n$1) {
-	return De(t, n$1, E$1(e, r, n$1.buffer));
+function Aa(e, r, t, n) {
+	return De(t, n, E$1(e, r, n.buffer));
 }
-function Ea(e, r, t, n$1) {
-	return Fe(t, n$1, E$1(e, r, n$1.buffer));
+function Ea(e, r, t, n) {
+	return Fe(t, n, E$1(e, r, n.buffer));
 }
-function Ia(e, r, t, n$1) {
-	return Be(t, n$1, E$1(e, r, n$1.buffer));
+function Ia(e, r, t, n) {
+	return Be(t, n, E$1(e, r, n.buffer));
 }
-function sn(e, r, t, n$1) {
-	let a = $$1(n$1, e.base.features);
-	return Ve(t, n$1, a ? Jr(e, r, a) : o$1);
+function sn(e, r, t, n) {
+	let a = $$1(n, e.base.features);
+	return Ve(t, n, a ? Jr(e, r, a) : o$1);
 }
-function Ra(e, r, t, n$1) {
-	let a = $$1(n$1, e.base.features);
-	return Me(t, n$1, a ? Jr(e, r, a) : o$1);
+function Ra(e, r, t, n) {
+	let a = $$1(n, e.base.features);
+	return Me(t, n, a ? Jr(e, r, a) : o$1);
 }
-function Pa(e, r, t, n$1) {
+function Pa(e, r, t, n) {
 	let a = [], s = [];
-	for (let [i$1, u$1] of n$1.entries()) a.push(E$1(e, r, i$1)), s.push(E$1(e, r, u$1));
+	for (let [i, u] of n.entries()) a.push(E$1(e, r, i)), s.push(E$1(e, r, u));
 	return nr(e.base, t, a, s);
 }
-function xa(e, r, t, n$1) {
+function xa(e, r, t, n) {
 	let a = [];
-	for (let s of n$1.keys()) a.push(E$1(e, r, s));
+	for (let s of n.keys()) a.push(E$1(e, r, s));
 	return Le(t, a);
 }
-function Oa(e, r, t, n$1) {
+function Oa(e, r, t, n) {
 	let a = Ye(t, k(e.base, 4), []);
-	return e.type === 1 || (Xr(e), n$1.on({
+	return e.type === 1 || (Xr(e), n.on({
 		next: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, qe(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, qe(t, i));
 			}
 		},
 		throw: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, We(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, We(t, i));
 			}
 			be(e);
 		},
 		return: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, Ge(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, Ge(t, i));
 			}
 			be(e);
 		}
@@ -1329,61 +1329,61 @@ function Oa(e, r, t, n$1) {
 }
 function Ta(e, r, t) {
 	if (this.state.alive) {
-		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n$1], o$1, o$1, o$1, o$1)), be(this);
+		let n = G(this, r, t);
+		n && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n], o$1, o$1, o$1, o$1)), be(this);
 	}
 }
 function wa(e, r, t) {
 	if (this.state.alive) {
-		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n$1], o$1, o$1, o$1, o$1));
+		let n = G(this, r, t);
+		n && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n], o$1, o$1, o$1, o$1));
 	}
 	be(this);
 }
-function ha(e, r, t, n$1) {
+function ha(e, r, t, n) {
 	let a = hr(e.base, {});
-	return e.type === 2 && (Xr(e), n$1.then(Ta.bind(e, a, r), wa.bind(e, a, r))), ht(e.base, t, a);
+	return e.type === 2 && (Xr(e), n.then(Ta.bind(e, a, r), wa.bind(e, a, r))), ht(e.base, t, a);
 }
-function za(e, r, t, n$1, a) {
-	for (let s = 0, i$1 = a.length; s < i$1; s++) {
-		let u$1 = a[s];
-		if (u$1.parse.sync && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.sync(n$1, new Gr(e, r), { id: t }));
+function za(e, r, t, n, a) {
+	for (let s = 0, i = a.length; s < i; s++) {
+		let u = a[s];
+		if (u.parse.sync && u.test(n)) return fe$1(t, u.tag, u.parse.sync(n, new Gr(e, r), { id: t }));
 	}
 	return o$1;
 }
-function _a(e, r, t, n$1, a) {
-	for (let s = 0, i$1 = a.length; s < i$1; s++) {
-		let u$1 = a[s];
-		if (u$1.parse.stream && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.stream(n$1, new Kr(e, r), { id: t }));
+function _a(e, r, t, n, a) {
+	for (let s = 0, i = a.length; s < i; s++) {
+		let u = a[s];
+		if (u.parse.stream && u.test(n)) return fe$1(t, u.tag, u.parse.stream(n, new Kr(e, r), { id: t }));
 	}
 	return o$1;
 }
-function un(e, r, t, n$1) {
+function un(e, r, t, n) {
 	let a = e.base.plugins;
-	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$1;
+	return a ? e.type === 1 ? za(e, r, t, n, a) : _a(e, r, t, n, a) : o$1;
 }
-function ka(e, r, t, n$1) {
+function ka(e, r, t, n) {
 	let a = [];
-	for (let s = 0, i$1 = n$1.v.length; s < i$1; s++) a[s] = E$1(e, r, n$1.v[s]);
-	return Ke(t, a, n$1.t, n$1.d);
+	for (let s = 0, i = n.v.length; s < i; s++) a[s] = E$1(e, r, n.v[s]);
+	return Ke(t, a, n.t, n.d);
 }
-function Da(e, r, t, n$1, a) {
+function Da(e, r, t, n, a) {
 	switch (a) {
-		case Object: return Wr(e, r, t, n$1, !1);
-		case o$1: return Wr(e, r, t, n$1, !0);
-		case Date: return he(t, n$1);
+		case Object: return Wr(e, r, t, n, !1);
+		case o$1: return Wr(e, r, t, n, !0);
+		case Date: return he(t, n);
 		case Error:
 		case EvalError:
 		case RangeError:
 		case ReferenceError:
 		case SyntaxError:
 		case TypeError:
-		case URIError: return sn(e, r, t, n$1);
+		case URIError: return sn(e, r, t, n);
 		case Number:
 		case Boolean:
 		case String:
-		case BigInt: return Ca(e, r, t, n$1);
-		case ArrayBuffer: return or(e.base, t, n$1);
+		case BigInt: return Ca(e, r, t, n);
+		case ArrayBuffer: return or(e.base, t, n);
 		case Int8Array:
 		case Int16Array:
 		case Int32Array:
@@ -1392,37 +1392,37 @@ function Da(e, r, t, n$1, a) {
 		case Uint32Array:
 		case Uint8ClampedArray:
 		case Float32Array:
-		case Float64Array: return Aa(e, r, t, n$1);
-		case DataView: return Ia(e, r, t, n$1);
-		case Map: return Pa(e, r, t, n$1);
-		case Set: return xa(e, r, t, n$1);
+		case Float64Array: return Aa(e, r, t, n);
+		case DataView: return Ia(e, r, t, n);
+		case Map: return Pa(e, r, t, n);
+		case Set: return xa(e, r, t, n);
 		default: break;
 	}
-	if (a === Promise || n$1 instanceof Promise) return ha(e, r, t, n$1);
+	if (a === Promise || n instanceof Promise) return ha(e, r, t, n);
 	let s = e.base.features;
-	if (s & 32 && a === RegExp) return ze(t, n$1);
+	if (s & 32 && a === RegExp) return ze(t, n);
 	if (s & 16) switch (a) {
 		case BigInt64Array:
-		case BigUint64Array: return Ea(e, r, t, n$1);
+		case BigUint64Array: return Ea(e, r, t, n);
 		default: break;
 	}
-	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n$1 instanceof AggregateError)) return Ra(e, r, t, n$1);
-	if (n$1 instanceof Error) return sn(e, r, t, n$1);
-	if (C in n$1 || v$1 in n$1) return Wr(e, r, t, n$1, !!a);
-	throw new x$1(n$1);
+	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n instanceof AggregateError)) return Ra(e, r, t, n);
+	if (n instanceof Error) return sn(e, r, t, n);
+	if (C in n || v$1 in n) return Wr(e, r, t, n, !!a);
+	throw new x$1(n);
 }
-function Fa(e, r, t, n$1) {
-	if (Array.isArray(n$1)) return va(e, r, t, n$1);
-	if (M(n$1)) return Oa(e, r, t, n$1);
-	if (Ze(n$1)) return ka(e, r, t, n$1);
-	let a = n$1.constructor;
-	if (a === Y$1) return E$1(e, r, n$1.replacement);
-	return un(e, r, t, n$1) || Da(e, r, t, n$1, a);
+function Fa(e, r, t, n) {
+	if (Array.isArray(n)) return va(e, r, t, n);
+	if (M(n)) return Oa(e, r, t, n);
+	if (Ze(n)) return ka(e, r, t, n);
+	let a = n.constructor;
+	if (a === Y$1) return E$1(e, r, n.replacement);
+	return un(e, r, t, n) || Da(e, r, t, n, a);
 }
 function Ba(e, r, t) {
-	let n$1 = q$1(e.base, t);
-	if (n$1.type !== 0) return n$1.value;
-	let a = un(e, r, n$1.value, t);
+	let n = q$1(e.base, t);
+	if (n.type !== 0) return n.value;
+	let a = un(e, r, n.value, t);
 	if (a) return a;
 	throw new x$1(t);
 }
@@ -1436,8 +1436,8 @@ function E$1(e, r, t) {
 		case "bigint": return we(t);
 		case "object":
 			if (t) {
-				let n$1 = q$1(e.base, t);
-				return n$1.type === 0 ? Fa(e, r + 1, n$1.value, t) : n$1.value;
+				let n = q$1(e.base, t);
+				return n.type === 0 ? Fa(e, r + 1, n.value, t) : n.value;
 			}
 			return Ee;
 		case "symbol": return I(e.base, t);
@@ -1458,8 +1458,8 @@ function ln(e) {
 function $r(e, r, t) {
 	try {
 		e.state.onParse(r, t);
-	} catch (n$1) {
-		Zr(e, n$1);
+	} catch (n) {
+		Zr(e, n);
 	}
 }
 function Xr(e) {
@@ -1471,8 +1471,8 @@ function be(e) {
 function G(e, r, t) {
 	try {
 		return E$1(e, r, t);
-	} catch (n$1) {
-		return Zr(e, n$1), o$1;
+	} catch (n) {
+		return Zr(e, n), o$1;
 	}
 }
 function Qr(e, r) {
@@ -1480,35 +1480,35 @@ function Qr(e, r) {
 	t && ($r(e, t, !0), e.state.initial = !1, Va(e, e.state), e.state.pending <= 0 && fr(e));
 }
 function Va(e, r) {
-	for (let t = 0, n$1 = r.buffer.length; t < n$1; t++) $r(e, r.buffer[t], !1);
+	for (let t = 0, n = r.buffer.length; t < n; t++) $r(e, r.buffer[t], !1);
 }
 function fr(e) {
 	e.state.alive && (ln(e), e.state.alive = !1);
 }
 function cn(e, r) {
-	let t = A(r.plugins), n$1 = Hr({
+	let t = A(r.plugins), n = Hr({
 		plugins: t,
 		refs: r.refs,
 		disabledFeatures: r.disabledFeatures,
 		onParse(a, s) {
-			let i$1 = ur({
+			let i = ur({
 				plugins: t,
-				features: n$1.base.features,
+				features: n.base.features,
 				scopeId: r.scopeId,
-				markedRefs: n$1.base.marked
-			}), u$1;
+				markedRefs: n.base.marked
+			}), u;
 			try {
-				u$1 = cr(i$1, a);
-			} catch (l$1) {
-				r.onError && r.onError(l$1);
+				u = cr(i, a);
+			} catch (l) {
+				r.onError && r.onError(l);
 				return;
 			}
-			r.onSerialize(u$1, s);
+			r.onSerialize(u, s);
 		},
 		onError: r.onError,
 		onDone: r.onDone
 	});
-	return Qr(n$1, e), fr.bind(null, n$1);
+	return Qr(n, e), fr.bind(null, n);
 }
 var Sr = class {
 	constructor(r) {
@@ -1530,8 +1530,8 @@ var Sr = class {
 			refs: this.refs,
 			disabledFeatures: this.options.disabledFeatures,
 			onError: this.options.onError,
-			onSerialize: (n$1, a) => {
-				this.alive && this.options.onData(a ? this.options.globalIdentifier + "[\\"" + y$1(r) + "\\"]=" + n$1 : n$1);
+			onSerialize: (n, a) => {
+				this.alive && this.options.onData(a ? this.options.globalIdentifier + "[\\"" + y$1(r) + "\\"]=" + n : n);
 			},
 			onDone: () => {
 				this.alive && (this.pending--, this.pending <= 0 && this.flushed && !this.done && this.options.onDone && (this.options.onDone(), this.done = !0));
@@ -2321,16 +2321,16 @@ function renderToString(code, options = {}) {
 		lazy: {},
 		assets: [],
 		nonce: options.nonce,
-		serialize(id, p$1) {
-			!sharedConfig.context.noHydrate && serializer.write(id, p$1);
+		serialize(id, p) {
+			!sharedConfig.context.noHydrate && serializer.write(id, p);
 		},
 		roots: 0,
 		nextRoot() {
 			return this.renderId + "i-" + this.roots++;
 		}
 	};
-	let html = createRoot((d$1) => {
-		setTimeout(d$1);
+	let html = createRoot((d) => {
+		setTimeout(d);
 		return resolveSSRNode(escape(code()));
 	});
 	sharedConfig.context.noHydrate = true;
@@ -2342,9 +2342,9 @@ function renderToString(code, options = {}) {
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
-		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
-			result += t[i$1];
-			const node = nodes[i$1];
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
 			if (node !== void 0) result += resolveSSRNode(node);
 		}
 		t = result + t[nodes.length];
@@ -2360,7 +2360,7 @@ function escape(s, attr) {
 		if (!attr && t === "function") return escape(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i$1 = 0; i$1 < s.length; i$1++) s[i$1] = escape(s[i$1]);
+			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
 		if (attr && t === "boolean") return String(s);
@@ -2404,9 +2404,9 @@ function resolveSSRNode(node, top) {
 	if (Array.isArray(node)) {
 		let prev = {};
 		let mapped = "";
-		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
-			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
-			mapped += resolveSSRNode(prev = node[i$1]);
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
 		}
 		return mapped;
 	}
@@ -2417,7 +2417,7 @@ function resolveSSRNode(node, top) {
 function injectAssets(assets, html) {
 	if (!assets || !assets.length) return html;
 	let out = "";
-	for (let i$1 = 0, len = assets.length; i$1 < len; i$1++) out += assets[i$1]();
+	for (let i = 0, len = assets.length; i < len; i++) out += assets[i]();
 	const index = html.indexOf("</head>");
 	if (index === -1) return html;
 	return html.slice(0, index) + out + html.slice(index);
@@ -2474,7 +2474,7 @@ function handleError(err, owner = Owner) {
 	const error = castError(err);
 	if (!fns) throw error;
 	try {
-		for (const f$2 of fns) f$2(error);
+		for (const f of fns) f(error);
 	} catch (e) {
 		handleError(e, owner && owner.owner || null);
 	}
@@ -2487,18 +2487,18 @@ const UNOWNED = {
 };
 let Owner = null;
 function createOwner() {
-	const o$2 = {
+	const o = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
-	else Owner.owned.push(o$2);
-	return o$2;
+	if (Owner) if (!Owner.owned) Owner.owned = [o];
+	else Owner.owned.push(o);
+	return o;
 }
-function createRoot(fn$1, detachedOwner) {
-	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn$1.length === 0 ? UNOWNED : {
+function createRoot(fn, detachedOwner) {
+	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn.length === 0 ? UNOWNED : {
 		context: current ? current.context : null,
 		owner: current,
 		owned: null,
@@ -2507,7 +2507,7 @@ function createRoot(fn$1, detachedOwner) {
 	Owner = root;
 	let result;
 	try {
-		result = fn$1(fn$1.length === 0 ? () => {} : () => cleanNode(root));
+		result = fn(fn.length === 0 ? () => {} : () => cleanNode(root));
 	} catch (err) {
 		handleError(err);
 	} finally {
@@ -2516,29 +2516,29 @@ function createRoot(fn$1, detachedOwner) {
 	return result;
 }
 function createSignal(value, options) {
-	return [() => value, (v$2) => {
-		return value = typeof v$2 === "function" ? v$2(value) : v$2;
+	return [() => value, (v) => {
+		return value = typeof v === "function" ? v(value) : v;
 	}];
 }
-function createMemo(fn$1, value) {
+function createMemo(fn, value) {
 	Owner = createOwner();
-	let v$2;
+	let v;
 	try {
-		v$2 = fn$1(value);
+		v = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$2;
+	return () => v;
 }
 function cleanNode(node) {
 	if (node.owned) {
-		for (let i$1 = 0; i$1 < node.owned.length; i$1++) cleanNode(node.owned[i$1]);
+		for (let i = 0; i < node.owned.length; i++) cleanNode(node.owned[i]);
 		node.owned = null;
 	}
 	if (node.cleanups) {
-		for (let i$1 = 0; i$1 < node.cleanups.length; i$1++) node.cleanups[i$1]();
+		for (let i = 0; i < node.cleanups.length; i++) node.cleanups[i]();
 		node.cleanups = null;
 	}
 }
@@ -2550,25 +2550,25 @@ function createContext(defaultValue) {
 		defaultValue
 	};
 }
-function children(fn$1) {
-	const memo = createMemo(() => resolveChildren(fn$1()));
+function children(fn) {
+	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$2 = memo();
-		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
+		const c = memo();
+		return Array.isArray(c) ? c : c != null ? [c] : [];
 	};
 	return memo;
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i$1 = 0; i$1 < children$1.length; i$1++) {
-			const result = resolveChildren(children$1[i$1]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id) {
 	return function provider(props) {
@@ -2600,7 +2600,7 @@ const SuspenseContext = createContext();
 
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
 var rt = {
 	0: "Symbol.asyncIterator",
@@ -2680,20 +2680,20 @@ var Ce = {
 	5: TypeError,
 	6: URIError
 };
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
 		i: r,
 		s: t,
-		c: n$1,
+		c: n,
 		m: a,
 		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
 		o: S,
-		l: d$1
+		l: d
 	};
 }
 function F(e) {
@@ -2717,8 +2717,8 @@ function fn(e) {
 	}
 }
 function y$1(e) {
-	let r = "", t = 0, n$1;
-	for (let a = 0, s = e.length; a < s; a++) n$1 = fn(e[a]), n$1 && (r += e.slice(t, a) + n$1, t = a + 1);
+	let r = "", t = 0, n;
+	for (let a = 0, s = e.length; a < s; a++) n = fn(e[a]), n && (r += e.slice(t, a) + n, t = a + 1);
 	return t === 0 ? r = e : r += e.slice(t), r;
 }
 var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
@@ -2762,8 +2762,8 @@ function gn(e) {
 	return e.name !== r ? { name: e.name } : e.constructor.name !== r ? { name: e.constructor.name } : {};
 }
 function $$1(e, r) {
-	let t = gn(e), n$1 = Object.getOwnPropertyNames(e);
-	for (let a = 0, s = n$1.length, i$1; a < s; a++) i$1 = n$1[a], i$1 !== "name" && i$1 !== "message" && (i$1 === "stack" ? r & 4 && (t = t || {}, t[i$1] = e[i$1]) : (t = t || {}, t[i$1] = e[i$1]));
+	let t = gn(e), n = Object.getOwnPropertyNames(e);
+	for (let a = 0, s = n.length, i; a < s; a++) i = n[a], i !== "name" && i !== "message" && (i === "stack" ? r & 4 && (t = t || {}, t[i] = e[i]) : (t = t || {}, t[i] = e[i]));
 	return t;
 }
 function Oe(e) {
@@ -2843,8 +2843,8 @@ function We(e, r) {
 function Ge(e, r) {
 	return c$1(34, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
-function Ke(e, r, t, n$1) {
-	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n$1);
+function Ke(e, r, t, n) {
+	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n);
 }
 var { toString: ys } = Object.prototype;
 var yn = {
@@ -2856,9 +2856,9 @@ function Nn(e) {
 	return \`Seroval Error (step: \${yn[e]})\`;
 }
 var bn = (e, r) => Nn(e), Se = class extends Error {
-	constructor(t, n$1) {
-		super(bn(t, n$1));
-		this.cause = n$1;
+	constructor(t, n) {
+		super(bn(t, n));
+		this.cause = n;
 	}
 }, z = class extends Se {
 	constructor(r) {
@@ -2939,29 +2939,29 @@ var re = () => {
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 }, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
 	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
 		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
 		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
 }, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
+	let t = 0, n = {
+		[e]: () => n,
 		next: () => {
 			if (t > r.d) return {
 				done: !0,
@@ -2975,69 +2975,69 @@ var re = () => {
 			};
 		}
 	};
-	return n$1;
+	return n;
 }, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
 			done: !0,
 			value: void 0
 		});
 	};
 	t.on({
 		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !1,
 				value: S
-			}), i$1.push(S);
+			}), i.push(S);
 		},
 		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
 		},
 		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !0,
 				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
+			}), l(), a = i.length, i.push(S);
 		}
 	});
-	let g$1 = {
-		[e]: () => g$1,
+	let g = {
+		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
+				let K = n++;
+				if (K >= i.length) {
 					let et = r();
-					return u$1.push(et), et.p;
+					return u.push(et), et.p;
 				}
 				return {
 					done: !1,
-					value: i$1[K$1]
+					value: i[K]
 				};
 			}
-			if (n$1 > a) return {
+			if (n > a) return {
 				done: !0,
 				value: void 0
 			};
-			let S = n$1++, d$1 = i$1[S];
+			let S = n++, d = i[S];
 			if (S !== a) return {
 				done: !1,
-				value: d$1
+				value: d
 			};
-			if (s) throw d$1;
+			if (s) throw d;
 			return {
 				done: !0,
-				value: d$1
+				value: d
 			};
 		}
 	};
-	return g$1;
+	return g;
 }, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
 }, Et = Or.toString();
 function Ze(e) {
 	return "__SEROVAL_SEQUENCE__" in e;
@@ -3051,17 +3051,17 @@ function Tr(e, r, t) {
 	};
 }
 function $e(e) {
-	let r = [], t = -1, n$1 = -1, a = e[C]();
+	let r = [], t = -1, n = -1, a = e[C]();
 	for (;;) try {
 		let s = a.next();
 		if (r.push(s.value), s.done) {
-			n$1 = r.length - 1;
+			n = r.length - 1;
 			break;
 		}
 	} catch (s) {
 		t = r.length, r.push(s);
 	}
-	return Tr(r, t, n$1);
+	return Tr(r, t, n);
 }
 var An = Pr(C);
 var Rt = {}, Pt = {};
@@ -3088,15 +3088,15 @@ function te$1() {
 }
 function Xe(e) {
 	let r = te$1(), t = e[v$1]();
-	async function n$1() {
+	async function n() {
 		try {
 			let a = await t.next();
-			a.done ? r.return(a.value) : (r.next(a.value), await n$1());
+			a.done ? r.return(a.value) : (r.next(a.value), await n());
 		} catch (a) {
 			r.throw(a);
 		}
 	}
-	return n$1().catch(() => {}), r;
+	return n().catch(() => {}), r;
 }
 var En = xr(v$1, re);
 function pe$1(e, r) {
@@ -3151,21 +3151,21 @@ function rr(e) {
 	let r = Qe(e, Pt);
 	return r.type === 1 ? r.value : c$1(29, r.value, o$1, o$1, o$1, o$1, o$1, [k(e, 1), I(e, v$1)], o$1, o$1, o$1, o$1);
 }
-function tr(e, r, t, n$1) {
-	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n$1, o$1, o$1, o$1, o$1, Oe(r), o$1);
+function tr(e, r, t, n) {
+	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n, o$1, o$1, o$1, o$1, Oe(r), o$1);
 }
-function nr(e, r, t, n$1) {
+function nr(e, r, t, n) {
 	return c$1(8, r, o$1, o$1, o$1, o$1, {
 		k: t,
-		v: n$1
+		v: n
 	}, o$1, k(e, 0), o$1, o$1, o$1);
 }
 function ht(e, r, t) {
 	return c$1(22, r, t, o$1, o$1, o$1, o$1, o$1, k(e, 1), o$1, o$1, o$1);
 }
 function or(e, r, t) {
-	let n$1 = new Uint8Array(t), a = "";
-	for (let s = 0, i$1 = n$1.length; s < i$1; s++) a += String.fromCharCode(n$1[s]);
+	let n = new Uint8Array(t), a = "";
+	for (let s = 0, i = n.length; s < i; s++) a += String.fromCharCode(n[s]);
 	return c$1(19, r, y$1(btoa(a)), o$1, o$1, o$1, o$1, o$1, k(e, 5), o$1, o$1, o$1);
 }
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
@@ -3173,7 +3173,7 @@ function ni(e) {
 	return e;
 }
 function kt(e, r) {
-	for (let t = 0, n$1 = r.length; t < n$1; t++) {
+	for (let t = 0, n = r.length; t < n; t++) {
 		let a = r[t];
 		e.has(a) || (e.add(a), a.extends && kt(e, a.extends));
 	}
@@ -3212,33 +3212,33 @@ function ye(e) {
 }
 function Po(e) {
 	let r = [], t = e[0];
-	for (let n$1 = 1, a = e.length, s, i$1 = t; n$1 < a; n$1++) s = e[n$1], s.t === 0 && s.v === i$1.v ? t = {
+	for (let n = 1, a = e.length, s, i = t; n < a; n++) s = e[n], s.t === 0 && s.v === i.v ? t = {
 		t: 0,
 		s: s.s,
 		k: o$1,
 		v: ye(t)
-	} : s.t === 2 && s.s === i$1.s ? t = {
+	} : s.t === 2 && s.s === i.s ? t = {
 		t: 2,
 		s: ye(t),
 		k: s.k,
 		v: s.v
-	} : s.t === 1 && s.s === i$1.s ? t = {
+	} : s.t === 1 && s.s === i.s ? t = {
 		t: 1,
 		s: ye(t),
 		k: o$1,
 		v: s.v
-	} : s.t === 3 && s.s === i$1.s ? t = {
+	} : s.t === 3 && s.s === i.s ? t = {
 		t: 3,
 		s: ye(t),
 		k: s.k,
 		v: o$1
-	} : (r.push(t), t = s), i$1 = s;
+	} : (r.push(t), t = s), i = s;
 	return r.push(t), r;
 }
 function tn(e) {
 	if (e.length) {
 		let r = "", t = Po(e);
-		for (let n$1 = 0, a = t.length; n$1 < a; n$1++) r += ye(t[n$1]) + ",";
+		for (let n = 0, a = t.length; n < a; n++) r += ye(t[n]) + ",";
 		return r;
 	}
 	return o$1;
@@ -3279,8 +3279,8 @@ var Mr = class {
 function ko(e, r) {
 	let t = e.valid.get(r);
 	t ?? (t = e.valid.size, e.valid.set(r, t));
-	let n$1 = e.vars[t];
-	return n$1 ?? (n$1 = Br(t), e.vars[t] = n$1), n$1;
+	let n = e.vars[t];
+	return n ?? (n = Br(t), e.vars[t] = n), n;
 }
 function Do(e) {
 	return ce + "[" + e + "]";
@@ -3302,8 +3302,8 @@ function jr(e, r, t) {
 }
 function Fo(e) {
 	let r = "";
-	for (let t = 0, n$1 = e.flags, a = n$1.length; t < a; t++) {
-		let s = n$1[t];
+	for (let t = 0, n = e.flags, a = n.length; t < a; t++) {
+		let s = n[t];
 		r += zo[s.type] + "(" + s.value + "),";
 	}
 	return r;
@@ -3328,12 +3328,12 @@ function Bo(e, r, t) {
 		v: t
 	});
 }
-function ge(e, r, t, n$1) {
+function ge(e, r, t, n) {
 	e.base.assignments.push({
 		t: 2,
 		s: m$1(e, r),
 		k: t,
-		v: n$1
+		v: n
 	});
 }
 function Zt(e, r, t) {
@@ -3344,14 +3344,14 @@ function Zt(e, r, t) {
 		v: o$1
 	});
 }
-function Ne(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + "[" + t + "]", n$1);
+function Ne(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + "[" + t + "]", n);
 }
-function Ur(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + "." + t, n$1);
+function Ur(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + "." + t, n);
 }
-function Vo(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + ".v[" + t + "]", n$1);
+function Vo(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + ".v[" + t + "]", n);
 }
 function D$1(e, r) {
 	return r.t === 4 && e.stack.includes(r.i);
@@ -3362,83 +3362,83 @@ function se(e, r, t) {
 function Mo(e) {
 	return U + ".get(\\"" + e.s + "\\")";
 }
-function $t(e, r, t, n$1) {
-	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n$1, m$1(e, t.i)), "") : f$1(e, t) : "";
+function $t(e, r, t, n) {
+	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n, m$1(e, t.i)), "") : f$1(e, t) : "";
 }
 function Lo(e, r) {
-	let t = r.i, n$1 = r.a, a = n$1.length;
+	let t = r.i, n = r.a, a = n.length;
 	if (a > 0) {
 		e.base.stack.push(t);
-		let s = $t(e, t, n$1[0], 0), i$1 = s === "";
-		for (let u$1 = 1, l$1; u$1 < a; u$1++) l$1 = $t(e, t, n$1[u$1], u$1), s += "," + l$1, i$1 = l$1 === "";
-		return e.base.stack.pop(), jr(e, r.o, r.i), "[" + s + (i$1 ? ",]" : "]");
+		let s = $t(e, t, n[0], 0), i = s === "";
+		for (let u = 1, l; u < a; u++) l = $t(e, t, n[u], u), s += "," + l, i = l === "";
+		return e.base.stack.pop(), jr(e, r.o, r.i), "[" + s + (i ? ",]" : "]");
 	}
 	return "[]";
 }
-function Xt(e, r, t, n$1) {
+function Xt(e, r, t, n) {
 	if (typeof t == "string") {
 		let a = Number(t), s = a >= 0 && a.toString() === t || Vr(t);
-		if (D$1(e.base, n$1)) {
-			let i$1 = m$1(e, n$1.i);
-			return O$1(e.base, r.i), s && a !== a ? Ur(e, r.i, t, i$1) : Ne(e, r.i, s ? t : "\\"" + t + "\\"", i$1), "";
+		if (D$1(e.base, n)) {
+			let i = m$1(e, n.i);
+			return O$1(e.base, r.i), s && a !== a ? Ur(e, r.i, t, i) : Ne(e, r.i, s ? t : "\\"" + t + "\\"", i), "";
 		}
-		return (s ? t : "\\"" + t + "\\"") + ":" + f$1(e, n$1);
+		return (s ? t : "\\"" + t + "\\"") + ":" + f$1(e, n);
 	}
-	return "[" + f$1(e, t) + "]:" + f$1(e, n$1);
+	return "[" + f$1(e, t) + "]:" + f$1(e, n);
 }
 function an(e, r, t) {
-	let n$1 = t.k, a = n$1.length;
+	let n = t.k, a = n.length;
 	if (a > 0) {
 		let s = t.v;
 		e.base.stack.push(r.i);
-		let i$1 = Xt(e, r, n$1[0], s[0]);
-		for (let u$1 = 1, l$1 = i$1; u$1 < a; u$1++) l$1 = Xt(e, r, n$1[u$1], s[u$1]), i$1 += (l$1 && i$1 && ",") + l$1;
-		return e.base.stack.pop(), "{" + i$1 + "}";
+		let i = Xt(e, r, n[0], s[0]);
+		for (let u = 1, l = i; u < a; u++) l = Xt(e, r, n[u], s[u]), i += (l && i && ",") + l;
+		return e.base.stack.pop(), "{" + i + "}";
 	}
 	return "{}";
 }
 function Uo(e, r) {
 	return jr(e, r.o, r.i), an(e, r, r.p);
 }
-function jo(e, r, t, n$1) {
+function jo(e, r, t, n) {
 	let a = an(e, r, t);
-	return a !== "{}" ? "Object.assign(" + n$1 + "," + a + ")" : n$1;
+	return a !== "{}" ? "Object.assign(" + n + "," + a + ")" : n;
 }
-function Yo(e, r, t, n$1, a) {
-	let s = e.base, i$1 = f$1(e, a), u$1 = Number(n$1), l$1 = u$1 >= 0 && u$1.toString() === n$1 || Vr(n$1);
-	if (D$1(s, a)) l$1 && u$1 !== u$1 ? Ur(e, r.i, n$1, i$1) : Ne(e, r.i, l$1 ? n$1 : "\\"" + n$1 + "\\"", i$1);
+function Yo(e, r, t, n, a) {
+	let s = e.base, i = f$1(e, a), u = Number(n), l = u >= 0 && u.toString() === n || Vr(n);
+	if (D$1(s, a)) l && u !== u ? Ur(e, r.i, n, i) : Ne(e, r.i, l ? n : "\\"" + n + "\\"", i);
 	else {
-		let g$1 = s.assignments;
-		s.assignments = t, l$1 && u$1 !== u$1 ? Ur(e, r.i, n$1, i$1) : Ne(e, r.i, l$1 ? n$1 : "\\"" + n$1 + "\\"", i$1), s.assignments = g$1;
+		let g = s.assignments;
+		s.assignments = t, l && u !== u ? Ur(e, r.i, n, i) : Ne(e, r.i, l ? n : "\\"" + n + "\\"", i), s.assignments = g;
 	}
 }
-function qo(e, r, t, n$1, a) {
-	if (typeof n$1 == "string") Yo(e, r, t, n$1, a);
+function qo(e, r, t, n, a) {
+	if (typeof n == "string") Yo(e, r, t, n, a);
 	else {
-		let s = e.base, i$1 = s.stack;
+		let s = e.base, i = s.stack;
 		s.stack = [];
-		let u$1 = f$1(e, a);
-		s.stack = i$1;
-		let l$1 = s.assignments;
-		s.assignments = t, Ne(e, r.i, f$1(e, n$1), u$1), s.assignments = l$1;
+		let u = f$1(e, a);
+		s.stack = i;
+		let l = s.assignments;
+		s.assignments = t, Ne(e, r.i, f$1(e, n), u), s.assignments = l;
 	}
 }
 function Wo(e, r, t) {
-	let n$1 = t.k, a = n$1.length;
+	let n = t.k, a = n.length;
 	if (a > 0) {
-		let s = [], i$1 = t.v;
+		let s = [], i = t.v;
 		e.base.stack.push(r.i);
-		for (let u$1 = 0; u$1 < a; u$1++) qo(e, r, s, n$1[u$1], i$1[u$1]);
+		for (let u = 0; u < a; u++) qo(e, r, s, n[u], i[u]);
 		return e.base.stack.pop(), tn(s);
 	}
 	return o$1;
 }
 function qr(e, r, t) {
 	if (r.p) {
-		let n$1 = e.base;
-		if (n$1.features & 8) t = jo(e, r, r.p, t);
+		let n = e.base;
+		if (n.features & 8) t = jo(e, r, r.p, t);
 		else {
-			O$1(n$1, r.i);
+			O$1(n, r.i);
 			let a = Wo(e, r, r.p);
 			if (a) return "(" + se(e, r.i, t) + "," + a + m$1(e, r.i) + ")";
 		}
@@ -3456,52 +3456,52 @@ function Ho(e, r) {
 	throw new w$1(r);
 }
 function Qt(e, r, t) {
-	let n$1 = e.base;
-	return D$1(n$1, t) ? (O$1(n$1, r), Bo(e, r, m$1(e, t.i)), "") : f$1(e, t);
+	let n = e.base;
+	return D$1(n, t) ? (O$1(n, r), Bo(e, r, m$1(e, t.i)), "") : f$1(e, t);
 }
 function Jo(e, r) {
-	let t = Oo, n$1 = r.a, a = n$1.length, s = r.i;
+	let t = Oo, n = r.a, a = n.length, s = r.i;
 	if (a > 0) {
 		e.base.stack.push(s);
-		let i$1 = Qt(e, s, n$1[0]);
-		for (let u$1 = 1, l$1 = i$1; u$1 < a; u$1++) l$1 = Qt(e, s, n$1[u$1]), i$1 += (l$1 && i$1 && ",") + l$1;
-		e.base.stack.pop(), i$1 && (t += "([" + i$1 + "])");
+		let i = Qt(e, s, n[0]);
+		for (let u = 1, l = i; u < a; u++) l = Qt(e, s, n[u]), i += (l && i && ",") + l;
+		e.base.stack.pop(), i && (t += "([" + i + "])");
 	}
 	return t;
 }
-function en(e, r, t, n$1, a) {
+function en(e, r, t, n, a) {
 	let s = e.base;
 	if (D$1(s, t)) {
-		let i$1 = m$1(e, t.i);
-		if (O$1(s, r), D$1(s, n$1)) return ge(e, r, i$1, m$1(e, n$1.i)), "";
-		if (n$1.t !== 4 && n$1.i != null && Lr(s, n$1.i)) {
-			let l$1 = "(" + f$1(e, n$1) + ",[" + a + "," + a + "])";
-			return ge(e, r, i$1, m$1(e, n$1.i)), Zt(e, r, a), l$1;
+		let i = m$1(e, t.i);
+		if (O$1(s, r), D$1(s, n)) return ge(e, r, i, m$1(e, n.i)), "";
+		if (n.t !== 4 && n.i != null && Lr(s, n.i)) {
+			let l = "(" + f$1(e, n) + ",[" + a + "," + a + "])";
+			return ge(e, r, i, m$1(e, n.i)), Zt(e, r, a), l;
 		}
-		let u$1 = s.stack;
-		return s.stack = [], ge(e, r, i$1, f$1(e, n$1)), s.stack = u$1, "";
+		let u = s.stack;
+		return s.stack = [], ge(e, r, i, f$1(e, n)), s.stack = u, "";
 	}
-	if (D$1(s, n$1)) {
-		let i$1 = m$1(e, n$1.i);
+	if (D$1(s, n)) {
+		let i = m$1(e, n.i);
 		if (O$1(s, r), t.t !== 4 && t.i != null && Lr(s, t.i)) {
-			let l$1 = "(" + f$1(e, t) + ",[" + a + "," + a + "])";
-			return ge(e, r, m$1(e, t.i), i$1), Zt(e, r, a), l$1;
+			let l = "(" + f$1(e, t) + ",[" + a + "," + a + "])";
+			return ge(e, r, m$1(e, t.i), i), Zt(e, r, a), l;
 		}
-		let u$1 = s.stack;
-		return s.stack = [], ge(e, r, f$1(e, t), i$1), s.stack = u$1, "";
+		let u = s.stack;
+		return s.stack = [], ge(e, r, f$1(e, t), i), s.stack = u, "";
 	}
-	return "[" + f$1(e, t) + "," + f$1(e, n$1) + "]";
+	return "[" + f$1(e, t) + "," + f$1(e, n) + "]";
 }
 function Zo(e, r) {
-	let t = To, n$1 = r.e.k, a = n$1.length, s = r.i, i$1 = r.f, u$1 = m$1(e, i$1.i), l$1 = e.base;
+	let t = To, n = r.e.k, a = n.length, s = r.i, i = r.f, u = m$1(e, i.i), l = e.base;
 	if (a > 0) {
-		let g$1 = r.e.v;
-		l$1.stack.push(s);
-		let S = en(e, s, n$1[0], g$1[0], u$1);
-		for (let d$1 = 1, K$1 = S; d$1 < a; d$1++) K$1 = en(e, s, n$1[d$1], g$1[d$1], u$1), S += (K$1 && S && ",") + K$1;
-		l$1.stack.pop(), S && (t += "([" + S + "])");
+		let g = r.e.v;
+		l.stack.push(s);
+		let S = en(e, s, n[0], g[0], u);
+		for (let d = 1, K = S; d < a; d++) K = en(e, s, n[d], g[d], u), S += (K && S && ",") + K;
+		l.stack.pop(), S && (t += "([" + S + "])");
 	}
-	return i$1.t === 26 && (O$1(l$1, i$1.i), t = "(" + f$1(e, i$1) + "," + t + ")"), t;
+	return i.t === 26 && (O$1(l, i.i), t = "(" + f$1(e, i) + "," + t + ")"), t;
 }
 function $o(e, r) {
 	return W(e, r.f) + "(\\"" + r.s + "\\")";
@@ -3515,21 +3515,21 @@ function Qo(e, r) {
 function ea(e, r) {
 	let t = r.i;
 	e.base.stack.push(t);
-	let n$1 = qr(e, r, "new AggregateError([],\\"" + r.m + "\\")");
-	return e.base.stack.pop(), n$1;
+	let n = qr(e, r, "new AggregateError([],\\"" + r.m + "\\")");
+	return e.base.stack.pop(), n;
 }
 function ra(e, r) {
 	return qr(e, r, "new " + Ce[r.s] + "(\\"" + r.m + "\\")");
 }
 function ta(e, r) {
-	let t, n$1 = r.f, a = r.i, s = r.s ? wo : ho, i$1 = e.base;
-	if (D$1(i$1, n$1)) {
-		let u$1 = m$1(e, n$1.i);
-		t = s + (r.s ? "().then(" + sr([], u$1) + ")" : "().catch(" + Wt([], "throw " + u$1) + ")");
+	let t, n = r.f, a = r.i, s = r.s ? wo : ho, i = e.base;
+	if (D$1(i, n)) {
+		let u = m$1(e, n.i);
+		t = s + (r.s ? "().then(" + sr([], u) + ")" : "().catch(" + Wt([], "throw " + u) + ")");
 	} else {
-		i$1.stack.push(a);
-		let u$1 = f$1(e, n$1);
-		i$1.stack.pop(), t = s + "(" + u$1 + ")";
+		i.stack.push(a);
+		let u = f$1(e, n);
+		i.stack.pop(), t = s + "(" + u + ")";
 	}
 	return t;
 }
@@ -3554,33 +3554,33 @@ function sa(e, r) {
 }
 function ia(e, r) {
 	let t = e.base.plugins;
-	if (t) for (let n$1 = 0, a = t.length; n$1 < a; n$1++) {
-		let s = t[n$1];
+	if (t) for (let n = 0, a = t.length; n < a; n++) {
+		let s = t[n];
 		if (s.tag === r.c) return e.child ??= new Mr(e), s.serialize(r.s, e.child, { id: r.i });
 	}
 	throw new Q(r.c);
 }
 function ua(e, r) {
-	let t = "", n$1 = !1;
-	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
+	let t = "", n = !1;
+	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n && (t += ")"), t;
 }
 function la(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
 }
 function ca(e, r) {
-	let t = r.a[0], n$1 = r.a[1], a = e.base, s = "";
-	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n$1.t !== 4 && (O$1(a, n$1.i), s += (s ? "," : "(") + f$1(e, n$1)), s && (s += ",");
-	let i$1 = se(e, r.i, "(" + At + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
-	return s ? s + i$1 + ")" : i$1;
+	let t = r.a[0], n = r.a[1], a = e.base, s = "";
+	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n.t !== 4 && (O$1(a, n.i), s += (s ? "," : "(") + f$1(e, n)), s && (s += ",");
+	let i = se(e, r.i, "(" + At + ")(" + m$1(e, n.i) + "," + m$1(e, t.i) + ")");
+	return s ? s + i + ")" : i;
 }
 function fa(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
 }
 function Sa(e, r) {
-	let t = se(e, r.i, W(e, r.f) + "()"), n$1 = r.a.length;
-	if (n$1) {
+	let t = se(e, r.i, W(e, r.f) + "()"), n = r.a.length;
+	if (n) {
 		let a = f$1(e, r.a[0]);
-		for (let s = 1; s < n$1; s++) a += "," + f$1(e, r.a[s]);
+		for (let s = 1; s < n; s++) a += "," + f$1(e, r.a[s]);
 		return "(" + t + "," + a + "," + m$1(e, r.i) + ")";
 	}
 	return t;
@@ -3594,16 +3594,16 @@ function pa(e, r) {
 function da(e, r) {
 	return m$1(e, r.i) + ".return(" + f$1(e, r.f) + ")";
 }
-function rn(e, r, t, n$1) {
+function rn(e, r, t, n) {
 	let a = e.base;
-	return D$1(a, n$1) ? (O$1(a, r), Vo(e, r, t, m$1(e, n$1.i)), "") : f$1(e, n$1);
+	return D$1(a, n) ? (O$1(a, r), Vo(e, r, t, m$1(e, n.i)), "") : f$1(e, n);
 }
 function ga(e, r) {
-	let t = r.a, n$1 = t.length, a = r.i;
-	if (n$1 > 0) {
+	let t = r.a, n = t.length, a = r.i;
+	if (n > 0) {
 		e.base.stack.push(a);
 		let s = rn(e, a, 0, t[0]);
-		for (let i$1 = 1, u$1 = s; i$1 < n$1; i$1++) u$1 = rn(e, a, i$1, t[i$1]), s += (u$1 && s && ",") + u$1;
+		for (let i = 1, u = s; i < n; i++) u = rn(e, a, i, t[i]), s += (u && s && ",") + u;
 		if (e.base.stack.pop(), s) return "{__SEROVAL_SEQUENCE__:!0,v:[" + s + "],t:" + r.s + ",d:" + r.l + "}";
 	}
 	return "{__SEROVAL_SEQUENCE__:!0,v:[],t:-1,d:0}";
@@ -3655,12 +3655,12 @@ function f$1(e, r) {
 	}
 }
 function cr(e, r) {
-	let t = f$1(e, r), n$1 = r.i;
-	if (n$1 == null) return t;
-	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce, l$1 = a ? "(" + t + "," + a + s + ")" : t;
-	if (u$1 === "") return r.t === 10 && !a ? "(" + l$1 + ")" : l$1;
-	let g$1 = i$1 == null ? "()" : "(" + ce + "[\\"" + y$1(i$1) + "\\"])";
-	return "(" + sr([u$1], l$1) + ")" + g$1;
+	let t = f$1(e, r), n = r.i;
+	if (n == null) return t;
+	let a = on(e.base), s = m$1(e, n), i = e.state.scopeId, u = i == null ? "" : ce, l = a ? "(" + t + "," + a + s + ")" : t;
+	if (u === "") return r.t === 10 && !a ? "(" + l + ")" : l;
+	let g = i == null ? "()" : "(" + ce + "[\\"" + y$1(i) + "\\"])";
+	return "(" + sr([u], l) + ")" + g;
 }
 var Gr = class {
 	constructor(r, t) {
@@ -3716,74 +3716,74 @@ function Hr(e) {
 	};
 }
 function ba(e, r, t) {
-	let n$1 = [];
-	for (let a = 0, s = t.length; a < s; a++) a in t ? n$1[a] = E$1(e, r, t[a]) : n$1[a] = 0;
-	return n$1;
+	let n = [];
+	for (let a = 0, s = t.length; a < s; a++) a in t ? n[a] = E$1(e, r, t[a]) : n[a] = 0;
+	return n;
 }
-function va(e, r, t, n$1) {
-	return _e(t, n$1, ba(e, r, n$1));
+function va(e, r, t, n) {
+	return _e(t, n, ba(e, r, n));
 }
 function Jr(e, r, t) {
-	let n$1 = Object.entries(t), a = [], s = [];
-	for (let i$1 = 0, u$1 = n$1.length; i$1 < u$1; i$1++) a.push(y$1(n$1[i$1][0])), s.push(E$1(e, r, n$1[i$1][1]));
+	let n = Object.entries(t), a = [], s = [];
+	for (let i = 0, u = n.length; i < u; i++) a.push(y$1(n[i][0])), s.push(E$1(e, r, n[i][1]));
 	return C in t && (a.push(I(e.base, C)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$1 in t && (a.push(I(e.base, v$1)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$1() : Xe(t))))), P$1 in t && (a.push(I(e.base, P$1)), s.push(X(t[P$1]))), R in t && (a.push(I(e.base, R)), s.push(t[R] ? J : Z)), {
 		k: a,
 		v: s
 	};
 }
-function Wr(e, r, t, n$1, a) {
-	return tr(t, n$1, a, Jr(e, r, n$1));
+function Wr(e, r, t, n, a) {
+	return tr(t, n, a, Jr(e, r, n));
 }
-function Ca(e, r, t, n$1) {
-	return ke(t, E$1(e, r, n$1.valueOf()));
+function Ca(e, r, t, n) {
+	return ke(t, E$1(e, r, n.valueOf()));
 }
-function Aa(e, r, t, n$1) {
-	return De(t, n$1, E$1(e, r, n$1.buffer));
+function Aa(e, r, t, n) {
+	return De(t, n, E$1(e, r, n.buffer));
 }
-function Ea(e, r, t, n$1) {
-	return Fe(t, n$1, E$1(e, r, n$1.buffer));
+function Ea(e, r, t, n) {
+	return Fe(t, n, E$1(e, r, n.buffer));
 }
-function Ia(e, r, t, n$1) {
-	return Be(t, n$1, E$1(e, r, n$1.buffer));
+function Ia(e, r, t, n) {
+	return Be(t, n, E$1(e, r, n.buffer));
 }
-function sn(e, r, t, n$1) {
-	let a = $$1(n$1, e.base.features);
-	return Ve(t, n$1, a ? Jr(e, r, a) : o$1);
+function sn(e, r, t, n) {
+	let a = $$1(n, e.base.features);
+	return Ve(t, n, a ? Jr(e, r, a) : o$1);
 }
-function Ra(e, r, t, n$1) {
-	let a = $$1(n$1, e.base.features);
-	return Me(t, n$1, a ? Jr(e, r, a) : o$1);
+function Ra(e, r, t, n) {
+	let a = $$1(n, e.base.features);
+	return Me(t, n, a ? Jr(e, r, a) : o$1);
 }
-function Pa(e, r, t, n$1) {
+function Pa(e, r, t, n) {
 	let a = [], s = [];
-	for (let [i$1, u$1] of n$1.entries()) a.push(E$1(e, r, i$1)), s.push(E$1(e, r, u$1));
+	for (let [i, u] of n.entries()) a.push(E$1(e, r, i)), s.push(E$1(e, r, u));
 	return nr(e.base, t, a, s);
 }
-function xa(e, r, t, n$1) {
+function xa(e, r, t, n) {
 	let a = [];
-	for (let s of n$1.keys()) a.push(E$1(e, r, s));
+	for (let s of n.keys()) a.push(E$1(e, r, s));
 	return Le(t, a);
 }
-function Oa(e, r, t, n$1) {
+function Oa(e, r, t, n) {
 	let a = Ye(t, k(e.base, 4), []);
-	return e.type === 1 || (Xr(e), n$1.on({
+	return e.type === 1 || (Xr(e), n.on({
 		next: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, qe(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, qe(t, i));
 			}
 		},
 		throw: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, We(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, We(t, i));
 			}
 			be(e);
 		},
 		return: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, Ge(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, Ge(t, i));
 			}
 			be(e);
 		}
@@ -3791,61 +3791,61 @@ function Oa(e, r, t, n$1) {
 }
 function Ta(e, r, t) {
 	if (this.state.alive) {
-		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n$1], o$1, o$1, o$1, o$1)), be(this);
+		let n = G(this, r, t);
+		n && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n], o$1, o$1, o$1, o$1)), be(this);
 	}
 }
 function wa(e, r, t) {
 	if (this.state.alive) {
-		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n$1], o$1, o$1, o$1, o$1));
+		let n = G(this, r, t);
+		n && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n], o$1, o$1, o$1, o$1));
 	}
 	be(this);
 }
-function ha(e, r, t, n$1) {
+function ha(e, r, t, n) {
 	let a = hr(e.base, {});
-	return e.type === 2 && (Xr(e), n$1.then(Ta.bind(e, a, r), wa.bind(e, a, r))), ht(e.base, t, a);
+	return e.type === 2 && (Xr(e), n.then(Ta.bind(e, a, r), wa.bind(e, a, r))), ht(e.base, t, a);
 }
-function za(e, r, t, n$1, a) {
-	for (let s = 0, i$1 = a.length; s < i$1; s++) {
-		let u$1 = a[s];
-		if (u$1.parse.sync && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.sync(n$1, new Gr(e, r), { id: t }));
+function za(e, r, t, n, a) {
+	for (let s = 0, i = a.length; s < i; s++) {
+		let u = a[s];
+		if (u.parse.sync && u.test(n)) return fe$1(t, u.tag, u.parse.sync(n, new Gr(e, r), { id: t }));
 	}
 	return o$1;
 }
-function _a(e, r, t, n$1, a) {
-	for (let s = 0, i$1 = a.length; s < i$1; s++) {
-		let u$1 = a[s];
-		if (u$1.parse.stream && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.stream(n$1, new Kr(e, r), { id: t }));
+function _a(e, r, t, n, a) {
+	for (let s = 0, i = a.length; s < i; s++) {
+		let u = a[s];
+		if (u.parse.stream && u.test(n)) return fe$1(t, u.tag, u.parse.stream(n, new Kr(e, r), { id: t }));
 	}
 	return o$1;
 }
-function un(e, r, t, n$1) {
+function un(e, r, t, n) {
 	let a = e.base.plugins;
-	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$1;
+	return a ? e.type === 1 ? za(e, r, t, n, a) : _a(e, r, t, n, a) : o$1;
 }
-function ka(e, r, t, n$1) {
+function ka(e, r, t, n) {
 	let a = [];
-	for (let s = 0, i$1 = n$1.v.length; s < i$1; s++) a[s] = E$1(e, r, n$1.v[s]);
-	return Ke(t, a, n$1.t, n$1.d);
+	for (let s = 0, i = n.v.length; s < i; s++) a[s] = E$1(e, r, n.v[s]);
+	return Ke(t, a, n.t, n.d);
 }
-function Da(e, r, t, n$1, a) {
+function Da(e, r, t, n, a) {
 	switch (a) {
-		case Object: return Wr(e, r, t, n$1, !1);
-		case o$1: return Wr(e, r, t, n$1, !0);
-		case Date: return he(t, n$1);
+		case Object: return Wr(e, r, t, n, !1);
+		case o$1: return Wr(e, r, t, n, !0);
+		case Date: return he(t, n);
 		case Error:
 		case EvalError:
 		case RangeError:
 		case ReferenceError:
 		case SyntaxError:
 		case TypeError:
-		case URIError: return sn(e, r, t, n$1);
+		case URIError: return sn(e, r, t, n);
 		case Number:
 		case Boolean:
 		case String:
-		case BigInt: return Ca(e, r, t, n$1);
-		case ArrayBuffer: return or(e.base, t, n$1);
+		case BigInt: return Ca(e, r, t, n);
+		case ArrayBuffer: return or(e.base, t, n);
 		case Int8Array:
 		case Int16Array:
 		case Int32Array:
@@ -3854,37 +3854,37 @@ function Da(e, r, t, n$1, a) {
 		case Uint32Array:
 		case Uint8ClampedArray:
 		case Float32Array:
-		case Float64Array: return Aa(e, r, t, n$1);
-		case DataView: return Ia(e, r, t, n$1);
-		case Map: return Pa(e, r, t, n$1);
-		case Set: return xa(e, r, t, n$1);
+		case Float64Array: return Aa(e, r, t, n);
+		case DataView: return Ia(e, r, t, n);
+		case Map: return Pa(e, r, t, n);
+		case Set: return xa(e, r, t, n);
 		default: break;
 	}
-	if (a === Promise || n$1 instanceof Promise) return ha(e, r, t, n$1);
+	if (a === Promise || n instanceof Promise) return ha(e, r, t, n);
 	let s = e.base.features;
-	if (s & 32 && a === RegExp) return ze(t, n$1);
+	if (s & 32 && a === RegExp) return ze(t, n);
 	if (s & 16) switch (a) {
 		case BigInt64Array:
-		case BigUint64Array: return Ea(e, r, t, n$1);
+		case BigUint64Array: return Ea(e, r, t, n);
 		default: break;
 	}
-	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n$1 instanceof AggregateError)) return Ra(e, r, t, n$1);
-	if (n$1 instanceof Error) return sn(e, r, t, n$1);
-	if (C in n$1 || v$1 in n$1) return Wr(e, r, t, n$1, !!a);
-	throw new x$1(n$1);
+	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n instanceof AggregateError)) return Ra(e, r, t, n);
+	if (n instanceof Error) return sn(e, r, t, n);
+	if (C in n || v$1 in n) return Wr(e, r, t, n, !!a);
+	throw new x$1(n);
 }
-function Fa(e, r, t, n$1) {
-	if (Array.isArray(n$1)) return va(e, r, t, n$1);
-	if (M(n$1)) return Oa(e, r, t, n$1);
-	if (Ze(n$1)) return ka(e, r, t, n$1);
-	let a = n$1.constructor;
-	if (a === Y$1) return E$1(e, r, n$1.replacement);
-	return un(e, r, t, n$1) || Da(e, r, t, n$1, a);
+function Fa(e, r, t, n) {
+	if (Array.isArray(n)) return va(e, r, t, n);
+	if (M(n)) return Oa(e, r, t, n);
+	if (Ze(n)) return ka(e, r, t, n);
+	let a = n.constructor;
+	if (a === Y$1) return E$1(e, r, n.replacement);
+	return un(e, r, t, n) || Da(e, r, t, n, a);
 }
 function Ba(e, r, t) {
-	let n$1 = q$1(e.base, t);
-	if (n$1.type !== 0) return n$1.value;
-	let a = un(e, r, n$1.value, t);
+	let n = q$1(e.base, t);
+	if (n.type !== 0) return n.value;
+	let a = un(e, r, n.value, t);
 	if (a) return a;
 	throw new x$1(t);
 }
@@ -3898,8 +3898,8 @@ function E$1(e, r, t) {
 		case "bigint": return we(t);
 		case "object":
 			if (t) {
-				let n$1 = q$1(e.base, t);
-				return n$1.type === 0 ? Fa(e, r + 1, n$1.value, t) : n$1.value;
+				let n = q$1(e.base, t);
+				return n.type === 0 ? Fa(e, r + 1, n.value, t) : n.value;
 			}
 			return Ee;
 		case "symbol": return I(e.base, t);
@@ -3920,8 +3920,8 @@ function ln(e) {
 function $r(e, r, t) {
 	try {
 		e.state.onParse(r, t);
-	} catch (n$1) {
-		Zr(e, n$1);
+	} catch (n) {
+		Zr(e, n);
 	}
 }
 function Xr(e) {
@@ -3933,8 +3933,8 @@ function be(e) {
 function G(e, r, t) {
 	try {
 		return E$1(e, r, t);
-	} catch (n$1) {
-		return Zr(e, n$1), o$1;
+	} catch (n) {
+		return Zr(e, n), o$1;
 	}
 }
 function Qr(e, r) {
@@ -3942,35 +3942,35 @@ function Qr(e, r) {
 	t && ($r(e, t, !0), e.state.initial = !1, Va(e, e.state), e.state.pending <= 0 && fr(e));
 }
 function Va(e, r) {
-	for (let t = 0, n$1 = r.buffer.length; t < n$1; t++) $r(e, r.buffer[t], !1);
+	for (let t = 0, n = r.buffer.length; t < n; t++) $r(e, r.buffer[t], !1);
 }
 function fr(e) {
 	e.state.alive && (ln(e), e.state.alive = !1);
 }
 function cn(e, r) {
-	let t = A(r.plugins), n$1 = Hr({
+	let t = A(r.plugins), n = Hr({
 		plugins: t,
 		refs: r.refs,
 		disabledFeatures: r.disabledFeatures,
 		onParse(a, s) {
-			let i$1 = ur({
+			let i = ur({
 				plugins: t,
-				features: n$1.base.features,
+				features: n.base.features,
 				scopeId: r.scopeId,
-				markedRefs: n$1.base.marked
-			}), u$1;
+				markedRefs: n.base.marked
+			}), u;
 			try {
-				u$1 = cr(i$1, a);
-			} catch (l$1) {
-				r.onError && r.onError(l$1);
+				u = cr(i, a);
+			} catch (l) {
+				r.onError && r.onError(l);
 				return;
 			}
-			r.onSerialize(u$1, s);
+			r.onSerialize(u, s);
 		},
 		onError: r.onError,
 		onDone: r.onDone
 	});
-	return Qr(n$1, e), fr.bind(null, n$1);
+	return Qr(n, e), fr.bind(null, n);
 }
 var Sr = class {
 	constructor(r) {
@@ -3992,8 +3992,8 @@ var Sr = class {
 			refs: this.refs,
 			disabledFeatures: this.options.disabledFeatures,
 			onError: this.options.onError,
-			onSerialize: (n$1, a) => {
-				this.alive && this.options.onData(a ? this.options.globalIdentifier + "[\\"" + y$1(r) + "\\"]=" + n$1 : n$1);
+			onSerialize: (n, a) => {
+				this.alive && this.options.onData(a ? this.options.globalIdentifier + "[\\"" + y$1(r) + "\\"]=" + n : n);
 			},
 			onDone: () => {
 				this.alive && (this.pending--, this.pending <= 0 && this.flushed && !this.done && this.options.onDone && (this.options.onDone(), this.done = !0));
@@ -4783,16 +4783,16 @@ function renderToString(code, options = {}) {
 		lazy: {},
 		assets: [],
 		nonce: options.nonce,
-		serialize(id, p$1) {
-			!sharedConfig.context.noHydrate && serializer.write(id, p$1);
+		serialize(id, p) {
+			!sharedConfig.context.noHydrate && serializer.write(id, p);
 		},
 		roots: 0,
 		nextRoot() {
 			return this.renderId + "i-" + this.roots++;
 		}
 	};
-	let html = createRoot((d$1) => {
-		setTimeout(d$1);
+	let html = createRoot((d) => {
+		setTimeout(d);
 		return resolveSSRNode(escape(code()));
 	});
 	sharedConfig.context.noHydrate = true;
@@ -4804,9 +4804,9 @@ function renderToString(code, options = {}) {
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
-		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
-			result += t[i$1];
-			const node = nodes[i$1];
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
 			if (node !== void 0) result += resolveSSRNode(node);
 		}
 		t = result + t[nodes.length];
@@ -4822,7 +4822,7 @@ function escape(s, attr) {
 		if (!attr && t === "function") return escape(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i$1 = 0; i$1 < s.length; i$1++) s[i$1] = escape(s[i$1]);
+			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
 		if (attr && t === "boolean") return String(s);
@@ -4866,9 +4866,9 @@ function resolveSSRNode(node, top) {
 	if (Array.isArray(node)) {
 		let prev = {};
 		let mapped = "";
-		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
-			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
-			mapped += resolveSSRNode(prev = node[i$1]);
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
 		}
 		return mapped;
 	}
@@ -4879,7 +4879,7 @@ function resolveSSRNode(node, top) {
 function injectAssets(assets, html) {
 	if (!assets || !assets.length) return html;
 	let out = "";
-	for (let i$1 = 0, len = assets.length; i$1 < len; i$1++) out += assets[i$1]();
+	for (let i = 0, len = assets.length; i < len; i++) out += assets[i]();
 	const index = html.indexOf("</head>");
 	if (index === -1) return html;
 	return html.slice(0, index) + out + html.slice(index);
@@ -4936,7 +4936,7 @@ function handleError(err, owner = Owner) {
 	const error = castError(err);
 	if (!fns) throw error;
 	try {
-		for (const f$2 of fns) f$2(error);
+		for (const f of fns) f(error);
 	} catch (e) {
 		handleError(e, owner && owner.owner || null);
 	}
@@ -4949,18 +4949,18 @@ const UNOWNED = {
 };
 let Owner = null;
 function createOwner() {
-	const o$2 = {
+	const o = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
-	else Owner.owned.push(o$2);
-	return o$2;
+	if (Owner) if (!Owner.owned) Owner.owned = [o];
+	else Owner.owned.push(o);
+	return o;
 }
-function createRoot(fn$1, detachedOwner) {
-	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn$1.length === 0 ? UNOWNED : {
+function createRoot(fn, detachedOwner) {
+	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn.length === 0 ? UNOWNED : {
 		context: current ? current.context : null,
 		owner: current,
 		owned: null,
@@ -4969,7 +4969,7 @@ function createRoot(fn$1, detachedOwner) {
 	Owner = root;
 	let result;
 	try {
-		result = fn$1(fn$1.length === 0 ? () => {} : () => cleanNode(root));
+		result = fn(fn.length === 0 ? () => {} : () => cleanNode(root));
 	} catch (err) {
 		handleError(err);
 	} finally {
@@ -4978,29 +4978,29 @@ function createRoot(fn$1, detachedOwner) {
 	return result;
 }
 function createSignal(value, options) {
-	return [() => value, (v$2) => {
-		return value = typeof v$2 === "function" ? v$2(value) : v$2;
+	return [() => value, (v) => {
+		return value = typeof v === "function" ? v(value) : v;
 	}];
 }
-function createMemo(fn$1, value) {
+function createMemo(fn, value) {
 	Owner = createOwner();
-	let v$2;
+	let v;
 	try {
-		v$2 = fn$1(value);
+		v = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$2;
+	return () => v;
 }
 function cleanNode(node) {
 	if (node.owned) {
-		for (let i$1 = 0; i$1 < node.owned.length; i$1++) cleanNode(node.owned[i$1]);
+		for (let i = 0; i < node.owned.length; i++) cleanNode(node.owned[i]);
 		node.owned = null;
 	}
 	if (node.cleanups) {
-		for (let i$1 = 0; i$1 < node.cleanups.length; i$1++) node.cleanups[i$1]();
+		for (let i = 0; i < node.cleanups.length; i++) node.cleanups[i]();
 		node.cleanups = null;
 	}
 }
@@ -5012,25 +5012,25 @@ function createContext(defaultValue) {
 		defaultValue
 	};
 }
-function children(fn$1) {
-	const memo = createMemo(() => resolveChildren(fn$1()));
+function children(fn) {
+	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$2 = memo();
-		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
+		const c = memo();
+		return Array.isArray(c) ? c : c != null ? [c] : [];
 	};
 	return memo;
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i$1 = 0; i$1 < children$1.length; i$1++) {
-			const result = resolveChildren(children$1[i$1]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id) {
 	return function provider(props) {
@@ -5062,7 +5062,7 @@ const SuspenseContext = createContext();
 
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
 var rt = {
 	0: "Symbol.asyncIterator",
@@ -5142,20 +5142,20 @@ var Ce = {
 	5: TypeError,
 	6: URIError
 };
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
 		i: r,
 		s: t,
-		c: n$1,
+		c: n,
 		m: a,
 		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
 		o: S,
-		l: d$1
+		l: d
 	};
 }
 function F(e) {
@@ -5179,8 +5179,8 @@ function fn(e) {
 	}
 }
 function y$1(e) {
-	let r = "", t = 0, n$1;
-	for (let a = 0, s = e.length; a < s; a++) n$1 = fn(e[a]), n$1 && (r += e.slice(t, a) + n$1, t = a + 1);
+	let r = "", t = 0, n;
+	for (let a = 0, s = e.length; a < s; a++) n = fn(e[a]), n && (r += e.slice(t, a) + n, t = a + 1);
 	return t === 0 ? r = e : r += e.slice(t), r;
 }
 var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
@@ -5224,8 +5224,8 @@ function gn(e) {
 	return e.name !== r ? { name: e.name } : e.constructor.name !== r ? { name: e.constructor.name } : {};
 }
 function $$1(e, r) {
-	let t = gn(e), n$1 = Object.getOwnPropertyNames(e);
-	for (let a = 0, s = n$1.length, i$1; a < s; a++) i$1 = n$1[a], i$1 !== "name" && i$1 !== "message" && (i$1 === "stack" ? r & 4 && (t = t || {}, t[i$1] = e[i$1]) : (t = t || {}, t[i$1] = e[i$1]));
+	let t = gn(e), n = Object.getOwnPropertyNames(e);
+	for (let a = 0, s = n.length, i; a < s; a++) i = n[a], i !== "name" && i !== "message" && (i === "stack" ? r & 4 && (t = t || {}, t[i] = e[i]) : (t = t || {}, t[i] = e[i]));
 	return t;
 }
 function Oe(e) {
@@ -5305,8 +5305,8 @@ function We(e, r) {
 function Ge(e, r) {
 	return c$1(34, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
-function Ke(e, r, t, n$1) {
-	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n$1);
+function Ke(e, r, t, n) {
+	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n);
 }
 var { toString: ys } = Object.prototype;
 var yn = {
@@ -5318,9 +5318,9 @@ function Nn(e) {
 	return \`Seroval Error (step: \${yn[e]})\`;
 }
 var bn = (e, r) => Nn(e), Se = class extends Error {
-	constructor(t, n$1) {
-		super(bn(t, n$1));
-		this.cause = n$1;
+	constructor(t, n) {
+		super(bn(t, n));
+		this.cause = n;
 	}
 }, z = class extends Se {
 	constructor(r) {
@@ -5401,29 +5401,29 @@ var re = () => {
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 }, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
 	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
 		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
 		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
 }, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
+	let t = 0, n = {
+		[e]: () => n,
 		next: () => {
 			if (t > r.d) return {
 				done: !0,
@@ -5437,69 +5437,69 @@ var re = () => {
 			};
 		}
 	};
-	return n$1;
+	return n;
 }, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
 			done: !0,
 			value: void 0
 		});
 	};
 	t.on({
 		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !1,
 				value: S
-			}), i$1.push(S);
+			}), i.push(S);
 		},
 		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
 		},
 		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !0,
 				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
+			}), l(), a = i.length, i.push(S);
 		}
 	});
-	let g$1 = {
-		[e]: () => g$1,
+	let g = {
+		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
+				let K = n++;
+				if (K >= i.length) {
 					let et = r();
-					return u$1.push(et), et.p;
+					return u.push(et), et.p;
 				}
 				return {
 					done: !1,
-					value: i$1[K$1]
+					value: i[K]
 				};
 			}
-			if (n$1 > a) return {
+			if (n > a) return {
 				done: !0,
 				value: void 0
 			};
-			let S = n$1++, d$1 = i$1[S];
+			let S = n++, d = i[S];
 			if (S !== a) return {
 				done: !1,
-				value: d$1
+				value: d
 			};
-			if (s) throw d$1;
+			if (s) throw d;
 			return {
 				done: !0,
-				value: d$1
+				value: d
 			};
 		}
 	};
-	return g$1;
+	return g;
 }, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
 }, Et = Or.toString();
 function Ze(e) {
 	return "__SEROVAL_SEQUENCE__" in e;
@@ -5513,17 +5513,17 @@ function Tr(e, r, t) {
 	};
 }
 function $e(e) {
-	let r = [], t = -1, n$1 = -1, a = e[C]();
+	let r = [], t = -1, n = -1, a = e[C]();
 	for (;;) try {
 		let s = a.next();
 		if (r.push(s.value), s.done) {
-			n$1 = r.length - 1;
+			n = r.length - 1;
 			break;
 		}
 	} catch (s) {
 		t = r.length, r.push(s);
 	}
-	return Tr(r, t, n$1);
+	return Tr(r, t, n);
 }
 var An = Pr(C);
 var Rt = {}, Pt = {};
@@ -5550,15 +5550,15 @@ function te$1() {
 }
 function Xe(e) {
 	let r = te$1(), t = e[v$1]();
-	async function n$1() {
+	async function n() {
 		try {
 			let a = await t.next();
-			a.done ? r.return(a.value) : (r.next(a.value), await n$1());
+			a.done ? r.return(a.value) : (r.next(a.value), await n());
 		} catch (a) {
 			r.throw(a);
 		}
 	}
-	return n$1().catch(() => {}), r;
+	return n().catch(() => {}), r;
 }
 var En = xr(v$1, re);
 function pe$1(e, r) {
@@ -5613,21 +5613,21 @@ function rr(e) {
 	let r = Qe(e, Pt);
 	return r.type === 1 ? r.value : c$1(29, r.value, o$1, o$1, o$1, o$1, o$1, [k(e, 1), I(e, v$1)], o$1, o$1, o$1, o$1);
 }
-function tr(e, r, t, n$1) {
-	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n$1, o$1, o$1, o$1, o$1, Oe(r), o$1);
+function tr(e, r, t, n) {
+	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n, o$1, o$1, o$1, o$1, Oe(r), o$1);
 }
-function nr(e, r, t, n$1) {
+function nr(e, r, t, n) {
 	return c$1(8, r, o$1, o$1, o$1, o$1, {
 		k: t,
-		v: n$1
+		v: n
 	}, o$1, k(e, 0), o$1, o$1, o$1);
 }
 function ht(e, r, t) {
 	return c$1(22, r, t, o$1, o$1, o$1, o$1, o$1, k(e, 1), o$1, o$1, o$1);
 }
 function or(e, r, t) {
-	let n$1 = new Uint8Array(t), a = "";
-	for (let s = 0, i$1 = n$1.length; s < i$1; s++) a += String.fromCharCode(n$1[s]);
+	let n = new Uint8Array(t), a = "";
+	for (let s = 0, i = n.length; s < i; s++) a += String.fromCharCode(n[s]);
 	return c$1(19, r, y$1(btoa(a)), o$1, o$1, o$1, o$1, o$1, k(e, 5), o$1, o$1, o$1);
 }
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
@@ -5635,7 +5635,7 @@ function ni(e) {
 	return e;
 }
 function kt(e, r) {
-	for (let t = 0, n$1 = r.length; t < n$1; t++) {
+	for (let t = 0, n = r.length; t < n; t++) {
 		let a = r[t];
 		e.has(a) || (e.add(a), a.extends && kt(e, a.extends));
 	}
@@ -5674,33 +5674,33 @@ function ye(e) {
 }
 function Po(e) {
 	let r = [], t = e[0];
-	for (let n$1 = 1, a = e.length, s, i$1 = t; n$1 < a; n$1++) s = e[n$1], s.t === 0 && s.v === i$1.v ? t = {
+	for (let n = 1, a = e.length, s, i = t; n < a; n++) s = e[n], s.t === 0 && s.v === i.v ? t = {
 		t: 0,
 		s: s.s,
 		k: o$1,
 		v: ye(t)
-	} : s.t === 2 && s.s === i$1.s ? t = {
+	} : s.t === 2 && s.s === i.s ? t = {
 		t: 2,
 		s: ye(t),
 		k: s.k,
 		v: s.v
-	} : s.t === 1 && s.s === i$1.s ? t = {
+	} : s.t === 1 && s.s === i.s ? t = {
 		t: 1,
 		s: ye(t),
 		k: o$1,
 		v: s.v
-	} : s.t === 3 && s.s === i$1.s ? t = {
+	} : s.t === 3 && s.s === i.s ? t = {
 		t: 3,
 		s: ye(t),
 		k: s.k,
 		v: o$1
-	} : (r.push(t), t = s), i$1 = s;
+	} : (r.push(t), t = s), i = s;
 	return r.push(t), r;
 }
 function tn(e) {
 	if (e.length) {
 		let r = "", t = Po(e);
-		for (let n$1 = 0, a = t.length; n$1 < a; n$1++) r += ye(t[n$1]) + ",";
+		for (let n = 0, a = t.length; n < a; n++) r += ye(t[n]) + ",";
 		return r;
 	}
 	return o$1;
@@ -5741,8 +5741,8 @@ var Mr = class {
 function ko(e, r) {
 	let t = e.valid.get(r);
 	t ?? (t = e.valid.size, e.valid.set(r, t));
-	let n$1 = e.vars[t];
-	return n$1 ?? (n$1 = Br(t), e.vars[t] = n$1), n$1;
+	let n = e.vars[t];
+	return n ?? (n = Br(t), e.vars[t] = n), n;
 }
 function Do(e) {
 	return ce + "[" + e + "]";
@@ -5764,8 +5764,8 @@ function jr(e, r, t) {
 }
 function Fo(e) {
 	let r = "";
-	for (let t = 0, n$1 = e.flags, a = n$1.length; t < a; t++) {
-		let s = n$1[t];
+	for (let t = 0, n = e.flags, a = n.length; t < a; t++) {
+		let s = n[t];
 		r += zo[s.type] + "(" + s.value + "),";
 	}
 	return r;
@@ -5790,12 +5790,12 @@ function Bo(e, r, t) {
 		v: t
 	});
 }
-function ge(e, r, t, n$1) {
+function ge(e, r, t, n) {
 	e.base.assignments.push({
 		t: 2,
 		s: m$1(e, r),
 		k: t,
-		v: n$1
+		v: n
 	});
 }
 function Zt(e, r, t) {
@@ -5806,14 +5806,14 @@ function Zt(e, r, t) {
 		v: o$1
 	});
 }
-function Ne(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + "[" + t + "]", n$1);
+function Ne(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + "[" + t + "]", n);
 }
-function Ur(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + "." + t, n$1);
+function Ur(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + "." + t, n);
 }
-function Vo(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + ".v[" + t + "]", n$1);
+function Vo(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + ".v[" + t + "]", n);
 }
 function D$1(e, r) {
 	return r.t === 4 && e.stack.includes(r.i);
@@ -5824,83 +5824,83 @@ function se(e, r, t) {
 function Mo(e) {
 	return U + ".get(\\"" + e.s + "\\")";
 }
-function $t(e, r, t, n$1) {
-	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n$1, m$1(e, t.i)), "") : f$1(e, t) : "";
+function $t(e, r, t, n) {
+	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n, m$1(e, t.i)), "") : f$1(e, t) : "";
 }
 function Lo(e, r) {
-	let t = r.i, n$1 = r.a, a = n$1.length;
+	let t = r.i, n = r.a, a = n.length;
 	if (a > 0) {
 		e.base.stack.push(t);
-		let s = $t(e, t, n$1[0], 0), i$1 = s === "";
-		for (let u$1 = 1, l$1; u$1 < a; u$1++) l$1 = $t(e, t, n$1[u$1], u$1), s += "," + l$1, i$1 = l$1 === "";
-		return e.base.stack.pop(), jr(e, r.o, r.i), "[" + s + (i$1 ? ",]" : "]");
+		let s = $t(e, t, n[0], 0), i = s === "";
+		for (let u = 1, l; u < a; u++) l = $t(e, t, n[u], u), s += "," + l, i = l === "";
+		return e.base.stack.pop(), jr(e, r.o, r.i), "[" + s + (i ? ",]" : "]");
 	}
 	return "[]";
 }
-function Xt(e, r, t, n$1) {
+function Xt(e, r, t, n) {
 	if (typeof t == "string") {
 		let a = Number(t), s = a >= 0 && a.toString() === t || Vr(t);
-		if (D$1(e.base, n$1)) {
-			let i$1 = m$1(e, n$1.i);
-			return O$1(e.base, r.i), s && a !== a ? Ur(e, r.i, t, i$1) : Ne(e, r.i, s ? t : "\\"" + t + "\\"", i$1), "";
+		if (D$1(e.base, n)) {
+			let i = m$1(e, n.i);
+			return O$1(e.base, r.i), s && a !== a ? Ur(e, r.i, t, i) : Ne(e, r.i, s ? t : "\\"" + t + "\\"", i), "";
 		}
-		return (s ? t : "\\"" + t + "\\"") + ":" + f$1(e, n$1);
+		return (s ? t : "\\"" + t + "\\"") + ":" + f$1(e, n);
 	}
-	return "[" + f$1(e, t) + "]:" + f$1(e, n$1);
+	return "[" + f$1(e, t) + "]:" + f$1(e, n);
 }
 function an(e, r, t) {
-	let n$1 = t.k, a = n$1.length;
+	let n = t.k, a = n.length;
 	if (a > 0) {
 		let s = t.v;
 		e.base.stack.push(r.i);
-		let i$1 = Xt(e, r, n$1[0], s[0]);
-		for (let u$1 = 1, l$1 = i$1; u$1 < a; u$1++) l$1 = Xt(e, r, n$1[u$1], s[u$1]), i$1 += (l$1 && i$1 && ",") + l$1;
-		return e.base.stack.pop(), "{" + i$1 + "}";
+		let i = Xt(e, r, n[0], s[0]);
+		for (let u = 1, l = i; u < a; u++) l = Xt(e, r, n[u], s[u]), i += (l && i && ",") + l;
+		return e.base.stack.pop(), "{" + i + "}";
 	}
 	return "{}";
 }
 function Uo(e, r) {
 	return jr(e, r.o, r.i), an(e, r, r.p);
 }
-function jo(e, r, t, n$1) {
+function jo(e, r, t, n) {
 	let a = an(e, r, t);
-	return a !== "{}" ? "Object.assign(" + n$1 + "," + a + ")" : n$1;
+	return a !== "{}" ? "Object.assign(" + n + "," + a + ")" : n;
 }
-function Yo(e, r, t, n$1, a) {
-	let s = e.base, i$1 = f$1(e, a), u$1 = Number(n$1), l$1 = u$1 >= 0 && u$1.toString() === n$1 || Vr(n$1);
-	if (D$1(s, a)) l$1 && u$1 !== u$1 ? Ur(e, r.i, n$1, i$1) : Ne(e, r.i, l$1 ? n$1 : "\\"" + n$1 + "\\"", i$1);
+function Yo(e, r, t, n, a) {
+	let s = e.base, i = f$1(e, a), u = Number(n), l = u >= 0 && u.toString() === n || Vr(n);
+	if (D$1(s, a)) l && u !== u ? Ur(e, r.i, n, i) : Ne(e, r.i, l ? n : "\\"" + n + "\\"", i);
 	else {
-		let g$1 = s.assignments;
-		s.assignments = t, l$1 && u$1 !== u$1 ? Ur(e, r.i, n$1, i$1) : Ne(e, r.i, l$1 ? n$1 : "\\"" + n$1 + "\\"", i$1), s.assignments = g$1;
+		let g = s.assignments;
+		s.assignments = t, l && u !== u ? Ur(e, r.i, n, i) : Ne(e, r.i, l ? n : "\\"" + n + "\\"", i), s.assignments = g;
 	}
 }
-function qo(e, r, t, n$1, a) {
-	if (typeof n$1 == "string") Yo(e, r, t, n$1, a);
+function qo(e, r, t, n, a) {
+	if (typeof n == "string") Yo(e, r, t, n, a);
 	else {
-		let s = e.base, i$1 = s.stack;
+		let s = e.base, i = s.stack;
 		s.stack = [];
-		let u$1 = f$1(e, a);
-		s.stack = i$1;
-		let l$1 = s.assignments;
-		s.assignments = t, Ne(e, r.i, f$1(e, n$1), u$1), s.assignments = l$1;
+		let u = f$1(e, a);
+		s.stack = i;
+		let l = s.assignments;
+		s.assignments = t, Ne(e, r.i, f$1(e, n), u), s.assignments = l;
 	}
 }
 function Wo(e, r, t) {
-	let n$1 = t.k, a = n$1.length;
+	let n = t.k, a = n.length;
 	if (a > 0) {
-		let s = [], i$1 = t.v;
+		let s = [], i = t.v;
 		e.base.stack.push(r.i);
-		for (let u$1 = 0; u$1 < a; u$1++) qo(e, r, s, n$1[u$1], i$1[u$1]);
+		for (let u = 0; u < a; u++) qo(e, r, s, n[u], i[u]);
 		return e.base.stack.pop(), tn(s);
 	}
 	return o$1;
 }
 function qr(e, r, t) {
 	if (r.p) {
-		let n$1 = e.base;
-		if (n$1.features & 8) t = jo(e, r, r.p, t);
+		let n = e.base;
+		if (n.features & 8) t = jo(e, r, r.p, t);
 		else {
-			O$1(n$1, r.i);
+			O$1(n, r.i);
 			let a = Wo(e, r, r.p);
 			if (a) return "(" + se(e, r.i, t) + "," + a + m$1(e, r.i) + ")";
 		}
@@ -5918,52 +5918,52 @@ function Ho(e, r) {
 	throw new w$1(r);
 }
 function Qt(e, r, t) {
-	let n$1 = e.base;
-	return D$1(n$1, t) ? (O$1(n$1, r), Bo(e, r, m$1(e, t.i)), "") : f$1(e, t);
+	let n = e.base;
+	return D$1(n, t) ? (O$1(n, r), Bo(e, r, m$1(e, t.i)), "") : f$1(e, t);
 }
 function Jo(e, r) {
-	let t = Oo, n$1 = r.a, a = n$1.length, s = r.i;
+	let t = Oo, n = r.a, a = n.length, s = r.i;
 	if (a > 0) {
 		e.base.stack.push(s);
-		let i$1 = Qt(e, s, n$1[0]);
-		for (let u$1 = 1, l$1 = i$1; u$1 < a; u$1++) l$1 = Qt(e, s, n$1[u$1]), i$1 += (l$1 && i$1 && ",") + l$1;
-		e.base.stack.pop(), i$1 && (t += "([" + i$1 + "])");
+		let i = Qt(e, s, n[0]);
+		for (let u = 1, l = i; u < a; u++) l = Qt(e, s, n[u]), i += (l && i && ",") + l;
+		e.base.stack.pop(), i && (t += "([" + i + "])");
 	}
 	return t;
 }
-function en(e, r, t, n$1, a) {
+function en(e, r, t, n, a) {
 	let s = e.base;
 	if (D$1(s, t)) {
-		let i$1 = m$1(e, t.i);
-		if (O$1(s, r), D$1(s, n$1)) return ge(e, r, i$1, m$1(e, n$1.i)), "";
-		if (n$1.t !== 4 && n$1.i != null && Lr(s, n$1.i)) {
-			let l$1 = "(" + f$1(e, n$1) + ",[" + a + "," + a + "])";
-			return ge(e, r, i$1, m$1(e, n$1.i)), Zt(e, r, a), l$1;
+		let i = m$1(e, t.i);
+		if (O$1(s, r), D$1(s, n)) return ge(e, r, i, m$1(e, n.i)), "";
+		if (n.t !== 4 && n.i != null && Lr(s, n.i)) {
+			let l = "(" + f$1(e, n) + ",[" + a + "," + a + "])";
+			return ge(e, r, i, m$1(e, n.i)), Zt(e, r, a), l;
 		}
-		let u$1 = s.stack;
-		return s.stack = [], ge(e, r, i$1, f$1(e, n$1)), s.stack = u$1, "";
+		let u = s.stack;
+		return s.stack = [], ge(e, r, i, f$1(e, n)), s.stack = u, "";
 	}
-	if (D$1(s, n$1)) {
-		let i$1 = m$1(e, n$1.i);
+	if (D$1(s, n)) {
+		let i = m$1(e, n.i);
 		if (O$1(s, r), t.t !== 4 && t.i != null && Lr(s, t.i)) {
-			let l$1 = "(" + f$1(e, t) + ",[" + a + "," + a + "])";
-			return ge(e, r, m$1(e, t.i), i$1), Zt(e, r, a), l$1;
+			let l = "(" + f$1(e, t) + ",[" + a + "," + a + "])";
+			return ge(e, r, m$1(e, t.i), i), Zt(e, r, a), l;
 		}
-		let u$1 = s.stack;
-		return s.stack = [], ge(e, r, f$1(e, t), i$1), s.stack = u$1, "";
+		let u = s.stack;
+		return s.stack = [], ge(e, r, f$1(e, t), i), s.stack = u, "";
 	}
-	return "[" + f$1(e, t) + "," + f$1(e, n$1) + "]";
+	return "[" + f$1(e, t) + "," + f$1(e, n) + "]";
 }
 function Zo(e, r) {
-	let t = To, n$1 = r.e.k, a = n$1.length, s = r.i, i$1 = r.f, u$1 = m$1(e, i$1.i), l$1 = e.base;
+	let t = To, n = r.e.k, a = n.length, s = r.i, i = r.f, u = m$1(e, i.i), l = e.base;
 	if (a > 0) {
-		let g$1 = r.e.v;
-		l$1.stack.push(s);
-		let S = en(e, s, n$1[0], g$1[0], u$1);
-		for (let d$1 = 1, K$1 = S; d$1 < a; d$1++) K$1 = en(e, s, n$1[d$1], g$1[d$1], u$1), S += (K$1 && S && ",") + K$1;
-		l$1.stack.pop(), S && (t += "([" + S + "])");
+		let g = r.e.v;
+		l.stack.push(s);
+		let S = en(e, s, n[0], g[0], u);
+		for (let d = 1, K = S; d < a; d++) K = en(e, s, n[d], g[d], u), S += (K && S && ",") + K;
+		l.stack.pop(), S && (t += "([" + S + "])");
 	}
-	return i$1.t === 26 && (O$1(l$1, i$1.i), t = "(" + f$1(e, i$1) + "," + t + ")"), t;
+	return i.t === 26 && (O$1(l, i.i), t = "(" + f$1(e, i) + "," + t + ")"), t;
 }
 function $o(e, r) {
 	return W(e, r.f) + "(\\"" + r.s + "\\")";
@@ -5977,21 +5977,21 @@ function Qo(e, r) {
 function ea(e, r) {
 	let t = r.i;
 	e.base.stack.push(t);
-	let n$1 = qr(e, r, "new AggregateError([],\\"" + r.m + "\\")");
-	return e.base.stack.pop(), n$1;
+	let n = qr(e, r, "new AggregateError([],\\"" + r.m + "\\")");
+	return e.base.stack.pop(), n;
 }
 function ra(e, r) {
 	return qr(e, r, "new " + Ce[r.s] + "(\\"" + r.m + "\\")");
 }
 function ta(e, r) {
-	let t, n$1 = r.f, a = r.i, s = r.s ? wo : ho, i$1 = e.base;
-	if (D$1(i$1, n$1)) {
-		let u$1 = m$1(e, n$1.i);
-		t = s + (r.s ? "().then(" + sr([], u$1) + ")" : "().catch(" + Wt([], "throw " + u$1) + ")");
+	let t, n = r.f, a = r.i, s = r.s ? wo : ho, i = e.base;
+	if (D$1(i, n)) {
+		let u = m$1(e, n.i);
+		t = s + (r.s ? "().then(" + sr([], u) + ")" : "().catch(" + Wt([], "throw " + u) + ")");
 	} else {
-		i$1.stack.push(a);
-		let u$1 = f$1(e, n$1);
-		i$1.stack.pop(), t = s + "(" + u$1 + ")";
+		i.stack.push(a);
+		let u = f$1(e, n);
+		i.stack.pop(), t = s + "(" + u + ")";
 	}
 	return t;
 }
@@ -6016,33 +6016,33 @@ function sa(e, r) {
 }
 function ia(e, r) {
 	let t = e.base.plugins;
-	if (t) for (let n$1 = 0, a = t.length; n$1 < a; n$1++) {
-		let s = t[n$1];
+	if (t) for (let n = 0, a = t.length; n < a; n++) {
+		let s = t[n];
 		if (s.tag === r.c) return e.child ??= new Mr(e), s.serialize(r.s, e.child, { id: r.i });
 	}
 	throw new Q(r.c);
 }
 function ua(e, r) {
-	let t = "", n$1 = !1;
-	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
+	let t = "", n = !1;
+	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n && (t += ")"), t;
 }
 function la(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
 }
 function ca(e, r) {
-	let t = r.a[0], n$1 = r.a[1], a = e.base, s = "";
-	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n$1.t !== 4 && (O$1(a, n$1.i), s += (s ? "," : "(") + f$1(e, n$1)), s && (s += ",");
-	let i$1 = se(e, r.i, "(" + At + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
-	return s ? s + i$1 + ")" : i$1;
+	let t = r.a[0], n = r.a[1], a = e.base, s = "";
+	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n.t !== 4 && (O$1(a, n.i), s += (s ? "," : "(") + f$1(e, n)), s && (s += ",");
+	let i = se(e, r.i, "(" + At + ")(" + m$1(e, n.i) + "," + m$1(e, t.i) + ")");
+	return s ? s + i + ")" : i;
 }
 function fa(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
 }
 function Sa(e, r) {
-	let t = se(e, r.i, W(e, r.f) + "()"), n$1 = r.a.length;
-	if (n$1) {
+	let t = se(e, r.i, W(e, r.f) + "()"), n = r.a.length;
+	if (n) {
 		let a = f$1(e, r.a[0]);
-		for (let s = 1; s < n$1; s++) a += "," + f$1(e, r.a[s]);
+		for (let s = 1; s < n; s++) a += "," + f$1(e, r.a[s]);
 		return "(" + t + "," + a + "," + m$1(e, r.i) + ")";
 	}
 	return t;
@@ -6056,16 +6056,16 @@ function pa(e, r) {
 function da(e, r) {
 	return m$1(e, r.i) + ".return(" + f$1(e, r.f) + ")";
 }
-function rn(e, r, t, n$1) {
+function rn(e, r, t, n) {
 	let a = e.base;
-	return D$1(a, n$1) ? (O$1(a, r), Vo(e, r, t, m$1(e, n$1.i)), "") : f$1(e, n$1);
+	return D$1(a, n) ? (O$1(a, r), Vo(e, r, t, m$1(e, n.i)), "") : f$1(e, n);
 }
 function ga(e, r) {
-	let t = r.a, n$1 = t.length, a = r.i;
-	if (n$1 > 0) {
+	let t = r.a, n = t.length, a = r.i;
+	if (n > 0) {
 		e.base.stack.push(a);
 		let s = rn(e, a, 0, t[0]);
-		for (let i$1 = 1, u$1 = s; i$1 < n$1; i$1++) u$1 = rn(e, a, i$1, t[i$1]), s += (u$1 && s && ",") + u$1;
+		for (let i = 1, u = s; i < n; i++) u = rn(e, a, i, t[i]), s += (u && s && ",") + u;
 		if (e.base.stack.pop(), s) return "{__SEROVAL_SEQUENCE__:!0,v:[" + s + "],t:" + r.s + ",d:" + r.l + "}";
 	}
 	return "{__SEROVAL_SEQUENCE__:!0,v:[],t:-1,d:0}";
@@ -6117,12 +6117,12 @@ function f$1(e, r) {
 	}
 }
 function cr(e, r) {
-	let t = f$1(e, r), n$1 = r.i;
-	if (n$1 == null) return t;
-	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce, l$1 = a ? "(" + t + "," + a + s + ")" : t;
-	if (u$1 === "") return r.t === 10 && !a ? "(" + l$1 + ")" : l$1;
-	let g$1 = i$1 == null ? "()" : "(" + ce + "[\\"" + y$1(i$1) + "\\"])";
-	return "(" + sr([u$1], l$1) + ")" + g$1;
+	let t = f$1(e, r), n = r.i;
+	if (n == null) return t;
+	let a = on(e.base), s = m$1(e, n), i = e.state.scopeId, u = i == null ? "" : ce, l = a ? "(" + t + "," + a + s + ")" : t;
+	if (u === "") return r.t === 10 && !a ? "(" + l + ")" : l;
+	let g = i == null ? "()" : "(" + ce + "[\\"" + y$1(i) + "\\"])";
+	return "(" + sr([u], l) + ")" + g;
 }
 var Gr = class {
 	constructor(r, t) {
@@ -6178,74 +6178,74 @@ function Hr(e) {
 	};
 }
 function ba(e, r, t) {
-	let n$1 = [];
-	for (let a = 0, s = t.length; a < s; a++) a in t ? n$1[a] = E$1(e, r, t[a]) : n$1[a] = 0;
-	return n$1;
+	let n = [];
+	for (let a = 0, s = t.length; a < s; a++) a in t ? n[a] = E$1(e, r, t[a]) : n[a] = 0;
+	return n;
 }
-function va(e, r, t, n$1) {
-	return _e(t, n$1, ba(e, r, n$1));
+function va(e, r, t, n) {
+	return _e(t, n, ba(e, r, n));
 }
 function Jr(e, r, t) {
-	let n$1 = Object.entries(t), a = [], s = [];
-	for (let i$1 = 0, u$1 = n$1.length; i$1 < u$1; i$1++) a.push(y$1(n$1[i$1][0])), s.push(E$1(e, r, n$1[i$1][1]));
+	let n = Object.entries(t), a = [], s = [];
+	for (let i = 0, u = n.length; i < u; i++) a.push(y$1(n[i][0])), s.push(E$1(e, r, n[i][1]));
 	return C in t && (a.push(I(e.base, C)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$1 in t && (a.push(I(e.base, v$1)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$1() : Xe(t))))), P$1 in t && (a.push(I(e.base, P$1)), s.push(X(t[P$1]))), R in t && (a.push(I(e.base, R)), s.push(t[R] ? J : Z)), {
 		k: a,
 		v: s
 	};
 }
-function Wr(e, r, t, n$1, a) {
-	return tr(t, n$1, a, Jr(e, r, n$1));
+function Wr(e, r, t, n, a) {
+	return tr(t, n, a, Jr(e, r, n));
 }
-function Ca(e, r, t, n$1) {
-	return ke(t, E$1(e, r, n$1.valueOf()));
+function Ca(e, r, t, n) {
+	return ke(t, E$1(e, r, n.valueOf()));
 }
-function Aa(e, r, t, n$1) {
-	return De(t, n$1, E$1(e, r, n$1.buffer));
+function Aa(e, r, t, n) {
+	return De(t, n, E$1(e, r, n.buffer));
 }
-function Ea(e, r, t, n$1) {
-	return Fe(t, n$1, E$1(e, r, n$1.buffer));
+function Ea(e, r, t, n) {
+	return Fe(t, n, E$1(e, r, n.buffer));
 }
-function Ia(e, r, t, n$1) {
-	return Be(t, n$1, E$1(e, r, n$1.buffer));
+function Ia(e, r, t, n) {
+	return Be(t, n, E$1(e, r, n.buffer));
 }
-function sn(e, r, t, n$1) {
-	let a = $$1(n$1, e.base.features);
-	return Ve(t, n$1, a ? Jr(e, r, a) : o$1);
+function sn(e, r, t, n) {
+	let a = $$1(n, e.base.features);
+	return Ve(t, n, a ? Jr(e, r, a) : o$1);
 }
-function Ra(e, r, t, n$1) {
-	let a = $$1(n$1, e.base.features);
-	return Me(t, n$1, a ? Jr(e, r, a) : o$1);
+function Ra(e, r, t, n) {
+	let a = $$1(n, e.base.features);
+	return Me(t, n, a ? Jr(e, r, a) : o$1);
 }
-function Pa(e, r, t, n$1) {
+function Pa(e, r, t, n) {
 	let a = [], s = [];
-	for (let [i$1, u$1] of n$1.entries()) a.push(E$1(e, r, i$1)), s.push(E$1(e, r, u$1));
+	for (let [i, u] of n.entries()) a.push(E$1(e, r, i)), s.push(E$1(e, r, u));
 	return nr(e.base, t, a, s);
 }
-function xa(e, r, t, n$1) {
+function xa(e, r, t, n) {
 	let a = [];
-	for (let s of n$1.keys()) a.push(E$1(e, r, s));
+	for (let s of n.keys()) a.push(E$1(e, r, s));
 	return Le(t, a);
 }
-function Oa(e, r, t, n$1) {
+function Oa(e, r, t, n) {
 	let a = Ye(t, k(e.base, 4), []);
-	return e.type === 1 || (Xr(e), n$1.on({
+	return e.type === 1 || (Xr(e), n.on({
 		next: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, qe(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, qe(t, i));
 			}
 		},
 		throw: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, We(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, We(t, i));
 			}
 			be(e);
 		},
 		return: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, Ge(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, Ge(t, i));
 			}
 			be(e);
 		}
@@ -6253,61 +6253,61 @@ function Oa(e, r, t, n$1) {
 }
 function Ta(e, r, t) {
 	if (this.state.alive) {
-		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n$1], o$1, o$1, o$1, o$1)), be(this);
+		let n = G(this, r, t);
+		n && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n], o$1, o$1, o$1, o$1)), be(this);
 	}
 }
 function wa(e, r, t) {
 	if (this.state.alive) {
-		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n$1], o$1, o$1, o$1, o$1));
+		let n = G(this, r, t);
+		n && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n], o$1, o$1, o$1, o$1));
 	}
 	be(this);
 }
-function ha(e, r, t, n$1) {
+function ha(e, r, t, n) {
 	let a = hr(e.base, {});
-	return e.type === 2 && (Xr(e), n$1.then(Ta.bind(e, a, r), wa.bind(e, a, r))), ht(e.base, t, a);
+	return e.type === 2 && (Xr(e), n.then(Ta.bind(e, a, r), wa.bind(e, a, r))), ht(e.base, t, a);
 }
-function za(e, r, t, n$1, a) {
-	for (let s = 0, i$1 = a.length; s < i$1; s++) {
-		let u$1 = a[s];
-		if (u$1.parse.sync && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.sync(n$1, new Gr(e, r), { id: t }));
+function za(e, r, t, n, a) {
+	for (let s = 0, i = a.length; s < i; s++) {
+		let u = a[s];
+		if (u.parse.sync && u.test(n)) return fe$1(t, u.tag, u.parse.sync(n, new Gr(e, r), { id: t }));
 	}
 	return o$1;
 }
-function _a(e, r, t, n$1, a) {
-	for (let s = 0, i$1 = a.length; s < i$1; s++) {
-		let u$1 = a[s];
-		if (u$1.parse.stream && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.stream(n$1, new Kr(e, r), { id: t }));
+function _a(e, r, t, n, a) {
+	for (let s = 0, i = a.length; s < i; s++) {
+		let u = a[s];
+		if (u.parse.stream && u.test(n)) return fe$1(t, u.tag, u.parse.stream(n, new Kr(e, r), { id: t }));
 	}
 	return o$1;
 }
-function un(e, r, t, n$1) {
+function un(e, r, t, n) {
 	let a = e.base.plugins;
-	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$1;
+	return a ? e.type === 1 ? za(e, r, t, n, a) : _a(e, r, t, n, a) : o$1;
 }
-function ka(e, r, t, n$1) {
+function ka(e, r, t, n) {
 	let a = [];
-	for (let s = 0, i$1 = n$1.v.length; s < i$1; s++) a[s] = E$1(e, r, n$1.v[s]);
-	return Ke(t, a, n$1.t, n$1.d);
+	for (let s = 0, i = n.v.length; s < i; s++) a[s] = E$1(e, r, n.v[s]);
+	return Ke(t, a, n.t, n.d);
 }
-function Da(e, r, t, n$1, a) {
+function Da(e, r, t, n, a) {
 	switch (a) {
-		case Object: return Wr(e, r, t, n$1, !1);
-		case o$1: return Wr(e, r, t, n$1, !0);
-		case Date: return he(t, n$1);
+		case Object: return Wr(e, r, t, n, !1);
+		case o$1: return Wr(e, r, t, n, !0);
+		case Date: return he(t, n);
 		case Error:
 		case EvalError:
 		case RangeError:
 		case ReferenceError:
 		case SyntaxError:
 		case TypeError:
-		case URIError: return sn(e, r, t, n$1);
+		case URIError: return sn(e, r, t, n);
 		case Number:
 		case Boolean:
 		case String:
-		case BigInt: return Ca(e, r, t, n$1);
-		case ArrayBuffer: return or(e.base, t, n$1);
+		case BigInt: return Ca(e, r, t, n);
+		case ArrayBuffer: return or(e.base, t, n);
 		case Int8Array:
 		case Int16Array:
 		case Int32Array:
@@ -6316,37 +6316,37 @@ function Da(e, r, t, n$1, a) {
 		case Uint32Array:
 		case Uint8ClampedArray:
 		case Float32Array:
-		case Float64Array: return Aa(e, r, t, n$1);
-		case DataView: return Ia(e, r, t, n$1);
-		case Map: return Pa(e, r, t, n$1);
-		case Set: return xa(e, r, t, n$1);
+		case Float64Array: return Aa(e, r, t, n);
+		case DataView: return Ia(e, r, t, n);
+		case Map: return Pa(e, r, t, n);
+		case Set: return xa(e, r, t, n);
 		default: break;
 	}
-	if (a === Promise || n$1 instanceof Promise) return ha(e, r, t, n$1);
+	if (a === Promise || n instanceof Promise) return ha(e, r, t, n);
 	let s = e.base.features;
-	if (s & 32 && a === RegExp) return ze(t, n$1);
+	if (s & 32 && a === RegExp) return ze(t, n);
 	if (s & 16) switch (a) {
 		case BigInt64Array:
-		case BigUint64Array: return Ea(e, r, t, n$1);
+		case BigUint64Array: return Ea(e, r, t, n);
 		default: break;
 	}
-	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n$1 instanceof AggregateError)) return Ra(e, r, t, n$1);
-	if (n$1 instanceof Error) return sn(e, r, t, n$1);
-	if (C in n$1 || v$1 in n$1) return Wr(e, r, t, n$1, !!a);
-	throw new x$1(n$1);
+	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n instanceof AggregateError)) return Ra(e, r, t, n);
+	if (n instanceof Error) return sn(e, r, t, n);
+	if (C in n || v$1 in n) return Wr(e, r, t, n, !!a);
+	throw new x$1(n);
 }
-function Fa(e, r, t, n$1) {
-	if (Array.isArray(n$1)) return va(e, r, t, n$1);
-	if (M(n$1)) return Oa(e, r, t, n$1);
-	if (Ze(n$1)) return ka(e, r, t, n$1);
-	let a = n$1.constructor;
-	if (a === Y$1) return E$1(e, r, n$1.replacement);
-	return un(e, r, t, n$1) || Da(e, r, t, n$1, a);
+function Fa(e, r, t, n) {
+	if (Array.isArray(n)) return va(e, r, t, n);
+	if (M(n)) return Oa(e, r, t, n);
+	if (Ze(n)) return ka(e, r, t, n);
+	let a = n.constructor;
+	if (a === Y$1) return E$1(e, r, n.replacement);
+	return un(e, r, t, n) || Da(e, r, t, n, a);
 }
 function Ba(e, r, t) {
-	let n$1 = q$1(e.base, t);
-	if (n$1.type !== 0) return n$1.value;
-	let a = un(e, r, n$1.value, t);
+	let n = q$1(e.base, t);
+	if (n.type !== 0) return n.value;
+	let a = un(e, r, n.value, t);
 	if (a) return a;
 	throw new x$1(t);
 }
@@ -6360,8 +6360,8 @@ function E$1(e, r, t) {
 		case "bigint": return we(t);
 		case "object":
 			if (t) {
-				let n$1 = q$1(e.base, t);
-				return n$1.type === 0 ? Fa(e, r + 1, n$1.value, t) : n$1.value;
+				let n = q$1(e.base, t);
+				return n.type === 0 ? Fa(e, r + 1, n.value, t) : n.value;
 			}
 			return Ee;
 		case "symbol": return I(e.base, t);
@@ -6382,8 +6382,8 @@ function ln(e) {
 function $r(e, r, t) {
 	try {
 		e.state.onParse(r, t);
-	} catch (n$1) {
-		Zr(e, n$1);
+	} catch (n) {
+		Zr(e, n);
 	}
 }
 function Xr(e) {
@@ -6395,8 +6395,8 @@ function be(e) {
 function G(e, r, t) {
 	try {
 		return E$1(e, r, t);
-	} catch (n$1) {
-		return Zr(e, n$1), o$1;
+	} catch (n) {
+		return Zr(e, n), o$1;
 	}
 }
 function Qr(e, r) {
@@ -6404,35 +6404,35 @@ function Qr(e, r) {
 	t && ($r(e, t, !0), e.state.initial = !1, Va(e, e.state), e.state.pending <= 0 && fr(e));
 }
 function Va(e, r) {
-	for (let t = 0, n$1 = r.buffer.length; t < n$1; t++) $r(e, r.buffer[t], !1);
+	for (let t = 0, n = r.buffer.length; t < n; t++) $r(e, r.buffer[t], !1);
 }
 function fr(e) {
 	e.state.alive && (ln(e), e.state.alive = !1);
 }
 function cn(e, r) {
-	let t = A(r.plugins), n$1 = Hr({
+	let t = A(r.plugins), n = Hr({
 		plugins: t,
 		refs: r.refs,
 		disabledFeatures: r.disabledFeatures,
 		onParse(a, s) {
-			let i$1 = ur({
+			let i = ur({
 				plugins: t,
-				features: n$1.base.features,
+				features: n.base.features,
 				scopeId: r.scopeId,
-				markedRefs: n$1.base.marked
-			}), u$1;
+				markedRefs: n.base.marked
+			}), u;
 			try {
-				u$1 = cr(i$1, a);
-			} catch (l$1) {
-				r.onError && r.onError(l$1);
+				u = cr(i, a);
+			} catch (l) {
+				r.onError && r.onError(l);
 				return;
 			}
-			r.onSerialize(u$1, s);
+			r.onSerialize(u, s);
 		},
 		onError: r.onError,
 		onDone: r.onDone
 	});
-	return Qr(n$1, e), fr.bind(null, n$1);
+	return Qr(n, e), fr.bind(null, n);
 }
 var Sr = class {
 	constructor(r) {
@@ -6454,8 +6454,8 @@ var Sr = class {
 			refs: this.refs,
 			disabledFeatures: this.options.disabledFeatures,
 			onError: this.options.onError,
-			onSerialize: (n$1, a) => {
-				this.alive && this.options.onData(a ? this.options.globalIdentifier + "[\\"" + y$1(r) + "\\"]=" + n$1 : n$1);
+			onSerialize: (n, a) => {
+				this.alive && this.options.onData(a ? this.options.globalIdentifier + "[\\"" + y$1(r) + "\\"]=" + n : n);
 			},
 			onDone: () => {
 				this.alive && (this.pending--, this.pending <= 0 && this.flushed && !this.done && this.options.onDone && (this.options.onDone(), this.done = !0));
@@ -7245,16 +7245,16 @@ function renderToString(code, options = {}) {
 		lazy: {},
 		assets: [],
 		nonce: options.nonce,
-		serialize(id, p$1) {
-			!sharedConfig.context.noHydrate && serializer.write(id, p$1);
+		serialize(id, p) {
+			!sharedConfig.context.noHydrate && serializer.write(id, p);
 		},
 		roots: 0,
 		nextRoot() {
 			return this.renderId + "i-" + this.roots++;
 		}
 	};
-	let html = createRoot((d$1) => {
-		setTimeout(d$1);
+	let html = createRoot((d) => {
+		setTimeout(d);
 		return resolveSSRNode(escape(code()));
 	});
 	sharedConfig.context.noHydrate = true;
@@ -7266,9 +7266,9 @@ function renderToString(code, options = {}) {
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
-		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
-			result += t[i$1];
-			const node = nodes[i$1];
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
 			if (node !== void 0) result += resolveSSRNode(node);
 		}
 		t = result + t[nodes.length];
@@ -7288,7 +7288,7 @@ function escape(s, attr) {
 		if (!attr && t === "function") return escape(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i$1 = 0; i$1 < s.length; i$1++) s[i$1] = escape(s[i$1]);
+			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
 		if (attr && t === "boolean") return String(s);
@@ -7332,9 +7332,9 @@ function resolveSSRNode(node, top) {
 	if (Array.isArray(node)) {
 		let prev = {};
 		let mapped = "";
-		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
-			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
-			mapped += resolveSSRNode(prev = node[i$1]);
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
 		}
 		return mapped;
 	}
@@ -7349,7 +7349,7 @@ function getHydrationKey() {
 function injectAssets(assets, html) {
 	if (!assets || !assets.length) return html;
 	let out = "";
-	for (let i$1 = 0, len = assets.length; i$1 < len; i$1++) out += assets[i$1]();
+	for (let i = 0, len = assets.length; i < len; i++) out += assets[i]();
 	const index = html.indexOf("</head>");
 	if (index === -1) return html;
 	return html.slice(0, index) + out + html.slice(index);
@@ -7415,7 +7415,7 @@ function handleError(err, owner = Owner) {
 	const error = castError(err);
 	if (!fns) throw error;
 	try {
-		for (const f$2 of fns) f$2(error);
+		for (const f of fns) f(error);
 	} catch (e) {
 		handleError(e, owner && owner.owner || null);
 	}
@@ -7428,18 +7428,18 @@ const UNOWNED = {
 };
 let Owner = null;
 function createOwner() {
-	const o$2 = {
+	const o = {
 		owner: Owner,
 		context: Owner ? Owner.context : null,
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o$2];
-	else Owner.owned.push(o$2);
-	return o$2;
+	if (Owner) if (!Owner.owned) Owner.owned = [o];
+	else Owner.owned.push(o);
+	return o;
 }
-function createRoot(fn$1, detachedOwner) {
-	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn$1.length === 0 ? UNOWNED : {
+function createRoot(fn, detachedOwner) {
+	const owner = Owner, current = detachedOwner === void 0 ? owner : detachedOwner, root = fn.length === 0 ? UNOWNED : {
 		context: current ? current.context : null,
 		owner: current,
 		owned: null,
@@ -7448,7 +7448,7 @@ function createRoot(fn$1, detachedOwner) {
 	Owner = root;
 	let result;
 	try {
-		result = fn$1(fn$1.length === 0 ? () => {} : () => cleanNode(root));
+		result = fn(fn.length === 0 ? () => {} : () => cleanNode(root));
 	} catch (err) {
 		handleError(err);
 	} finally {
@@ -7457,29 +7457,29 @@ function createRoot(fn$1, detachedOwner) {
 	return result;
 }
 function createSignal(value, options) {
-	return [() => value, (v$2) => {
-		return value = typeof v$2 === "function" ? v$2(value) : v$2;
+	return [() => value, (v) => {
+		return value = typeof v === "function" ? v(value) : v;
 	}];
 }
-function createMemo(fn$1, value) {
+function createMemo(fn, value) {
 	Owner = createOwner();
-	let v$2;
+	let v;
 	try {
-		v$2 = fn$1(value);
+		v = fn(value);
 	} catch (err) {
 		handleError(err);
 	} finally {
 		Owner = Owner.owner;
 	}
-	return () => v$2;
+	return () => v;
 }
 function cleanNode(node) {
 	if (node.owned) {
-		for (let i$1 = 0; i$1 < node.owned.length; i$1++) cleanNode(node.owned[i$1]);
+		for (let i = 0; i < node.owned.length; i++) cleanNode(node.owned[i]);
 		node.owned = null;
 	}
 	if (node.cleanups) {
-		for (let i$1 = 0; i$1 < node.cleanups.length; i$1++) node.cleanups[i$1]();
+		for (let i = 0; i < node.cleanups.length; i++) node.cleanups[i]();
 		node.cleanups = null;
 	}
 }
@@ -7491,25 +7491,25 @@ function createContext(defaultValue) {
 		defaultValue
 	};
 }
-function children(fn$1) {
-	const memo = createMemo(() => resolveChildren(fn$1()));
+function children(fn) {
+	const memo = createMemo(() => resolveChildren(fn()));
 	memo.toArray = () => {
-		const c$2 = memo();
-		return Array.isArray(c$2) ? c$2 : c$2 != null ? [c$2] : [];
+		const c = memo();
+		return Array.isArray(c) ? c : c != null ? [c] : [];
 	};
 	return memo;
 }
-function resolveChildren(children$1) {
-	if (typeof children$1 === "function" && !children$1.length) return resolveChildren(children$1());
-	if (Array.isArray(children$1)) {
+function resolveChildren(children) {
+	if (typeof children === "function" && !children.length) return resolveChildren(children());
+	if (Array.isArray(children)) {
 		const results = [];
-		for (let i$1 = 0; i$1 < children$1.length; i$1++) {
-			const result = resolveChildren(children$1[i$1]);
+		for (let i = 0; i < children.length; i++) {
+			const result = resolveChildren(children[i]);
 			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
 		}
 		return results;
 	}
-	return children$1;
+	return children;
 }
 function createProvider(id) {
 	return function provider(props) {
@@ -7541,7 +7541,7 @@ const SuspenseContext = createContext();
 
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i$1) => (i$1[i$1.AggregateError = 1] = "AggregateError", i$1[i$1.ArrowFunction = 2] = "ArrowFunction", i$1[i$1.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i$1[i$1.ObjectAssign = 8] = "ObjectAssign", i$1[i$1.BigIntTypedArray = 16] = "BigIntTypedArray", i$1[i$1.RegExp = 32] = "RegExp", i$1))(L$1 || {});
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
 var rt = {
 	0: "Symbol.asyncIterator",
@@ -7621,20 +7621,20 @@ var Ce = {
 	5: TypeError,
 	6: URIError
 };
-function c$1(e, r, t, n$1, a, s, i$1, u$1, l$1, g$1, S, d$1) {
+function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
 		i: r,
 		s: t,
-		c: n$1,
+		c: n,
 		m: a,
 		p: s,
-		e: i$1,
-		a: u$1,
-		f: l$1,
-		b: g$1,
+		e: i,
+		a: u,
+		f: l,
+		b: g,
 		o: S,
-		l: d$1
+		l: d
 	};
 }
 function F(e) {
@@ -7658,8 +7658,8 @@ function fn(e) {
 	}
 }
 function y$1(e) {
-	let r = "", t = 0, n$1;
-	for (let a = 0, s = e.length; a < s; a++) n$1 = fn(e[a]), n$1 && (r += e.slice(t, a) + n$1, t = a + 1);
+	let r = "", t = 0, n;
+	for (let a = 0, s = e.length; a < s; a++) n = fn(e[a]), n && (r += e.slice(t, a) + n, t = a + 1);
 	return t === 0 ? r = e : r += e.slice(t), r;
 }
 var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
@@ -7703,8 +7703,8 @@ function gn(e) {
 	return e.name !== r ? { name: e.name } : e.constructor.name !== r ? { name: e.constructor.name } : {};
 }
 function $$1(e, r) {
-	let t = gn(e), n$1 = Object.getOwnPropertyNames(e);
-	for (let a = 0, s = n$1.length, i$1; a < s; a++) i$1 = n$1[a], i$1 !== "name" && i$1 !== "message" && (i$1 === "stack" ? r & 4 && (t = t || {}, t[i$1] = e[i$1]) : (t = t || {}, t[i$1] = e[i$1]));
+	let t = gn(e), n = Object.getOwnPropertyNames(e);
+	for (let a = 0, s = n.length, i; a < s; a++) i = n[a], i !== "name" && i !== "message" && (i === "stack" ? r & 4 && (t = t || {}, t[i] = e[i]) : (t = t || {}, t[i] = e[i]));
 	return t;
 }
 function Oe(e) {
@@ -7784,8 +7784,8 @@ function We(e, r) {
 function Ge(e, r) {
 	return c$1(34, e, o$1, o$1, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1);
 }
-function Ke(e, r, t, n$1) {
-	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n$1);
+function Ke(e, r, t, n) {
+	return c$1(35, e, t, o$1, o$1, o$1, o$1, r, o$1, o$1, o$1, n);
 }
 var { toString: ys } = Object.prototype;
 var yn = {
@@ -7797,9 +7797,9 @@ function Nn(e) {
 	return \`Seroval Error (step: \${yn[e]})\`;
 }
 var bn = (e, r) => Nn(e), Se = class extends Error {
-	constructor(t, n$1) {
-		super(bn(t, n$1));
-		this.cause = n$1;
+	constructor(t, n) {
+		super(bn(t, n));
+		this.cause = n;
 	}
 }, z = class extends Se {
 	constructor(r) {
@@ -7880,29 +7880,29 @@ var re = () => {
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 }, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
-	let e = [], r = [], t = !0, n$1 = !1, a = 0, s = (l$1, g$1, S) => {
-		for (S = 0; S < a; S++) r[S] && r[S][g$1](l$1);
-	}, i$1 = (l$1, g$1, S, d$1) => {
-		for (g$1 = 0, S = e.length; g$1 < S; g$1++) d$1 = e[g$1], !t && g$1 === S - 1 ? l$1[n$1 ? "return" : "throw"](d$1) : l$1.next(d$1);
-	}, u$1 = (l$1, g$1) => (t && (g$1 = a++, r[g$1] = l$1), i$1(l$1), () => {
-		t && (r[g$1] = r[a], r[a--] = void 0);
+	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
+		for (S = 0; S < a; S++) r[S] && r[S][g](l);
+	}, i = (l, g, S, d) => {
+		for (g = 0, S = e.length; g < S; g++) d = e[g], !t && g === S - 1 ? l[n ? "return" : "throw"](d) : l.next(d);
+	}, u = (l, g) => (t && (g = a++, r[g] = l), i(l), () => {
+		t && (r[g] = r[a], r[a--] = void 0);
 	});
 	return {
 		__SEROVAL_STREAM__: !0,
-		on: (l$1) => u$1(l$1),
-		next: (l$1) => {
-			t && (e.push(l$1), s(l$1, "next"));
+		on: (l) => u(l),
+		next: (l) => {
+			t && (e.push(l), s(l, "next"));
 		},
-		throw: (l$1) => {
-			t && (e.push(l$1), s(l$1, "throw"), t = !1, n$1 = !1, r.length = 0);
+		throw: (l) => {
+			t && (e.push(l), s(l, "throw"), t = !1, n = !1, r.length = 0);
 		},
-		return: (l$1) => {
-			t && (e.push(l$1), s(l$1, "return"), t = !1, n$1 = !0, r.length = 0);
+		return: (l) => {
+			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
 }, vt = Rr.toString(), Pr = (e) => (r) => () => {
-	let t = 0, n$1 = {
-		[e]: () => n$1,
+	let t = 0, n = {
+		[e]: () => n,
 		next: () => {
 			if (t > r.d) return {
 				done: !0,
@@ -7916,69 +7916,69 @@ var re = () => {
 			};
 		}
 	};
-	return n$1;
+	return n;
 }, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
-	let n$1 = 0, a = -1, s = !1, i$1 = [], u$1 = [], l$1 = (S = 0, d$1 = u$1.length) => {
-		for (; S < d$1; S++) u$1[S].s({
+	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
+		for (; S < d; S++) u[S].s({
 			done: !0,
 			value: void 0
 		});
 	};
 	t.on({
 		next: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !1,
 				value: S
-			}), i$1.push(S);
+			}), i.push(S);
 		},
 		throw: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.f(S), l$1(), a = i$1.length, s = !0, i$1.push(S);
+			let d = u.shift();
+			d && d.f(S), l(), a = i.length, s = !0, i.push(S);
 		},
 		return: (S) => {
-			let d$1 = u$1.shift();
-			d$1 && d$1.s({
+			let d = u.shift();
+			d && d.s({
 				done: !0,
 				value: S
-			}), l$1(), a = i$1.length, i$1.push(S);
+			}), l(), a = i.length, i.push(S);
 		}
 	});
-	let g$1 = {
-		[e]: () => g$1,
+	let g = {
+		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K$1 = n$1++;
-				if (K$1 >= i$1.length) {
+				let K = n++;
+				if (K >= i.length) {
 					let et = r();
-					return u$1.push(et), et.p;
+					return u.push(et), et.p;
 				}
 				return {
 					done: !1,
-					value: i$1[K$1]
+					value: i[K]
 				};
 			}
-			if (n$1 > a) return {
+			if (n > a) return {
 				done: !0,
 				value: void 0
 			};
-			let S = n$1++, d$1 = i$1[S];
+			let S = n++, d = i[S];
 			if (S !== a) return {
 				done: !1,
-				value: d$1
+				value: d
 			};
-			if (s) throw d$1;
+			if (s) throw d;
 			return {
 				done: !0,
-				value: d$1
+				value: d
 			};
 		}
 	};
-	return g$1;
+	return g;
 }, At = xr.toString(), Or = (e) => {
-	let r = atob(e), t = r.length, n$1 = new Uint8Array(t);
-	for (let a = 0; a < t; a++) n$1[a] = r.charCodeAt(a);
-	return n$1.buffer;
+	let r = atob(e), t = r.length, n = new Uint8Array(t);
+	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
+	return n.buffer;
 }, Et = Or.toString();
 function Ze(e) {
 	return "__SEROVAL_SEQUENCE__" in e;
@@ -7992,17 +7992,17 @@ function Tr(e, r, t) {
 	};
 }
 function $e(e) {
-	let r = [], t = -1, n$1 = -1, a = e[C]();
+	let r = [], t = -1, n = -1, a = e[C]();
 	for (;;) try {
 		let s = a.next();
 		if (r.push(s.value), s.done) {
-			n$1 = r.length - 1;
+			n = r.length - 1;
 			break;
 		}
 	} catch (s) {
 		t = r.length, r.push(s);
 	}
-	return Tr(r, t, n$1);
+	return Tr(r, t, n);
 }
 var An = Pr(C);
 var Rt = {}, Pt = {};
@@ -8029,15 +8029,15 @@ function te$1() {
 }
 function Xe(e) {
 	let r = te$1(), t = e[v$1]();
-	async function n$1() {
+	async function n() {
 		try {
 			let a = await t.next();
-			a.done ? r.return(a.value) : (r.next(a.value), await n$1());
+			a.done ? r.return(a.value) : (r.next(a.value), await n());
 		} catch (a) {
 			r.throw(a);
 		}
 	}
-	return n$1().catch(() => {}), r;
+	return n().catch(() => {}), r;
 }
 var En = xr(v$1, re);
 function pe$1(e, r) {
@@ -8092,21 +8092,21 @@ function rr(e) {
 	let r = Qe(e, Pt);
 	return r.type === 1 ? r.value : c$1(29, r.value, o$1, o$1, o$1, o$1, o$1, [k(e, 1), I(e, v$1)], o$1, o$1, o$1, o$1);
 }
-function tr(e, r, t, n$1) {
-	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n$1, o$1, o$1, o$1, o$1, Oe(r), o$1);
+function tr(e, r, t, n) {
+	return c$1(t ? 11 : 10, e, o$1, o$1, o$1, n, o$1, o$1, o$1, o$1, Oe(r), o$1);
 }
-function nr(e, r, t, n$1) {
+function nr(e, r, t, n) {
 	return c$1(8, r, o$1, o$1, o$1, o$1, {
 		k: t,
-		v: n$1
+		v: n
 	}, o$1, k(e, 0), o$1, o$1, o$1);
 }
 function ht(e, r, t) {
 	return c$1(22, r, t, o$1, o$1, o$1, o$1, o$1, k(e, 1), o$1, o$1, o$1);
 }
 function or(e, r, t) {
-	let n$1 = new Uint8Array(t), a = "";
-	for (let s = 0, i$1 = n$1.length; s < i$1; s++) a += String.fromCharCode(n$1[s]);
+	let n = new Uint8Array(t), a = "";
+	for (let s = 0, i = n.length; s < i; s++) a += String.fromCharCode(n[s]);
 	return c$1(19, r, y$1(btoa(a)), o$1, o$1, o$1, o$1, o$1, k(e, 5), o$1, o$1, o$1);
 }
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
@@ -8114,7 +8114,7 @@ function ni(e) {
 	return e;
 }
 function kt(e, r) {
-	for (let t = 0, n$1 = r.length; t < n$1; t++) {
+	for (let t = 0, n = r.length; t < n; t++) {
 		let a = r[t];
 		e.has(a) || (e.add(a), a.extends && kt(e, a.extends));
 	}
@@ -8153,33 +8153,33 @@ function ye(e) {
 }
 function Po(e) {
 	let r = [], t = e[0];
-	for (let n$1 = 1, a = e.length, s, i$1 = t; n$1 < a; n$1++) s = e[n$1], s.t === 0 && s.v === i$1.v ? t = {
+	for (let n = 1, a = e.length, s, i = t; n < a; n++) s = e[n], s.t === 0 && s.v === i.v ? t = {
 		t: 0,
 		s: s.s,
 		k: o$1,
 		v: ye(t)
-	} : s.t === 2 && s.s === i$1.s ? t = {
+	} : s.t === 2 && s.s === i.s ? t = {
 		t: 2,
 		s: ye(t),
 		k: s.k,
 		v: s.v
-	} : s.t === 1 && s.s === i$1.s ? t = {
+	} : s.t === 1 && s.s === i.s ? t = {
 		t: 1,
 		s: ye(t),
 		k: o$1,
 		v: s.v
-	} : s.t === 3 && s.s === i$1.s ? t = {
+	} : s.t === 3 && s.s === i.s ? t = {
 		t: 3,
 		s: ye(t),
 		k: s.k,
 		v: o$1
-	} : (r.push(t), t = s), i$1 = s;
+	} : (r.push(t), t = s), i = s;
 	return r.push(t), r;
 }
 function tn(e) {
 	if (e.length) {
 		let r = "", t = Po(e);
-		for (let n$1 = 0, a = t.length; n$1 < a; n$1++) r += ye(t[n$1]) + ",";
+		for (let n = 0, a = t.length; n < a; n++) r += ye(t[n]) + ",";
 		return r;
 	}
 	return o$1;
@@ -8220,8 +8220,8 @@ var Mr = class {
 function ko(e, r) {
 	let t = e.valid.get(r);
 	t ?? (t = e.valid.size, e.valid.set(r, t));
-	let n$1 = e.vars[t];
-	return n$1 ?? (n$1 = Br(t), e.vars[t] = n$1), n$1;
+	let n = e.vars[t];
+	return n ?? (n = Br(t), e.vars[t] = n), n;
 }
 function Do(e) {
 	return ce + "[" + e + "]";
@@ -8243,8 +8243,8 @@ function jr(e, r, t) {
 }
 function Fo(e) {
 	let r = "";
-	for (let t = 0, n$1 = e.flags, a = n$1.length; t < a; t++) {
-		let s = n$1[t];
+	for (let t = 0, n = e.flags, a = n.length; t < a; t++) {
+		let s = n[t];
 		r += zo[s.type] + "(" + s.value + "),";
 	}
 	return r;
@@ -8269,12 +8269,12 @@ function Bo(e, r, t) {
 		v: t
 	});
 }
-function ge(e, r, t, n$1) {
+function ge(e, r, t, n) {
 	e.base.assignments.push({
 		t: 2,
 		s: m$1(e, r),
 		k: t,
-		v: n$1
+		v: n
 	});
 }
 function Zt(e, r, t) {
@@ -8285,14 +8285,14 @@ function Zt(e, r, t) {
 		v: o$1
 	});
 }
-function Ne(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + "[" + t + "]", n$1);
+function Ne(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + "[" + t + "]", n);
 }
-function Ur(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + "." + t, n$1);
+function Ur(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + "." + t, n);
 }
-function Vo(e, r, t, n$1) {
-	Yr(e.base, m$1(e, r) + ".v[" + t + "]", n$1);
+function Vo(e, r, t, n) {
+	Yr(e.base, m$1(e, r) + ".v[" + t + "]", n);
 }
 function D$1(e, r) {
 	return r.t === 4 && e.stack.includes(r.i);
@@ -8303,83 +8303,83 @@ function se(e, r, t) {
 function Mo(e) {
 	return U + ".get(\\"" + e.s + "\\")";
 }
-function $t(e, r, t, n$1) {
-	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n$1, m$1(e, t.i)), "") : f$1(e, t) : "";
+function $t(e, r, t, n) {
+	return t ? D$1(e.base, t) ? (O$1(e.base, r), Ne(e, r, n, m$1(e, t.i)), "") : f$1(e, t) : "";
 }
 function Lo(e, r) {
-	let t = r.i, n$1 = r.a, a = n$1.length;
+	let t = r.i, n = r.a, a = n.length;
 	if (a > 0) {
 		e.base.stack.push(t);
-		let s = $t(e, t, n$1[0], 0), i$1 = s === "";
-		for (let u$1 = 1, l$1; u$1 < a; u$1++) l$1 = $t(e, t, n$1[u$1], u$1), s += "," + l$1, i$1 = l$1 === "";
-		return e.base.stack.pop(), jr(e, r.o, r.i), "[" + s + (i$1 ? ",]" : "]");
+		let s = $t(e, t, n[0], 0), i = s === "";
+		for (let u = 1, l; u < a; u++) l = $t(e, t, n[u], u), s += "," + l, i = l === "";
+		return e.base.stack.pop(), jr(e, r.o, r.i), "[" + s + (i ? ",]" : "]");
 	}
 	return "[]";
 }
-function Xt(e, r, t, n$1) {
+function Xt(e, r, t, n) {
 	if (typeof t == "string") {
 		let a = Number(t), s = a >= 0 && a.toString() === t || Vr(t);
-		if (D$1(e.base, n$1)) {
-			let i$1 = m$1(e, n$1.i);
-			return O$1(e.base, r.i), s && a !== a ? Ur(e, r.i, t, i$1) : Ne(e, r.i, s ? t : "\\"" + t + "\\"", i$1), "";
+		if (D$1(e.base, n)) {
+			let i = m$1(e, n.i);
+			return O$1(e.base, r.i), s && a !== a ? Ur(e, r.i, t, i) : Ne(e, r.i, s ? t : "\\"" + t + "\\"", i), "";
 		}
-		return (s ? t : "\\"" + t + "\\"") + ":" + f$1(e, n$1);
+		return (s ? t : "\\"" + t + "\\"") + ":" + f$1(e, n);
 	}
-	return "[" + f$1(e, t) + "]:" + f$1(e, n$1);
+	return "[" + f$1(e, t) + "]:" + f$1(e, n);
 }
 function an(e, r, t) {
-	let n$1 = t.k, a = n$1.length;
+	let n = t.k, a = n.length;
 	if (a > 0) {
 		let s = t.v;
 		e.base.stack.push(r.i);
-		let i$1 = Xt(e, r, n$1[0], s[0]);
-		for (let u$1 = 1, l$1 = i$1; u$1 < a; u$1++) l$1 = Xt(e, r, n$1[u$1], s[u$1]), i$1 += (l$1 && i$1 && ",") + l$1;
-		return e.base.stack.pop(), "{" + i$1 + "}";
+		let i = Xt(e, r, n[0], s[0]);
+		for (let u = 1, l = i; u < a; u++) l = Xt(e, r, n[u], s[u]), i += (l && i && ",") + l;
+		return e.base.stack.pop(), "{" + i + "}";
 	}
 	return "{}";
 }
 function Uo(e, r) {
 	return jr(e, r.o, r.i), an(e, r, r.p);
 }
-function jo(e, r, t, n$1) {
+function jo(e, r, t, n) {
 	let a = an(e, r, t);
-	return a !== "{}" ? "Object.assign(" + n$1 + "," + a + ")" : n$1;
+	return a !== "{}" ? "Object.assign(" + n + "," + a + ")" : n;
 }
-function Yo(e, r, t, n$1, a) {
-	let s = e.base, i$1 = f$1(e, a), u$1 = Number(n$1), l$1 = u$1 >= 0 && u$1.toString() === n$1 || Vr(n$1);
-	if (D$1(s, a)) l$1 && u$1 !== u$1 ? Ur(e, r.i, n$1, i$1) : Ne(e, r.i, l$1 ? n$1 : "\\"" + n$1 + "\\"", i$1);
+function Yo(e, r, t, n, a) {
+	let s = e.base, i = f$1(e, a), u = Number(n), l = u >= 0 && u.toString() === n || Vr(n);
+	if (D$1(s, a)) l && u !== u ? Ur(e, r.i, n, i) : Ne(e, r.i, l ? n : "\\"" + n + "\\"", i);
 	else {
-		let g$1 = s.assignments;
-		s.assignments = t, l$1 && u$1 !== u$1 ? Ur(e, r.i, n$1, i$1) : Ne(e, r.i, l$1 ? n$1 : "\\"" + n$1 + "\\"", i$1), s.assignments = g$1;
+		let g = s.assignments;
+		s.assignments = t, l && u !== u ? Ur(e, r.i, n, i) : Ne(e, r.i, l ? n : "\\"" + n + "\\"", i), s.assignments = g;
 	}
 }
-function qo(e, r, t, n$1, a) {
-	if (typeof n$1 == "string") Yo(e, r, t, n$1, a);
+function qo(e, r, t, n, a) {
+	if (typeof n == "string") Yo(e, r, t, n, a);
 	else {
-		let s = e.base, i$1 = s.stack;
+		let s = e.base, i = s.stack;
 		s.stack = [];
-		let u$1 = f$1(e, a);
-		s.stack = i$1;
-		let l$1 = s.assignments;
-		s.assignments = t, Ne(e, r.i, f$1(e, n$1), u$1), s.assignments = l$1;
+		let u = f$1(e, a);
+		s.stack = i;
+		let l = s.assignments;
+		s.assignments = t, Ne(e, r.i, f$1(e, n), u), s.assignments = l;
 	}
 }
 function Wo(e, r, t) {
-	let n$1 = t.k, a = n$1.length;
+	let n = t.k, a = n.length;
 	if (a > 0) {
-		let s = [], i$1 = t.v;
+		let s = [], i = t.v;
 		e.base.stack.push(r.i);
-		for (let u$1 = 0; u$1 < a; u$1++) qo(e, r, s, n$1[u$1], i$1[u$1]);
+		for (let u = 0; u < a; u++) qo(e, r, s, n[u], i[u]);
 		return e.base.stack.pop(), tn(s);
 	}
 	return o$1;
 }
 function qr(e, r, t) {
 	if (r.p) {
-		let n$1 = e.base;
-		if (n$1.features & 8) t = jo(e, r, r.p, t);
+		let n = e.base;
+		if (n.features & 8) t = jo(e, r, r.p, t);
 		else {
-			O$1(n$1, r.i);
+			O$1(n, r.i);
 			let a = Wo(e, r, r.p);
 			if (a) return "(" + se(e, r.i, t) + "," + a + m$1(e, r.i) + ")";
 		}
@@ -8397,52 +8397,52 @@ function Ho(e, r) {
 	throw new w$1(r);
 }
 function Qt(e, r, t) {
-	let n$1 = e.base;
-	return D$1(n$1, t) ? (O$1(n$1, r), Bo(e, r, m$1(e, t.i)), "") : f$1(e, t);
+	let n = e.base;
+	return D$1(n, t) ? (O$1(n, r), Bo(e, r, m$1(e, t.i)), "") : f$1(e, t);
 }
 function Jo(e, r) {
-	let t = Oo, n$1 = r.a, a = n$1.length, s = r.i;
+	let t = Oo, n = r.a, a = n.length, s = r.i;
 	if (a > 0) {
 		e.base.stack.push(s);
-		let i$1 = Qt(e, s, n$1[0]);
-		for (let u$1 = 1, l$1 = i$1; u$1 < a; u$1++) l$1 = Qt(e, s, n$1[u$1]), i$1 += (l$1 && i$1 && ",") + l$1;
-		e.base.stack.pop(), i$1 && (t += "([" + i$1 + "])");
+		let i = Qt(e, s, n[0]);
+		for (let u = 1, l = i; u < a; u++) l = Qt(e, s, n[u]), i += (l && i && ",") + l;
+		e.base.stack.pop(), i && (t += "([" + i + "])");
 	}
 	return t;
 }
-function en(e, r, t, n$1, a) {
+function en(e, r, t, n, a) {
 	let s = e.base;
 	if (D$1(s, t)) {
-		let i$1 = m$1(e, t.i);
-		if (O$1(s, r), D$1(s, n$1)) return ge(e, r, i$1, m$1(e, n$1.i)), "";
-		if (n$1.t !== 4 && n$1.i != null && Lr(s, n$1.i)) {
-			let l$1 = "(" + f$1(e, n$1) + ",[" + a + "," + a + "])";
-			return ge(e, r, i$1, m$1(e, n$1.i)), Zt(e, r, a), l$1;
+		let i = m$1(e, t.i);
+		if (O$1(s, r), D$1(s, n)) return ge(e, r, i, m$1(e, n.i)), "";
+		if (n.t !== 4 && n.i != null && Lr(s, n.i)) {
+			let l = "(" + f$1(e, n) + ",[" + a + "," + a + "])";
+			return ge(e, r, i, m$1(e, n.i)), Zt(e, r, a), l;
 		}
-		let u$1 = s.stack;
-		return s.stack = [], ge(e, r, i$1, f$1(e, n$1)), s.stack = u$1, "";
+		let u = s.stack;
+		return s.stack = [], ge(e, r, i, f$1(e, n)), s.stack = u, "";
 	}
-	if (D$1(s, n$1)) {
-		let i$1 = m$1(e, n$1.i);
+	if (D$1(s, n)) {
+		let i = m$1(e, n.i);
 		if (O$1(s, r), t.t !== 4 && t.i != null && Lr(s, t.i)) {
-			let l$1 = "(" + f$1(e, t) + ",[" + a + "," + a + "])";
-			return ge(e, r, m$1(e, t.i), i$1), Zt(e, r, a), l$1;
+			let l = "(" + f$1(e, t) + ",[" + a + "," + a + "])";
+			return ge(e, r, m$1(e, t.i), i), Zt(e, r, a), l;
 		}
-		let u$1 = s.stack;
-		return s.stack = [], ge(e, r, f$1(e, t), i$1), s.stack = u$1, "";
+		let u = s.stack;
+		return s.stack = [], ge(e, r, f$1(e, t), i), s.stack = u, "";
 	}
-	return "[" + f$1(e, t) + "," + f$1(e, n$1) + "]";
+	return "[" + f$1(e, t) + "," + f$1(e, n) + "]";
 }
 function Zo(e, r) {
-	let t = To, n$1 = r.e.k, a = n$1.length, s = r.i, i$1 = r.f, u$1 = m$1(e, i$1.i), l$1 = e.base;
+	let t = To, n = r.e.k, a = n.length, s = r.i, i = r.f, u = m$1(e, i.i), l = e.base;
 	if (a > 0) {
-		let g$1 = r.e.v;
-		l$1.stack.push(s);
-		let S = en(e, s, n$1[0], g$1[0], u$1);
-		for (let d$1 = 1, K$1 = S; d$1 < a; d$1++) K$1 = en(e, s, n$1[d$1], g$1[d$1], u$1), S += (K$1 && S && ",") + K$1;
-		l$1.stack.pop(), S && (t += "([" + S + "])");
+		let g = r.e.v;
+		l.stack.push(s);
+		let S = en(e, s, n[0], g[0], u);
+		for (let d = 1, K = S; d < a; d++) K = en(e, s, n[d], g[d], u), S += (K && S && ",") + K;
+		l.stack.pop(), S && (t += "([" + S + "])");
 	}
-	return i$1.t === 26 && (O$1(l$1, i$1.i), t = "(" + f$1(e, i$1) + "," + t + ")"), t;
+	return i.t === 26 && (O$1(l, i.i), t = "(" + f$1(e, i) + "," + t + ")"), t;
 }
 function $o(e, r) {
 	return W(e, r.f) + "(\\"" + r.s + "\\")";
@@ -8456,21 +8456,21 @@ function Qo(e, r) {
 function ea(e, r) {
 	let t = r.i;
 	e.base.stack.push(t);
-	let n$1 = qr(e, r, "new AggregateError([],\\"" + r.m + "\\")");
-	return e.base.stack.pop(), n$1;
+	let n = qr(e, r, "new AggregateError([],\\"" + r.m + "\\")");
+	return e.base.stack.pop(), n;
 }
 function ra(e, r) {
 	return qr(e, r, "new " + Ce[r.s] + "(\\"" + r.m + "\\")");
 }
 function ta(e, r) {
-	let t, n$1 = r.f, a = r.i, s = r.s ? wo : ho, i$1 = e.base;
-	if (D$1(i$1, n$1)) {
-		let u$1 = m$1(e, n$1.i);
-		t = s + (r.s ? "().then(" + sr([], u$1) + ")" : "().catch(" + Wt([], "throw " + u$1) + ")");
+	let t, n = r.f, a = r.i, s = r.s ? wo : ho, i = e.base;
+	if (D$1(i, n)) {
+		let u = m$1(e, n.i);
+		t = s + (r.s ? "().then(" + sr([], u) + ")" : "().catch(" + Wt([], "throw " + u) + ")");
 	} else {
-		i$1.stack.push(a);
-		let u$1 = f$1(e, n$1);
-		i$1.stack.pop(), t = s + "(" + u$1 + ")";
+		i.stack.push(a);
+		let u = f$1(e, n);
+		i.stack.pop(), t = s + "(" + u + ")";
 	}
 	return t;
 }
@@ -8495,33 +8495,33 @@ function sa(e, r) {
 }
 function ia(e, r) {
 	let t = e.base.plugins;
-	if (t) for (let n$1 = 0, a = t.length; n$1 < a; n$1++) {
-		let s = t[n$1];
+	if (t) for (let n = 0, a = t.length; n < a; n++) {
+		let s = t[n];
 		if (s.tag === r.c) return e.child ??= new Mr(e), s.serialize(r.s, e.child, { id: r.i });
 	}
 	throw new Q(r.c);
 }
 function ua(e, r) {
-	let t = "", n$1 = !1;
-	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n$1 = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n$1 && (t += ")"), t;
+	let t = "", n = !1;
+	return r.f.t !== 4 && (O$1(e.base, r.f.i), t = "(" + f$1(e, r.f) + ",", n = !0), t += se(e, r.i, "(" + Ct + ")(" + m$1(e, r.f.i) + ")"), n && (t += ")"), t;
 }
 function la(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
 }
 function ca(e, r) {
-	let t = r.a[0], n$1 = r.a[1], a = e.base, s = "";
-	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n$1.t !== 4 && (O$1(a, n$1.i), s += (s ? "," : "(") + f$1(e, n$1)), s && (s += ",");
-	let i$1 = se(e, r.i, "(" + At + ")(" + m$1(e, n$1.i) + "," + m$1(e, t.i) + ")");
-	return s ? s + i$1 + ")" : i$1;
+	let t = r.a[0], n = r.a[1], a = e.base, s = "";
+	t.t !== 4 && (O$1(a, t.i), s += "(" + f$1(e, t)), n.t !== 4 && (O$1(a, n.i), s += (s ? "," : "(") + f$1(e, n)), s && (s += ",");
+	let i = se(e, r.i, "(" + At + ")(" + m$1(e, n.i) + "," + m$1(e, t.i) + ")");
+	return s ? s + i + ")" : i;
 }
 function fa(e, r) {
 	return W(e, r.a[0]) + "(" + f$1(e, r.a[1]) + ")";
 }
 function Sa(e, r) {
-	let t = se(e, r.i, W(e, r.f) + "()"), n$1 = r.a.length;
-	if (n$1) {
+	let t = se(e, r.i, W(e, r.f) + "()"), n = r.a.length;
+	if (n) {
 		let a = f$1(e, r.a[0]);
-		for (let s = 1; s < n$1; s++) a += "," + f$1(e, r.a[s]);
+		for (let s = 1; s < n; s++) a += "," + f$1(e, r.a[s]);
 		return "(" + t + "," + a + "," + m$1(e, r.i) + ")";
 	}
 	return t;
@@ -8535,16 +8535,16 @@ function pa(e, r) {
 function da(e, r) {
 	return m$1(e, r.i) + ".return(" + f$1(e, r.f) + ")";
 }
-function rn(e, r, t, n$1) {
+function rn(e, r, t, n) {
 	let a = e.base;
-	return D$1(a, n$1) ? (O$1(a, r), Vo(e, r, t, m$1(e, n$1.i)), "") : f$1(e, n$1);
+	return D$1(a, n) ? (O$1(a, r), Vo(e, r, t, m$1(e, n.i)), "") : f$1(e, n);
 }
 function ga(e, r) {
-	let t = r.a, n$1 = t.length, a = r.i;
-	if (n$1 > 0) {
+	let t = r.a, n = t.length, a = r.i;
+	if (n > 0) {
 		e.base.stack.push(a);
 		let s = rn(e, a, 0, t[0]);
-		for (let i$1 = 1, u$1 = s; i$1 < n$1; i$1++) u$1 = rn(e, a, i$1, t[i$1]), s += (u$1 && s && ",") + u$1;
+		for (let i = 1, u = s; i < n; i++) u = rn(e, a, i, t[i]), s += (u && s && ",") + u;
 		if (e.base.stack.pop(), s) return "{__SEROVAL_SEQUENCE__:!0,v:[" + s + "],t:" + r.s + ",d:" + r.l + "}";
 	}
 	return "{__SEROVAL_SEQUENCE__:!0,v:[],t:-1,d:0}";
@@ -8596,12 +8596,12 @@ function f$1(e, r) {
 	}
 }
 function cr(e, r) {
-	let t = f$1(e, r), n$1 = r.i;
-	if (n$1 == null) return t;
-	let a = on(e.base), s = m$1(e, n$1), i$1 = e.state.scopeId, u$1 = i$1 == null ? "" : ce, l$1 = a ? "(" + t + "," + a + s + ")" : t;
-	if (u$1 === "") return r.t === 10 && !a ? "(" + l$1 + ")" : l$1;
-	let g$1 = i$1 == null ? "()" : "(" + ce + "[\\"" + y$1(i$1) + "\\"])";
-	return "(" + sr([u$1], l$1) + ")" + g$1;
+	let t = f$1(e, r), n = r.i;
+	if (n == null) return t;
+	let a = on(e.base), s = m$1(e, n), i = e.state.scopeId, u = i == null ? "" : ce, l = a ? "(" + t + "," + a + s + ")" : t;
+	if (u === "") return r.t === 10 && !a ? "(" + l + ")" : l;
+	let g = i == null ? "()" : "(" + ce + "[\\"" + y$1(i) + "\\"])";
+	return "(" + sr([u], l) + ")" + g;
 }
 var Gr = class {
 	constructor(r, t) {
@@ -8657,74 +8657,74 @@ function Hr(e) {
 	};
 }
 function ba(e, r, t) {
-	let n$1 = [];
-	for (let a = 0, s = t.length; a < s; a++) a in t ? n$1[a] = E$1(e, r, t[a]) : n$1[a] = 0;
-	return n$1;
+	let n = [];
+	for (let a = 0, s = t.length; a < s; a++) a in t ? n[a] = E$1(e, r, t[a]) : n[a] = 0;
+	return n;
 }
-function va(e, r, t, n$1) {
-	return _e(t, n$1, ba(e, r, n$1));
+function va(e, r, t, n) {
+	return _e(t, n, ba(e, r, n));
 }
 function Jr(e, r, t) {
-	let n$1 = Object.entries(t), a = [], s = [];
-	for (let i$1 = 0, u$1 = n$1.length; i$1 < u$1; i$1++) a.push(y$1(n$1[i$1][0])), s.push(E$1(e, r, n$1[i$1][1]));
+	let n = Object.entries(t), a = [], s = [];
+	for (let i = 0, u = n.length; i < u; i++) a.push(y$1(n[i][0])), s.push(E$1(e, r, n[i][1]));
 	return C in t && (a.push(I(e.base, C)), s.push(Ue(er(e.base), E$1(e, r, $e(t))))), v$1 in t && (a.push(I(e.base, v$1)), s.push(je(rr(e.base), E$1(e, r, e.type === 1 ? te$1() : Xe(t))))), P$1 in t && (a.push(I(e.base, P$1)), s.push(X(t[P$1]))), R in t && (a.push(I(e.base, R)), s.push(t[R] ? J : Z)), {
 		k: a,
 		v: s
 	};
 }
-function Wr(e, r, t, n$1, a) {
-	return tr(t, n$1, a, Jr(e, r, n$1));
+function Wr(e, r, t, n, a) {
+	return tr(t, n, a, Jr(e, r, n));
 }
-function Ca(e, r, t, n$1) {
-	return ke(t, E$1(e, r, n$1.valueOf()));
+function Ca(e, r, t, n) {
+	return ke(t, E$1(e, r, n.valueOf()));
 }
-function Aa(e, r, t, n$1) {
-	return De(t, n$1, E$1(e, r, n$1.buffer));
+function Aa(e, r, t, n) {
+	return De(t, n, E$1(e, r, n.buffer));
 }
-function Ea(e, r, t, n$1) {
-	return Fe(t, n$1, E$1(e, r, n$1.buffer));
+function Ea(e, r, t, n) {
+	return Fe(t, n, E$1(e, r, n.buffer));
 }
-function Ia(e, r, t, n$1) {
-	return Be(t, n$1, E$1(e, r, n$1.buffer));
+function Ia(e, r, t, n) {
+	return Be(t, n, E$1(e, r, n.buffer));
 }
-function sn(e, r, t, n$1) {
-	let a = $$1(n$1, e.base.features);
-	return Ve(t, n$1, a ? Jr(e, r, a) : o$1);
+function sn(e, r, t, n) {
+	let a = $$1(n, e.base.features);
+	return Ve(t, n, a ? Jr(e, r, a) : o$1);
 }
-function Ra(e, r, t, n$1) {
-	let a = $$1(n$1, e.base.features);
-	return Me(t, n$1, a ? Jr(e, r, a) : o$1);
+function Ra(e, r, t, n) {
+	let a = $$1(n, e.base.features);
+	return Me(t, n, a ? Jr(e, r, a) : o$1);
 }
-function Pa(e, r, t, n$1) {
+function Pa(e, r, t, n) {
 	let a = [], s = [];
-	for (let [i$1, u$1] of n$1.entries()) a.push(E$1(e, r, i$1)), s.push(E$1(e, r, u$1));
+	for (let [i, u] of n.entries()) a.push(E$1(e, r, i)), s.push(E$1(e, r, u));
 	return nr(e.base, t, a, s);
 }
-function xa(e, r, t, n$1) {
+function xa(e, r, t, n) {
 	let a = [];
-	for (let s of n$1.keys()) a.push(E$1(e, r, s));
+	for (let s of n.keys()) a.push(E$1(e, r, s));
 	return Le(t, a);
 }
-function Oa(e, r, t, n$1) {
+function Oa(e, r, t, n) {
 	let a = Ye(t, k(e.base, 4), []);
-	return e.type === 1 || (Xr(e), n$1.on({
+	return e.type === 1 || (Xr(e), n.on({
 		next: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, qe(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, qe(t, i));
 			}
 		},
 		throw: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, We(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, We(t, i));
 			}
 			be(e);
 		},
 		return: (s) => {
 			if (e.state.alive) {
-				let i$1 = G(e, r, s);
-				i$1 && ie(e, Ge(t, i$1));
+				let i = G(e, r, s);
+				i && ie(e, Ge(t, i));
 			}
 			be(e);
 		}
@@ -8732,61 +8732,61 @@ function Oa(e, r, t, n$1) {
 }
 function Ta(e, r, t) {
 	if (this.state.alive) {
-		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n$1], o$1, o$1, o$1, o$1)), be(this);
+		let n = G(this, r, t);
+		n && ie(this, c$1(23, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 2), n], o$1, o$1, o$1, o$1)), be(this);
 	}
 }
 function wa(e, r, t) {
 	if (this.state.alive) {
-		let n$1 = G(this, r, t);
-		n$1 && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n$1], o$1, o$1, o$1, o$1));
+		let n = G(this, r, t);
+		n && ie(this, c$1(24, e, o$1, o$1, o$1, o$1, o$1, [k(this.base, 3), n], o$1, o$1, o$1, o$1));
 	}
 	be(this);
 }
-function ha(e, r, t, n$1) {
+function ha(e, r, t, n) {
 	let a = hr(e.base, {});
-	return e.type === 2 && (Xr(e), n$1.then(Ta.bind(e, a, r), wa.bind(e, a, r))), ht(e.base, t, a);
+	return e.type === 2 && (Xr(e), n.then(Ta.bind(e, a, r), wa.bind(e, a, r))), ht(e.base, t, a);
 }
-function za(e, r, t, n$1, a) {
-	for (let s = 0, i$1 = a.length; s < i$1; s++) {
-		let u$1 = a[s];
-		if (u$1.parse.sync && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.sync(n$1, new Gr(e, r), { id: t }));
+function za(e, r, t, n, a) {
+	for (let s = 0, i = a.length; s < i; s++) {
+		let u = a[s];
+		if (u.parse.sync && u.test(n)) return fe$1(t, u.tag, u.parse.sync(n, new Gr(e, r), { id: t }));
 	}
 	return o$1;
 }
-function _a(e, r, t, n$1, a) {
-	for (let s = 0, i$1 = a.length; s < i$1; s++) {
-		let u$1 = a[s];
-		if (u$1.parse.stream && u$1.test(n$1)) return fe$1(t, u$1.tag, u$1.parse.stream(n$1, new Kr(e, r), { id: t }));
+function _a(e, r, t, n, a) {
+	for (let s = 0, i = a.length; s < i; s++) {
+		let u = a[s];
+		if (u.parse.stream && u.test(n)) return fe$1(t, u.tag, u.parse.stream(n, new Kr(e, r), { id: t }));
 	}
 	return o$1;
 }
-function un(e, r, t, n$1) {
+function un(e, r, t, n) {
 	let a = e.base.plugins;
-	return a ? e.type === 1 ? za(e, r, t, n$1, a) : _a(e, r, t, n$1, a) : o$1;
+	return a ? e.type === 1 ? za(e, r, t, n, a) : _a(e, r, t, n, a) : o$1;
 }
-function ka(e, r, t, n$1) {
+function ka(e, r, t, n) {
 	let a = [];
-	for (let s = 0, i$1 = n$1.v.length; s < i$1; s++) a[s] = E$1(e, r, n$1.v[s]);
-	return Ke(t, a, n$1.t, n$1.d);
+	for (let s = 0, i = n.v.length; s < i; s++) a[s] = E$1(e, r, n.v[s]);
+	return Ke(t, a, n.t, n.d);
 }
-function Da(e, r, t, n$1, a) {
+function Da(e, r, t, n, a) {
 	switch (a) {
-		case Object: return Wr(e, r, t, n$1, !1);
-		case o$1: return Wr(e, r, t, n$1, !0);
-		case Date: return he(t, n$1);
+		case Object: return Wr(e, r, t, n, !1);
+		case o$1: return Wr(e, r, t, n, !0);
+		case Date: return he(t, n);
 		case Error:
 		case EvalError:
 		case RangeError:
 		case ReferenceError:
 		case SyntaxError:
 		case TypeError:
-		case URIError: return sn(e, r, t, n$1);
+		case URIError: return sn(e, r, t, n);
 		case Number:
 		case Boolean:
 		case String:
-		case BigInt: return Ca(e, r, t, n$1);
-		case ArrayBuffer: return or(e.base, t, n$1);
+		case BigInt: return Ca(e, r, t, n);
+		case ArrayBuffer: return or(e.base, t, n);
 		case Int8Array:
 		case Int16Array:
 		case Int32Array:
@@ -8795,37 +8795,37 @@ function Da(e, r, t, n$1, a) {
 		case Uint32Array:
 		case Uint8ClampedArray:
 		case Float32Array:
-		case Float64Array: return Aa(e, r, t, n$1);
-		case DataView: return Ia(e, r, t, n$1);
-		case Map: return Pa(e, r, t, n$1);
-		case Set: return xa(e, r, t, n$1);
+		case Float64Array: return Aa(e, r, t, n);
+		case DataView: return Ia(e, r, t, n);
+		case Map: return Pa(e, r, t, n);
+		case Set: return xa(e, r, t, n);
 		default: break;
 	}
-	if (a === Promise || n$1 instanceof Promise) return ha(e, r, t, n$1);
+	if (a === Promise || n instanceof Promise) return ha(e, r, t, n);
 	let s = e.base.features;
-	if (s & 32 && a === RegExp) return ze(t, n$1);
+	if (s & 32 && a === RegExp) return ze(t, n);
 	if (s & 16) switch (a) {
 		case BigInt64Array:
-		case BigUint64Array: return Ea(e, r, t, n$1);
+		case BigUint64Array: return Ea(e, r, t, n);
 		default: break;
 	}
-	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n$1 instanceof AggregateError)) return Ra(e, r, t, n$1);
-	if (n$1 instanceof Error) return sn(e, r, t, n$1);
-	if (C in n$1 || v$1 in n$1) return Wr(e, r, t, n$1, !!a);
-	throw new x$1(n$1);
+	if (s & 1 && typeof AggregateError != "undefined" && (a === AggregateError || n instanceof AggregateError)) return Ra(e, r, t, n);
+	if (n instanceof Error) return sn(e, r, t, n);
+	if (C in n || v$1 in n) return Wr(e, r, t, n, !!a);
+	throw new x$1(n);
 }
-function Fa(e, r, t, n$1) {
-	if (Array.isArray(n$1)) return va(e, r, t, n$1);
-	if (M(n$1)) return Oa(e, r, t, n$1);
-	if (Ze(n$1)) return ka(e, r, t, n$1);
-	let a = n$1.constructor;
-	if (a === Y$1) return E$1(e, r, n$1.replacement);
-	return un(e, r, t, n$1) || Da(e, r, t, n$1, a);
+function Fa(e, r, t, n) {
+	if (Array.isArray(n)) return va(e, r, t, n);
+	if (M(n)) return Oa(e, r, t, n);
+	if (Ze(n)) return ka(e, r, t, n);
+	let a = n.constructor;
+	if (a === Y$1) return E$1(e, r, n.replacement);
+	return un(e, r, t, n) || Da(e, r, t, n, a);
 }
 function Ba(e, r, t) {
-	let n$1 = q$1(e.base, t);
-	if (n$1.type !== 0) return n$1.value;
-	let a = un(e, r, n$1.value, t);
+	let n = q$1(e.base, t);
+	if (n.type !== 0) return n.value;
+	let a = un(e, r, n.value, t);
 	if (a) return a;
 	throw new x$1(t);
 }
@@ -8839,8 +8839,8 @@ function E$1(e, r, t) {
 		case "bigint": return we(t);
 		case "object":
 			if (t) {
-				let n$1 = q$1(e.base, t);
-				return n$1.type === 0 ? Fa(e, r + 1, n$1.value, t) : n$1.value;
+				let n = q$1(e.base, t);
+				return n.type === 0 ? Fa(e, r + 1, n.value, t) : n.value;
 			}
 			return Ee;
 		case "symbol": return I(e.base, t);
@@ -8861,8 +8861,8 @@ function ln(e) {
 function $r(e, r, t) {
 	try {
 		e.state.onParse(r, t);
-	} catch (n$1) {
-		Zr(e, n$1);
+	} catch (n) {
+		Zr(e, n);
 	}
 }
 function Xr(e) {
@@ -8874,8 +8874,8 @@ function be(e) {
 function G(e, r, t) {
 	try {
 		return E$1(e, r, t);
-	} catch (n$1) {
-		return Zr(e, n$1), o$1;
+	} catch (n) {
+		return Zr(e, n), o$1;
 	}
 }
 function Qr(e, r) {
@@ -8883,35 +8883,35 @@ function Qr(e, r) {
 	t && ($r(e, t, !0), e.state.initial = !1, Va(e, e.state), e.state.pending <= 0 && fr(e));
 }
 function Va(e, r) {
-	for (let t = 0, n$1 = r.buffer.length; t < n$1; t++) $r(e, r.buffer[t], !1);
+	for (let t = 0, n = r.buffer.length; t < n; t++) $r(e, r.buffer[t], !1);
 }
 function fr(e) {
 	e.state.alive && (ln(e), e.state.alive = !1);
 }
 function cn(e, r) {
-	let t = A(r.plugins), n$1 = Hr({
+	let t = A(r.plugins), n = Hr({
 		plugins: t,
 		refs: r.refs,
 		disabledFeatures: r.disabledFeatures,
 		onParse(a, s) {
-			let i$1 = ur({
+			let i = ur({
 				plugins: t,
-				features: n$1.base.features,
+				features: n.base.features,
 				scopeId: r.scopeId,
-				markedRefs: n$1.base.marked
-			}), u$1;
+				markedRefs: n.base.marked
+			}), u;
 			try {
-				u$1 = cr(i$1, a);
-			} catch (l$1) {
-				r.onError && r.onError(l$1);
+				u = cr(i, a);
+			} catch (l) {
+				r.onError && r.onError(l);
 				return;
 			}
-			r.onSerialize(u$1, s);
+			r.onSerialize(u, s);
 		},
 		onError: r.onError,
 		onDone: r.onDone
 	});
-	return Qr(n$1, e), fr.bind(null, n$1);
+	return Qr(n, e), fr.bind(null, n);
 }
 var Sr = class {
 	constructor(r) {
@@ -8933,8 +8933,8 @@ var Sr = class {
 			refs: this.refs,
 			disabledFeatures: this.options.disabledFeatures,
 			onError: this.options.onError,
-			onSerialize: (n$1, a) => {
-				this.alive && this.options.onData(a ? this.options.globalIdentifier + "[\\"" + y$1(r) + "\\"]=" + n$1 : n$1);
+			onSerialize: (n, a) => {
+				this.alive && this.options.onData(a ? this.options.globalIdentifier + "[\\"" + y$1(r) + "\\"]=" + n : n);
 			},
 			onDone: () => {
 				this.alive && (this.pending--, this.pending <= 0 && this.flushed && !this.done && this.options.onDone && (this.options.onDone(), this.done = !0));
@@ -9724,16 +9724,16 @@ function renderToString(code, options = {}) {
 		lazy: {},
 		assets: [],
 		nonce: options.nonce,
-		serialize(id, p$1) {
-			!sharedConfig.context.noHydrate && serializer.write(id, p$1);
+		serialize(id, p) {
+			!sharedConfig.context.noHydrate && serializer.write(id, p);
 		},
 		roots: 0,
 		nextRoot() {
 			return this.renderId + "i-" + this.roots++;
 		}
 	};
-	let html = createRoot((d$1) => {
-		setTimeout(d$1);
+	let html = createRoot((d) => {
+		setTimeout(d);
 		return resolveSSRNode(escape(code()));
 	});
 	sharedConfig.context.noHydrate = true;
@@ -9745,9 +9745,9 @@ function renderToString(code, options = {}) {
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
-		for (let i$1 = 0; i$1 < nodes.length; i$1++) {
-			result += t[i$1];
-			const node = nodes[i$1];
+		for (let i = 0; i < nodes.length; i++) {
+			result += t[i];
+			const node = nodes[i];
 			if (node !== void 0) result += resolveSSRNode(node);
 		}
 		t = result + t[nodes.length];
@@ -9767,7 +9767,7 @@ function escape(s, attr) {
 		if (!attr && t === "function") return escape(s());
 		if (!attr && Array.isArray(s)) {
 			s = s.slice();
-			for (let i$1 = 0; i$1 < s.length; i$1++) s[i$1] = escape(s[i$1]);
+			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
 		if (attr && t === "boolean") return String(s);
@@ -9811,9 +9811,9 @@ function resolveSSRNode(node, top) {
 	if (Array.isArray(node)) {
 		let prev = {};
 		let mapped = "";
-		for (let i$1 = 0, len = node.length; i$1 < len; i$1++) {
-			if (!top && typeof prev !== "object" && typeof node[i$1] !== "object") mapped += \`<!--!$-->\`;
-			mapped += resolveSSRNode(prev = node[i$1]);
+		for (let i = 0, len = node.length; i < len; i++) {
+			if (!top && typeof prev !== "object" && typeof node[i] !== "object") mapped += \`<!--!$-->\`;
+			mapped += resolveSSRNode(prev = node[i]);
 		}
 		return mapped;
 	}
@@ -9828,7 +9828,7 @@ function getHydrationKey() {
 function injectAssets(assets, html) {
 	if (!assets || !assets.length) return html;
 	let out = "";
-	for (let i$1 = 0, len = assets.length; i$1 < len; i$1++) out += assets[i$1]();
+	for (let i = 0, len = assets.length; i < len; i++) out += assets[i]();
 	const index = html.indexOf("</head>");
 	if (index === -1) return html;
 	return html.slice(0, index) + out + html.slice(index);

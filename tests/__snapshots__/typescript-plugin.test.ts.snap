@@ -46,10 +46,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -303,9 +303,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -717,24 +717,24 @@ function cleanChildren(parent, current, marker, replacement) {
 //#endregion
 //#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
-var Enum4 = /* @__PURE__ */ function(Enum4$1) {
-	Enum4$1[Enum4$1["Foo"] = 0] = "Foo";
-	Enum4$1[Enum4$1["Bar"] = 1] = "Bar";
-	Enum4$1[Enum4$1["Baz"] = 2] = "Baz";
-	return Enum4$1;
+var Enum4 = /* @__PURE__ */ function(Enum4) {
+	Enum4[Enum4["Foo"] = 0] = "Foo";
+	Enum4[Enum4["Bar"] = 1] = "Bar";
+	Enum4[Enum4["Baz"] = 2] = "Baz";
+	return Enum4;
 }(Enum4 || {});
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1$1) {
-	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
-	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
-	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
-	return Enum1$1;
+var Enum1 = /* @__PURE__ */ function(Enum1) {
+	Enum1[Enum1["Foo"] = 0] = "Foo";
+	Enum1[Enum1["Bar"] = 1] = "Bar";
+	Enum1[Enum1["Baz"] = 2] = "Baz";
+	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2$1) {
-	Enum2$1["Foo"] = "FOO";
-	Enum2$1["Bar"] = "BAR";
-	Enum2$1["Baz"] = "BAZ";
-	return Enum2$1;
+var Enum2 = /* @__PURE__ */ function(Enum2) {
+	Enum2["Foo"] = "FOO";
+	Enum2["Bar"] = "BAR";
+	Enum2["Baz"] = "BAZ";
+	return Enum2;
 }(Enum2 || {});
 var Class1 = class {
 	constructor(prop1) {
@@ -861,10 +861,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -1118,9 +1118,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -1532,24 +1532,24 @@ function cleanChildren(parent, current, marker, replacement) {
 //#endregion
 //#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
-var Enum4 = /* @__PURE__ */ function(Enum4$1) {
-	Enum4$1[Enum4$1["Foo"] = 0] = "Foo";
-	Enum4$1[Enum4$1["Bar"] = 1] = "Bar";
-	Enum4$1[Enum4$1["Baz"] = 2] = "Baz";
-	return Enum4$1;
+var Enum4 = /* @__PURE__ */ function(Enum4) {
+	Enum4[Enum4["Foo"] = 0] = "Foo";
+	Enum4[Enum4["Bar"] = 1] = "Bar";
+	Enum4[Enum4["Baz"] = 2] = "Baz";
+	return Enum4;
 }(Enum4 || {});
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1$1) {
-	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
-	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
-	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
-	return Enum1$1;
+var Enum1 = /* @__PURE__ */ function(Enum1) {
+	Enum1[Enum1["Foo"] = 0] = "Foo";
+	Enum1[Enum1["Bar"] = 1] = "Bar";
+	Enum1[Enum1["Baz"] = 2] = "Baz";
+	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2$1) {
-	Enum2$1["Foo"] = "FOO";
-	Enum2$1["Bar"] = "BAR";
-	Enum2$1["Baz"] = "BAZ";
-	return Enum2$1;
+var Enum2 = /* @__PURE__ */ function(Enum2) {
+	Enum2["Foo"] = "FOO";
+	Enum2["Bar"] = "BAR";
+	Enum2["Baz"] = "BAZ";
+	return Enum2;
 }(Enum2 || {});
 var Class1 = class {
 	constructor(prop1) {
@@ -1676,10 +1676,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -1933,9 +1933,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -2347,24 +2347,24 @@ function cleanChildren(parent, current, marker, replacement) {
 //#endregion
 //#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
-var Enum4 = /* @__PURE__ */ function(Enum4$1) {
-	Enum4$1[Enum4$1["Foo"] = 0] = "Foo";
-	Enum4$1[Enum4$1["Bar"] = 1] = "Bar";
-	Enum4$1[Enum4$1["Baz"] = 2] = "Baz";
-	return Enum4$1;
+var Enum4 = /* @__PURE__ */ function(Enum4) {
+	Enum4[Enum4["Foo"] = 0] = "Foo";
+	Enum4[Enum4["Bar"] = 1] = "Bar";
+	Enum4[Enum4["Baz"] = 2] = "Baz";
+	return Enum4;
 }(Enum4 || {});
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1$1) {
-	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
-	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
-	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
-	return Enum1$1;
+var Enum1 = /* @__PURE__ */ function(Enum1) {
+	Enum1[Enum1["Foo"] = 0] = "Foo";
+	Enum1[Enum1["Bar"] = 1] = "Bar";
+	Enum1[Enum1["Baz"] = 2] = "Baz";
+	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2$1) {
-	Enum2$1["Foo"] = "FOO";
-	Enum2$1["Bar"] = "BAR";
-	Enum2$1["Baz"] = "BAZ";
-	return Enum2$1;
+var Enum2 = /* @__PURE__ */ function(Enum2) {
+	Enum2["Foo"] = "FOO";
+	Enum2["Bar"] = "BAR";
+	Enum2["Baz"] = "BAZ";
+	return Enum2;
 }(Enum2 || {});
 var Class1 = class {
 	constructor(prop1) {
@@ -2491,10 +2491,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -2748,9 +2748,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -3162,24 +3162,24 @@ function cleanChildren(parent, current, marker, replacement) {
 //#endregion
 //#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
-var Enum4 = /* @__PURE__ */ function(Enum4$1) {
-	Enum4$1[Enum4$1["Foo"] = 0] = "Foo";
-	Enum4$1[Enum4$1["Bar"] = 1] = "Bar";
-	Enum4$1[Enum4$1["Baz"] = 2] = "Baz";
-	return Enum4$1;
+var Enum4 = /* @__PURE__ */ function(Enum4) {
+	Enum4[Enum4["Foo"] = 0] = "Foo";
+	Enum4[Enum4["Bar"] = 1] = "Bar";
+	Enum4[Enum4["Baz"] = 2] = "Baz";
+	return Enum4;
 }(Enum4 || {});
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1$1) {
-	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
-	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
-	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
-	return Enum1$1;
+var Enum1 = /* @__PURE__ */ function(Enum1) {
+	Enum1[Enum1["Foo"] = 0] = "Foo";
+	Enum1[Enum1["Bar"] = 1] = "Bar";
+	Enum1[Enum1["Baz"] = 2] = "Baz";
+	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2$1) {
-	Enum2$1["Foo"] = "FOO";
-	Enum2$1["Bar"] = "BAR";
-	Enum2$1["Baz"] = "BAZ";
-	return Enum2$1;
+var Enum2 = /* @__PURE__ */ function(Enum2) {
+	Enum2["Foo"] = "FOO";
+	Enum2["Bar"] = "BAR";
+	Enum2["Baz"] = "BAZ";
+	return Enum2;
 }(Enum2 || {});
 var Class1 = class {
 	constructor(prop1) {
@@ -3306,10 +3306,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -3563,9 +3563,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -3983,17 +3983,17 @@ var Enum4 = {
 	Baz: 2
 };
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1$1) {
-	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
-	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
-	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
-	return Enum1$1;
+var Enum1 = /* @__PURE__ */ function(Enum1) {
+	Enum1[Enum1["Foo"] = 0] = "Foo";
+	Enum1[Enum1["Bar"] = 1] = "Bar";
+	Enum1[Enum1["Baz"] = 2] = "Baz";
+	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2$1) {
-	Enum2$1["Foo"] = "FOO";
-	Enum2$1["Bar"] = "BAR";
-	Enum2$1["Baz"] = "BAZ";
-	return Enum2$1;
+var Enum2 = /* @__PURE__ */ function(Enum2) {
+	Enum2["Foo"] = "FOO";
+	Enum2["Bar"] = "BAR";
+	Enum2["Baz"] = "BAZ";
+	return Enum2;
 }(Enum2 || {});
 var Class1 = class {
 	constructor(prop1) {
@@ -4120,10 +4120,10 @@ function createSignal(value, options) {
 		observerSlots: null,
 		comparator: options.equals || void 0
 	};
-	const setter = (value$1) => {
-		if (typeof value$1 === "function") if (Transition && Transition.running && Transition.sources.has(s)) value$1 = value$1(s.tValue);
-		else value$1 = value$1(s.value);
-		return writeSignal(s, value$1);
+	const setter = (value) => {
+		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+		else value = value(s.value);
+		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
 }
@@ -4377,9 +4377,9 @@ function completeUpdates(wait) {
 			const disposed = Transition.disposed;
 			Effects.push.apply(Effects, Transition.effects);
 			res = Transition.resolve;
-			for (const e$1 of Effects) {
-				"tState" in e$1 && (e$1.state = e$1.tState);
-				delete e$1.tState;
+			for (const e of Effects) {
+				"tState" in e && (e.state = e.tState);
+				delete e.tState;
 			}
 			Transition = null;
 			runUpdates(() => {
@@ -4797,17 +4797,17 @@ var Enum4 = {
 	Baz: 2
 };
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1$1) {
-	Enum1$1[Enum1$1["Foo"] = 0] = "Foo";
-	Enum1$1[Enum1$1["Bar"] = 1] = "Bar";
-	Enum1$1[Enum1$1["Baz"] = 2] = "Baz";
-	return Enum1$1;
+var Enum1 = /* @__PURE__ */ function(Enum1) {
+	Enum1[Enum1["Foo"] = 0] = "Foo";
+	Enum1[Enum1["Bar"] = 1] = "Bar";
+	Enum1[Enum1["Baz"] = 2] = "Baz";
+	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2$1) {
-	Enum2$1["Foo"] = "FOO";
-	Enum2$1["Bar"] = "BAR";
-	Enum2$1["Baz"] = "BAZ";
-	return Enum2$1;
+var Enum2 = /* @__PURE__ */ function(Enum2) {
+	Enum2["Foo"] = "FOO";
+	Enum2["Bar"] = "BAR";
+	Enum2["Baz"] = "BAZ";
+	return Enum2;
 }(Enum2 || {});
 var Class1 = class {
 	constructor(prop1) {
