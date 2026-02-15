@@ -1,5 +1,4 @@
 import { Component } from "./component.ts";
-import value from "./cts.cts";
 import * as module from "./module.mts";
 import type { MyType } from "./types.d.ts";
 import { helper } from "./utils/helper.tsx";
