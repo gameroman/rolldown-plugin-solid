@@ -30,13 +30,13 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@babel/helper-plugin-utils": "8.0.0-rc.1",
-    "@babel/helper-validator-option": "8.0.0-rc.1",
-    "@babel/core": "8.0.0-rc.1",
-    "@babel/helper-module-imports": "8.0.0-rc.1",
-    "@babel/template": "8.0.0-rc.1",
-    "@babel/traverse": "8.0.0-rc.1",
-    "@babel/types": "8.0.0-rc.1",
+    "@babel/helper-plugin-utils": "^8.0.0-rc.1",
+    "@babel/helper-validator-option": "^8.0.0-rc.1",
+    "@babel/core": "^8.0.0-rc.1",
+    "@babel/helper-module-imports": "^8.0.0-rc.1",
+    "@babel/template": "^8.0.0-rc.1",
+    "@babel/traverse": "^8.0.0-rc.1",
+    "@babel/types": "^8.0.0-rc.1",
     "html-entities": "2.6.0",
     "parse5": "^8.0.0"
   },
@@ -55,5 +55,16 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "overrides": {
+    "@babel/helper-plugin-utils": "8.0.0-rc.1",
+    "@babel/helper-validator-identifier": "8.0.0-rc.1",
+    "@babel/helper-validator-option": "8.0.0-rc.1",
+    "@babel/code-frame": "8.0.0-rc.1",
+    "@babel/core": "8.0.0-rc.1",
+    "@babel/helper-module-imports": "8.0.0-rc.1",
+    "@babel/template": "8.0.0-rc.1",
+    "@babel/traverse": "8.0.0-rc.1",
+    "@babel/types": "8.0.0-rc.1"
   }
 }
