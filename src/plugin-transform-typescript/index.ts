@@ -109,11 +109,6 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     optimizeConstEnums = false,
   } = opts;
 
-  if (true) {
-    // eslint-disable-next-line no-var
-    var { allowDeclareFields = false } = opts;
-  }
-
   const classMemberVisitors = {
     field(
       path: NodePath<
@@ -123,14 +118,6 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     ) {
       const { node } = path;
 
-      if (true) {
-        if (!allowDeclareFields && node.declare) {
-          throw path.buildCodeFrameError(
-            `The 'declare' modifier is only allowed when the 'allowDeclareFields' option of ` +
-              `@babel/plugin-transform-typescript or @babel/preset-typescript is enabled.`,
-          );
-        }
-      }
       if (node.declare) {
         if (node.value) {
           throw path.buildCodeFrameError(
@@ -146,28 +133,8 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
             `Definitely assigned fields cannot be initialized here, but only in the constructor`,
           );
         }
-        if (true) {
-          // keep the definitely assigned fields only when `allowDeclareFields` (equivalent of
-          // Typescript's `useDefineForClassFields`) is true
-          if (
-            !allowDeclareFields &&
-            !node.decorators &&
-            !t.isClassPrivateProperty(node)
-          ) {
-            path.remove();
-          }
-        }
       } else if (node.abstract) {
         path.remove();
-      } else if (true) {
-        if (
-          !allowDeclareFields &&
-          !node.value &&
-          !node.decorators &&
-          !t.isClassPrivateProperty(node)
-        ) {
-          path.remove();
-        }
       }
 
       if (node.accessibility) node.accessibility = null;

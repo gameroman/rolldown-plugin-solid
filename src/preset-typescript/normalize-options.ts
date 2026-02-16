@@ -39,7 +39,9 @@ export interface Options {
   isTSX?: boolean;
 }
 
-export default function normalizeOptions(options: Options = {}): Options {
+export default function normalizeOptions(
+  options: Options = {},
+): Required<Omit<Options, "allowDeclareFields">> {
   const { allowNamespaces = true, jsxPragma, onlyRemoveTypeImports } = options;
 
   const TopLevelOptions: {
@@ -92,7 +94,7 @@ export default function normalizeOptions(options: Options = {}): Options {
     false,
   );
 
-  const normalized: Options = {
+  const normalized = {
     ignoreExtensions,
     allowNamespaces,
     disallowAmbiguousJSXLike,
