@@ -651,7 +651,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
         {
           path.replaceWith(
-            // @ts-ignore(Babel 7 vs Babel 8) Babel 7 AST
+            // @ts-expect-error(Babel 7 vs Babel 8) Babel 7 AST
             path.node.isExport ? t.exportNamedDeclaration(newNode) : newNode,
           );
         }
@@ -692,35 +692,35 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
       CallExpression(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeArguments = null;
         }
       },
 
       OptionalCallExpression(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeArguments = null;
         }
       },
 
       NewExpression(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeArguments = null;
         }
       },
 
       JSXOpeningElement(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeArguments = null;
         }
       },
 
       TaggedTemplateExpression(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
           path.node.typeArguments = null;
         }
       },

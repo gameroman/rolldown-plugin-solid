@@ -1,5 +1,4 @@
 import type { PluginItem } from "@babel/core";
-// @ts-expect-error: Babel types are not installed
 import { declarePreset } from "@babel/helper-plugin-utils";
 import transformTypeScript from "../plugin-transform-typescript";
 import type { Options } from "./normalize-options";
@@ -10,7 +9,6 @@ export type { Options as PresetTypescriptOptions };
 
 const presetTypescript: unknown = declarePreset((api, opts: Options) => {
   const {
-    allExtensions,
     ignoreExtensions,
     allowNamespaces,
     disallowAmbiguousJSXLike,
@@ -41,7 +39,7 @@ const presetTypescript: unknown = declarePreset((api, opts: Options) => {
     ];
   };
 
-  const disableExtensionDetect = allExtensions || ignoreExtensions;
+  const disableExtensionDetect = ignoreExtensions;
 
   return {
     plugins: rewriteImportExtensions ? [pluginRewriteTSImports] : [],

@@ -1,4 +1,3 @@
-// @ts-expect-error: Babel types are not installed
 import { OptionValidator } from "@babel/helper-validator-option";
 
 interface BabelOptionValidator {
@@ -63,20 +62,11 @@ export default function normalizeOptions(options: Options = {}): Options {
     "React.Fragment",
   );
 
-  const allExtensions = v.validateBooleanOption(
-    TopLevelOptions.allExtensions,
-    options.allExtensions,
-    false,
-  );
-
   const isTSX = v.validateBooleanOption(
     TopLevelOptions.isTSX,
     options.isTSX,
     false,
   );
-  if (isTSX) {
-    v.invariant(allExtensions, "isTSX:true requires allExtensions:true");
-  }
 
   const ignoreExtensions = v.validateBooleanOption(
     TopLevelOptions.ignoreExtensions,
@@ -89,12 +79,6 @@ export default function normalizeOptions(options: Options = {}): Options {
     options.disallowAmbiguousJSXLike,
     false,
   );
-  if (disallowAmbiguousJSXLike) {
-    v.invariant(
-      allExtensions,
-      "disallowAmbiguousJSXLike:true requires allExtensions:true",
-    );
-  }
 
   const optimizeConstEnums = v.validateBooleanOption(
     TopLevelOptions.optimizeConstEnums,
@@ -117,7 +101,6 @@ export default function normalizeOptions(options: Options = {}): Options {
     onlyRemoveTypeImports,
     optimizeConstEnums,
     rewriteImportExtensions,
-    allExtensions,
     isTSX,
   };
 

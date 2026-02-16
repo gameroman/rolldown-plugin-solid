@@ -1,7 +1,6 @@
 import { declare } from "@babel/helper-plugin-utils";
 
-// eslint-disable-next-line no-var
-var removePlugin = function (plugins: any[], name: string) {
+const removePlugin = function (plugins: any[], name: string) {
   const indices: number[] = [];
   plugins.forEach((plugin, i) => {
     const n = Array.isArray(plugin) ? plugin[0] : plugin;
@@ -40,11 +39,6 @@ const syntaxTypeScript = declare((api, opts: Options) => {
       // If the JSX syntax plugin already ran, remove it because JSX handling
       // in TS depends on the extensions, and is purely dependent on 'isTSX'.
       removePlugin(plugins, "jsx");
-
-      // These are now enabled by default in @babel/parser, but we push
-      // them for compat with older versions.
-      // @ts-ignore(Babel 7 vs Babel 8) These plugins have been removed
-      plugins.push("objectRestSpread", "classProperties");
 
       if (isTSX) {
         plugins.push("jsx");
