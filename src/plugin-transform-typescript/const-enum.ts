@@ -55,7 +55,7 @@ export default function transpileConstEnum(
       );
     } else {
       path.replaceWith(
-        t.variableDeclaration(undefined ? "const" : "var", [
+        t.variableDeclaration("const", [
           t.variableDeclarator(path.node.id, obj),
         ]),
       );

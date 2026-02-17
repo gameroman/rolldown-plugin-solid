@@ -1,4 +1,3 @@
-// @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
 import type { Visitor } from "@babel/traverse";
 import postprocess from "./shared/postprocess";

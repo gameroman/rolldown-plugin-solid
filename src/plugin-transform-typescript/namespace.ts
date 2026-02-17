@@ -10,7 +10,6 @@ export function getFirstIdentifier(node: t.TSEntityName): t.Identifier {
   }
   // In Babel 8 TSEntityName also includes ThisExpression, however, a namespace
   // id must not be a ThisExpression or a TSQualifiedName { left: ThisExpression }.
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   return getFirstIdentifier((node as t.TSQualifiedName).left);
 }
 
@@ -105,7 +104,6 @@ function handleVariableDeclaration(
   const bindingIdentifiers = t.getBindingIdentifiers(node);
   const assignments = [];
   // getBindingIdentifiers returns an object without prototype.
-  // eslint-disable-next-line guard-for-in
   for (const idName in bindingIdentifiers) {
     assignments.push(
       t.assignmentExpression(
@@ -191,7 +189,6 @@ function handleNested(
       case "VariableDeclaration": {
         isEmpty = false;
         // getBindingIdentifiers returns an object without prototype.
-        // eslint-disable-next-line guard-for-in
         for (const name in t.getBindingIdentifiers(subNode)) {
           names.add(name);
         }

@@ -1,5 +1,4 @@
 import type { PluginPass } from "@babel/core";
-// @ts-expect-error: Babel types are not installed
 import { declare } from "@babel/helper-plugin-utils";
 import type { Binding, NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
@@ -15,8 +14,8 @@ import syntaxTypeScript from "./plugin-syntax-typescript";
 function isInType(path: NodePath) {
   switch (path.parent.type) {
     case "TSTypeReference":
-    case "TSExpressionWithTypeArguments":
-    case "TSExpressionWithTypeArguments":
+    case "TSClassImplements":
+    case "TSInterfaceHeritage":
     case "TSTypeQuery":
       return true;
     case "TSQualifiedName":
@@ -110,11 +109,6 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     optimizeConstEnums = false,
   } = opts;
 
-  if (true) {
-    // eslint-disable-next-line no-var
-    var { allowDeclareFields = false } = opts;
-  }
-
   const classMemberVisitors = {
     field(
       path: NodePath<
@@ -124,14 +118,6 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
     ) {
       const { node } = path;
 
-      if (true) {
-        if (!allowDeclareFields && node.declare) {
-          throw path.buildCodeFrameError(
-            `The 'declare' modifier is only allowed when the 'allowDeclareFields' option of ` +
-              `@babel/plugin-transform-typescript or @babel/preset-typescript is enabled.`,
-          );
-        }
-      }
       if (node.declare) {
         if (node.value) {
           throw path.buildCodeFrameError(
@@ -147,28 +133,8 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
             `Definitely assigned fields cannot be initialized here, but only in the constructor`,
           );
         }
-        if (true) {
-          // keep the definitely assigned fields only when `allowDeclareFields` (equivalent of
-          // Typescript's `useDefineForClassFields`) is true
-          if (
-            !allowDeclareFields &&
-            !node.decorators &&
-            !t.isClassPrivateProperty(node)
-          ) {
-            path.remove();
-          }
-        }
       } else if (node.abstract) {
         path.remove();
-      } else if (true) {
-        if (
-          !allowDeclareFields &&
-          !node.value &&
-          !node.decorators &&
-          !t.isClassPrivateProperty(node)
-        ) {
-          path.remove();
-        }
       }
 
       if (node.accessibility) node.accessibility = null;
@@ -367,9 +333,6 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
               const binding = stmt.scope.getBinding(id.name);
               if (
                 binding &&
-                (undefined ||
-                  // @ts-ignore(Babel 7 vs Babel 8) Babel 7 AST
-                  !stmt.node.isExport) &&
                 isImportTypeOnly({
                   binding,
                   programPath: path,
@@ -429,7 +392,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
           return;
         }
 
-        if (undefined && t.isTSImportEqualsDeclaration(path.node.declaration)) {
+        if (t.isTSImportEqualsDeclaration(path.node.declaration)) {
           return;
         }
 
@@ -562,7 +525,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
         if (node.typeParameters) node.typeParameters = null;
 
-        if (node.superTypeParameters) node.superTypeParameters = null;
+        if (node.superTypeArguments) node.superTypeArguments = null;
 
         if (node.implements) node.implements = null;
         if (node.abstract) node.abstract = null;
@@ -655,7 +618,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
         {
           path.replaceWith(
-            // @ts-ignore(Babel 7 vs Babel 8) Babel 7 AST
+            // @ts-expect-error(Babel 7 vs Babel 8) Babel 7 AST
             path.node.isExport ? t.exportNamedDeclaration(newNode) : newNode,
           );
         }
@@ -678,10 +641,9 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         path.replaceWith(path.node.expression);
       },
 
-      [`TSAsExpression${
-        // Added in Babel 7.20.0
-        t.tsSatisfiesExpression ? "|TSSatisfiesExpression" : ""
-      }`](path: NodePath<t.TSAsExpression | t.TSSatisfiesExpression>) {
+      ["TSAsExpression|TSSatisfiesExpression"](
+        path: NodePath<t.TSAsExpression | t.TSSatisfiesExpression>,
+      ) {
         let { node }: { node: t.Expression } = path;
         do {
           node = node.expression;
@@ -689,21 +651,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         path.replaceWith(node);
       },
 
-      [undefined
-        ? "TSNonNullExpression|TSInstantiationExpression"
-        : /* This has been introduced in Babel 7.18.0
-                     We use api.types.* and not t.* for feature detection,
-                     because the Babel version that is running this plugin
-                     (where we check if the visitor is valid) might be different
-                     from the Babel version that we resolve with `import "@babel/core"`.
-                     This happens, for example, with Next.js that bundled `@babel/core`
-                     but allows loading unbundled plugin (which cannot obviously import
-                     the bundled `@babel/core` version).
-                   */
-
-          api.types.tsInstantiationExpression
-          ? "TSNonNullExpression|TSInstantiationExpression"
-          : "TSNonNullExpression"](
+      ["TSNonNullExpression|TSInstantiationExpression"](
         path: NodePath<t.TSNonNullExpression | t.TSInstantiationExpression>,
       ) {
         path.replaceWith(path.node.expression);
@@ -711,36 +659,36 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
       CallExpression(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
+          path.node.typeArguments = null;
         }
       },
 
       OptionalCallExpression(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
+          path.node.typeArguments = null;
         }
       },
 
       NewExpression(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
+          path.node.typeArguments = null;
         }
       },
 
       JSXOpeningElement(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
+          path.node.typeArguments = null;
         }
       },
 
       TaggedTemplateExpression(path) {
         {
-          // @ts-ignore(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeParameters = null;
+          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
+          path.node.typeArguments = null;
         }
       },
     },
