@@ -2,7 +2,6 @@ import assert from "node:assert";
 import * as template from "@babel/template";
 import type { NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
-import { addComment, type Node } from "@babel/types";
 
 type TransparentExprWrapper =
   | t.TSAsExpression
@@ -41,21 +40,19 @@ function skipTransparentExprWrapperNodes(
 
 const PURE_ANNOTATION = "#__PURE__";
 
-const isPureAnnotated = ({ leadingComments }: Node): boolean =>
+const isPureAnnotated = ({ leadingComments }: t.Node): boolean =>
   !!leadingComments &&
   leadingComments.some((comment) => /[@#]__PURE__/.test(comment.value));
 
-function annotateAsPure(pathOrNode: Node | { node: Node }): void {
+function annotateAsPure(pathOrNode: t.Node | { node: t.Node }): void {
   const node =
     // @ts-expect-error Node will not have `node` property
-    (pathOrNode.node || pathOrNode) as Node;
+    (pathOrNode.node || pathOrNode) as t.Node;
   if (isPureAnnotated(node)) {
     return;
   }
-  addComment(node, "leading", PURE_ANNOTATION);
+  t.addComment(node, "leading", PURE_ANNOTATION);
 }
-
-type t = typeof t;
 
 const ENUMS = new WeakMap<t.Identifier, PreviousEnumMembers>();
 
