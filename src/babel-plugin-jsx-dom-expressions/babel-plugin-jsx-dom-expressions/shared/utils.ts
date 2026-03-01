@@ -30,7 +30,7 @@ export const getRendererConfig = (path, renderer) => {
   return config?.renderers?.find((r) => r.name === renderer) ?? config;
 };
 
-export function registerImportMethod(path, name, moduleName) {
+export function registerImportMethod(path, name, moduleName?) {
   const imports =
     path.scope.getProgramParent().data.imports ||
     (path.scope.getProgramParent().data.imports = new Map());

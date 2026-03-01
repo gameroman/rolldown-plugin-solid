@@ -24,7 +24,7 @@ const pluginRewriteTSImports = declare(({ types: t, template }) => {
                 : ".js"
               : d && (!ext || !cm)
                 ? m
-                : d + ext + "." + cm.toLowerCase() + "js",
+                : `${d + ext}.${cm.toLowerCase()}js`,
         );
       }
       return;

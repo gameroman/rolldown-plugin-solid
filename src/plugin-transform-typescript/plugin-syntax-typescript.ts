@@ -1,6 +1,6 @@
 import { declare } from "@babel/helper-plugin-utils";
 
-const removePlugin = function (plugins: any[], name: string) {
+function removePlugin(plugins: any[], name: string) {
   const indices: number[] = [];
   plugins.forEach((plugin, i) => {
     const n = Array.isArray(plugin) ? plugin[0] : plugin;
@@ -13,7 +13,7 @@ const removePlugin = function (plugins: any[], name: string) {
   for (const i of indices) {
     plugins.splice(i, 1);
   }
-};
+}
 
 export interface Options {
   disallowAmbiguousJSXLike?: boolean;
@@ -51,4 +51,5 @@ const syntaxTypeScript = declare((api, opts: Options) => {
     },
   };
 });
+
 export default syntaxTypeScript;

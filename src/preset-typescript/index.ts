@@ -71,4 +71,5 @@ const presetTypescript: unknown = declarePreset((api, opts: Options) => {
         ],
   };
 });
+
 export default presetTypescript;

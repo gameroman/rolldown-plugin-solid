@@ -1,7 +1,7 @@
 import type { PluginPass } from "@babel/core";
 import { declare } from "@babel/helper-plugin-utils";
 import type { Binding, NodePath } from "@babel/traverse";
-import * as t from "@babel/types";
+import type * as t from "@babel/types";
 import type { NodePathConstEnum } from "./const-enum";
 import transpileConstEnum from "./const-enum";
 import { injectInitialization } from "./create-class-features-plugin";
@@ -651,45 +651,30 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         path.replaceWith(node);
       },
 
-      ["TSNonNullExpression|TSInstantiationExpression"](
+      "TSNonNullExpression|TSInstantiationExpression"(
         path: NodePath<t.TSNonNullExpression | t.TSInstantiationExpression>,
       ) {
         path.replaceWith(path.node.expression);
       },
 
       CallExpression(path) {
-        {
-          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeArguments = null;
-        }
+        path.node.typeArguments = null;
       },
 
       OptionalCallExpression(path) {
-        {
-          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeArguments = null;
-        }
+        path.node.typeArguments = null;
       },
 
       NewExpression(path) {
-        {
-          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeArguments = null;
-        }
+        path.node.typeArguments = null;
       },
 
       JSXOpeningElement(path) {
-        {
-          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeArguments = null;
-        }
+        path.node.typeArguments = null;
       },
 
       TaggedTemplateExpression(path) {
-        {
-          // @ts-expect-error(Babel 7 vs Babel 8) Removed in Babel 8
-          path.node.typeArguments = null;
-        }
+        path.node.typeArguments = null;
       },
     },
   };
@@ -737,14 +722,13 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
 
     // "React" or the JSX pragma is referenced as a value if there are any JSX elements/fragments in the code.
     let sourceFileHasJsx = false;
-    {
-      programPath.traverse({
-        "JSXElement|JSXFragment"(path) {
-          sourceFileHasJsx = true;
-          path.stop();
-        },
-      });
-    }
+
+    programPath.traverse({
+      "JSXElement|JSXFragment"(path) {
+        sourceFileHasJsx = true;
+        path.stop();
+      },
+    });
 
     return !sourceFileHasJsx;
   }
