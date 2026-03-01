@@ -68,12 +68,9 @@ function wrapDynamics(path, dynamics) {
 
   const prevId = t.identifier("_p$");
 
-  /** @type {t.VariableDeclarator[]} */
-  const declarations = [];
-  /** @type {t.ExpressionStatement[]} */
-  const statements = [];
-  /** @type {t.Identifier[]} */
-  const properties = [];
+  const declarations: t.VariableDeclarator[] = [];
+  const statements: t.ExpressionStatement[] = [];
+  const properties: t.Identifier[] = [];
 
   dynamics.forEach(({ elem, key, value }, index) => {
     const varIdent = path.scope.generateUidIdentifier("v$");

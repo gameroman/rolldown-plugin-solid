@@ -36,13 +36,13 @@ export function registerImportMethod(path, name, moduleName?) {
     (path.scope.getProgramParent().data.imports = new Map());
   moduleName = moduleName || getConfig(path).moduleName;
   if (!imports.has(`${moduleName}:${name}`)) {
-    let id = addNamed(path, name, moduleName, {
+    const id = addNamed(path, name, moduleName, {
       nameHint: `_$${name}`,
     });
     imports.set(`${moduleName}:${name}`, id);
     return id;
   } else {
-    let iden = imports.get(`${moduleName}:${name}`);
+    const iden = imports.get(`${moduleName}:${name}`);
     // the cloning is required to play well with babel-preset-env which is
     // transpiling import as we add them and using the same identifier causes
     // problems with the multiple identifiers of the same thing
@@ -58,17 +58,6 @@ function jsxElementNameToString(node) {
     return node.name;
   }
   return `${node.namespace.name}:${node.name.name}`;
-}
-
-function tagNameToIdentifier(name) {
-  const parts = name.split(".");
-  if (parts.length === 1) return t.identifier(name);
-  let part;
-  let base = t.identifier(parts.shift());
-  while ((part = parts.shift())) {
-    base = t.memberExpression(base, t.identifier(part));
-  }
-  return base;
 }
 
 export function getTagName(tag) {

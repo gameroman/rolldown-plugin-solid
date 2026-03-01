@@ -3,7 +3,7 @@ import { declare } from "@babel/helper-plugin-utils";
 import type { NodePath } from "@babel/traverse";
 import * as t from "@babel/types";
 
-const pluginRewriteTSImports = declare(({ types: t, template }) => {
+const pluginRewriteTSImports = declare(({ template }) => {
   function maybeReplace(
     source: t.ArgumentPlaceholder | t.Expression | null | undefined,
     path: NodePath,

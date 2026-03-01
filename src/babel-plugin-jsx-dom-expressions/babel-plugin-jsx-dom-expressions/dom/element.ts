@@ -59,36 +59,38 @@ const alwaysClose = [
 ];
 
 export function transformElement(path, info) {
-  let tagName = getTagName(path.node),
-    config = getConfig(path),
-    wrapSVG = info.topLevel && tagName != "svg" && SVGElements.has(tagName),
-    voidTag = VoidElements.indexOf(tagName) > -1,
-    isCustomElement =
-      tagName.indexOf("-") > -1 ||
-      path
-        .get("openingElement")
-        .get("attributes")
-        .some((a) => a.node?.name?.name === "is" || a.name?.name === "is"),
-    isImportNode =
-      (tagName === "img" || tagName === "iframe") &&
-      path
-        .get("openingElement")
-        .get("attributes")
-        .some((a) => a.node.name?.name === "loading"),
-    results = {
-      template: `<${tagName}`,
-      templateWithClosingTags: `<${tagName}`,
-      declarations: [],
-      exprs: [],
-      dynamics: [],
-      postExprs: [],
-      isSVG: wrapSVG,
-      hasCustomElement: isCustomElement,
-      isImportNode,
-      tagName,
-      renderer: "dom",
-      skipTemplate: false,
-    };
+  const tagName = getTagName(path.node);
+  const config = getConfig(path);
+  const wrapSVG =
+    info.topLevel && tagName !== "svg" && SVGElements.has(tagName);
+  const voidTag = VoidElements.indexOf(tagName) > -1;
+  const isCustomElement =
+    tagName.indexOf("-") > -1 ||
+    path
+      .get("openingElement")
+      .get("attributes")
+      .some((a) => a.node?.name?.name === "is" || a.name?.name === "is");
+  const isImportNode =
+    (tagName === "img" || tagName === "iframe") &&
+    path
+      .get("openingElement")
+      .get("attributes")
+      .some((a) => a.node.name?.name === "loading");
+
+  const results = {
+    template: `<${tagName}`,
+    templateWithClosingTags: `<${tagName}`,
+    declarations: [],
+    exprs: [],
+    dynamics: [],
+    postExprs: [],
+    isSVG: wrapSVG,
+    hasCustomElement: isCustomElement,
+    isImportNode,
+    tagName,
+    renderer: "dom",
+    skipTemplate: false,
+  };
 
   path
     .get("openingElement")
