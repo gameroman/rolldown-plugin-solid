@@ -134,13 +134,11 @@ function getContextId(count) {
 	const num = String(count), len = num.length - 1;
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
-const SuspenseContext = createContext();
-
+createContext();
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
 var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables, rt = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -168,20 +166,6 @@ var rt = {
 	[vr]: 10,
 	[P$1]: 11,
 	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
 }, nt = {
 	2: "!0",
 	3: "!1",
@@ -191,16 +175,8 @@ var rt = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
+}, o$1 = void 0;
+Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 var Ce = {
 	0: "Error",
 	1: "EvalError",
@@ -209,15 +185,8 @@ var Ce = {
 	4: "SyntaxError",
 	5: "TypeError",
 	6: "URIError"
-}, at = {
-	0: Error,
-	1: EvalError,
-	2: RangeError,
-	3: ReferenceError,
-	4: SyntaxError,
-	5: TypeError,
-	6: URIError
 };
+Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -402,14 +371,6 @@ var bn = (e, r) => Nn(e), Se = class extends Error {
 	constructor(r) {
 		super("parsing", r);
 	}
-}, Ir = class extends Se {
-	constructor(r) {
-		super("serialization", r);
-	}
-}, He = class extends Se {
-	constructor(r) {
-		super("deserialization", r);
-	}
 };
 function _(e) {
 	return \`Seroval Error (specific: \${e})\`;
@@ -427,32 +388,19 @@ var x$1 = class extends Error {
 	constructor(r) {
 		super(_(3));
 	}
-}, V = class extends Error {
-	constructor(r) {
-		super(_(4));
-	}
-}, Re = class extends Error {
+};
+Error;
+var Re = class extends Error {
 	constructor(t) {
 		super(_(5));
 		this.value = t;
 	}
-}, Pe = class extends Error {
-	constructor(r) {
-		super(_(6));
-	}
-}, Je = class extends Error {
-	constructor(r) {
-		super(_(7));
-	}
-}, h$1 = class extends Error {
-	constructor(r) {
-		super(_(8));
-	}
-}, gt = class extends Error {
-	constructor(r) {
-		super(_(9));
-	}
-}, ee = class extends Error {
+};
+Error;
+Error;
+Error;
+Error;
+var ee = class extends Error {
 	constructor(r) {
 		super(_(9));
 	}
@@ -601,7 +549,7 @@ function $e(e) {
 	}
 	return Tr(r, t, n);
 }
-var An = Pr(C);
+Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -636,7 +584,7 @@ function Xe(e) {
 	}
 	return n().catch(() => {}), r;
 }
-var En = xr(v$1, re);
+xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -1556,7 +1504,6 @@ var Sr = class {
 		}
 	}
 };
-
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
@@ -1625,7 +1572,7 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-var B = ni({
+ni({
 	tag: "seroval-plugins/web/Blob",
 	test(e) {
 		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
@@ -1869,7 +1816,7 @@ var l = ni({
 		return new Headers(r.deserialize(e.value));
 	}
 });
-var $ = ni({
+ni({
 	tag: "seroval-plugins/web/ImageData",
 	test(e) {
 		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
@@ -2113,166 +2060,6 @@ var fe = ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
-const booleans = [
-	"allowfullscreen",
-	"async",
-	"alpha",
-	"autofocus",
-	"autoplay",
-	"checked",
-	"controls",
-	"default",
-	"disabled",
-	"formnovalidate",
-	"hidden",
-	"indeterminate",
-	"inert",
-	"ismap",
-	"loop",
-	"multiple",
-	"muted",
-	"nomodule",
-	"novalidate",
-	"open",
-	"playsinline",
-	"readonly",
-	"required",
-	"reversed",
-	"seamless",
-	"selected",
-	"adauctionheaders",
-	"browsingtopics",
-	"credentialless",
-	"defaultchecked",
-	"defaultmuted",
-	"defaultselected",
-	"defer",
-	"disablepictureinpicture",
-	"disableremoteplayback",
-	"preservespitch",
-	"shadowrootclonable",
-	"shadowrootcustomelementregistry",
-	"shadowrootdelegatesfocus",
-	"shadowrootserializable",
-	"sharedstoragewritable"
-];
-const Properties = /* @__PURE__ */ new Set([
-	"className",
-	"value",
-	"readOnly",
-	"noValidate",
-	"formNoValidate",
-	"isMap",
-	"noModule",
-	"playsInline",
-	"adAuctionHeaders",
-	"allowFullscreen",
-	"browsingTopics",
-	"defaultChecked",
-	"defaultMuted",
-	"defaultSelected",
-	"disablePictureInPicture",
-	"disableRemotePlayback",
-	"preservesPitch",
-	"shadowRootClonable",
-	"shadowRootCustomElementRegistry",
-	"shadowRootDelegatesFocus",
-	"shadowRootSerializable",
-	"sharedStorageWritable",
-	...booleans
-]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 const GLOBAL_IDENTIFIER = "_$HY.r";
 function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
@@ -2428,7 +2215,6 @@ function injectScripts(html, scripts, nonce) {
 	if (index > -1) return html.slice(0, index) + tag + html.slice(index);
 	return html + tag;
 }
-
 //#endregion
 //#region tests/fixtures/ssr.tsx
 var _tmpl$ = [
@@ -2457,9 +2243,9 @@ const App = () => {
 	return ssr(_tmpl$5, escape(count()));
 };
 var ssr_default = renderToString(App);
-
 //#endregion
-export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };"
+export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
+"
 `;
 
 exports[`rolldown-plugin-solid dist should transform SSR component 1`] = `
@@ -2596,13 +2382,11 @@ function getContextId(count) {
 	const num = String(count), len = num.length - 1;
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
-const SuspenseContext = createContext();
-
+createContext();
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
 var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables, rt = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -2630,20 +2414,6 @@ var rt = {
 	[vr]: 10,
 	[P$1]: 11,
 	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
 }, nt = {
 	2: "!0",
 	3: "!1",
@@ -2653,16 +2423,8 @@ var rt = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
+}, o$1 = void 0;
+Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 var Ce = {
 	0: "Error",
 	1: "EvalError",
@@ -2671,15 +2433,8 @@ var Ce = {
 	4: "SyntaxError",
 	5: "TypeError",
 	6: "URIError"
-}, at = {
-	0: Error,
-	1: EvalError,
-	2: RangeError,
-	3: ReferenceError,
-	4: SyntaxError,
-	5: TypeError,
-	6: URIError
 };
+Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -2864,14 +2619,6 @@ var bn = (e, r) => Nn(e), Se = class extends Error {
 	constructor(r) {
 		super("parsing", r);
 	}
-}, Ir = class extends Se {
-	constructor(r) {
-		super("serialization", r);
-	}
-}, He = class extends Se {
-	constructor(r) {
-		super("deserialization", r);
-	}
 };
 function _(e) {
 	return \`Seroval Error (specific: \${e})\`;
@@ -2889,32 +2636,19 @@ var x$1 = class extends Error {
 	constructor(r) {
 		super(_(3));
 	}
-}, V = class extends Error {
-	constructor(r) {
-		super(_(4));
-	}
-}, Re = class extends Error {
+};
+Error;
+var Re = class extends Error {
 	constructor(t) {
 		super(_(5));
 		this.value = t;
 	}
-}, Pe = class extends Error {
-	constructor(r) {
-		super(_(6));
-	}
-}, Je = class extends Error {
-	constructor(r) {
-		super(_(7));
-	}
-}, h$1 = class extends Error {
-	constructor(r) {
-		super(_(8));
-	}
-}, gt = class extends Error {
-	constructor(r) {
-		super(_(9));
-	}
-}, ee = class extends Error {
+};
+Error;
+Error;
+Error;
+Error;
+var ee = class extends Error {
 	constructor(r) {
 		super(_(9));
 	}
@@ -3063,7 +2797,7 @@ function $e(e) {
 	}
 	return Tr(r, t, n);
 }
-var An = Pr(C);
+Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -3098,7 +2832,7 @@ function Xe(e) {
 	}
 	return n().catch(() => {}), r;
 }
-var En = xr(v$1, re);
+xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -4018,7 +3752,6 @@ var Sr = class {
 		}
 	}
 };
-
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
@@ -4087,7 +3820,7 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-var B = ni({
+ni({
 	tag: "seroval-plugins/web/Blob",
 	test(e) {
 		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
@@ -4331,7 +4064,7 @@ var l = ni({
 		return new Headers(r.deserialize(e.value));
 	}
 });
-var $ = ni({
+ni({
 	tag: "seroval-plugins/web/ImageData",
 	test(e) {
 		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
@@ -4575,166 +4308,6 @@ var fe = ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
-const booleans = [
-	"allowfullscreen",
-	"async",
-	"alpha",
-	"autofocus",
-	"autoplay",
-	"checked",
-	"controls",
-	"default",
-	"disabled",
-	"formnovalidate",
-	"hidden",
-	"indeterminate",
-	"inert",
-	"ismap",
-	"loop",
-	"multiple",
-	"muted",
-	"nomodule",
-	"novalidate",
-	"open",
-	"playsinline",
-	"readonly",
-	"required",
-	"reversed",
-	"seamless",
-	"selected",
-	"adauctionheaders",
-	"browsingtopics",
-	"credentialless",
-	"defaultchecked",
-	"defaultmuted",
-	"defaultselected",
-	"defer",
-	"disablepictureinpicture",
-	"disableremoteplayback",
-	"preservespitch",
-	"shadowrootclonable",
-	"shadowrootcustomelementregistry",
-	"shadowrootdelegatesfocus",
-	"shadowrootserializable",
-	"sharedstoragewritable"
-];
-const Properties = /* @__PURE__ */ new Set([
-	"className",
-	"value",
-	"readOnly",
-	"noValidate",
-	"formNoValidate",
-	"isMap",
-	"noModule",
-	"playsInline",
-	"adAuctionHeaders",
-	"allowFullscreen",
-	"browsingTopics",
-	"defaultChecked",
-	"defaultMuted",
-	"defaultSelected",
-	"disablePictureInPicture",
-	"disableRemotePlayback",
-	"preservesPitch",
-	"shadowRootClonable",
-	"shadowRootCustomElementRegistry",
-	"shadowRootDelegatesFocus",
-	"shadowRootSerializable",
-	"sharedStorageWritable",
-	...booleans
-]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 const GLOBAL_IDENTIFIER = "_$HY.r";
 function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
@@ -4890,7 +4463,6 @@ function injectScripts(html, scripts, nonce) {
 	if (index > -1) return html.slice(0, index) + tag + html.slice(index);
 	return html + tag;
 }
-
 //#endregion
 //#region tests/fixtures/ssr.tsx
 var _tmpl$ = [
@@ -4919,9 +4491,9 @@ const App = () => {
 	return ssr(_tmpl$5, escape(count()));
 };
 var ssr_default = renderToString(App);
-
 //#endregion
-export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };"
+export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
+"
 `;
 
 exports[`rolldown-plugin-solid src should transform SSR with hydratable option 1`] = `
@@ -5058,13 +4630,11 @@ function getContextId(count) {
 	const num = String(count), len = num.length - 1;
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
-const SuspenseContext = createContext();
-
+createContext();
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
 var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables, rt = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -5092,20 +4662,6 @@ var rt = {
 	[vr]: 10,
 	[P$1]: 11,
 	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
 }, nt = {
 	2: "!0",
 	3: "!1",
@@ -5115,16 +4671,8 @@ var rt = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
+}, o$1 = void 0;
+Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 var Ce = {
 	0: "Error",
 	1: "EvalError",
@@ -5133,15 +4681,8 @@ var Ce = {
 	4: "SyntaxError",
 	5: "TypeError",
 	6: "URIError"
-}, at = {
-	0: Error,
-	1: EvalError,
-	2: RangeError,
-	3: ReferenceError,
-	4: SyntaxError,
-	5: TypeError,
-	6: URIError
 };
+Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -5326,14 +4867,6 @@ var bn = (e, r) => Nn(e), Se = class extends Error {
 	constructor(r) {
 		super("parsing", r);
 	}
-}, Ir = class extends Se {
-	constructor(r) {
-		super("serialization", r);
-	}
-}, He = class extends Se {
-	constructor(r) {
-		super("deserialization", r);
-	}
 };
 function _(e) {
 	return \`Seroval Error (specific: \${e})\`;
@@ -5351,32 +4884,19 @@ var x$1 = class extends Error {
 	constructor(r) {
 		super(_(3));
 	}
-}, V = class extends Error {
-	constructor(r) {
-		super(_(4));
-	}
-}, Re = class extends Error {
+};
+Error;
+var Re = class extends Error {
 	constructor(t) {
 		super(_(5));
 		this.value = t;
 	}
-}, Pe = class extends Error {
-	constructor(r) {
-		super(_(6));
-	}
-}, Je = class extends Error {
-	constructor(r) {
-		super(_(7));
-	}
-}, h$1 = class extends Error {
-	constructor(r) {
-		super(_(8));
-	}
-}, gt = class extends Error {
-	constructor(r) {
-		super(_(9));
-	}
-}, ee = class extends Error {
+};
+Error;
+Error;
+Error;
+Error;
+var ee = class extends Error {
 	constructor(r) {
 		super(_(9));
 	}
@@ -5525,7 +5045,7 @@ function $e(e) {
 	}
 	return Tr(r, t, n);
 }
-var An = Pr(C);
+Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -5560,7 +5080,7 @@ function Xe(e) {
 	}
 	return n().catch(() => {}), r;
 }
-var En = xr(v$1, re);
+xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -6480,7 +6000,6 @@ var Sr = class {
 		}
 	}
 };
-
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
@@ -6549,7 +6068,7 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-var B = ni({
+ni({
 	tag: "seroval-plugins/web/Blob",
 	test(e) {
 		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
@@ -6793,7 +6312,7 @@ var l = ni({
 		return new Headers(r.deserialize(e.value));
 	}
 });
-var $ = ni({
+ni({
 	tag: "seroval-plugins/web/ImageData",
 	test(e) {
 		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
@@ -7037,166 +6556,6 @@ var fe = ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
-const booleans = [
-	"allowfullscreen",
-	"async",
-	"alpha",
-	"autofocus",
-	"autoplay",
-	"checked",
-	"controls",
-	"default",
-	"disabled",
-	"formnovalidate",
-	"hidden",
-	"indeterminate",
-	"inert",
-	"ismap",
-	"loop",
-	"multiple",
-	"muted",
-	"nomodule",
-	"novalidate",
-	"open",
-	"playsinline",
-	"readonly",
-	"required",
-	"reversed",
-	"seamless",
-	"selected",
-	"adauctionheaders",
-	"browsingtopics",
-	"credentialless",
-	"defaultchecked",
-	"defaultmuted",
-	"defaultselected",
-	"defer",
-	"disablepictureinpicture",
-	"disableremoteplayback",
-	"preservespitch",
-	"shadowrootclonable",
-	"shadowrootcustomelementregistry",
-	"shadowrootdelegatesfocus",
-	"shadowrootserializable",
-	"sharedstoragewritable"
-];
-const Properties = /* @__PURE__ */ new Set([
-	"className",
-	"value",
-	"readOnly",
-	"noValidate",
-	"formNoValidate",
-	"isMap",
-	"noModule",
-	"playsInline",
-	"adAuctionHeaders",
-	"allowFullscreen",
-	"browsingTopics",
-	"defaultChecked",
-	"defaultMuted",
-	"defaultSelected",
-	"disablePictureInPicture",
-	"disableRemotePlayback",
-	"preservesPitch",
-	"shadowRootClonable",
-	"shadowRootCustomElementRegistry",
-	"shadowRootDelegatesFocus",
-	"shadowRootSerializable",
-	"sharedStorageWritable",
-	...booleans
-]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 const GLOBAL_IDENTIFIER = "_$HY.r";
 function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
@@ -7360,7 +6719,6 @@ function injectScripts(html, scripts, nonce) {
 	if (index > -1) return html.slice(0, index) + tag + html.slice(index);
 	return html + tag;
 }
-
 //#endregion
 //#region tests/fixtures/ssr.tsx
 var _tmpl$ = [
@@ -7398,9 +6756,9 @@ const App = () => {
 	return ssr(_tmpl$5, ssrHydrationKey(), escape(count()));
 };
 var ssr_default = renderToString(App);
-
 //#endregion
-export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };"
+export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
+"
 `;
 
 exports[`rolldown-plugin-solid dist should transform SSR with hydratable option 1`] = `
@@ -7537,13 +6895,11 @@ function getContextId(count) {
 	const num = String(count), len = num.length - 1;
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
-const SuspenseContext = createContext();
-
+createContext();
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
 var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
+var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables, rt = {
 	0: "Symbol.asyncIterator",
 	1: "Symbol.hasInstance",
 	2: "Symbol.isConcatSpreadable",
@@ -7571,20 +6927,6 @@ var rt = {
 	[vr]: 10,
 	[P$1]: 11,
 	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
 }, nt = {
 	2: "!0",
 	3: "!1",
@@ -7594,16 +6936,8 @@ var rt = {
 	5: "1/0",
 	6: "-1/0",
 	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
+}, o$1 = void 0;
+Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 var Ce = {
 	0: "Error",
 	1: "EvalError",
@@ -7612,15 +6946,8 @@ var Ce = {
 	4: "SyntaxError",
 	5: "TypeError",
 	6: "URIError"
-}, at = {
-	0: Error,
-	1: EvalError,
-	2: RangeError,
-	3: ReferenceError,
-	4: SyntaxError,
-	5: TypeError,
-	6: URIError
 };
+Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -7805,14 +7132,6 @@ var bn = (e, r) => Nn(e), Se = class extends Error {
 	constructor(r) {
 		super("parsing", r);
 	}
-}, Ir = class extends Se {
-	constructor(r) {
-		super("serialization", r);
-	}
-}, He = class extends Se {
-	constructor(r) {
-		super("deserialization", r);
-	}
 };
 function _(e) {
 	return \`Seroval Error (specific: \${e})\`;
@@ -7830,32 +7149,19 @@ var x$1 = class extends Error {
 	constructor(r) {
 		super(_(3));
 	}
-}, V = class extends Error {
-	constructor(r) {
-		super(_(4));
-	}
-}, Re = class extends Error {
+};
+Error;
+var Re = class extends Error {
 	constructor(t) {
 		super(_(5));
 		this.value = t;
 	}
-}, Pe = class extends Error {
-	constructor(r) {
-		super(_(6));
-	}
-}, Je = class extends Error {
-	constructor(r) {
-		super(_(7));
-	}
-}, h$1 = class extends Error {
-	constructor(r) {
-		super(_(8));
-	}
-}, gt = class extends Error {
-	constructor(r) {
-		super(_(9));
-	}
-}, ee = class extends Error {
+};
+Error;
+Error;
+Error;
+Error;
+var ee = class extends Error {
 	constructor(r) {
 		super(_(9));
 	}
@@ -8004,7 +7310,7 @@ function $e(e) {
 	}
 	return Tr(r, t, n);
 }
-var An = Pr(C);
+Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -8039,7 +7345,7 @@ function Xe(e) {
 	}
 	return n().catch(() => {}), r;
 }
-var En = xr(v$1, re);
+xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -8959,7 +8265,6 @@ var Sr = class {
 		}
 	}
 };
-
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
@@ -9028,7 +8333,7 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-var B = ni({
+ni({
 	tag: "seroval-plugins/web/Blob",
 	test(e) {
 		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
@@ -9272,7 +8577,7 @@ var l = ni({
 		return new Headers(r.deserialize(e.value));
 	}
 });
-var $ = ni({
+ni({
 	tag: "seroval-plugins/web/ImageData",
 	test(e) {
 		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
@@ -9516,166 +8821,6 @@ var fe = ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
-const booleans = [
-	"allowfullscreen",
-	"async",
-	"alpha",
-	"autofocus",
-	"autoplay",
-	"checked",
-	"controls",
-	"default",
-	"disabled",
-	"formnovalidate",
-	"hidden",
-	"indeterminate",
-	"inert",
-	"ismap",
-	"loop",
-	"multiple",
-	"muted",
-	"nomodule",
-	"novalidate",
-	"open",
-	"playsinline",
-	"readonly",
-	"required",
-	"reversed",
-	"seamless",
-	"selected",
-	"adauctionheaders",
-	"browsingtopics",
-	"credentialless",
-	"defaultchecked",
-	"defaultmuted",
-	"defaultselected",
-	"defer",
-	"disablepictureinpicture",
-	"disableremoteplayback",
-	"preservespitch",
-	"shadowrootclonable",
-	"shadowrootcustomelementregistry",
-	"shadowrootdelegatesfocus",
-	"shadowrootserializable",
-	"sharedstoragewritable"
-];
-const Properties = /* @__PURE__ */ new Set([
-	"className",
-	"value",
-	"readOnly",
-	"noValidate",
-	"formNoValidate",
-	"isMap",
-	"noModule",
-	"playsInline",
-	"adAuctionHeaders",
-	"allowFullscreen",
-	"browsingTopics",
-	"defaultChecked",
-	"defaultMuted",
-	"defaultSelected",
-	"disablePictureInPicture",
-	"disableRemotePlayback",
-	"preservesPitch",
-	"shadowRootClonable",
-	"shadowRootCustomElementRegistry",
-	"shadowRootDelegatesFocus",
-	"shadowRootSerializable",
-	"sharedStorageWritable",
-	...booleans
-]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
 const GLOBAL_IDENTIFIER = "_$HY.r";
 function createSerializer({ onData, onDone, scopeId, onError, plugins: customPlugins }) {
@@ -9839,7 +8984,6 @@ function injectScripts(html, scripts, nonce) {
 	if (index > -1) return html.slice(0, index) + tag + html.slice(index);
 	return html + tag;
 }
-
 //#endregion
 //#region tests/fixtures/ssr.tsx
 var _tmpl$ = [
@@ -9877,7 +9021,7 @@ const App = () => {
 	return ssr(_tmpl$5, ssrHydrationKey(), escape(count()));
 };
 var ssr_default = renderToString(App);
-
 //#endregion
-export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };"
+export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
+"
 `;

@@ -23,7 +23,6 @@ function setHydrateContext(context) {
 }
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
-let ERROR = null;
 let runEffects = runQueue;
 const STALE = 1;
 const PENDING = 2;
@@ -35,8 +34,6 @@ const UNOWNED = {
 };
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -57,9 +54,7 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createEffect(fn, value, options) {
 	runEffects = runUserEffects;
@@ -72,49 +67,14 @@ function batch(fn) {
 	return runUpdates(fn, false);
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
 	}
-}
-function onCleanup(fn) {
-	if (Owner === null);
-	else if (Owner.cleanups === null) Owner.cleanups = [fn];
-	else Owner.cleanups.push(fn);
-	return fn;
-}
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
 }
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
 function useContext(context) {
@@ -251,17 +211,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -308,8 +257,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -352,23 +300,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function runUserEffects(queue) {
 	let i, userLength = 0;
@@ -459,117 +390,9 @@ function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
 }
-function runErrors(err, fns, owner) {
-	try {
-		for (const f of fns) f(err);
-	} catch (e) {
-		handleError(e, owner && owner.owner || null);
-	}
-}
 function handleError(err, owner = Owner) {
-	const fns = ERROR && owner && owner.context && owner.context[ERROR];
-	const error = castError(err);
-	if (!fns) throw error;
-	if (Effects) Effects.push({
-		fn() {
-			runErrors(error, fns, owner);
-		},
-		state: STALE
-	});
-	else runErrors(error, fns, owner);
+	throw castError(err);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -811,7 +634,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-
 //#endregion
 //#region tests/fixtures/batch.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div class=batch-example><h2>Batch Example</h2><div class=state-display><p>Count: </p><p>Double: </p><p>Name: </p><p>Greeting: </p></div><div class=controls><button>Update Without Batch</button><button>Update With Batch</button><button>Nested Batch Example</button><button>Complex Update</button></div><div class=info><p>Check console to see the difference in effect triggers!</p><p>Without batch: Each signal update triggers effects separately</p><p>With batch: All updates trigger effects together once\`);
@@ -895,9 +717,9 @@ const BatchExample = () => {
 	})();
 };
 delegateEvents(["click"]);
-
 //#endregion
-export { BatchExample as default };"
+export { BatchExample as default };
+"
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with batch 1`] = `
@@ -923,7 +745,6 @@ function setHydrateContext(context) {
 }
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
-let ERROR = null;
 let runEffects = runQueue;
 const STALE = 1;
 const PENDING = 2;
@@ -935,8 +756,6 @@ const UNOWNED = {
 };
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -957,9 +776,7 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createEffect(fn, value, options) {
 	runEffects = runUserEffects;
@@ -972,49 +789,14 @@ function batch(fn) {
 	return runUpdates(fn, false);
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
 	}
-}
-function onCleanup(fn) {
-	if (Owner === null);
-	else if (Owner.cleanups === null) Owner.cleanups = [fn];
-	else Owner.cleanups.push(fn);
-	return fn;
-}
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
 }
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
 function useContext(context) {
@@ -1151,17 +933,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -1208,8 +979,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -1252,23 +1022,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function runUserEffects(queue) {
 	let i, userLength = 0;
@@ -1359,117 +1112,9 @@ function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
 }
-function runErrors(err, fns, owner) {
-	try {
-		for (const f of fns) f(err);
-	} catch (e) {
-		handleError(e, owner && owner.owner || null);
-	}
-}
 function handleError(err, owner = Owner) {
-	const fns = ERROR && owner && owner.context && owner.context[ERROR];
-	const error = castError(err);
-	if (!fns) throw error;
-	if (Effects) Effects.push({
-		fn() {
-			runErrors(error, fns, owner);
-		},
-		state: STALE
-	});
-	else runErrors(error, fns, owner);
+	throw castError(err);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -1711,7 +1356,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-
 //#endregion
 //#region tests/fixtures/batch.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div class=batch-example><h2>Batch Example</h2><div class=state-display><p>Count: </p><p>Double: </p><p>Name: </p><p>Greeting: </p></div><div class=controls><button>Update Without Batch</button><button>Update With Batch</button><button>Nested Batch Example</button><button>Complex Update</button></div><div class=info><p>Check console to see the difference in effect triggers!</p><p>Without batch: Each signal update triggers effects separately</p><p>With batch: All updates trigger effects together once\`);
@@ -1795,7 +1439,7 @@ const BatchExample = () => {
 	})();
 };
 delegateEvents(["click"]);
-
 //#endregion
-export { BatchExample as default };"
+export { BatchExample as default };
+"
 `;

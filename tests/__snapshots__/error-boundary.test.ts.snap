@@ -18,16 +18,6 @@ function getContextId(count) {
 	const num = String(count), len = num.length - 1;
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
-function setHydrateContext(context) {
-	sharedConfig.context = context;
-}
-function nextHydrateContext() {
-	return {
-		...sharedConfig.context,
-		id: sharedConfig.getNextContextId(),
-		count: 0
-	};
-}
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
 let ERROR = null;
@@ -42,8 +32,6 @@ const UNOWNED = {
 };
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -64,9 +52,7 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -74,18 +60,14 @@ function createMemo(fn, value, options) {
 	c.observers = null;
 	c.observerSlots = null;
 	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
+	updateComputation(c);
 	return readSignal.bind(c);
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
@@ -113,36 +95,7 @@ function catchError(fn, handler) {
 		Owner = Owner.owner;
 	}
 }
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
-}
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
-let SuspenseContext;
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -272,17 +225,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -329,8 +271,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -373,23 +314,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function lookUpstream(node, ignore) {
 	const runningTransition = Transition && Transition.running;
@@ -477,17 +401,7 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-let hydrationEnabled = false;
 function createComponent(Comp, props) {
-	if (hydrationEnabled) {
-		if (sharedConfig.context) {
-			const c = sharedConfig.context;
-			setHydrateContext(nextHydrateContext());
-			const r = untrack(() => Comp(props || {}));
-			setHydrateContext(c);
-			return r;
-		}
-	}
 	return untrack(() => Comp(props || {}));
 }
 let Errors;
@@ -507,98 +421,6 @@ function ErrorBoundary(props) {
 		return catchError(() => props.children, setErrored);
 	}, void 0, void 0);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -850,7 +672,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-
 //#endregion
 //#region tests/fixtures/error-boundary.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><p>This component works fine</p><button>Trigger Error\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Result: </p><button>Trigger Async Error\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Deep component level \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Nested Error Boundary</h3><button>Increase Level (Current: <!>)\`), _tmpl$5 = /* @__PURE__ */ template(\`<div><p>Inner Error Boundary: </p><button>Reset Inner\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>Error Boundary Demo\`), _tmpl$7 = /* @__PURE__ */ template(\`<div><h3>Something went wrong!</h3><p>Error: </p><button>Try Again\`);
@@ -935,9 +756,9 @@ const ErrorBoundaryDemo = () => {
 	})();
 };
 delegateEvents(["click"]);
-
 //#endregion
-export { ErrorBoundaryDemo as default };"
+export { ErrorBoundaryDemo as default };
+"
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with ErrorBoundary 1`] = `
@@ -958,16 +779,6 @@ function getContextId(count) {
 	const num = String(count), len = num.length - 1;
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
-function setHydrateContext(context) {
-	sharedConfig.context = context;
-}
-function nextHydrateContext() {
-	return {
-		...sharedConfig.context,
-		id: sharedConfig.getNextContextId(),
-		count: 0
-	};
-}
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
 let ERROR = null;
@@ -982,8 +793,6 @@ const UNOWNED = {
 };
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -1004,9 +813,7 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -1014,18 +821,14 @@ function createMemo(fn, value, options) {
 	c.observers = null;
 	c.observerSlots = null;
 	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
+	updateComputation(c);
 	return readSignal.bind(c);
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
@@ -1053,36 +856,7 @@ function catchError(fn, handler) {
 		Owner = Owner.owner;
 	}
 }
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
-}
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
-let SuspenseContext;
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -1212,17 +986,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -1269,8 +1032,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -1313,23 +1075,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function lookUpstream(node, ignore) {
 	const runningTransition = Transition && Transition.running;
@@ -1417,17 +1162,7 @@ function handleError(err, owner = Owner) {
 	});
 	else runErrors(error, fns, owner);
 }
-let hydrationEnabled = false;
 function createComponent(Comp, props) {
-	if (hydrationEnabled) {
-		if (sharedConfig.context) {
-			const c = sharedConfig.context;
-			setHydrateContext(nextHydrateContext());
-			const r = untrack(() => Comp(props || {}));
-			setHydrateContext(c);
-			return r;
-		}
-	}
 	return untrack(() => Comp(props || {}));
 }
 let Errors;
@@ -1447,98 +1182,6 @@ function ErrorBoundary(props) {
 		return catchError(() => props.children, setErrored);
 	}, void 0, void 0);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
 	while (aStart < aEnd || bStart < bEnd) {
@@ -1790,7 +1433,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-
 //#endregion
 //#region tests/fixtures/error-boundary.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><p>This component works fine</p><button>Trigger Error\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Result: </p><button>Trigger Async Error\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Deep component level \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Nested Error Boundary</h3><button>Increase Level (Current: <!>)\`), _tmpl$5 = /* @__PURE__ */ template(\`<div><p>Inner Error Boundary: </p><button>Reset Inner\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>Error Boundary Demo\`), _tmpl$7 = /* @__PURE__ */ template(\`<div><h3>Something went wrong!</h3><p>Error: </p><button>Try Again\`);
@@ -1875,7 +1517,7 @@ const ErrorBoundaryDemo = () => {
 	})();
 };
 delegateEvents(["click"]);
-
 //#endregion
-export { ErrorBoundaryDemo as default };"
+export { ErrorBoundaryDemo as default };
+"
 `;

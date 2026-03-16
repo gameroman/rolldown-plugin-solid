@@ -20,7 +20,6 @@ function getContextId(count) {
 }
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
-let ERROR = null;
 let runEffects = runQueue;
 const STALE = 1;
 const PENDING = 2;
@@ -33,8 +32,6 @@ const UNOWNED = {
 const NO_INIT = {};
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -55,14 +52,10 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createComputed(fn, value, options) {
-	const c = createComputation(fn, value, true, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, true, STALE));
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -70,10 +63,7 @@ function createMemo(fn, value, options) {
 	c.observers = null;
 	c.observerSlots = null;
 	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
+	updateComputation(c);
 	return readSignal.bind(c);
 }
 function isPromise(v) {
@@ -205,21 +195,14 @@ function createResource(pSource, pFetcher, pOptions) {
 	}];
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
 	}
-}
-function onCleanup(fn) {
-	if (Owner === null);
-	else if (Owner.cleanups === null) Owner.cleanups = [fn];
-	else Owner.cleanups.push(fn);
-	return fn;
 }
 function runWithOwner(o, fn) {
 	const prev = Owner;
@@ -234,34 +217,6 @@ function runWithOwner(o, fn) {
 		Owner = prev;
 		Listener = prevListener;
 	}
-}
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
 }
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
 function useContext(context) {
@@ -398,17 +353,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -455,8 +399,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -499,23 +442,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function lookUpstream(node, ignore) {
 	const runningTransition = Transition && Transition.running;
@@ -584,117 +510,9 @@ function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
 }
-function runErrors(err, fns, owner) {
-	try {
-		for (const f of fns) f(err);
-	} catch (e) {
-		handleError(e, owner && owner.owner || null);
-	}
-}
 function handleError(err, owner = Owner) {
-	const fns = ERROR && owner && owner.context && owner.context[ERROR];
-	const error = castError(err);
-	if (!fns) throw error;
-	if (Effects) Effects.push({
-		fn() {
-			runErrors(error, fns, owner);
-		},
-		state: STALE
-	});
-	else runErrors(error, fns, owner);
+	throw castError(err);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
@@ -878,7 +696,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-
 //#endregion
 //#region tests/fixtures/config-test.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: \`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!>!\`);
@@ -920,9 +737,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-
 //#endregion
-export { App as default };"
+export { App as default };
+"
 `;
 
 exports[`rolldown-plugin-solid dist should transform custom builtIns configuration 1`] = `
@@ -945,7 +762,6 @@ function getContextId(count) {
 }
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
-let ERROR = null;
 let runEffects = runQueue;
 const STALE = 1;
 const PENDING = 2;
@@ -958,8 +774,6 @@ const UNOWNED = {
 const NO_INIT = {};
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -980,14 +794,10 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createComputed(fn, value, options) {
-	const c = createComputation(fn, value, true, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, true, STALE));
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -995,10 +805,7 @@ function createMemo(fn, value, options) {
 	c.observers = null;
 	c.observerSlots = null;
 	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
+	updateComputation(c);
 	return readSignal.bind(c);
 }
 function isPromise(v) {
@@ -1130,21 +937,14 @@ function createResource(pSource, pFetcher, pOptions) {
 	}];
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
 	}
-}
-function onCleanup(fn) {
-	if (Owner === null);
-	else if (Owner.cleanups === null) Owner.cleanups = [fn];
-	else Owner.cleanups.push(fn);
-	return fn;
 }
 function runWithOwner(o, fn) {
 	const prev = Owner;
@@ -1159,34 +959,6 @@ function runWithOwner(o, fn) {
 		Owner = prev;
 		Listener = prevListener;
 	}
-}
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
 }
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
 function useContext(context) {
@@ -1323,17 +1095,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -1380,8 +1141,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -1424,23 +1184,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function lookUpstream(node, ignore) {
 	const runningTransition = Transition && Transition.running;
@@ -1509,117 +1252,9 @@ function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
 }
-function runErrors(err, fns, owner) {
-	try {
-		for (const f of fns) f(err);
-	} catch (e) {
-		handleError(e, owner && owner.owner || null);
-	}
-}
 function handleError(err, owner = Owner) {
-	const fns = ERROR && owner && owner.context && owner.context[ERROR];
-	const error = castError(err);
-	if (!fns) throw error;
-	if (Effects) Effects.push({
-		fn() {
-			runErrors(error, fns, owner);
-		},
-		state: STALE
-	});
-	else runErrors(error, fns, owner);
+	throw castError(err);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
@@ -1803,7 +1438,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-
 //#endregion
 //#region tests/fixtures/config-test.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: \`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!>!\`);
@@ -1845,9 +1479,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-
 //#endregion
-export { App as default };"
+export { App as default };
+"
 `;
 
 exports[`rolldown-plugin-solid src should transform SSR generate mode 1`] = `
@@ -2069,72 +1703,23 @@ function notifySuspense(contexts) {
 		contexts.delete(c);
 	}
 }
-
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
-	0: "Symbol.asyncIterator",
-	1: "Symbol.hasInstance",
-	2: "Symbol.isConcatSpreadable",
-	3: "Symbol.iterator",
-	4: "Symbol.match",
-	5: "Symbol.matchAll",
-	6: "Symbol.replace",
-	7: "Symbol.search",
-	8: "Symbol.species",
-	9: "Symbol.split",
-	10: "Symbol.toPrimitive",
-	11: "Symbol.toStringTag",
-	12: "Symbol.unscopables"
-}, ve = {
-	[v$1]: 0,
-	[mr]: 1,
-	[R]: 2,
-	[C]: 3,
-	[pr]: 4,
-	[dr]: 5,
-	[gr]: 6,
-	[yr]: 7,
-	[Nr]: 8,
-	[br]: 9,
-	[vr]: 10,
-	[P$1]: 11,
-	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
-}, nt = {
-	2: "!0",
-	3: "!1",
-	1: "void 0",
-	0: "null",
-	4: "-0",
-	5: "1/0",
-	6: "-1/0",
-	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator;
+Symbol.hasInstance;
+Symbol.isConcatSpreadable;
+var C = Symbol.iterator;
+Symbol.match;
+Symbol.matchAll;
+Symbol.replace;
+Symbol.search;
+Symbol.species;
+Symbol.split;
+Symbol.toPrimitive;
+Symbol.toStringTag;
+Symbol.unscopables;
+var o$1 = void 0;
+Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -2154,9 +1739,15 @@ function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 function F(e) {
 	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
-var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
-var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
+F(2);
+F(3);
+F(1);
+F(0);
+F(4);
+F(5);
+F(6);
+F(7);
+var U = "__SEROVAL_REFS__", j = /* @__PURE__ */ new Map();
 typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
 	value: j,
 	configurable: !0,
@@ -2178,8 +1769,7 @@ typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
 	writable: !1,
 	enumerable: !1
 });
-var { toString: ys } = Object.prototype;
-var re = () => {
+var { toString: ys } = Object.prototype, re = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -2192,7 +1782,11 @@ var re = () => {
 	e.s(r), e.p.s = 1, e.p.v = r;
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
+};
+re.toString();
+vn.toString();
+Cn.toString();
+var Rr = () => {
 	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g](l);
 	}, i = (l, g, S, d) => {
@@ -2213,7 +1807,9 @@ var re = () => {
 			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
-}, vt = Rr.toString(), Pr = (e) => (r) => () => {
+};
+Rr.toString();
+var Pr = (e) => (r) => () => {
 	let t = 0, n = {
 		[e]: () => n,
 		next: () => {
@@ -2230,7 +1826,9 @@ var re = () => {
 		}
 	};
 	return n;
-}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
+};
+Pr.toString();
+var xr = (e, r) => (t) => () => {
 	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
 		for (; S < d; S++) u[S].s({
 			done: !0,
@@ -2288,23 +1886,25 @@ var re = () => {
 		}
 	};
 	return g;
-}, At = xr.toString(), Or = (e) => {
+};
+xr.toString();
+var Or = (e) => {
 	let r = atob(e), t = r.length, n = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
 	return n.buffer;
-}, Et = Or.toString();
-var An = Pr(C);
+};
+Or.toString();
+Pr(C);
 function te$1() {
 	return Rr();
 }
-var En = xr(v$1, re);
+xr(v$1, re);
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
 function ni(e) {
 	return e;
 }
-var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
-var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
-
+var Eo = () => T, Io = Eo.toString();
+/=>/.test(Io);
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
@@ -2320,7 +1920,8 @@ function D(e) {
 function c(e) {
 	return new Promise(D.bind(e));
 }
-var i = {}, O = ni({
+var i = {};
+ni({
 	tag: "seroval-plugins/web/AbortSignal",
 	extends: [ni({
 		tag: "seroval-plugins/web/AbortControllerFactoryPlugin",
@@ -2373,7 +1974,7 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-var B = ni({
+ni({
 	tag: "seroval-plugins/web/Blob",
 	test(e) {
 		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
@@ -2399,7 +2000,7 @@ function d(e) {
 		composed: e.composed
 	};
 }
-var L = ni({
+ni({
 	tag: "seroval-plugins/web/CustomEvent",
 	test(e) {
 		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
@@ -2431,7 +2032,7 @@ var L = ni({
 		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
 	}
 });
-var q = ni({
+ni({
 	tag: "seroval-plugins/web/DOMException",
 	test(e) {
 		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
@@ -2470,7 +2071,7 @@ function f(e) {
 		composed: e.composed
 	};
 }
-var Y = ni({
+ni({
 	tag: "seroval-plugins/web/Event",
 	test(e) {
 		return typeof Event == "undefined" ? !1 : e instanceof Event;
@@ -2533,7 +2134,8 @@ function y(e) {
 var o = {}, v = (e, r = new FormData(), a = 0, t = e.length, s) => {
 	for (; a < t; a++) s = e[a], r.append(s[0], s[1]);
 	return r;
-}, K = ni({
+};
+ni({
 	tag: "seroval-plugins/web/FormData",
 	extends: [m, ni({
 		tag: "seroval-plugins/web/FormDataFactory",
@@ -2617,7 +2219,7 @@ var l = ni({
 		return new Headers(r.deserialize(e.value));
 	}
 });
-var $ = ni({
+ni({
 	tag: "seroval-plugins/web/ImageData",
 	test(e) {
 		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
@@ -2754,7 +2356,7 @@ function N(e, r) {
 		referrerPolicy: e.referrerPolicy
 	};
 }
-var te = ni({
+ni({
 	tag: "seroval-plugins/web/Request",
 	extends: [p, l],
 	test(e) {
@@ -2788,7 +2390,7 @@ function h(e) {
 		statusText: e.statusText
 	};
 }
-var ne = ni({
+ni({
 	tag: "seroval-plugins/web/Response",
 	extends: [p, l],
 	test(e) {
@@ -2815,7 +2417,7 @@ var ne = ni({
 		return new Response(r.deserialize(e.body), r.deserialize(e.options));
 	}
 });
-var pe = ni({
+ni({
 	tag: "seroval-plugins/web/URL",
 	test(e) {
 		return typeof URL == "undefined" ? !1 : e instanceof URL;
@@ -2838,7 +2440,7 @@ var pe = ni({
 		return new URL(r.deserialize(e.value));
 	}
 });
-var fe = ni({
+ni({
 	tag: "seroval-plugins/web/URLSearchParams",
 	test(e) {
 		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
@@ -2861,167 +2463,7 @@ var fe = ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
-const booleans = [
-	"allowfullscreen",
-	"async",
-	"alpha",
-	"autofocus",
-	"autoplay",
-	"checked",
-	"controls",
-	"default",
-	"disabled",
-	"formnovalidate",
-	"hidden",
-	"indeterminate",
-	"inert",
-	"ismap",
-	"loop",
-	"multiple",
-	"muted",
-	"nomodule",
-	"novalidate",
-	"open",
-	"playsinline",
-	"readonly",
-	"required",
-	"reversed",
-	"seamless",
-	"selected",
-	"adauctionheaders",
-	"browsingtopics",
-	"credentialless",
-	"defaultchecked",
-	"defaultmuted",
-	"defaultselected",
-	"defer",
-	"disablepictureinpicture",
-	"disableremoteplayback",
-	"preservespitch",
-	"shadowrootclonable",
-	"shadowrootcustomelementregistry",
-	"shadowrootdelegatesfocus",
-	"shadowrootserializable",
-	"sharedstoragewritable"
-];
-const Properties = /* @__PURE__ */ new Set([
-	"className",
-	"value",
-	"readOnly",
-	"noValidate",
-	"formNoValidate",
-	"isMap",
-	"noModule",
-	"playsInline",
-	"adAuctionHeaders",
-	"allowFullscreen",
-	"browsingTopics",
-	"defaultChecked",
-	"defaultMuted",
-	"defaultSelected",
-	"disablePictureInPicture",
-	"disableRemotePlayback",
-	"preservesPitch",
-	"shadowRootClonable",
-	"shadowRootCustomElementRegistry",
-	"shadowRootDelegatesFocus",
-	"shadowRootSerializable",
-	"sharedStorageWritable",
-	...booleans
-]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
-const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
+L$1.AggregateError | L$1.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
@@ -3094,7 +2536,6 @@ function resolveSSRNode(node, top) {
 	if (t === "function") return resolveSSRNode(node());
 	return String(node);
 }
-
 //#endregion
 //#region tests/fixtures/config-test.tsx
 var _tmpl$ = [
@@ -3115,9 +2556,9 @@ const App = () => {
 	const [user] = createResource(userId, asyncFetchUser);
 	return ssr(_tmpl$, user.loading && _tmpl$2, user.error && ssr(_tmpl$3, escape(user.error.message)), user() && ssr(_tmpl$4, escape(user()?.name)));
 };
-
 //#endregion
-export { App as default };"
+export { App as default };
+"
 `;
 
 exports[`rolldown-plugin-solid dist should transform SSR generate mode 1`] = `
@@ -3339,72 +2780,23 @@ function notifySuspense(contexts) {
 		contexts.delete(c);
 	}
 }
-
 //#endregion
 //#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
-var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables;
-var rt = {
-	0: "Symbol.asyncIterator",
-	1: "Symbol.hasInstance",
-	2: "Symbol.isConcatSpreadable",
-	3: "Symbol.iterator",
-	4: "Symbol.match",
-	5: "Symbol.matchAll",
-	6: "Symbol.replace",
-	7: "Symbol.search",
-	8: "Symbol.species",
-	9: "Symbol.split",
-	10: "Symbol.toPrimitive",
-	11: "Symbol.toStringTag",
-	12: "Symbol.unscopables"
-}, ve = {
-	[v$1]: 0,
-	[mr]: 1,
-	[R]: 2,
-	[C]: 3,
-	[pr]: 4,
-	[dr]: 5,
-	[gr]: 6,
-	[yr]: 7,
-	[Nr]: 8,
-	[br]: 9,
-	[vr]: 10,
-	[P$1]: 11,
-	[Cr]: 12
-}, tt = {
-	0: v$1,
-	1: mr,
-	2: R,
-	3: C,
-	4: pr,
-	5: dr,
-	6: gr,
-	7: yr,
-	8: Nr,
-	9: br,
-	10: vr,
-	11: P$1,
-	12: Cr
-}, nt = {
-	2: "!0",
-	3: "!1",
-	1: "void 0",
-	0: "null",
-	4: "-0",
-	5: "1/0",
-	6: "-1/0",
-	7: "0/0"
-}, o$1 = void 0, ot = {
-	2: !0,
-	3: !1,
-	1: o$1,
-	0: null,
-	4: -0,
-	5: Number.POSITIVE_INFINITY,
-	6: Number.NEGATIVE_INFINITY,
-	7: NaN
-};
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator;
+Symbol.hasInstance;
+Symbol.isConcatSpreadable;
+var C = Symbol.iterator;
+Symbol.match;
+Symbol.matchAll;
+Symbol.replace;
+Symbol.search;
+Symbol.species;
+Symbol.split;
+Symbol.toPrimitive;
+Symbol.toStringTag;
+Symbol.unscopables;
+var o$1 = void 0;
+Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -3424,9 +2816,15 @@ function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 function F(e) {
 	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-var J = F(2), Z = F(3), Ae = F(1), Ee = F(0), st = F(4), it = F(5), ut = F(6), lt = F(7);
-var U = "__SEROVAL_REFS__", ce = "$R", Ie = \`self.\${ce}\`;
-var Ar = /* @__PURE__ */ new Map(), j = /* @__PURE__ */ new Map();
+F(2);
+F(3);
+F(1);
+F(0);
+F(4);
+F(5);
+F(6);
+F(7);
+var U = "__SEROVAL_REFS__", j = /* @__PURE__ */ new Map();
 typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
 	value: j,
 	configurable: !0,
@@ -3448,8 +2846,7 @@ typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
 	writable: !1,
 	enumerable: !1
 });
-var { toString: ys } = Object.prototype;
-var re = () => {
+var { toString: ys } = Object.prototype, re = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -3462,7 +2859,11 @@ var re = () => {
 	e.s(r), e.p.s = 1, e.p.v = r;
 }, Cn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
-}, yt = re.toString(), Nt = vn.toString(), bt = Cn.toString(), Rr = () => {
+};
+re.toString();
+vn.toString();
+Cn.toString();
+var Rr = () => {
 	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g](l);
 	}, i = (l, g, S, d) => {
@@ -3483,7 +2884,9 @@ var re = () => {
 			t && (e.push(l), s(l, "return"), t = !1, n = !0, r.length = 0);
 		}
 	};
-}, vt = Rr.toString(), Pr = (e) => (r) => () => {
+};
+Rr.toString();
+var Pr = (e) => (r) => () => {
 	let t = 0, n = {
 		[e]: () => n,
 		next: () => {
@@ -3500,7 +2903,9 @@ var re = () => {
 		}
 	};
 	return n;
-}, Ct = Pr.toString(), xr = (e, r) => (t) => () => {
+};
+Pr.toString();
+var xr = (e, r) => (t) => () => {
 	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
 		for (; S < d; S++) u[S].s({
 			done: !0,
@@ -3558,23 +2963,25 @@ var re = () => {
 		}
 	};
 	return g;
-}, At = xr.toString(), Or = (e) => {
+};
+xr.toString();
+var Or = (e) => {
 	let r = atob(e), t = r.length, n = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
 	return n.buffer;
-}, Et = Or.toString();
-var An = Pr(C);
+};
+Or.toString();
+Pr(C);
 function te$1() {
 	return Rr();
 }
-var En = xr(v$1, re);
+xr(v$1, re);
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
 function ni(e) {
 	return e;
 }
-var Eo = () => T, Io = Eo.toString(), qt = /=>/.test(Io);
-var Ht = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_", Gt = Ht.length, Jt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_", Kt = Jt.length;
-
+var Eo = () => T, Io = Eo.toString();
+/=>/.test(Io);
 //#endregion
 //#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
@@ -3590,7 +2997,8 @@ function D(e) {
 function c(e) {
 	return new Promise(D.bind(e));
 }
-var i = {}, O = ni({
+var i = {};
+ni({
 	tag: "seroval-plugins/web/AbortSignal",
 	extends: [ni({
 		tag: "seroval-plugins/web/AbortControllerFactoryPlugin",
@@ -3643,7 +3051,7 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-var B = ni({
+ni({
 	tag: "seroval-plugins/web/Blob",
 	test(e) {
 		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
@@ -3669,7 +3077,7 @@ function d(e) {
 		composed: e.composed
 	};
 }
-var L = ni({
+ni({
 	tag: "seroval-plugins/web/CustomEvent",
 	test(e) {
 		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
@@ -3701,7 +3109,7 @@ var L = ni({
 		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
 	}
 });
-var q = ni({
+ni({
 	tag: "seroval-plugins/web/DOMException",
 	test(e) {
 		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
@@ -3740,7 +3148,7 @@ function f(e) {
 		composed: e.composed
 	};
 }
-var Y = ni({
+ni({
 	tag: "seroval-plugins/web/Event",
 	test(e) {
 		return typeof Event == "undefined" ? !1 : e instanceof Event;
@@ -3803,7 +3211,8 @@ function y(e) {
 var o = {}, v = (e, r = new FormData(), a = 0, t = e.length, s) => {
 	for (; a < t; a++) s = e[a], r.append(s[0], s[1]);
 	return r;
-}, K = ni({
+};
+ni({
 	tag: "seroval-plugins/web/FormData",
 	extends: [m, ni({
 		tag: "seroval-plugins/web/FormDataFactory",
@@ -3887,7 +3296,7 @@ var l = ni({
 		return new Headers(r.deserialize(e.value));
 	}
 });
-var $ = ni({
+ni({
 	tag: "seroval-plugins/web/ImageData",
 	test(e) {
 		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
@@ -4024,7 +3433,7 @@ function N(e, r) {
 		referrerPolicy: e.referrerPolicy
 	};
 }
-var te = ni({
+ni({
 	tag: "seroval-plugins/web/Request",
 	extends: [p, l],
 	test(e) {
@@ -4058,7 +3467,7 @@ function h(e) {
 		statusText: e.statusText
 	};
 }
-var ne = ni({
+ni({
 	tag: "seroval-plugins/web/Response",
 	extends: [p, l],
 	test(e) {
@@ -4085,7 +3494,7 @@ var ne = ni({
 		return new Response(r.deserialize(e.body), r.deserialize(e.options));
 	}
 });
-var pe = ni({
+ni({
 	tag: "seroval-plugins/web/URL",
 	test(e) {
 		return typeof URL == "undefined" ? !1 : e instanceof URL;
@@ -4108,7 +3517,7 @@ var pe = ni({
 		return new URL(r.deserialize(e.value));
 	}
 });
-var fe = ni({
+ni({
 	tag: "seroval-plugins/web/URLSearchParams",
 	test(e) {
 		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
@@ -4131,167 +3540,7 @@ var fe = ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
-const booleans = [
-	"allowfullscreen",
-	"async",
-	"alpha",
-	"autofocus",
-	"autoplay",
-	"checked",
-	"controls",
-	"default",
-	"disabled",
-	"formnovalidate",
-	"hidden",
-	"indeterminate",
-	"inert",
-	"ismap",
-	"loop",
-	"multiple",
-	"muted",
-	"nomodule",
-	"novalidate",
-	"open",
-	"playsinline",
-	"readonly",
-	"required",
-	"reversed",
-	"seamless",
-	"selected",
-	"adauctionheaders",
-	"browsingtopics",
-	"credentialless",
-	"defaultchecked",
-	"defaultmuted",
-	"defaultselected",
-	"defer",
-	"disablepictureinpicture",
-	"disableremoteplayback",
-	"preservespitch",
-	"shadowrootclonable",
-	"shadowrootcustomelementregistry",
-	"shadowrootdelegatesfocus",
-	"shadowrootserializable",
-	"sharedstoragewritable"
-];
-const Properties = /* @__PURE__ */ new Set([
-	"className",
-	"value",
-	"readOnly",
-	"noValidate",
-	"formNoValidate",
-	"isMap",
-	"noModule",
-	"playsInline",
-	"adAuctionHeaders",
-	"allowFullscreen",
-	"browsingTopics",
-	"defaultChecked",
-	"defaultMuted",
-	"defaultSelected",
-	"disablePictureInPicture",
-	"disableRemotePlayback",
-	"preservesPitch",
-	"shadowRootClonable",
-	"shadowRootCustomElementRegistry",
-	"shadowRootDelegatesFocus",
-	"shadowRootSerializable",
-	"sharedStorageWritable",
-	...booleans
-]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
-const ES2017FLAG = L$1.AggregateError | L$1.BigIntTypedArray;
+L$1.AggregateError | L$1.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
@@ -4364,7 +3613,6 @@ function resolveSSRNode(node, top) {
 	if (t === "function") return resolveSSRNode(node());
 	return String(node);
 }
-
 //#endregion
 //#region tests/fixtures/config-test.tsx
 var _tmpl$ = [
@@ -4385,9 +3633,9 @@ const App = () => {
 	const [user] = createResource(userId, asyncFetchUser);
 	return ssr(_tmpl$, user.loading && _tmpl$2, user.error && ssr(_tmpl$3, escape(user.error.message)), user() && ssr(_tmpl$4, escape(user()?.name)));
 };
-
 //#endregion
-export { App as default };"
+export { App as default };
+"
 `;
 
 exports[`rolldown-plugin-solid src should transform custom generated with hydratable 1`] = `
@@ -4410,7 +3658,6 @@ function getContextId(count) {
 }
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
-let ERROR = null;
 let runEffects = runQueue;
 const STALE = 1;
 const PENDING = 2;
@@ -4423,8 +3670,6 @@ const UNOWNED = {
 const NO_INIT = {};
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -4445,14 +3690,10 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createComputed(fn, value, options) {
-	const c = createComputation(fn, value, true, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, true, STALE));
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -4460,10 +3701,7 @@ function createMemo(fn, value, options) {
 	c.observers = null;
 	c.observerSlots = null;
 	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
+	updateComputation(c);
 	return readSignal.bind(c);
 }
 function isPromise(v) {
@@ -4595,21 +3833,14 @@ function createResource(pSource, pFetcher, pOptions) {
 	}];
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
 	}
-}
-function onCleanup(fn) {
-	if (Owner === null);
-	else if (Owner.cleanups === null) Owner.cleanups = [fn];
-	else Owner.cleanups.push(fn);
-	return fn;
 }
 function runWithOwner(o, fn) {
 	const prev = Owner;
@@ -4624,34 +3855,6 @@ function runWithOwner(o, fn) {
 		Owner = prev;
 		Listener = prevListener;
 	}
-}
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
 }
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
 function useContext(context) {
@@ -4788,17 +3991,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -4845,8 +4037,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -4889,23 +4080,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function lookUpstream(node, ignore) {
 	const runningTransition = Transition && Transition.running;
@@ -4974,117 +4148,9 @@ function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
 }
-function runErrors(err, fns, owner) {
-	try {
-		for (const f of fns) f(err);
-	} catch (e) {
-		handleError(e, owner && owner.owner || null);
-	}
-}
 function handleError(err, owner = Owner) {
-	const fns = ERROR && owner && owner.context && owner.context[ERROR];
-	const error = castError(err);
-	if (!fns) throw error;
-	if (Effects) Effects.push({
-		fn() {
-			runErrors(error, fns, owner);
-		},
-		state: STALE
-	});
-	else runErrors(error, fns, owner);
+	throw castError(err);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
@@ -5294,7 +4360,6 @@ function cleanChildren(parent, current, marker, replacement) {
 function getHydrationKey() {
 	return sharedConfig.getNextContextId();
 }
-
 //#endregion
 //#region tests/fixtures/config-test.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test</h1><!$><!/><!$><!/><!$><!/>\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: <!$><!/>\`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!$><!/>!\`);
@@ -5334,9 +4399,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-
 //#endregion
-export { App as default };"
+export { App as default };
+"
 `;
 
 exports[`rolldown-plugin-solid dist should transform custom generated with hydratable 1`] = `
@@ -5359,7 +4424,6 @@ function getContextId(count) {
 }
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
-let ERROR = null;
 let runEffects = runQueue;
 const STALE = 1;
 const PENDING = 2;
@@ -5372,8 +4436,6 @@ const UNOWNED = {
 const NO_INIT = {};
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -5394,14 +4456,10 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createComputed(fn, value, options) {
-	const c = createComputation(fn, value, true, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, true, STALE));
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -5409,10 +4467,7 @@ function createMemo(fn, value, options) {
 	c.observers = null;
 	c.observerSlots = null;
 	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
+	updateComputation(c);
 	return readSignal.bind(c);
 }
 function isPromise(v) {
@@ -5544,21 +4599,14 @@ function createResource(pSource, pFetcher, pOptions) {
 	}];
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
 	}
-}
-function onCleanup(fn) {
-	if (Owner === null);
-	else if (Owner.cleanups === null) Owner.cleanups = [fn];
-	else Owner.cleanups.push(fn);
-	return fn;
 }
 function runWithOwner(o, fn) {
 	const prev = Owner;
@@ -5573,34 +4621,6 @@ function runWithOwner(o, fn) {
 		Owner = prev;
 		Listener = prevListener;
 	}
-}
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
 }
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
 function useContext(context) {
@@ -5737,17 +4757,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -5794,8 +4803,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -5838,23 +4846,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function lookUpstream(node, ignore) {
 	const runningTransition = Transition && Transition.running;
@@ -5923,117 +4914,9 @@ function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
 }
-function runErrors(err, fns, owner) {
-	try {
-		for (const f of fns) f(err);
-	} catch (e) {
-		handleError(e, owner && owner.owner || null);
-	}
-}
 function handleError(err, owner = Owner) {
-	const fns = ERROR && owner && owner.context && owner.context[ERROR];
-	const error = castError(err);
-	if (!fns) throw error;
-	if (Effects) Effects.push({
-		fn() {
-			runErrors(error, fns, owner);
-		},
-		state: STALE
-	});
-	else runErrors(error, fns, owner);
+	throw castError(err);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
@@ -6243,7 +5126,6 @@ function cleanChildren(parent, current, marker, replacement) {
 function getHydrationKey() {
 	return sharedConfig.getNextContextId();
 }
-
 //#endregion
 //#region tests/fixtures/config-test.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test</h1><!$><!/><!$><!/><!$><!/>\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: <!$><!/>\`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!$><!/>!\`);
@@ -6283,9 +5165,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-
 //#endregion
-export { App as default };"
+export { App as default };
+"
 `;
 
 exports[`rolldown-plugin-solid src should transform minimal builtIns 1`] = `
@@ -6308,7 +5190,6 @@ function getContextId(count) {
 }
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
-let ERROR = null;
 let runEffects = runQueue;
 const STALE = 1;
 const PENDING = 2;
@@ -6321,8 +5202,6 @@ const UNOWNED = {
 const NO_INIT = {};
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -6343,14 +5222,10 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createComputed(fn, value, options) {
-	const c = createComputation(fn, value, true, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, true, STALE));
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -6358,10 +5233,7 @@ function createMemo(fn, value, options) {
 	c.observers = null;
 	c.observerSlots = null;
 	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
+	updateComputation(c);
 	return readSignal.bind(c);
 }
 function isPromise(v) {
@@ -6493,21 +5365,14 @@ function createResource(pSource, pFetcher, pOptions) {
 	}];
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
 	}
-}
-function onCleanup(fn) {
-	if (Owner === null);
-	else if (Owner.cleanups === null) Owner.cleanups = [fn];
-	else Owner.cleanups.push(fn);
-	return fn;
 }
 function runWithOwner(o, fn) {
 	const prev = Owner;
@@ -6522,34 +5387,6 @@ function runWithOwner(o, fn) {
 		Owner = prev;
 		Listener = prevListener;
 	}
-}
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
 }
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
 function useContext(context) {
@@ -6686,17 +5523,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -6743,8 +5569,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -6787,23 +5612,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function lookUpstream(node, ignore) {
 	const runningTransition = Transition && Transition.running;
@@ -6872,117 +5680,9 @@ function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
 }
-function runErrors(err, fns, owner) {
-	try {
-		for (const f of fns) f(err);
-	} catch (e) {
-		handleError(e, owner && owner.owner || null);
-	}
-}
 function handleError(err, owner = Owner) {
-	const fns = ERROR && owner && owner.context && owner.context[ERROR];
-	const error = castError(err);
-	if (!fns) throw error;
-	if (Effects) Effects.push({
-		fn() {
-			runErrors(error, fns, owner);
-		},
-		state: STALE
-	});
-	else runErrors(error, fns, owner);
+	throw castError(err);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
@@ -7166,7 +5866,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-
 //#endregion
 //#region tests/fixtures/config-test.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: \`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!>!\`);
@@ -7208,9 +5907,9 @@ const App = () => {
 		return _el$;
 	})();
 };
-
 //#endregion
-export { App as default };"
+export { App as default };
+"
 `;
 
 exports[`rolldown-plugin-solid dist should transform minimal builtIns 1`] = `
@@ -7233,7 +5932,6 @@ function getContextId(count) {
 }
 const equalFn = (a, b) => a === b;
 const signalOptions = { equals: equalFn };
-let ERROR = null;
 let runEffects = runQueue;
 const STALE = 1;
 const PENDING = 2;
@@ -7246,8 +5944,6 @@ const UNOWNED = {
 const NO_INIT = {};
 var Owner = null;
 let Transition = null;
-let Scheduler = null;
-let ExternalSourceConfig = null;
 let Listener = null;
 let Updates = null;
 let Effects = null;
@@ -7268,14 +5964,10 @@ function createSignal(value, options) {
 	return [readSignal.bind(s), setter];
 }
 function createComputed(fn, value, options) {
-	const c = createComputation(fn, value, true, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, true, STALE));
 }
 function createRenderEffect(fn, value, options) {
-	const c = createComputation(fn, value, false, STALE);
-	if (Scheduler && Transition && Transition.running) Updates.push(c);
-	else updateComputation(c);
+	updateComputation(createComputation(fn, value, false, STALE));
 }
 function createMemo(fn, value, options) {
 	options = options ? Object.assign({}, signalOptions, options) : signalOptions;
@@ -7283,10 +5975,7 @@ function createMemo(fn, value, options) {
 	c.observers = null;
 	c.observerSlots = null;
 	c.comparator = options.equals || void 0;
-	if (Scheduler && Transition && Transition.running) {
-		c.tState = STALE;
-		Updates.push(c);
-	} else updateComputation(c);
+	updateComputation(c);
 	return readSignal.bind(c);
 }
 function isPromise(v) {
@@ -7418,21 +6107,14 @@ function createResource(pSource, pFetcher, pOptions) {
 	}];
 }
 function untrack(fn) {
-	if (!ExternalSourceConfig && Listener === null) return fn();
+	if (Listener === null) return fn();
 	const listener = Listener;
 	Listener = null;
 	try {
-		if (ExternalSourceConfig) return ExternalSourceConfig.untrack(fn);
 		return fn();
 	} finally {
 		Listener = listener;
 	}
-}
-function onCleanup(fn) {
-	if (Owner === null);
-	else if (Owner.cleanups === null) Owner.cleanups = [fn];
-	else Owner.cleanups.push(fn);
-	return fn;
 }
 function runWithOwner(o, fn) {
 	const prev = Owner;
@@ -7447,34 +6129,6 @@ function runWithOwner(o, fn) {
 		Owner = prev;
 		Listener = prevListener;
 	}
-}
-function startTransition(fn) {
-	if (Transition && Transition.running) {
-		fn();
-		return Transition.done;
-	}
-	const l = Listener;
-	const o = Owner;
-	return Promise.resolve().then(() => {
-		Listener = l;
-		Owner = o;
-		let t;
-		if (Scheduler || SuspenseContext) {
-			t = Transition || (Transition = {
-				sources: /* @__PURE__ */ new Set(),
-				effects: [],
-				promises: /* @__PURE__ */ new Set(),
-				disposed: /* @__PURE__ */ new Set(),
-				queue: /* @__PURE__ */ new Set(),
-				running: true
-			});
-			t.done || (t.done = new Promise((res) => t.resolve = res));
-			t.running = true;
-		}
-		runUpdates(fn, false);
-		Listener = Owner = null;
-		return t ? t.done : void 0;
-	});
 }
 const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
 function useContext(context) {
@@ -7611,17 +6265,6 @@ function createComputation(fn, init, pure, state = STALE, options) {
 	else Owner.tOwned.push(c);
 	else if (!Owner.owned) Owner.owned = [c];
 	else Owner.owned.push(c);
-	if (ExternalSourceConfig && c.fn) {
-		const [track, trigger] = createSignal(void 0, { equals: false });
-		const ordinary = ExternalSourceConfig.factory(c.fn, trigger);
-		onCleanup(() => ordinary.dispose());
-		const triggerInTransition = () => startTransition(trigger).then(() => inTransition.dispose());
-		const inTransition = ExternalSourceConfig.factory(c.fn, triggerInTransition);
-		c.fn = (x) => {
-			track();
-			return Transition && Transition.running ? inTransition.track(x) : ordinary.track(x);
-		};
-	}
 	return c;
 }
 function runTop(node) {
@@ -7668,8 +6311,7 @@ function runUpdates(fn, init) {
 }
 function completeUpdates(wait) {
 	if (Updates) {
-		if (Scheduler && Transition && Transition.running) scheduleQueue(Updates);
-		else runQueue(Updates);
+		runQueue(Updates);
 		Updates = null;
 	}
 	if (wait) return;
@@ -7712,23 +6354,6 @@ function completeUpdates(wait) {
 }
 function runQueue(queue) {
 	for (let i = 0; i < queue.length; i++) runTop(queue[i]);
-}
-function scheduleQueue(queue) {
-	for (let i = 0; i < queue.length; i++) {
-		const item = queue[i];
-		const tasks = Transition.queue;
-		if (!tasks.has(item)) {
-			tasks.add(item);
-			Scheduler(() => {
-				tasks.delete(item);
-				runUpdates(() => {
-					Transition.running = true;
-					runTop(item);
-				}, false);
-				Transition && (Transition.running = false);
-			});
-		}
-	}
 }
 function lookUpstream(node, ignore) {
 	const runningTransition = Transition && Transition.running;
@@ -7797,117 +6422,9 @@ function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
 }
-function runErrors(err, fns, owner) {
-	try {
-		for (const f of fns) f(err);
-	} catch (e) {
-		handleError(e, owner && owner.owner || null);
-	}
-}
 function handleError(err, owner = Owner) {
-	const fns = ERROR && owner && owner.context && owner.context[ERROR];
-	const error = castError(err);
-	if (!fns) throw error;
-	if (Effects) Effects.push({
-		fn() {
-			runErrors(error, fns, owner);
-		},
-		state: STALE
-	});
-	else runErrors(error, fns, owner);
+	throw castError(err);
 }
-
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	className: "class",
-	htmlFor: "for"
-});
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
-	class: "className",
-	novalidate: {
-		$: "noValidate",
-		FORM: 1
-	},
-	formnovalidate: {
-		$: "formNoValidate",
-		BUTTON: 1,
-		INPUT: 1
-	},
-	ismap: {
-		$: "isMap",
-		IMG: 1
-	},
-	nomodule: {
-		$: "noModule",
-		SCRIPT: 1
-	},
-	playsinline: {
-		$: "playsInline",
-		VIDEO: 1
-	},
-	readonly: {
-		$: "readOnly",
-		INPUT: 1,
-		TEXTAREA: 1
-	},
-	adauctionheaders: {
-		$: "adAuctionHeaders",
-		IFRAME: 1
-	},
-	allowfullscreen: {
-		$: "allowFullscreen",
-		IFRAME: 1
-	},
-	browsingtopics: {
-		$: "browsingTopics",
-		IMG: 1
-	},
-	defaultchecked: {
-		$: "defaultChecked",
-		INPUT: 1
-	},
-	defaultmuted: {
-		$: "defaultMuted",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	defaultselected: {
-		$: "defaultSelected",
-		OPTION: 1
-	},
-	disablepictureinpicture: {
-		$: "disablePictureInPicture",
-		VIDEO: 1
-	},
-	disableremoteplayback: {
-		$: "disableRemotePlayback",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	preservespitch: {
-		$: "preservesPitch",
-		AUDIO: 1,
-		VIDEO: 1
-	},
-	shadowrootclonable: {
-		$: "shadowRootClonable",
-		TEMPLATE: 1
-	},
-	shadowrootdelegatesfocus: {
-		$: "shadowRootDelegatesFocus",
-		TEMPLATE: 1
-	},
-	shadowrootserializable: {
-		$: "shadowRootSerializable",
-		TEMPLATE: 1
-	},
-	sharedstoragewritable: {
-		$: "sharedStorageWritable",
-		IFRAME: 1,
-		IMG: 1
-	}
-});
 const memo = (fn) => createMemo(() => fn());
 function reconcileArrays(parentNode, a, b) {
 	let bLength = b.length, aEnd = a.length, bEnd = bLength, aStart = 0, bStart = 0, after = a[aEnd - 1].nextSibling, map = null;
@@ -8091,7 +6608,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-
 //#endregion
 //#region tests/fixtures/config-test.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1>Config Test\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading...\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Error: \`), _tmpl$4 = /* @__PURE__ */ template(\`<p>Hello, <!>!\`);
@@ -8133,7 +6649,7 @@ const App = () => {
 		return _el$;
 	})();
 };
-
 //#endregion
-export { App as default };"
+export { App as default };
+"
 `;
