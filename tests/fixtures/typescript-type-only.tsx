@@ -41,7 +41,7 @@ function GenericList<T extends { id: string }>(props: GenericProps<T>) {
 }
 
 // Export type definitions
-export type { MyComponentProps, GenericProps };
+export type { GenericProps, MyComponentProps };
 export type ComponentType<T extends Record<string, any> = {}> = Component<T>;
 export type EventHandler<T = Event> = (event: T) => void;
 
@@ -52,4 +52,4 @@ function Button(props: ButtonProps & { onClickType: EventHandler }) {
 
 // Export components
 export default MyComponent;
-export { GenericList, Button };
+export { Button, GenericList };

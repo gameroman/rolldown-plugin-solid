@@ -47,12 +47,9 @@ export function createTemplate(path, result, wrap) {
 function wrapDynamics(path, dynamics) {
   if (!dynamics.length) return;
   const config = getConfig(path);
-
   const effectWrapperId = registerImportMethod(path, config.effectWrapper);
-
   if (dynamics.length === 1) {
     const prevValue = t.identifier("_$p");
-
     return t.expressionStatement(
       t.callExpression(effectWrapperId, [
         t.arrowFunctionExpression(
@@ -65,13 +62,10 @@ function wrapDynamics(path, dynamics) {
       ]),
     );
   }
-
   const prevId = t.identifier("_p$");
-
   const declarations: t.VariableDeclarator[] = [];
   const statements: t.ExpressionStatement[] = [];
   const properties: t.Identifier[] = [];
-
   dynamics.forEach(({ elem, key, value }, index) => {
     const varIdent = path.scope.generateUidIdentifier("v$");
 
@@ -98,7 +92,6 @@ function wrapDynamics(path, dynamics) {
       ),
     );
   });
-
   return t.expressionStatement(
     t.callExpression(effectWrapperId, [
       t.arrowFunctionExpression(

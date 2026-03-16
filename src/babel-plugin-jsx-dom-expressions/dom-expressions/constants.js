@@ -594,13 +594,13 @@ const DOMElements = /*#__PURE__*/ new Set([
 ]);
 
 export {
-  BooleanAttributes,
-  Properties,
-  ChildProperties,
-  getPropAlias,
   Aliases,
+  BooleanAttributes,
+  ChildProperties,
   DelegatedEvents,
+  DOMElements,
+  getPropAlias,
+  Properties,
   SVGElements,
   SVGNamespace,
-  DOMElements,
 };

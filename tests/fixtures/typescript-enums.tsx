@@ -290,16 +290,16 @@ function ComplexEnumComponent() {
 }
 
 export {
-  ConstEnumComponent,
-  RegularEnumComponent,
-  MixedEnumComponent,
-  EnumMappingComponent,
-  ComplexEnumComponent,
-  Direction,
-  Status,
-  Priority,
   Color,
-  Size,
-  LogLevel,
   ComplexEnum,
+  ComplexEnumComponent,
+  ConstEnumComponent,
+  Direction,
+  EnumMappingComponent,
+  LogLevel,
+  MixedEnumComponent,
+  Priority,
+  RegularEnumComponent,
+  Size,
+  Status,
 };

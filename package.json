@@ -5,8 +5,7 @@
   "license": "MIT",
   "author": "gameroman",
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ],
   "type": "module",
   "types": "./dist/index.d.ts",
@@ -25,7 +24,7 @@
     "build": "tsdown",
     "lint": "biome lint",
     "format": "biome check --write --linter-enabled=false",
-    "test": "bun test --coverage",
+    "test": "bun run build && bun test --coverage",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run build"
   },

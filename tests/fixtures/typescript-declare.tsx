@@ -195,15 +195,15 @@ function GenericStoreComponent() {
 }
 
 export {
-  UserProfile,
-  StoreComponent,
-  ConfigComponent,
-  ConcreteComponent,
-  GenericStoreComponent,
-  UserStore,
-  DataStore,
-  Config,
   BaseComponent,
+  ConcreteComponent,
   ConcreteComponent as Concrete,
+  Config,
+  ConfigComponent,
+  DataStore,
   GenericStore,
+  GenericStoreComponent,
+  StoreComponent,
+  UserProfile,
+  UserStore,
 };

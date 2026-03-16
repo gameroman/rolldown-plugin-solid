@@ -76,10 +76,8 @@ export namespace Namespace1 {
   }
 }
 
-export { Enum1, Enum2, Class1, Class2 };
 export type { Type1, Type2 };
-export { type Interface1 };
-export { text, Enum4 };
+export { Class1, Class2, Enum1, Enum2, Enum4, type Interface1, text };
 
 // Test TypeScript namespace functionality
 namespace Utils {

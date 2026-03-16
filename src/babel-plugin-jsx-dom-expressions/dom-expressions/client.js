@@ -32,12 +32,12 @@ export {
 const $$EVENTS = "_$DX_DELEGATE";
 
 export {
-  effect,
-  memo,
-  untrack,
-  getOwner,
   createComponent,
+  effect,
+  getOwner,
+  memo,
   mergeProps,
+  untrack,
   voidFn as useAssets,
   voidFn as getAssets,
   voidFn as Assets,

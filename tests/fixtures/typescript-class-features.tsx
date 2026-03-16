@@ -135,10 +135,10 @@ class ComplexParameterProps {
 }
 
 export {
-  ParameterProps,
-  ParameterPropsWithConstructor,
-  DerivedParameterProps,
-  DefaultParameterProps,
   ComplexDerived,
   ComplexParameterProps,
+  DefaultParameterProps,
+  DerivedParameterProps,
+  ParameterProps,
+  ParameterPropsWithConstructor,
 };
