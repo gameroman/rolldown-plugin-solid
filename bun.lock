@@ -42,7 +42,6 @@
     "@babel/template": "8.0.0-rc.2",
     "@babel/traverse": "8.0.0-rc.2",
     "@babel/types": "8.0.0-rc.2",
-    "semver": "latest",
   },
   "packages": {
     "@babel/code-frame": ["@babel/code-frame@8.0.0-rc.2", "", { "dependencies": { "@babel/helper-validator-identifier": "^8.0.0-rc.2", "js-tokens": "^10.0.0" } }, "sha512-zbPFBDbQdChkGN02WRc/BcOvZLDTctFJZVeWkciVr82T5V0GVBXztq4/Wi4Ca+ZKx7U+Kdt5b862cpFJ4Cjf1A=="],
