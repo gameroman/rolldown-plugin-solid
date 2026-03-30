@@ -151,8 +151,8 @@ export function insert<T>(
 export function spread<T>(
   node: Element,
   accessor: T,
-  isSVG?: Boolean,
-  skipChildren?: Boolean,
+  isSVG?: boolean,
+  skipChildren?: boolean,
 ): void;
 
 /** @deprecated not supported on the server side */
@@ -196,8 +196,8 @@ export function className(node: Element, value: string): void;
 export function assign(
   node: Element,
   props: any,
-  isSVG?: Boolean,
-  skipChildren?: Boolean,
+  isSVG?: boolean,
+  skipChildren?: boolean,
 ): void;
 
 /** @deprecated not supported on the server side */

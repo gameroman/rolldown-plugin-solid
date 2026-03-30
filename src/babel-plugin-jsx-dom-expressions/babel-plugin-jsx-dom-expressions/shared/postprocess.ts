@@ -45,10 +45,10 @@ export default (path, state) => {
         }
       }
     }
-    let domTemplates = path.scope.data.templates.filter(
+    const domTemplates = path.scope.data.templates.filter(
       (temp) => temp.renderer === "dom",
     );
-    let ssrTemplates = path.scope.data.templates.filter(
+    const ssrTemplates = path.scope.data.templates.filter(
       (temp) => temp.renderer === "ssr",
     );
     domTemplates.length > 0 && appendTemplatesDOM(path, domTemplates);

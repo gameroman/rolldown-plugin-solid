@@ -1,9 +1,17 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.9/schema.json",
   "extends": ["@gameroman/config/biome"],
+  "files": {
+    "includes": ["**", "!!tests/fixtures"]
+  },
   "linter": {
     "rules": {
-      "suspicious": "warn"
+      "suspicious": {
+        "noEmptyInterface": "off"
+      },
+      "style": {
+        "useShorthandFunctionType": "off"
+      }
     }
   }
 }

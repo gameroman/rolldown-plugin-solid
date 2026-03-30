@@ -267,7 +267,7 @@ export function renderToStream(code, options = {}) {
         fn(tmp);
       }
       if (onCompleteAll) {
-        let ogComplete = onCompleteAll;
+        const ogComplete = onCompleteAll;
         onCompleteAll = (options) => {
           ogComplete(options);
           complete();
@@ -605,7 +605,7 @@ function queue(fn) {
 }
 
 function allSettled(promises) {
-  let length = promises.length;
+  const length = promises.length;
   return Promise.allSettled(promises).then(() => {
     if (promises.length !== length) return allSettled(promises);
     return;
@@ -709,7 +709,7 @@ export function ssrSpread(props, isSVG, skipChildren) {
   const keys = Object.keys(props);
   let classResolved;
   for (let i = 0; i < keys.length; i++) {
-    let prop = keys[i];
+    const prop = keys[i];
     if (prop === "children") {
       !skipChildren &&
         console.warn(`SSR currently does not support spread children.`);

@@ -174,7 +174,7 @@ export function transformElement(path, info) {
     results.templateWithClosingTags += `</${tagName}>`;
   }
   if (info.topLevel && config.hydratable && results.hasHydratableEvent) {
-    let runHydrationEvents = registerImportMethod(
+    const runHydrationEvents = registerImportMethod(
       path,
       "runHydrationEvents",
       getRendererConfig(path, "dom").moduleName,
@@ -320,7 +320,7 @@ export function setAttr(
     );
   }
 
-  let isNameSpaced = name.indexOf(":") > -1;
+  const isNameSpaced = name.indexOf(":") > -1;
   name = Aliases[name] || name;
   !isSVG && (name = name.toLowerCase());
   const ns = isNameSpaced && SVGNamespace[name.split(":")[0]];
@@ -668,7 +668,7 @@ function transformAttributes(path, results) {
     }
 
     for (let i = 0, len = text.length; i < len; i++) {
-      let char = text[i];
+      const char = text[i];
 
       if (
         char === "'" ||
@@ -1281,7 +1281,7 @@ function transformChildren(path, results, config) {
       nextPlaceholder = null;
       i++;
     } else if (child.exprs.length) {
-      let insert = registerImportMethod(
+      const insert = registerImportMethod(
         path,
         "insert",
         getRendererConfig(path, "dom").moduleName,
@@ -1525,7 +1525,7 @@ function processSpreads(
         });
       if (dynamic) {
         const id = convertJSXIdentifier(node.name);
-        let expr =
+        const expr =
           wrapConditionals &&
           (t.isLogicalExpression(node.value.expression) ||
             t.isConditionalExpression(node.value.expression))

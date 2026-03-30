@@ -678,7 +678,7 @@ function createElement(path, { topLevel, hydratable }) {
               checkTags: true,
             })
           ) {
-            let expr = t.arrowFunctionExpression([], value.expression);
+            const expr = t.arrowFunctionExpression([], value.expression);
             runningObject.push(
               t.objectMethod(
                 "get",

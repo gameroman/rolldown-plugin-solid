@@ -108,7 +108,7 @@ export function delegateEvents(eventNames, document = window.document) {
 
 export function clearDelegatedEvents(document = window.document) {
   if (document[$$EVENTS]) {
-    for (let name of document[$$EVENTS].keys())
+    for (const name of document[$$EVENTS].keys())
       document.removeEventListener(name, eventHandler);
     delete document[$$EVENTS];
   }
@@ -531,7 +531,7 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
   const hydrating = isHydrating(parent);
   if (hydrating) {
     !current && (current = [...parent.childNodes]);
-    let cleaned = [];
+    const cleaned = [];
     for (let i = 0; i < current.length; i++) {
       const node = current[i];
       if (node.nodeType === 8 && node.data.slice(0, 2) === "!$") node.remove();

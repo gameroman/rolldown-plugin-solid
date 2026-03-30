@@ -139,15 +139,13 @@ function handleNested(
 
   const body = node.body;
   let namespaceTopLevel: t.Statement[];
-  {
-    namespaceTopLevel = t.isTSModuleBlock(body)
-      ? body.body
-      : // We handle `namespace X.Y {}` as if it was
-        //   namespace X {
-        //     export namespace Y {}
-        //   }
-        [t.exportNamedDeclaration(body)];
-  }
+  namespaceTopLevel = t.isTSModuleBlock(body)
+    ? body.body
+    : // We handle `namespace X.Y {}` as if it was
+      //   namespace X {
+      //     export namespace Y {}
+      //   }
+      [t.exportNamedDeclaration(body)];
 
   let isEmpty = true;
 
