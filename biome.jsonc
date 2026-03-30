@@ -7,7 +7,15 @@
   "linter": {
     "rules": {
       "suspicious": {
-        "noEmptyInterface": "off"
+        "noEmptyInterface": "off",
+        "noImplicitAnyLet": "warn",
+        "noAssignInExpressions": "warn",
+        "noExplicitAny": "warn",
+        "useIterableCallbackReturn": "warn",
+        "noDoubleEquals": "warn",
+        "noThenProperty": "warn",
+        "noShadowRestrictedNames": "warn",
+        "noFallthroughSwitchClause": "warn"
       },
       "style": {
         "useShorthandFunctionType": "off"

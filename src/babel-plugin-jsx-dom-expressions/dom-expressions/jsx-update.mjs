@@ -9,8 +9,8 @@
  * @see https://github.com/ryansolid/dom-expressions/issues/408
  */
 
-import { execSync as $ } from "child_process";
-import fs from "fs";
+import { execSync as $ } from "node:child_process";
+import fs from "node:fs";
 
 process.chdir("packages/dom-expressions/src");
 

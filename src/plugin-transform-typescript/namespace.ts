@@ -130,10 +130,7 @@ function handleNested(
   parentExport?: t.Expression,
 ): t.Statement | null {
   const names = new Set();
-  const realName =
-    true || t.isIdentifier(node.id)
-      ? (node.id as t.Identifier)
-      : getFirstIdentifier(node.id as unknown as t.TSQualifiedName);
+  const realName = getFirstIdentifier(node.id as t.TSQualifiedName);
 
   const name = path.scope.generateUid(realName.name);
 

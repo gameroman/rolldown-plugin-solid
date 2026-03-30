@@ -47,7 +47,7 @@ export {
 };
 
 export function render(code, element, init, options = {}) {
-  if ("_DX_DEV_" && !element) {
+  if (!element) {
     throw new Error(
       "The `element` passed to `render(..., element)` doesn't exist. Make sure `element` exists in the document.",
     );
@@ -68,7 +68,7 @@ export function render(code, element, init, options = {}) {
 export function template(html, isImportNode, isSVG, isMathML) {
   let node;
   const create = () => {
-    if ("_DX_DEV_" && isHydrating())
+    if (isHydrating())
       throw new Error(
         "Failed attempt to create new DOM elements during hydration. Check that the libraries you are using support hydration.",
       );
@@ -324,7 +324,7 @@ export function getNextElement(template) {
     !hydrating ||
     !(node = sharedConfig.registry.get((key = getHydrationKey())))
   ) {
-    if ("_DX_DEV_" && hydrating) {
+    if (hydrating) {
       sharedConfig.done = true;
       throw new Error(
         `Hydration Mismatch. Unable to find DOM nodes for hydration key: ${key}\n${template ? template().outerHTML : ""}`,
@@ -614,8 +614,7 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
       parent.appendChild(value);
     } else parent.replaceChild(value, parent.firstChild);
     current = value;
-  } else if ("_DX_DEV_")
-    console.warn(`Unrecognized value. Skipped inserting`, value);
+  }
 
   return current;
 }
