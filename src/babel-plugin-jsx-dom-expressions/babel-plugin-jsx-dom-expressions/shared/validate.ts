@@ -1,9 +1,10 @@
 import * as parse5 from "parse5";
 
 /** `bodyElement` will be used as a `context` (The place where we run `innerHTML`) */
+// biome-ignore lint/style/noNonNullAssertion: it will be always defined
 const bodyElement = parse5.parse(
   `<!DOCTYPE html><html><head></head><body></body></html>`,
-  // @ts-expect-error
+  // @ts-expect-error: it will be always defined
 ).childNodes[1]!.childNodes[1];
 
 function innerHTML(htmlFragment: string) {

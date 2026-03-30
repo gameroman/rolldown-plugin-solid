@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform typescript code with default options 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -164,6 +163,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -535,8 +535,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
 var Enum4 = /* @__PURE__ */ function(Enum4) {
 	Enum4[Enum4["Foo"] = 0] = "Foo";
@@ -633,14 +631,12 @@ function TestNamespace() {
 		return _el$;
 	})();
 }
-//#endregion
 export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, TestNamespace, text };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform typescript code with default options 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -802,6 +798,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -1173,8 +1170,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
 var Enum4 = /* @__PURE__ */ function(Enum4) {
 	Enum4[Enum4["Foo"] = 0] = "Foo";
@@ -1271,14 +1266,12 @@ function TestNamespace() {
 		return _el$;
 	})();
 }
-//#endregion
 export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, TestNamespace, text };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform typescript code with {onlyRemoveTypeImports: true} 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1440,6 +1433,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -1811,8 +1805,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
 var Enum4 = /* @__PURE__ */ function(Enum4) {
 	Enum4[Enum4["Foo"] = 0] = "Foo";
@@ -1909,14 +1901,12 @@ function TestNamespace() {
 		return _el$;
 	})();
 }
-//#endregion
 export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, TestNamespace, text };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform typescript code with {onlyRemoveTypeImports: true} 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -2078,6 +2068,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -2449,8 +2440,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
 var Enum4 = /* @__PURE__ */ function(Enum4) {
 	Enum4[Enum4["Foo"] = 0] = "Foo";
@@ -2547,14 +2536,12 @@ function TestNamespace() {
 		return _el$;
 	})();
 }
-//#endregion
 export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, TestNamespace, text };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform typescript code with {optimizeConstEnums: true} 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -2716,6 +2703,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -3087,8 +3075,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
 const Enum4 = {
 	Foo: 0,
@@ -3184,14 +3170,12 @@ function TestNamespace() {
 		return _el$;
 	})();
 }
-//#endregion
 export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, TestNamespace, text };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform typescript code with {optimizeConstEnums: true} 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -3353,6 +3337,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -3724,8 +3709,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-plugin.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
 const Enum4 = {
 	Foo: 0,
@@ -3821,7 +3804,6 @@ function TestNamespace() {
 		return _el$;
 	})();
 }
-//#endregion
 export { Class1, Class2, Enum1, Enum2, Enum4, Namespace1, TestNamespace, text };
 "
 `;

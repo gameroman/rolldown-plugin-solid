@@ -15,7 +15,7 @@ import {
 } from "../shared/utils";
 
 export function transformElement(path, info) {
-  let tagName = getTagName(path.node),
+  const tagName = getTagName(path.node),
     results = {
       id: path.scope.generateUidIdentifier("el$"),
       declarations: [],
@@ -254,14 +254,14 @@ function transformChildren(path, results) {
         Wrap the usage with a component that would render this element, eg. Canvas`);
     }
     if (child.id) {
-      let insertNode = registerImportMethod(
+      const insertNode = registerImportMethod(
         path,
         "insertNode",
         getRendererConfig(path, "universal").moduleName,
       );
       let insert = child.id;
       if (child.text) {
-        let createTextNode = registerImportMethod(
+        const createTextNode = registerImportMethod(
           path,
           "createTextNode",
           getRendererConfig(path, "universal").moduleName,
@@ -303,7 +303,7 @@ function transformChildren(path, results) {
       results.exprs.push(...child.exprs);
       results.dynamics.push(...child.dynamics);
     } else if (child.exprs.length) {
-      let insert = registerImportMethod(
+      const insert = registerImportMethod(
         path,
         "insert",
         getRendererConfig(path, "universal").moduleName,
@@ -389,7 +389,7 @@ function processSpreads(
         });
       if (dynamic) {
         const id = convertJSXIdentifier(node.name);
-        let expr =
+        const expr =
           wrapConditionals &&
           (t.isLogicalExpression(node.value.expression) ||
             t.isConditionalExpression(node.value.expression))

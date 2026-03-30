@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform component with onMount 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -197,6 +196,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -594,8 +594,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/onmount.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div class=data-loader><h3>Data Loader Component\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading posts...\`), _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div class=timer-component><h4>Timer: <!>s\`), _tmpl$6 = /* @__PURE__ */ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`), _tmpl$7 = /* @__PURE__ */ template(\`<p class=error>Error: \`), _tmpl$8 = /* @__PURE__ */ template(\`<pre>\`), _tmpl$9 = /* @__PURE__ */ template(\`<p>Loading data...\`);
 const OnMountExample = () => {
 	const [mountedTime, setMountedTime] = createSignal("");
@@ -702,14 +700,12 @@ const OnMountExample = () => {
 		return _el$1;
 	})();
 };
-//#endregion
 export { OnMountExample as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with onMount 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -904,6 +900,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -1301,8 +1298,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/onmount.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div class=data-loader><h3>Data Loader Component\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>Loading posts...\`), _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div class=timer-component><h4>Timer: <!>s\`), _tmpl$6 = /* @__PURE__ */ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`), _tmpl$7 = /* @__PURE__ */ template(\`<p class=error>Error: \`), _tmpl$8 = /* @__PURE__ */ template(\`<pre>\`), _tmpl$9 = /* @__PURE__ */ template(\`<p>Loading data...\`);
 const OnMountExample = () => {
 	const [mountedTime, setMountedTime] = createSignal("");
@@ -1409,7 +1404,6 @@ const OnMountExample = () => {
 		return _el$1;
 	})();
 };
-//#endregion
 export { OnMountExample as default };
 "
 `;

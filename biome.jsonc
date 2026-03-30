@@ -1,27 +1,24 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
-  },
-  "formatter": {
-    "enabled": true,
-    "indentStyle": "space",
-    "lineEnding": "lf"
-  },
-  "assist": {
-    "actions": {
-      "source": {
-        "organizeImports": "on"
-      }
-    }
+  "$schema": "https://biomejs.dev/schemas/2.4.9/schema.json",
+  "extends": ["@gameroman/config/biome"],
+  "files": {
+    "includes": ["**", "!!tests/fixtures"]
   },
   "linter": {
     "rules": {
-      "a11y": "off",
+      "suspicious": {
+        "noEmptyInterface": "off",
+        "noImplicitAnyLet": "warn",
+        "noAssignInExpressions": "warn",
+        "noExplicitAny": "warn",
+        "useIterableCallbackReturn": "warn",
+        "noDoubleEquals": "warn",
+        "noThenProperty": "warn",
+        "noShadowRestrictedNames": "warn",
+        "noFallthroughSwitchClause": "warn"
+      },
       "style": {
-        "useNodejsImportProtocol": "error"
+        "useShorthandFunctionType": "off"
       }
     }
   }

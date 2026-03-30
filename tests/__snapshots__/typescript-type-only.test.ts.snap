@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform with typescript declare 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -164,6 +163,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -604,8 +604,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-type-only.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1></h1><p>Count: </p><p>User: </p><button>Value: \`), _tmpl$2 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$3 = /* @__PURE__ */ template(\`<li>\`), _tmpl$4 = /* @__PURE__ */ template(\`<button>\`);
 function MyComponent(props) {
 	const [value, setValue] = createSignal(0);
@@ -645,14 +643,12 @@ function Button(props) {
 	})();
 }
 delegateEvents(["click"]);
-//#endregion
 export { Button, GenericList, MyComponent as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform with typescript declare 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -814,6 +810,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -1254,8 +1251,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-type-only.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1></h1><p>Count: </p><p>User: </p><button>Value: \`), _tmpl$2 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$3 = /* @__PURE__ */ template(\`<li>\`), _tmpl$4 = /* @__PURE__ */ template(\`<button>\`);
 function MyComponent(props) {
 	const [value, setValue] = createSignal(0);
@@ -1295,7 +1290,6 @@ function Button(props) {
 	})();
 }
 delegateEvents(["click"]);
-//#endregion
 export { Button, GenericList, MyComponent as default };
 "
 `;

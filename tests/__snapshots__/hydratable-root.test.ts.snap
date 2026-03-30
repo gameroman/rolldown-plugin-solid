@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform hydratable html/head/body elements 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -48,8 +47,6 @@ function getHydrationKey() {
 function NoHydration(props) {
 	return sharedConfig.context ? void 0 : props.children;
 }
-//#endregion
-//#region tests/fixtures/hydratable-root.tsx
 function TestHydratableHtml() {
 	return getNextElement();
 }
@@ -59,14 +56,12 @@ function TestHydratableHead() {
 function TestHydratableBody() {
 	return getNextElement();
 }
-//#endregion
 export { TestHydratableBody, TestHydratableHead, TestHydratableHtml };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform hydratable html/head/body elements 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -112,8 +107,6 @@ function getHydrationKey() {
 function NoHydration(props) {
 	return sharedConfig.context ? void 0 : props.children;
 }
-//#endregion
-//#region tests/fixtures/hydratable-root.tsx
 function TestHydratableHtml() {
 	return getNextElement();
 }
@@ -123,7 +116,6 @@ function TestHydratableHead() {
 function TestHydratableBody() {
 	return getNextElement();
 }
-//#endregion
 export { TestHydratableBody, TestHydratableHead, TestHydratableHtml };
 "
 `;

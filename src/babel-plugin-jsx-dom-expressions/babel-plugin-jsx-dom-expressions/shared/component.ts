@@ -312,7 +312,7 @@ function transformComponentChildren(children, config) {
   const filteredChildren = filterChildren(children);
   if (!filteredChildren.length) return;
   let dynamic = false;
-  let pathNodes = [];
+  const pathNodes = [];
 
   let transformedChildren = filteredChildren.reduce((memo, path) => {
     if (t.isJSXText(path.node)) {

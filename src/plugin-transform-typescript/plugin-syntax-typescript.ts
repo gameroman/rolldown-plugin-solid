@@ -24,8 +24,7 @@ export interface Options {
 const syntaxTypeScript = declare((api, opts: Options) => {
   const { disallowAmbiguousJSXLike, dts } = opts;
 
-  // eslint-disable-next-line no-var
-  var { isTSX } = opts;
+  const { isTSX } = opts;
 
   return {
     name: "syntax-typescript",

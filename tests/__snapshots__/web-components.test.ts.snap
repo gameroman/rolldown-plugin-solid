@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform web components with contextToCustomElements enabled 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -197,6 +196,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -691,8 +691,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/web-components.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
@@ -763,14 +761,12 @@ const WebComponentsIntegration = () => {
 	} });
 };
 delegateEvents(["click"]);
-//#endregion
 export { WebComponentsIntegration as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform web components with contextToCustomElements enabled 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -965,6 +961,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -1459,8 +1456,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/web-components.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
@@ -1531,14 +1526,12 @@ const WebComponentsIntegration = () => {
 	} });
 };
 delegateEvents(["click"]);
-//#endregion
 export { WebComponentsIntegration as default };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform web components with contextToCustomElements disabled 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1730,6 +1723,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -2224,8 +2218,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/web-components.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
@@ -2294,14 +2286,12 @@ const WebComponentsIntegration = () => {
 	} });
 };
 delegateEvents(["click"]);
-//#endregion
 export { WebComponentsIntegration as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform web components with contextToCustomElements disabled 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -2493,6 +2483,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -2987,8 +2978,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/web-components.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
@@ -3057,14 +3046,12 @@ const WebComponentsIntegration = () => {
 	} });
 };
 delegateEvents(["click"]);
-//#endregion
 export { WebComponentsIntegration as default };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform web components with SSR mode 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -3256,6 +3243,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -3477,8 +3465,6 @@ function ssr(template, ...nodes) {}
 function ssrStyle(value) {}
 function ssrHydrationKey() {}
 function escape(html) {}
-//#endregion
-//#region tests/fixtures/web-components.tsx
 var _tmpl$ = [
 	"<div",
 	" style=\\"",
@@ -3541,14 +3527,12 @@ const WebComponentsIntegration = () => {
 		return ssr(_tmpl$5, ssrHydrationKey(), escape(createComponent(RegularSolidComponent, {})), escape(createComponent(CustomElementWrapper, {})), escape(createComponent(NestedContextTest, {})), ssrStyle(\`padding: 1rem; margin: 1rem; border: 1px solid #ccc; border-radius: 4px;\`), ssrStyle(\`background: var(--theme-bg, #fff); color: var(--theme-color, #000); padding: 1rem;\`));
 	} });
 };
-//#endregion
 export { WebComponentsIntegration as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform web components with SSR mode 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -3740,6 +3724,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -3961,8 +3946,6 @@ function ssr(template, ...nodes) {}
 function ssrStyle(value) {}
 function ssrHydrationKey() {}
 function escape(html) {}
-//#endregion
-//#region tests/fixtures/web-components.tsx
 var _tmpl$ = [
 	"<div",
 	" style=\\"",
@@ -4025,7 +4008,6 @@ const WebComponentsIntegration = () => {
 		return ssr(_tmpl$5, ssrHydrationKey(), escape(createComponent(RegularSolidComponent, {})), escape(createComponent(CustomElementWrapper, {})), escape(createComponent(NestedContextTest, {})), ssrStyle(\`padding: 1rem; margin: 1rem; border: 1px solid #ccc; border-radius: 4px;\`), ssrStyle(\`background: var(--theme-bg, #fff); color: var(--theme-color, #000); padding: 1rem;\`));
 	} });
 };
-//#endregion
 export { WebComponentsIntegration as default };
 "
 `;

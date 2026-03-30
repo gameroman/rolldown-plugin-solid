@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform SSR component 1`] = `
-"//#region node_modules/solid-js/dist/server.js
-const ERROR = Symbol("error");
+"const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -135,8 +134,6 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
 var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables, rt = {
 	0: "Symbol.asyncIterator",
@@ -186,7 +183,6 @@ var Ce = {
 	5: "TypeError",
 	6: "URIError"
 };
-Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -388,19 +384,12 @@ var x$1 = class extends Error {
 	constructor(r) {
 		super(_(3));
 	}
-};
-Error;
-var Re = class extends Error {
+}, Re = class extends Error {
 	constructor(t) {
 		super(_(5));
 		this.value = t;
 	}
-};
-Error;
-Error;
-Error;
-Error;
-var ee = class extends Error {
+}, ee = class extends Error {
 	constructor(r) {
 		super(_(9));
 	}
@@ -1504,8 +1493,6 @@ var Sr = class {
 		}
 	}
 };
-//#endregion
-//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
 	let r = new AbortController(), a = r.abort.bind(r);
 	return e.then(a, a), r;
@@ -2215,8 +2202,6 @@ function injectScripts(html, scripts, nonce) {
 	if (index > -1) return html.slice(0, index) + tag + html.slice(index);
 	return html + tag;
 }
-//#endregion
-//#region tests/fixtures/ssr.tsx
 var _tmpl$ = [
 	"<div><script>console.log('test')<\\/script><style>body { margin: 0; }</style><div data-custom-element=\\"true\\" data-test=\\"value\\"><span>Nested content</span></div>",
 	"<div",
@@ -2243,14 +2228,12 @@ const App = () => {
 	return ssr(_tmpl$5, escape(count()));
 };
 var ssr_default = renderToString(App);
-//#endregion
 export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform SSR component 1`] = `
-"//#region node_modules/solid-js/dist/server.js
-const ERROR = Symbol("error");
+"const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -2383,8 +2366,6 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
 var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables, rt = {
 	0: "Symbol.asyncIterator",
@@ -2434,7 +2415,6 @@ var Ce = {
 	5: "TypeError",
 	6: "URIError"
 };
-Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -2636,19 +2616,12 @@ var x$1 = class extends Error {
 	constructor(r) {
 		super(_(3));
 	}
-};
-Error;
-var Re = class extends Error {
+}, Re = class extends Error {
 	constructor(t) {
 		super(_(5));
 		this.value = t;
 	}
-};
-Error;
-Error;
-Error;
-Error;
-var ee = class extends Error {
+}, ee = class extends Error {
 	constructor(r) {
 		super(_(9));
 	}
@@ -3752,8 +3725,6 @@ var Sr = class {
 		}
 	}
 };
-//#endregion
-//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
 	let r = new AbortController(), a = r.abort.bind(r);
 	return e.then(a, a), r;
@@ -4463,8 +4434,6 @@ function injectScripts(html, scripts, nonce) {
 	if (index > -1) return html.slice(0, index) + tag + html.slice(index);
 	return html + tag;
 }
-//#endregion
-//#region tests/fixtures/ssr.tsx
 var _tmpl$ = [
 	"<div><script>console.log('test')<\\/script><style>body { margin: 0; }</style><div data-custom-element=\\"true\\" data-test=\\"value\\"><span>Nested content</span></div>",
 	"<div",
@@ -4491,14 +4460,12 @@ const App = () => {
 	return ssr(_tmpl$5, escape(count()));
 };
 var ssr_default = renderToString(App);
-//#endregion
 export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform SSR with hydratable option 1`] = `
-"//#region node_modules/solid-js/dist/server.js
-const ERROR = Symbol("error");
+"const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -4631,8 +4598,6 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
 var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables, rt = {
 	0: "Symbol.asyncIterator",
@@ -4682,7 +4647,6 @@ var Ce = {
 	5: "TypeError",
 	6: "URIError"
 };
-Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -4884,19 +4848,12 @@ var x$1 = class extends Error {
 	constructor(r) {
 		super(_(3));
 	}
-};
-Error;
-var Re = class extends Error {
+}, Re = class extends Error {
 	constructor(t) {
 		super(_(5));
 		this.value = t;
 	}
-};
-Error;
-Error;
-Error;
-Error;
-var ee = class extends Error {
+}, ee = class extends Error {
 	constructor(r) {
 		super(_(9));
 	}
@@ -6000,8 +5957,6 @@ var Sr = class {
 		}
 	}
 };
-//#endregion
-//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
 	let r = new AbortController(), a = r.abort.bind(r);
 	return e.then(a, a), r;
@@ -6719,8 +6674,6 @@ function injectScripts(html, scripts, nonce) {
 	if (index > -1) return html.slice(0, index) + tag + html.slice(index);
 	return html + tag;
 }
-//#endregion
-//#region tests/fixtures/ssr.tsx
 var _tmpl$ = [
 	"<div",
 	"><script>console.log('test')<\\/script><style>body { margin: 0; }</style><div data-custom-element=\\"true\\" data-test=\\"value\\"><span>Nested content</span></div><!--$-->",
@@ -6756,14 +6709,12 @@ const App = () => {
 	return ssr(_tmpl$5, ssrHydrationKey(), escape(count()));
 };
 var ssr_default = renderToString(App);
-//#endregion
 export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform SSR with hydratable option 1`] = `
-"//#region node_modules/solid-js/dist/server.js
-const ERROR = Symbol("error");
+"const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -6896,8 +6847,6 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
 var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {});
 var v$1 = Symbol.asyncIterator, mr = Symbol.hasInstance, R = Symbol.isConcatSpreadable, C = Symbol.iterator, pr = Symbol.match, dr = Symbol.matchAll, gr = Symbol.replace, yr = Symbol.search, Nr = Symbol.species, br = Symbol.split, vr = Symbol.toPrimitive, P$1 = Symbol.toStringTag, Cr = Symbol.unscopables, rt = {
 	0: "Symbol.asyncIterator",
@@ -6947,7 +6896,6 @@ var Ce = {
 	5: "TypeError",
 	6: "URIError"
 };
-Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
 		t: e,
@@ -7149,19 +7097,12 @@ var x$1 = class extends Error {
 	constructor(r) {
 		super(_(3));
 	}
-};
-Error;
-var Re = class extends Error {
+}, Re = class extends Error {
 	constructor(t) {
 		super(_(5));
 		this.value = t;
 	}
-};
-Error;
-Error;
-Error;
-Error;
-var ee = class extends Error {
+}, ee = class extends Error {
 	constructor(r) {
 		super(_(9));
 	}
@@ -8265,8 +8206,6 @@ var Sr = class {
 		}
 	}
 };
-//#endregion
-//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
 	let r = new AbortController(), a = r.abort.bind(r);
 	return e.then(a, a), r;
@@ -8984,8 +8923,6 @@ function injectScripts(html, scripts, nonce) {
 	if (index > -1) return html.slice(0, index) + tag + html.slice(index);
 	return html + tag;
 }
-//#endregion
-//#region tests/fixtures/ssr.tsx
 var _tmpl$ = [
 	"<div",
 	"><script>console.log('test')<\\/script><style>body { margin: 0; }</style><div data-custom-element=\\"true\\" data-test=\\"value\\"><span>Nested content</span></div><!--$-->",
@@ -9021,7 +8958,6 @@ const App = () => {
 	return ssr(_tmpl$5, ssrHydrationKey(), escape(count()));
 };
 var ssr_default = renderToString(App);
-//#endregion
 export { TestSSRComplexStructure, TestSSRSpecialElements, ssr_default as default };
 "
 `;

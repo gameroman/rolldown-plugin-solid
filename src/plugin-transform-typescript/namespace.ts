@@ -130,24 +130,19 @@ function handleNested(
   parentExport?: t.Expression,
 ): t.Statement | null {
   const names = new Set();
-  const realName =
-    true || t.isIdentifier(node.id)
-      ? (node.id as t.Identifier)
-      : getFirstIdentifier(node.id as unknown as t.TSQualifiedName);
+  const realName = getFirstIdentifier(node.id as t.TSQualifiedName);
 
   const name = path.scope.generateUid(realName.name);
 
   const body = node.body;
   let namespaceTopLevel: t.Statement[];
-  {
-    namespaceTopLevel = t.isTSModuleBlock(body)
-      ? body.body
-      : // We handle `namespace X.Y {}` as if it was
-        //   namespace X {
-        //     export namespace Y {}
-        //   }
-        [t.exportNamedDeclaration(body)];
-  }
+  namespaceTopLevel = t.isTSModuleBlock(body)
+    ? body.body
+    : // We handle `namespace X.Y {}` as if it was
+      //   namespace X {
+      //     export namespace Y {}
+      //   }
+      [t.exportNamedDeclaration(body)];
 
   let isEmpty = true;
 

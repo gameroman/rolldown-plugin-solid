@@ -125,7 +125,7 @@ export function transformNode(path, info = {}) {
   if (t.isJSXElement(node)) {
     return transformElement(config, path, info);
   } else if (t.isJSXFragment(node)) {
-    let results = { template: "", declarations: [], exprs: [], dynamics: [] };
+    const results = { template: "", declarations: [], exprs: [], dynamics: [] };
     // <><div /><Component /></>
     transformFragmentChildren(path.get("children"), results, config);
     return results;
@@ -229,7 +229,7 @@ export function getCreateTemplate(config, path, result) {
 
 function transformElement(config, path, info = {}) {
   const node = path.node;
-  let tagName = getTagName(node);
+  const tagName = getTagName(node);
   // <Component ...></Component>
   if (isComponent(tagName)) return transformComponent(path);
 

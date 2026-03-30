@@ -615,13 +615,10 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         const newNode = t.variableDeclaration(varKind, [
           t.variableDeclarator(id, init),
         ]);
-
-        {
-          path.replaceWith(
-            // @ts-expect-error(Babel 7 vs Babel 8) Babel 7 AST
-            path.node.isExport ? t.exportNamedDeclaration(newNode) : newNode,
-          );
-        }
+        path.replaceWith(
+          // @ts-expect-error(Babel 7 vs Babel 8) Babel 7 AST
+          path.node.isExport ? t.exportNamedDeclaration(newNode) : newNode,
+        );
         path.scope.registerDeclaration(path);
       },
 

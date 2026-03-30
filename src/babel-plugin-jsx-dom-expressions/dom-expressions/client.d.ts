@@ -41,14 +41,14 @@ export function clearDelegatedEvents(d?: Document): void;
 export function spread<T>(
   node: Element,
   accessor: T,
-  isSVG?: Boolean,
-  skipChildren?: Boolean,
+  isSVG?: boolean,
+  skipChildren?: boolean,
 ): void;
 export function assign(
   node: Element,
   props: any,
-  isSVG?: Boolean,
-  skipChildren?: Boolean,
+  isSVG?: boolean,
+  skipChildren?: boolean,
 ): void;
 export function setAttribute(node: Element, name: string, value: string): void;
 export function setAttributeNS(
