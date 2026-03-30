@@ -28,6 +28,7 @@ export function createFixtureTest(
       plugins: [solidPluginSrc(options?.plugin)],
       output: { format: "esm" },
       write: false,
+      experimental: { attachDebugInfo: "none" },
     });
     const srcCode = srcResult.output[0].code;
 
@@ -37,6 +38,7 @@ export function createFixtureTest(
       plugins: [solidPluginDist(options?.plugin)],
       output: { format: "esm" },
       write: false,
+      experimental: { attachDebugInfo: "none" },
     });
 
     const distCode = distResult.output[0].code;

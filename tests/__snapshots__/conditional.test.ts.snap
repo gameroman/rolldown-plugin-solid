@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform component with conditional rendering 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -182,6 +181,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -678,8 +678,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/conditional.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<h2>Welcome back!\`), _tmpl$2 = /* @__PURE__ */ template(\`<button>Logout\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Admin access granted\`), _tmpl$4 = /* @__PURE__ */ template(\`<p>User access granted\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Guest access only\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><div><p>User type: </p><button>Guest</button><button>User</button><button>Admin\`), _tmpl$7 = /* @__PURE__ */ template(\`<button>Login\`);
 const ConditionalDemo = () => {
 	const [isLoggedIn, setIsLoggedIn] = createSignal(false);
@@ -745,14 +743,12 @@ const ConditionalDemo = () => {
 	})();
 };
 delegateEvents(["click"]);
-//#endregion
 export { ConditionalDemo as default };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform component with conditional rendering 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -932,6 +928,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -1428,8 +1425,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/conditional.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<h2>Welcome back!\`), _tmpl$2 = /* @__PURE__ */ template(\`<button>Logout\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Admin access granted\`), _tmpl$4 = /* @__PURE__ */ template(\`<p>User access granted\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Guest access only\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><div><p>User type: </p><button>Guest</button><button>User</button><button>Admin\`), _tmpl$7 = /* @__PURE__ */ template(\`<button>Login\`);
 const ConditionalDemo = () => {
 	const [isLoggedIn, setIsLoggedIn] = createSignal(false);
@@ -1495,7 +1490,6 @@ const ConditionalDemo = () => {
 	})();
 };
 delegateEvents(["click"]);
-//#endregion
 export { ConditionalDemo as default };
 "
 `;

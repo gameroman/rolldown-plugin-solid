@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform with typescript declare 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -196,6 +195,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -725,8 +725,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-declare.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`), _tmpl$3 = /* @__PURE__ */ template(\`<li>Item: \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Component <!>: \`), _tmpl$6 = /* @__PURE__ */ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`), _tmpl$7 = /* @__PURE__ */ template(\`<li>\`);
 var UserStore = class {
 	constructor(id) {
@@ -889,14 +887,12 @@ function GenericStoreComponent() {
 	})();
 }
 delegateEvents(["click"]);
-//#endregion
 export { BaseComponent, ConcreteComponent as Concrete, ConcreteComponent, Config, ConfigComponent, DataStore, GenericStore, GenericStoreComponent, StoreComponent, UserProfile, UserStore };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform with typescript declare 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1090,6 +1086,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -1619,8 +1616,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/typescript-declare.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`), _tmpl$3 = /* @__PURE__ */ template(\`<li>Item: \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Component <!>: \`), _tmpl$6 = /* @__PURE__ */ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`), _tmpl$7 = /* @__PURE__ */ template(\`<li>\`);
 var UserStore = class {
 	constructor(id) {
@@ -1783,7 +1778,6 @@ function GenericStoreComponent() {
 	})();
 }
 delegateEvents(["click"]);
-//#endregion
 export { BaseComponent, ConcreteComponent as Concrete, ConcreteComponent, Config, ConfigComponent, DataStore, GenericStore, GenericStoreComponent, StoreComponent, UserProfile, UserStore };
 "
 `;

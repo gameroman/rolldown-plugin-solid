@@ -1,8 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`rolldown-plugin-solid src should transform templates and event delegation 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -164,6 +163,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -353,8 +353,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
 const Properties = /* @__PURE__ */ new Set([
 	"className",
 	"value",
@@ -932,8 +930,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/templates.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
@@ -1026,14 +1022,12 @@ delegateEvents([
 	"mouseover",
 	"input"
 ]);
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates and event delegation 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -1195,6 +1189,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -1384,8 +1379,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
 const Properties = /* @__PURE__ */ new Set([
 	"className",
 	"value",
@@ -1963,8 +1956,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/templates.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
@@ -2057,14 +2048,12 @@ delegateEvents([
 	"mouseover",
 	"input"
 ]);
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with SSR 1`] = `
-"//#region node_modules/solid-js/dist/server.js
-const ERROR = Symbol("error");
+"const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -2158,22 +2147,7 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator;
-Symbol.hasInstance;
-Symbol.isConcatSpreadable;
-var C = Symbol.iterator;
-Symbol.match;
-Symbol.matchAll;
-Symbol.replace;
-Symbol.search;
-Symbol.species;
-Symbol.split;
-Symbol.toPrimitive;
-Symbol.toStringTag;
-Symbol.unscopables;
-var o$1 = void 0;
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator, C = Symbol.iterator, o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -2360,8 +2334,6 @@ function ni(e) {
 }
 var Eo = () => T, Io = Eo.toString();
 /=>/.test(Io);
-//#endregion
-//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
 	let r = new AbortController(), a = r.abort.bind(r);
 	return e.then(a, a), r;
@@ -2918,8 +2890,6 @@ ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -3121,8 +3091,6 @@ function getHydrationKey() {
 	const hydrate = sharedConfig.context;
 	return hydrate && !hydrate.noHydrate && sharedConfig.getNextContextId();
 }
-//#endregion
-//#region tests/fixtures/templates.tsx
 var _tmpl$ = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>", _tmpl$2 = "<div><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>", _tmpl$3 = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>", _tmpl$4 = [
 	"<div class=\\"container\\"><h1>Title</h1>",
 	"<ul>",
@@ -3181,14 +3149,12 @@ function TestSSRSpecialElements() {
 function TestValidationScenarios() {
 	return ssr(_tmpl$12);
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with SSR 1`] = `
-"//#region node_modules/solid-js/dist/server.js
-const ERROR = Symbol("error");
+"const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -3282,22 +3248,7 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator;
-Symbol.hasInstance;
-Symbol.isConcatSpreadable;
-var C = Symbol.iterator;
-Symbol.match;
-Symbol.matchAll;
-Symbol.replace;
-Symbol.search;
-Symbol.species;
-Symbol.split;
-Symbol.toPrimitive;
-Symbol.toStringTag;
-Symbol.unscopables;
-var o$1 = void 0;
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator, C = Symbol.iterator, o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -3484,8 +3435,6 @@ function ni(e) {
 }
 var Eo = () => T, Io = Eo.toString();
 /=>/.test(Io);
-//#endregion
-//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
 	let r = new AbortController(), a = r.abort.bind(r);
 	return e.then(a, a), r;
@@ -4042,8 +3991,6 @@ ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -4245,8 +4192,6 @@ function getHydrationKey() {
 	const hydrate = sharedConfig.context;
 	return hydrate && !hydrate.noHydrate && sharedConfig.getNextContextId();
 }
-//#endregion
-//#region tests/fixtures/templates.tsx
 var _tmpl$ = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>", _tmpl$2 = "<div><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>", _tmpl$3 = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>", _tmpl$4 = [
 	"<div class=\\"container\\"><h1>Title</h1>",
 	"<ul>",
@@ -4305,14 +4250,12 @@ function TestSSRSpecialElements() {
 function TestValidationScenarios() {
 	return ssr(_tmpl$12);
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with universal 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -4501,6 +4444,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -4788,8 +4732,6 @@ function mergeProps$1(...sources) {
 	}
 	return target;
 }
-//#endregion
-//#region node_modules/solid-js/universal/dist/universal.js
 const memo$1 = (fn) => createMemo(() => fn());
 function createRenderer$1({ createElement, createTextNode, isTextNode, replaceText, insertNode, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
 	function insert(parent, accessor, marker, initial) {
@@ -4987,8 +4929,6 @@ function createRenderer(options) {
 	renderer.mergeProps = mergeProps$1;
 	return renderer;
 }
-//#endregion
-//#region tests/helpers/universal-mode-renderer.ts
 const { createComponent, createElement, createTextNode, effect, insert, insertNode, memo, mergeProps, render, setProp, spread, use } = createRenderer({
 	createElement() {},
 	createTextNode() {},
@@ -5003,8 +4943,6 @@ const { createComponent, createElement, createTextNode, effect, insert, insertNo
 	replaceText() {},
 	setProperty() {}
 });
-//#endregion
-//#region tests/fixtures/templates.tsx
 function TestSvgWrap() {
 	return (() => {
 		var _el$ = createElement("svg"), _el$2 = createElement("circle"), _el$3 = createElement("foreignObject"), _el$4 = createElement("div"), _el$5 = createElement("p");
@@ -5243,14 +5181,12 @@ function TestValidationScenarios() {
 		return _el$70;
 	})();
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with universal 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -5439,6 +5375,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -5726,8 +5663,6 @@ function mergeProps$1(...sources) {
 	}
 	return target;
 }
-//#endregion
-//#region node_modules/solid-js/universal/dist/universal.js
 const memo$1 = (fn) => createMemo(() => fn());
 function createRenderer$1({ createElement, createTextNode, isTextNode, replaceText, insertNode, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
 	function insert(parent, accessor, marker, initial) {
@@ -5925,8 +5860,6 @@ function createRenderer(options) {
 	renderer.mergeProps = mergeProps$1;
 	return renderer;
 }
-//#endregion
-//#region tests/helpers/universal-mode-renderer.ts
 const { createComponent, createElement, createTextNode, effect, insert, insertNode, memo, mergeProps, render, setProp, spread, use } = createRenderer({
 	createElement() {},
 	createTextNode() {},
@@ -5941,8 +5874,6 @@ const { createComponent, createElement, createTextNode, effect, insert, insertNo
 	replaceText() {},
 	setProperty() {}
 });
-//#endregion
-//#region tests/fixtures/templates.tsx
 function TestSvgWrap() {
 	return (() => {
 		var _el$ = createElement("svg"), _el$2 = createElement("circle"), _el$3 = createElement("foreignObject"), _el$4 = createElement("div"), _el$5 = createElement("p");
@@ -6181,14 +6112,12 @@ function TestValidationScenarios() {
 		return _el$70;
 	})();
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with universal and hydratable 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -6377,6 +6306,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -6664,8 +6594,6 @@ function mergeProps$1(...sources) {
 	}
 	return target;
 }
-//#endregion
-//#region node_modules/solid-js/universal/dist/universal.js
 const memo$1 = (fn) => createMemo(() => fn());
 function createRenderer$1({ createElement, createTextNode, isTextNode, replaceText, insertNode, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
 	function insert(parent, accessor, marker, initial) {
@@ -6863,8 +6791,6 @@ function createRenderer(options) {
 	renderer.mergeProps = mergeProps$1;
 	return renderer;
 }
-//#endregion
-//#region tests/helpers/universal-mode-renderer.ts
 const { createComponent, createElement, createTextNode, effect, insert, insertNode, memo, mergeProps, render, setProp, spread, use } = createRenderer({
 	createElement() {},
 	createTextNode() {},
@@ -6879,8 +6805,6 @@ const { createComponent, createElement, createTextNode, effect, insert, insertNo
 	replaceText() {},
 	setProperty() {}
 });
-//#endregion
-//#region tests/fixtures/templates.tsx
 function TestSvgWrap() {
 	return (() => {
 		var _el$ = createElement("svg"), _el$2 = createElement("circle"), _el$3 = createElement("foreignObject"), _el$4 = createElement("div"), _el$5 = createElement("p");
@@ -7119,14 +7043,12 @@ function TestValidationScenarios() {
 		return _el$70;
 	})();
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with universal and hydratable 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -7315,6 +7237,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -7602,8 +7525,6 @@ function mergeProps$1(...sources) {
 	}
 	return target;
 }
-//#endregion
-//#region node_modules/solid-js/universal/dist/universal.js
 const memo$1 = (fn) => createMemo(() => fn());
 function createRenderer$1({ createElement, createTextNode, isTextNode, replaceText, insertNode, removeNode, setProperty, getParentNode, getFirstChild, getNextSibling }) {
 	function insert(parent, accessor, marker, initial) {
@@ -7801,8 +7722,6 @@ function createRenderer(options) {
 	renderer.mergeProps = mergeProps$1;
 	return renderer;
 }
-//#endregion
-//#region tests/helpers/universal-mode-renderer.ts
 const { createComponent, createElement, createTextNode, effect, insert, insertNode, memo, mergeProps, render, setProp, spread, use } = createRenderer({
 	createElement() {},
 	createTextNode() {},
@@ -7817,8 +7736,6 @@ const { createComponent, createElement, createTextNode, effect, insert, insertNo
 	replaceText() {},
 	setProperty() {}
 });
-//#endregion
-//#region tests/fixtures/templates.tsx
 function TestSvgWrap() {
 	return (() => {
 		var _el$ = createElement("svg"), _el$2 = createElement("circle"), _el$3 = createElement("foreignObject"), _el$4 = createElement("div"), _el$5 = createElement("p");
@@ -8057,14 +7974,12 @@ function TestValidationScenarios() {
 		return _el$70;
 	})();
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with disabled delegation 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -8226,6 +8141,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -8415,8 +8331,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
 const Properties = /* @__PURE__ */ new Set([
 	"className",
 	"value",
@@ -8994,8 +8908,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/templates.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
@@ -9083,14 +8995,12 @@ function TestSSRSpecialElements() {
 function TestValidationScenarios() {
 	return _tmpl$13();
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with disabled delegation 1`] = `
-"//#region node_modules/solid-js/dist/solid.js
-const sharedConfig = {
+"const sharedConfig = {
 	context: void 0,
 	registry: void 0,
 	effects: void 0,
@@ -9252,6 +9162,7 @@ function runComputation(node, value, time) {
 	if (!node.updatedAt || node.updatedAt <= time) {
 		if (node.updatedAt != null && "observers" in node) writeSignal(node, nextValue, true);
 		else if (Transition && Transition.running && node.pure) {
+			if (!Transition.sources.has(node)) node.value = nextValue;
 			Transition.sources.add(node);
 			node.tValue = nextValue;
 		} else node.value = nextValue;
@@ -9441,8 +9352,6 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-//#endregion
-//#region node_modules/solid-js/web/dist/web.js
 const Properties = /* @__PURE__ */ new Set([
 	"className",
 	"value",
@@ -10020,8 +9929,6 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-//#endregion
-//#region tests/fixtures/templates.tsx
 var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
@@ -10109,14 +10016,12 @@ function TestSSRSpecialElements() {
 function TestValidationScenarios() {
 	return _tmpl$13();
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid src should transform templates with hydratable SSR 1`] = `
-"//#region node_modules/solid-js/dist/server.js
-const ERROR = Symbol("error");
+"const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -10230,22 +10135,7 @@ function createComponent(Comp, props) {
 	return Comp(props || {});
 }
 createContext();
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator;
-Symbol.hasInstance;
-Symbol.isConcatSpreadable;
-var C = Symbol.iterator;
-Symbol.match;
-Symbol.matchAll;
-Symbol.replace;
-Symbol.search;
-Symbol.species;
-Symbol.split;
-Symbol.toPrimitive;
-Symbol.toStringTag;
-Symbol.unscopables;
-var o$1 = void 0;
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator, C = Symbol.iterator, o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -10432,8 +10322,6 @@ function ni(e) {
 }
 var Eo = () => T, Io = Eo.toString();
 /=>/.test(Io);
-//#endregion
-//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
 	let r = new AbortController(), a = r.abort.bind(r);
 	return e.then(a, a), r;
@@ -10990,8 +10878,6 @@ ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -11197,8 +11083,6 @@ function NoHydration(props) {
 	if (sharedConfig.context) sharedConfig.context.noHydrate = true;
 	return props.children;
 }
-//#endregion
-//#region tests/fixtures/templates.tsx
 var _tmpl$ = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>"], _tmpl$2 = ["<div", "><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>"], _tmpl$3 = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"], _tmpl$4 = [
 	"<div",
 	" class=\\"container\\"><h1>Title</h1><!--$-->",
@@ -11269,14 +11153,12 @@ function TestSSRSpecialElements() {
 function TestValidationScenarios() {
 	return ssr(_tmpl$12, ssrHydrationKey());
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
 
 exports[`rolldown-plugin-solid dist should transform templates with hydratable SSR 1`] = `
-"//#region node_modules/solid-js/dist/server.js
-const ERROR = Symbol("error");
+"const ERROR = Symbol("error");
 function castError(err) {
 	if (err instanceof Error) return err;
 	return new Error(typeof err === "string" ? err : "Unknown error", { cause: err });
@@ -11390,22 +11272,7 @@ function createComponent(Comp, props) {
 	return Comp(props || {});
 }
 createContext();
-//#endregion
-//#region node_modules/seroval/dist/esm/production/index.mjs
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator;
-Symbol.hasInstance;
-Symbol.isConcatSpreadable;
-var C = Symbol.iterator;
-Symbol.match;
-Symbol.matchAll;
-Symbol.replace;
-Symbol.search;
-Symbol.species;
-Symbol.split;
-Symbol.toPrimitive;
-Symbol.toStringTag;
-Symbol.unscopables;
-var o$1 = void 0;
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator, C = Symbol.iterator, o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -11592,8 +11459,6 @@ function ni(e) {
 }
 var Eo = () => T, Io = Eo.toString();
 /=>/.test(Io);
-//#endregion
-//#region node_modules/seroval-plugins/dist/esm/production/web.mjs
 var u = (e) => {
 	let r = new AbortController(), a = r.abort.bind(r);
 	return e.then(a, a), r;
@@ -12150,8 +12015,6 @@ ni({
 		return new URLSearchParams(r.deserialize(e.value));
 	}
 });
-//#endregion
-//#region node_modules/solid-js/web/dist/server.js
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -12357,8 +12220,6 @@ function NoHydration(props) {
 	if (sharedConfig.context) sharedConfig.context.noHydrate = true;
 	return props.children;
 }
-//#endregion
-//#region tests/fixtures/templates.tsx
 var _tmpl$ = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>"], _tmpl$2 = ["<div", "><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>"], _tmpl$3 = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"], _tmpl$4 = [
 	"<div",
 	" class=\\"container\\"><h1>Title</h1><!--$-->",
@@ -12429,7 +12290,6 @@ function TestSSRSpecialElements() {
 function TestValidationScenarios() {
 	return ssr(_tmpl$12, ssrHydrationKey());
 }
-//#endregion
 export { TestAttributeTemplates, TestComplexTemplates, TestEventDelegation, TestNestedSvg, TestSSRHeadElement, TestSSRHydration, TestSSRScriptStyle, TestSSRSpecialElements, TestSSRSpreadAttributes, TestSVGTemplates, TestSvgWrap, TestValidationScenarios };
 "
 `;
