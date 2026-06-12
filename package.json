@@ -16,6 +16,10 @@
     "type": "git",
     "url": "git+https://github.com/gameroman/rolldown-plugin-solid.git"
   },
+  "homepage": "https://github.com/gameroman/rolldown-plugin-solid#readme",
+  "bugs": {
+    "url": "https://github.com/gameroman/rolldown-plugin-solid/issues"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
