@@ -1,6 +1,9 @@
 {
   "name": "@rolldown-plugin/solid",
   "version": "0.0.4",
+  "bugs": {
+    "url": "https://github.com/gameroman/rolldown-plugin-solid/issues"
+  },
   "description": "A Rolldown plugin for compiling SolidJS JSX/TSX files",
   "license": "MIT",
   "author": "gameroman",
