@@ -120,7 +120,7 @@ function runWithOwner(o, fn) {
 		Listener = prevListener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function useContext(context) {
 	let value;
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
@@ -136,20 +136,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -716,7 +719,7 @@ function Portal(props) {
 	}, void 0, { render: !hydrating });
 	return marker;
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div class=notification><p>This notification is always rendered in a different container\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=tooltip style=position:fixed;top:10px;right:10px>This tooltip is rendered directly to document.body\`), _tmpl$3 = /* @__PURE__ */ template(\`<div class=portal-example><h2>Portal Example</h2><button>Open Modal</button><button>Open Different Modal\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=modal-overlay><div class=modal-content><h3>Modal</h3><p></p><button>Close\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=notification><p>This notification is always rendered in a different container\`), _tmpl$2 = /*#__PURE__*/ template(\`<div class=tooltip style=position:fixed;top:10px;right:10px>This tooltip is rendered directly to document.body\`), _tmpl$3 = /*#__PURE__*/ template(\`<div class=portal-example><h2>Portal Example</h2><button>Open Modal</button><button>Open Different Modal\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=modal-overlay><div class=modal-content><h3>Modal</h3><p></p><button>Close\`);
 const Modal = () => {
 	const [isOpen, setIsOpen] = createSignal(false);
 	const [message, setMessage] = createSignal("");
@@ -886,7 +889,7 @@ function runWithOwner(o, fn) {
 		Listener = prevListener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function useContext(context) {
 	let value;
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
@@ -902,20 +905,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1482,7 +1488,7 @@ function Portal(props) {
 	}, void 0, { render: !hydrating });
 	return marker;
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div class=notification><p>This notification is always rendered in a different container\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=tooltip style=position:fixed;top:10px;right:10px>This tooltip is rendered directly to document.body\`), _tmpl$3 = /* @__PURE__ */ template(\`<div class=portal-example><h2>Portal Example</h2><button>Open Modal</button><button>Open Different Modal\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=modal-overlay><div class=modal-content><h3>Modal</h3><p></p><button>Close\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=notification><p>This notification is always rendered in a different container\`), _tmpl$2 = /*#__PURE__*/ template(\`<div class=tooltip style=position:fixed;top:10px;right:10px>This tooltip is rendered directly to document.body\`), _tmpl$3 = /*#__PURE__*/ template(\`<div class=portal-example><h2>Portal Example</h2><button>Open Modal</button><button>Open Different Modal\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=modal-overlay><div class=modal-content><h3>Modal</h3><p></p><button>Close\`);
 const Modal = () => {
 	const [isOpen, setIsOpen] = createSignal(false);
 	const [message, setMessage] = createSignal("");

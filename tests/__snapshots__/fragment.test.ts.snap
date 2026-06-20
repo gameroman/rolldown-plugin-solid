@@ -78,7 +78,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -89,20 +89,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -624,7 +627,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<button type=button>\`);
 const App = () => {
 	const [count, setCount] = createSignal(0);
 	const inc = (by = 1) => setCount(count() + by);
@@ -718,7 +721,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -729,20 +732,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1264,7 +1270,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<button type=button>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<button type=button>\`);
 const App = () => {
 	const [count, setCount] = createSignal(0);
 	const inc = (by = 1) => setCount(count() + by);
@@ -1342,7 +1348,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -1353,20 +1359,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1923,7 +1932,7 @@ function cleanChildren(parent, current, marker, replacement) {
 function getHydrationKey() {
 	return sharedConfig.getNextContextId();
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<h2>Child Component\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>\`), _tmpl$3 = /* @__PURE__ */ template(\`<button>Update Message\`), _tmpl$4 = /* @__PURE__ */ template(\`<h1>Fragment Example\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Count: <!$><!/>\`), _tmpl$6 = /* @__PURE__ */ template(\`<button>Increment\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<h2>Child Component\`), _tmpl$2 = /*#__PURE__*/ template(\`<p>\`), _tmpl$3 = /*#__PURE__*/ template(\`<button>Update Message\`), _tmpl$4 = /*#__PURE__*/ template(\`<h1>Fragment Example\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Count: <!$><!/>\`), _tmpl$6 = /*#__PURE__*/ template(\`<button>Increment\`);
 const ChildComponent = () => {
 	const [message, setMessage] = createSignal("Hello from child!");
 	return [
@@ -2026,7 +2035,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -2037,20 +2046,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -2607,7 +2619,7 @@ function cleanChildren(parent, current, marker, replacement) {
 function getHydrationKey() {
 	return sharedConfig.getNextContextId();
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<h2>Child Component\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>\`), _tmpl$3 = /* @__PURE__ */ template(\`<button>Update Message\`), _tmpl$4 = /* @__PURE__ */ template(\`<h1>Fragment Example\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Count: <!$><!/>\`), _tmpl$6 = /* @__PURE__ */ template(\`<button>Increment\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<h2>Child Component\`), _tmpl$2 = /*#__PURE__*/ template(\`<p>\`), _tmpl$3 = /*#__PURE__*/ template(\`<button>Update Message\`), _tmpl$4 = /*#__PURE__*/ template(\`<h1>Fragment Example\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Count: <!$><!/>\`), _tmpl$6 = /*#__PURE__*/ template(\`<button>Increment\`);
 const ChildComponent = () => {
 	const [message, setMessage] = createSignal("Hello from child!");
 	return [
@@ -2701,7 +2713,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -2712,20 +2724,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -2970,23 +2985,20 @@ function handleError(err, owner = Owner) {
 function createComponent(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
-function ssr(template, ...nodes) {}
-function escape(html) {}
-var _tmpl$ = "<h2>Child Component</h2>", _tmpl$2 = ["<p>", "</p>"], _tmpl$3 = "<button>Update Message</button>", _tmpl$4 = "<h1>Fragment Example</h1>", _tmpl$5 = ["<p>Count: ", "</p>"], _tmpl$6 = "<button>Increment</button>";
 const ChildComponent = () => {
 	const [message, setMessage] = createSignal("Hello from child!");
 	return [
-		ssr(_tmpl$),
-		ssr(_tmpl$2, escape(message())),
-		ssr(_tmpl$3)
+		void 0,
+		(message(), void 0),
+		void 0
 	];
 };
 const App = () => {
 	const [count, setCount] = createSignal(0);
 	return [
-		ssr(_tmpl$4),
-		ssr(_tmpl$5, escape(count())),
-		ssr(_tmpl$6),
+		void 0,
+		(count(), void 0),
+		void 0,
 		createComponent(ChildComponent, {})
 	];
 };
@@ -3047,7 +3059,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -3058,20 +3070,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -3316,23 +3331,20 @@ function handleError(err, owner = Owner) {
 function createComponent(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
-function ssr(template, ...nodes) {}
-function escape(html) {}
-var _tmpl$ = "<h2>Child Component</h2>", _tmpl$2 = ["<p>", "</p>"], _tmpl$3 = "<button>Update Message</button>", _tmpl$4 = "<h1>Fragment Example</h1>", _tmpl$5 = ["<p>Count: ", "</p>"], _tmpl$6 = "<button>Increment</button>";
 const ChildComponent = () => {
 	const [message, setMessage] = createSignal("Hello from child!");
 	return [
-		ssr(_tmpl$),
-		ssr(_tmpl$2, escape(message())),
-		ssr(_tmpl$3)
+		void 0,
+		(message(), void 0),
+		void 0
 	];
 };
 const App = () => {
 	const [count, setCount] = createSignal(0);
 	return [
-		ssr(_tmpl$4),
-		ssr(_tmpl$5, escape(count())),
-		ssr(_tmpl$6),
+		void 0,
+		(count(), void 0),
+		void 0,
 		createComponent(ChildComponent, {})
 	];
 };
@@ -3429,7 +3441,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -3440,20 +3452,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -4166,7 +4181,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -4177,20 +4192,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;

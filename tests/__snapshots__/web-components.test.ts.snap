@@ -74,7 +74,7 @@ function untrack(fn) {
 function getOwner() {
 	return Owner;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function createContext(defaultValue, options) {
 	const id = Symbol("context");
 	return {
@@ -106,20 +106,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -392,7 +395,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -691,7 +696,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /*#__PURE__*/ template(\`<div>No theme context\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /*#__PURE__*/ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
 	const context = useContext(ThemeContext);
@@ -839,7 +844,7 @@ function untrack(fn) {
 function getOwner() {
 	return Owner;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function createContext(defaultValue, options) {
 	const id = Symbol("context");
 	return {
@@ -871,20 +876,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1157,7 +1165,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -1456,7 +1466,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /*#__PURE__*/ template(\`<div>No theme context\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /*#__PURE__*/ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
 	const context = useContext(ThemeContext);
@@ -1601,7 +1611,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function createContext(defaultValue, options) {
 	const id = Symbol("context");
 	return {
@@ -1633,20 +1643,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1919,7 +1932,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -2218,7 +2233,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /*#__PURE__*/ template(\`<div>No theme context\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /*#__PURE__*/ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
 	const context = useContext(ThemeContext);
@@ -2361,7 +2376,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function createContext(defaultValue, options) {
 	const id = Symbol("context");
 	return {
@@ -2393,20 +2408,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -2679,7 +2697,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -2978,7 +2998,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: </p><button>Toggle Theme (via Custom Element Sim)</button><div style=margin-top:1rem><slot><p>This simulates slotted content inheriting theme context\`), _tmpl$2 = /*#__PURE__*/ template(\`<div>No theme context\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><p>Regular Solid Component Theme: </p><button>Toggle Theme (via Solid Component)\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h4>Nested Context Test</h4><p>Theme accessible here: \`), _tmpl$5 = /*#__PURE__*/ template(\`<div><h2>Web Components + SolidJS Context Integration</h2><div style=margin:1rem><h3>Context Boundary Testing</h3></div><div style="padding:1rem;margin:1rem;border:1px solid #ccc;border-radius:4px;"><h3>Simulated Shadow DOM with Slots</h3><div style="background:var(--theme-bg, #fff);color:var(--theme-color, #000);padding:1rem;"><p>This simulates content inside shadow DOM</p><slot>Default slot content\`);
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
 	const context = useContext(ThemeContext);
@@ -3121,7 +3141,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function createContext(defaultValue, options) {
 	const id = Symbol("context");
 	return {
@@ -3153,20 +3173,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -3439,7 +3462,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -3461,41 +3486,11 @@ function createProvider(id, options) {
 function createComponent(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
-function ssr(template, ...nodes) {}
-function ssrStyle(value) {}
-function ssrHydrationKey() {}
-function escape(html) {}
-var _tmpl$ = [
-	"<div",
-	" style=\\"",
-	"\\"><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: <!--$-->",
-	"<!--/--></p><button>Toggle Theme (via Custom Element Sim)</button><div style=\\"margin-top:1rem;\\"><slot><p>This simulates slotted content inheriting theme context</p></slot></div></div>"
-], _tmpl$2 = ["<div", ">No theme context</div>"], _tmpl$3 = [
-	"<div",
-	" style=\\"",
-	"\\"><p>Regular Solid Component Theme: <!--$-->",
-	"<!--/--></p><button>Toggle Theme (via Solid Component)</button></div>"
-], _tmpl$4 = [
-	"<div",
-	" style=\\"",
-	"\\"><h4>Nested Context Test</h4><p>Theme accessible here: <!--$-->",
-	"<!--/--></p><!--$-->",
-	"<!--/--></div>"
-], _tmpl$5 = [
-	"<div",
-	"><h2>Web Components + SolidJS Context Integration</h2><!--$-->",
-	"<!--/--><!--$-->",
-	"<!--/--><div style=\\"margin:1rem;\\"><h3>Context Boundary Testing</h3><!--$-->",
-	"<!--/--></div><div style=\\"",
-	"\\"><h3>Simulated Shadow DOM with Slots</h3><div style=\\"",
-	"\\"><p>This simulates content inside shadow DOM</p><slot>Default slot content</slot></div></div></div>"
-];
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
 	const context = useContext(ThemeContext);
 	context?.toggleTheme;
-	const theme = context?.theme?.() || "light";
-	return ssr(_tmpl$, ssrHydrationKey(), ssrStyle(\`background: \${theme === "light" ? "#f0f0f0" : "#1a1a1a"}; color: \${theme === "light" ? "#000" : "#fff"}; padding: 1rem; border-radius: 4px; border: 1px solid \${theme === "light" ? "#ccc" : "#555"};\`), escape(theme));
+	context?.theme?.();
 };
 const ThemeProvider = (props) => {
 	const [theme, setTheme] = createSignal("light");
@@ -3514,17 +3509,17 @@ const ThemeProvider = (props) => {
 };
 const RegularSolidComponent = () => {
 	const context = useContext(ThemeContext);
-	if (!context) return ssr(_tmpl$2, ssrHydrationKey());
+	if (!context) return void 0;
 	const { theme, toggleTheme } = context;
-	return ssr(_tmpl$3, ssrHydrationKey(), ssrStyle(\`background: \${theme() === "light" ? "#fff" : "#333"}; color: \${theme() === "light" ? "#000" : "#fff"}; padding: 1rem; margin: 1rem; border-radius: 4px;\`), escape(theme()));
+	theme(), theme(), theme();
 };
 const NestedContextTest = () => {
 	const context = useContext(ThemeContext);
-	return ssr(_tmpl$4, ssrHydrationKey(), ssrStyle(\`background: \${context?.theme?.() === "light" ? "#f9f9f9" : "#2a2a2a"}; color: \${context?.theme?.() === "light" ? "#000" : "#fff"}; padding: 1rem; margin: 1rem; border-radius: 4px;\`), escape(context?.theme?.()), escape(createComponent(CustomElementWrapper, {})));
+	context?.theme?.(), context?.theme?.(), context?.theme?.(), createComponent(CustomElementWrapper, {});
 };
 const WebComponentsIntegration = () => {
 	return createComponent(ThemeProvider, { get children() {
-		return ssr(_tmpl$5, ssrHydrationKey(), escape(createComponent(RegularSolidComponent, {})), escape(createComponent(CustomElementWrapper, {})), escape(createComponent(NestedContextTest, {})), ssrStyle(\`padding: 1rem; margin: 1rem; border: 1px solid #ccc; border-radius: 4px;\`), ssrStyle(\`background: var(--theme-bg, #fff); color: var(--theme-color, #000); padding: 1rem;\`));
+		createComponent(RegularSolidComponent, {}), createComponent(CustomElementWrapper, {}), createComponent(NestedContextTest, {});
 	} });
 };
 export { WebComponentsIntegration as default };
@@ -3602,7 +3597,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function createContext(defaultValue, options) {
 	const id = Symbol("context");
 	return {
@@ -3634,20 +3629,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -3920,7 +3918,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -3942,41 +3942,11 @@ function createProvider(id, options) {
 function createComponent(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
-function ssr(template, ...nodes) {}
-function ssrStyle(value) {}
-function ssrHydrationKey() {}
-function escape(html) {}
-var _tmpl$ = [
-	"<div",
-	" style=\\"",
-	"\\"><h3>Custom Element Simulation</h3><p>Simulated Custom Element Theme: <!--$-->",
-	"<!--/--></p><button>Toggle Theme (via Custom Element Sim)</button><div style=\\"margin-top:1rem;\\"><slot><p>This simulates slotted content inheriting theme context</p></slot></div></div>"
-], _tmpl$2 = ["<div", ">No theme context</div>"], _tmpl$3 = [
-	"<div",
-	" style=\\"",
-	"\\"><p>Regular Solid Component Theme: <!--$-->",
-	"<!--/--></p><button>Toggle Theme (via Solid Component)</button></div>"
-], _tmpl$4 = [
-	"<div",
-	" style=\\"",
-	"\\"><h4>Nested Context Test</h4><p>Theme accessible here: <!--$-->",
-	"<!--/--></p><!--$-->",
-	"<!--/--></div>"
-], _tmpl$5 = [
-	"<div",
-	"><h2>Web Components + SolidJS Context Integration</h2><!--$-->",
-	"<!--/--><!--$-->",
-	"<!--/--><div style=\\"margin:1rem;\\"><h3>Context Boundary Testing</h3><!--$-->",
-	"<!--/--></div><div style=\\"",
-	"\\"><h3>Simulated Shadow DOM with Slots</h3><div style=\\"",
-	"\\"><p>This simulates content inside shadow DOM</p><slot>Default slot content</slot></div></div></div>"
-];
 const ThemeContext = createContext();
 const CustomElementWrapper = () => {
 	const context = useContext(ThemeContext);
 	context?.toggleTheme;
-	const theme = context?.theme?.() || "light";
-	return ssr(_tmpl$, ssrHydrationKey(), ssrStyle(\`background: \${theme === "light" ? "#f0f0f0" : "#1a1a1a"}; color: \${theme === "light" ? "#000" : "#fff"}; padding: 1rem; border-radius: 4px; border: 1px solid \${theme === "light" ? "#ccc" : "#555"};\`), escape(theme));
+	context?.theme?.();
 };
 const ThemeProvider = (props) => {
 	const [theme, setTheme] = createSignal("light");
@@ -3995,17 +3965,17 @@ const ThemeProvider = (props) => {
 };
 const RegularSolidComponent = () => {
 	const context = useContext(ThemeContext);
-	if (!context) return ssr(_tmpl$2, ssrHydrationKey());
+	if (!context) return void 0;
 	const { theme, toggleTheme } = context;
-	return ssr(_tmpl$3, ssrHydrationKey(), ssrStyle(\`background: \${theme() === "light" ? "#fff" : "#333"}; color: \${theme() === "light" ? "#000" : "#fff"}; padding: 1rem; margin: 1rem; border-radius: 4px;\`), escape(theme()));
+	theme(), theme(), theme();
 };
 const NestedContextTest = () => {
 	const context = useContext(ThemeContext);
-	return ssr(_tmpl$4, ssrHydrationKey(), ssrStyle(\`background: \${context?.theme?.() === "light" ? "#f9f9f9" : "#2a2a2a"}; color: \${context?.theme?.() === "light" ? "#000" : "#fff"}; padding: 1rem; margin: 1rem; border-radius: 4px;\`), escape(context?.theme?.()), escape(createComponent(CustomElementWrapper, {})));
+	context?.theme?.(), context?.theme?.(), context?.theme?.(), createComponent(CustomElementWrapper, {});
 };
 const WebComponentsIntegration = () => {
 	return createComponent(ThemeProvider, { get children() {
-		return ssr(_tmpl$5, ssrHydrationKey(), escape(createComponent(RegularSolidComponent, {})), escape(createComponent(CustomElementWrapper, {})), escape(createComponent(NestedContextTest, {})), ssrStyle(\`padding: 1rem; margin: 1rem; border: 1px solid #ccc; border-radius: 4px;\`), ssrStyle(\`background: var(--theme-bg, #fff); color: var(--theme-color, #000); padding: 1rem;\`));
+		createComponent(RegularSolidComponent, {}), createComponent(CustomElementWrapper, {}), createComponent(NestedContextTest, {});
 	} });
 };
 export { WebComponentsIntegration as default };

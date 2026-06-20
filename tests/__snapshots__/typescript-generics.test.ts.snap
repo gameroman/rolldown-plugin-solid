@@ -94,7 +94,7 @@ function onCleanup(fn) {
 	else Owner.cleanups.push(fn);
 	return fn;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -105,20 +105,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -731,15 +734,15 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div>Status: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div>Pending...\`), _tmpl$3 = /* @__PURE__ */ template(\`<div>Loading...\`), _tmpl$4 = /* @__PURE__ */ template(\`<div>Success!\`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Error!\`), _tmpl$6 = /* @__PURE__ */ template(\`<div>Unknown\`), _tmpl$7 = /* @__PURE__ */ template(\`<input type=text>\`), _tmpl$8 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$9 = /* @__PURE__ */ template(\`<li>\`), _tmpl$0 = /* @__PURE__ */ template(\`<div>Error: \`), _tmpl$1 = /* @__PURE__ */ template(\`<li><span></span><button>Update\`), _tmpl$10 = /* @__PURE__ */ template(\`<span>(<!>)\`), _tmpl$11 = /* @__PURE__ */ template(\`<span>\`), _tmpl$12 = /* @__PURE__ */ template(\`<span>Number: \`);
-var Status = /* @__PURE__ */ function(Status) {
+var _tmpl$ = /*#__PURE__*/ template(\`<div>Status: \`), _tmpl$2 = /*#__PURE__*/ template(\`<div>Pending...\`), _tmpl$3 = /*#__PURE__*/ template(\`<div>Loading...\`), _tmpl$4 = /*#__PURE__*/ template(\`<div>Success!\`), _tmpl$5 = /*#__PURE__*/ template(\`<div>Error!\`), _tmpl$6 = /*#__PURE__*/ template(\`<div>Unknown\`), _tmpl$7 = /*#__PURE__*/ template(\`<input type=text>\`), _tmpl$8 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$9 = /*#__PURE__*/ template(\`<li>\`), _tmpl$0 = /*#__PURE__*/ template(\`<div>Error: \`), _tmpl$1 = /*#__PURE__*/ template(\`<li><span></span><button>Update\`), _tmpl$10 = /*#__PURE__*/ template(\`<span>(<!>)\`), _tmpl$11 = /*#__PURE__*/ template(\`<span>\`), _tmpl$12 = /*#__PURE__*/ template(\`<span>Number: \`);
+var Status = /*#__PURE__*/ function(Status) {
 	Status[Status["Pending"] = 0] = "Pending";
 	Status[Status["Loading"] = 1] = "Loading";
 	Status[Status["Success"] = 2] = "Success";
 	Status[Status["Error"] = 3] = "Error";
 	return Status;
 }(Status || {});
-var Colors = /* @__PURE__ */ function(Colors) {
+var Colors = /*#__PURE__*/ function(Colors) {
 	Colors["Red"] = "#FF0000";
 	Colors["Green"] = "#00FF00";
 	Colors["Blue"] = "#0000FF";
@@ -983,7 +986,7 @@ function onCleanup(fn) {
 	else Owner.cleanups.push(fn);
 	return fn;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -994,20 +997,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1620,15 +1626,15 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div>Status: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div>Pending...\`), _tmpl$3 = /* @__PURE__ */ template(\`<div>Loading...\`), _tmpl$4 = /* @__PURE__ */ template(\`<div>Success!\`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Error!\`), _tmpl$6 = /* @__PURE__ */ template(\`<div>Unknown\`), _tmpl$7 = /* @__PURE__ */ template(\`<input type=text>\`), _tmpl$8 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$9 = /* @__PURE__ */ template(\`<li>\`), _tmpl$0 = /* @__PURE__ */ template(\`<div>Error: \`), _tmpl$1 = /* @__PURE__ */ template(\`<li><span></span><button>Update\`), _tmpl$10 = /* @__PURE__ */ template(\`<span>(<!>)\`), _tmpl$11 = /* @__PURE__ */ template(\`<span>\`), _tmpl$12 = /* @__PURE__ */ template(\`<span>Number: \`);
-var Status = /* @__PURE__ */ function(Status) {
+var _tmpl$ = /*#__PURE__*/ template(\`<div>Status: \`), _tmpl$2 = /*#__PURE__*/ template(\`<div>Pending...\`), _tmpl$3 = /*#__PURE__*/ template(\`<div>Loading...\`), _tmpl$4 = /*#__PURE__*/ template(\`<div>Success!\`), _tmpl$5 = /*#__PURE__*/ template(\`<div>Error!\`), _tmpl$6 = /*#__PURE__*/ template(\`<div>Unknown\`), _tmpl$7 = /*#__PURE__*/ template(\`<input type=text>\`), _tmpl$8 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$9 = /*#__PURE__*/ template(\`<li>\`), _tmpl$0 = /*#__PURE__*/ template(\`<div>Error: \`), _tmpl$1 = /*#__PURE__*/ template(\`<li><span></span><button>Update\`), _tmpl$10 = /*#__PURE__*/ template(\`<span>(<!>)\`), _tmpl$11 = /*#__PURE__*/ template(\`<span>\`), _tmpl$12 = /*#__PURE__*/ template(\`<span>Number: \`);
+var Status = /*#__PURE__*/ function(Status) {
 	Status[Status["Pending"] = 0] = "Pending";
 	Status[Status["Loading"] = 1] = "Loading";
 	Status[Status["Success"] = 2] = "Success";
 	Status[Status["Error"] = 3] = "Error";
 	return Status;
 }(Status || {});
-var Colors = /* @__PURE__ */ function(Colors) {
+var Colors = /*#__PURE__*/ function(Colors) {
 	Colors["Red"] = "#FF0000";
 	Colors["Green"] = "#00FF00";
 	Colors["Blue"] = "#0000FF";

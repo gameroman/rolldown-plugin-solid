@@ -89,7 +89,7 @@ function untrack(fn) {
 function getListener() {
 	return Listener;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function useContext(context) {
 	let value;
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
@@ -105,20 +105,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -681,10 +684,18 @@ function wrap$1(value) {
 	if (!p) {
 		Object.defineProperty(value, $PROXY, { value: p = new Proxy(value, proxyTraps$1) });
 		if (!Array.isArray(value)) {
-			const keys = Object.keys(value), desc = Object.getOwnPropertyDescriptors(value);
+			const keys = Object.keys(value), desc = Object.getOwnPropertyDescriptors(value), proto = Object.getPrototypeOf(value);
+			const isClass = proto !== null && value !== null && typeof value === "object" && !Array.isArray(value) && proto !== Object.prototype;
+			if (isClass) {
+				const descriptors = Object.getOwnPropertyDescriptors(proto);
+				keys.push(...Object.keys(descriptors));
+				Object.assign(desc, descriptors);
+			}
 			for (let i = 0, l = keys.length; i < l; i++) {
 				const prop = keys[i];
+				if (isClass && prop === "constructor") continue;
 				if (desc[prop].get) Object.defineProperty(value, prop, {
+					configurable: true,
 					enumerable: desc[prop].enumerable,
 					get: desc[prop].get.bind(p)
 				});
@@ -783,6 +794,7 @@ const proxyTraps$1 = {
 	getOwnPropertyDescriptor: proxyDescriptor$1
 };
 function setProperty(state, property, value, deleting = false) {
+	if (property === "__proto__") return;
 	if (!deleting && state[property] === value) return;
 	const prev = state[property], len = state.length;
 	if (value === void 0) {
@@ -804,8 +816,12 @@ function mergeStoreNode(state, value) {
 	const keys = Object.keys(value);
 	for (let i = 0; i < keys.length; i += 1) {
 		const key = keys[i];
+		if (isUnsafeKey$1(key)) continue;
 		setProperty(state, key, value[key]);
 	}
+}
+function isUnsafeKey$1(property) {
+	return property === "__proto__" || property === "constructor" || property === "prototype";
 }
 function updateArray(current, next) {
 	if (typeof next === "function") next = next(current);
@@ -825,6 +841,7 @@ function updatePath(current, path, traversed = []) {
 	if (path.length > 1) {
 		part = path.shift();
 		const partType = typeof part, isArray = Array.isArray(current);
+		if (partType === "string" && (part === "__proto__" || path.length > 1 && isUnsafeKey$1(part))) return;
 		if (Array.isArray(part)) {
 			for (let i = 0; i < part.length; i++) updatePath(current, [part[i]].concat(path), traversed);
 			return;
@@ -863,7 +880,7 @@ function createStore(...[store, options]) {
 	}
 	return [wrappedStore, setStore];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Users List\`), _tmpl$3 = /* @__PURE__ */ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Users List\`), _tmpl$3 = /*#__PURE__*/ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
 const StoreExample = () => {
 	const [store, setStore] = createStore({
 		currentUser: null,
@@ -1117,7 +1134,7 @@ function untrack(fn) {
 function getListener() {
 	return Listener;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function useContext(context) {
 	let value;
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
@@ -1133,20 +1150,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1709,10 +1729,18 @@ function wrap$1(value) {
 	if (!p) {
 		Object.defineProperty(value, $PROXY, { value: p = new Proxy(value, proxyTraps$1) });
 		if (!Array.isArray(value)) {
-			const keys = Object.keys(value), desc = Object.getOwnPropertyDescriptors(value);
+			const keys = Object.keys(value), desc = Object.getOwnPropertyDescriptors(value), proto = Object.getPrototypeOf(value);
+			const isClass = proto !== null && value !== null && typeof value === "object" && !Array.isArray(value) && proto !== Object.prototype;
+			if (isClass) {
+				const descriptors = Object.getOwnPropertyDescriptors(proto);
+				keys.push(...Object.keys(descriptors));
+				Object.assign(desc, descriptors);
+			}
 			for (let i = 0, l = keys.length; i < l; i++) {
 				const prop = keys[i];
+				if (isClass && prop === "constructor") continue;
 				if (desc[prop].get) Object.defineProperty(value, prop, {
+					configurable: true,
 					enumerable: desc[prop].enumerable,
 					get: desc[prop].get.bind(p)
 				});
@@ -1811,6 +1839,7 @@ const proxyTraps$1 = {
 	getOwnPropertyDescriptor: proxyDescriptor$1
 };
 function setProperty(state, property, value, deleting = false) {
+	if (property === "__proto__") return;
 	if (!deleting && state[property] === value) return;
 	const prev = state[property], len = state.length;
 	if (value === void 0) {
@@ -1832,8 +1861,12 @@ function mergeStoreNode(state, value) {
 	const keys = Object.keys(value);
 	for (let i = 0; i < keys.length; i += 1) {
 		const key = keys[i];
+		if (isUnsafeKey$1(key)) continue;
 		setProperty(state, key, value[key]);
 	}
+}
+function isUnsafeKey$1(property) {
+	return property === "__proto__" || property === "constructor" || property === "prototype";
 }
 function updateArray(current, next) {
 	if (typeof next === "function") next = next(current);
@@ -1853,6 +1886,7 @@ function updatePath(current, path, traversed = []) {
 	if (path.length > 1) {
 		part = path.shift();
 		const partType = typeof part, isArray = Array.isArray(current);
+		if (partType === "string" && (part === "__proto__" || path.length > 1 && isUnsafeKey$1(part))) return;
 		if (Array.isArray(part)) {
 			for (let i = 0; i < part.length; i++) updatePath(current, [part[i]].concat(path), traversed);
 			return;
@@ -1891,7 +1925,7 @@ function createStore(...[store, options]) {
 	}
 	return [wrappedStore, setStore];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Users List\`), _tmpl$3 = /* @__PURE__ */ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Users List\`), _tmpl$3 = /*#__PURE__*/ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
 const StoreExample = () => {
 	const [store, setStore] = createStore({
 		currentUser: null,

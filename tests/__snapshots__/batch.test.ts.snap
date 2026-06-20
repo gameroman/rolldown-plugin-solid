@@ -75,7 +75,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function useContext(context) {
 	let value;
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
@@ -91,20 +91,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -634,7 +637,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div class=batch-example><h2>Batch Example</h2><div class=state-display><p>Count: </p><p>Double: </p><p>Name: </p><p>Greeting: </p></div><div class=controls><button>Update Without Batch</button><button>Update With Batch</button><button>Nested Batch Example</button><button>Complex Update</button></div><div class=info><p>Check console to see the difference in effect triggers!</p><p>Without batch: Each signal update triggers effects separately</p><p>With batch: All updates trigger effects together once\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=batch-example><h2>Batch Example</h2><div class=state-display><p>Count: </p><p>Double: </p><p>Name: </p><p>Greeting: </p></div><div class=controls><button>Update Without Batch</button><button>Update With Batch</button><button>Nested Batch Example</button><button>Complex Update</button></div><div class=info><p>Check console to see the difference in effect triggers!</p><p>Without batch: Each signal update triggers effects separately</p><p>With batch: All updates trigger effects together once\`);
 const BatchExample = () => {
 	const [count, setCount] = createSignal(0);
 	const [double, setDouble] = createSignal(0);
@@ -794,7 +797,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function useContext(context) {
 	let value;
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
@@ -810,20 +813,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1353,7 +1359,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div class=batch-example><h2>Batch Example</h2><div class=state-display><p>Count: </p><p>Double: </p><p>Name: </p><p>Greeting: </p></div><div class=controls><button>Update Without Batch</button><button>Update With Batch</button><button>Nested Batch Example</button><button>Complex Update</button></div><div class=info><p>Check console to see the difference in effect triggers!</p><p>Without batch: Each signal update triggers effects separately</p><p>With batch: All updates trigger effects together once\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=batch-example><h2>Batch Example</h2><div class=state-display><p>Count: </p><p>Double: </p><p>Name: </p><p>Greeting: </p></div><div class=controls><button>Update Without Batch</button><button>Update With Batch</button><button>Nested Batch Example</button><button>Complex Update</button></div><div class=info><p>Check console to see the difference in effect triggers!</p><p>Without batch: Each signal update triggers effects separately</p><p>With batch: All updates trigger effects together once\`);
 const BatchExample = () => {
 	const [count, setCount] = createSignal(0);
 	const [double, setDouble] = createSignal(0);

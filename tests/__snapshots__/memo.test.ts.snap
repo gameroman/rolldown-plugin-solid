@@ -81,7 +81,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function useContext(context) {
 	let value;
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
@@ -97,20 +97,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -644,7 +647,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Counter with Memos</h3><p>Count: </p><p>Multiplier: </p><p>Doubled: </p><p>Quadrupled: </p><p>Expensive: </p><button>Increment</button><button>Increase Multiplier\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Filtered List with Memos</h3><div style=margin-bottom:1rem><input type=text placeholder=Search...><select style=margin-left:0.5rem><option value=all>All Categories</option><option value=fruit>Fruit</option><option value=vegetable>Vegetable</option><option value=grain>Grain</option></select><input type=number placeholder="Min Price"min=0 step=0.1 style=margin-left:0.5rem;width:100px></div><button>Add Random Item</button><p>Total items: </p><p>Total price: $</p><ul>\`), _tmpl$3 = /* @__PURE__ */ template(\`<li> (<!>) - $\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Computed Values</h3><div style=display:flex;gap:1rem;align-items:center><div><label>Base: </label><input type=range min=1 max=20></div><div><label>Exponent: </label><input type=range min=1 max=5></div></div><p>Raw power: </p><p>Formatted: </p><p>Is large: </p><p>Description: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div style=color:red;font-weight:bold>This is a large number!\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>createMemo Demo</h2><hr><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Counter with Memos</h3><p>Count: </p><p>Multiplier: </p><p>Doubled: </p><p>Quadrupled: </p><p>Expensive: </p><button>Increment</button><button>Increase Multiplier\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Filtered List with Memos</h3><div style=margin-bottom:1rem><input type=text placeholder=Search...><select style=margin-left:0.5rem><option value=all>All Categories</option><option value=fruit>Fruit</option><option value=vegetable>Vegetable</option><option value=grain>Grain</option></select><input type=number placeholder="Min Price"min=0 step=0.1 style=margin-left:0.5rem;width:100px></div><button>Add Random Item</button><p>Total items: </p><p>Total price: $</p><ul>\`), _tmpl$3 = /*#__PURE__*/ template(\`<li> (<!>) - $\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Computed Values</h3><div style=display:flex;gap:1rem;align-items:center><div><label>Base: </label><input type=range min=1 max=20></div><div><label>Exponent: </label><input type=range min=1 max=5></div></div><p>Raw power: </p><p>Formatted: </p><p>Is large: </p><p>Description: \`), _tmpl$5 = /*#__PURE__*/ template(\`<div style=color:red;font-weight:bold>This is a large number!\`), _tmpl$6 = /*#__PURE__*/ template(\`<div><h2>createMemo Demo</h2><hr><hr>\`);
 const MemoCounter = () => {
 	const [count, setCount] = createSignal(0);
 	const [multiplier, setMultiplier] = createSignal(2);
@@ -903,7 +906,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function useContext(context) {
 	let value;
 	return Owner && Owner.context && (value = Owner.context[context.id]) !== void 0 ? value : context.defaultValue;
@@ -919,20 +922,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1466,7 +1472,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Counter with Memos</h3><p>Count: </p><p>Multiplier: </p><p>Doubled: </p><p>Quadrupled: </p><p>Expensive: </p><button>Increment</button><button>Increase Multiplier\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Filtered List with Memos</h3><div style=margin-bottom:1rem><input type=text placeholder=Search...><select style=margin-left:0.5rem><option value=all>All Categories</option><option value=fruit>Fruit</option><option value=vegetable>Vegetable</option><option value=grain>Grain</option></select><input type=number placeholder="Min Price"min=0 step=0.1 style=margin-left:0.5rem;width:100px></div><button>Add Random Item</button><p>Total items: </p><p>Total price: $</p><ul>\`), _tmpl$3 = /* @__PURE__ */ template(\`<li> (<!>) - $\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Computed Values</h3><div style=display:flex;gap:1rem;align-items:center><div><label>Base: </label><input type=range min=1 max=20></div><div><label>Exponent: </label><input type=range min=1 max=5></div></div><p>Raw power: </p><p>Formatted: </p><p>Is large: </p><p>Description: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div style=color:red;font-weight:bold>This is a large number!\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>createMemo Demo</h2><hr><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Counter with Memos</h3><p>Count: </p><p>Multiplier: </p><p>Doubled: </p><p>Quadrupled: </p><p>Expensive: </p><button>Increment</button><button>Increase Multiplier\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Filtered List with Memos</h3><div style=margin-bottom:1rem><input type=text placeholder=Search...><select style=margin-left:0.5rem><option value=all>All Categories</option><option value=fruit>Fruit</option><option value=vegetable>Vegetable</option><option value=grain>Grain</option></select><input type=number placeholder="Min Price"min=0 step=0.1 style=margin-left:0.5rem;width:100px></div><button>Add Random Item</button><p>Total items: </p><p>Total price: $</p><ul>\`), _tmpl$3 = /*#__PURE__*/ template(\`<li> (<!>) - $\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Computed Values</h3><div style=display:flex;gap:1rem;align-items:center><div><label>Base: </label><input type=range min=1 max=20></div><div><label>Exponent: </label><input type=range min=1 max=5></div></div><p>Raw power: </p><p>Formatted: </p><p>Is large: </p><p>Description: \`), _tmpl$5 = /*#__PURE__*/ template(\`<div style=color:red;font-weight:bold>This is a large number!\`), _tmpl$6 = /*#__PURE__*/ template(\`<div><h2>createMemo Demo</h2><hr><hr>\`);
 const MemoCounter = () => {
 	const [count, setCount] = createSignal(0);
 	const [multiplier, setMultiplier] = createSignal(2);

@@ -101,7 +101,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -538,7 +540,6 @@ function $e(e) {
 	}
 	return Tr(r, t, n);
 }
-Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -573,7 +574,6 @@ function Xe(e) {
 	}
 	return n().catch(() => {}), r;
 }
-xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -1559,24 +1559,6 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-ni({
-	tag: "seroval-plugins/web/Blob",
-	test(e) {
-		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
-	},
-	parse: { async async(e, r) {
-		return {
-			type: await r.parse(e.type),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
-	},
-	deserialize(e, r) {
-		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
-	}
-});
 function d(e) {
 	return {
 		detail: e.detail,
@@ -1801,44 +1783,6 @@ var l = ni({
 	},
 	deserialize(e, r) {
 		return new Headers(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/ImageData",
-	test(e) {
-		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		async async(e, r) {
-			return {
-				data: await r.parse(e.data),
-				width: await r.parse(e.width),
-				height: await r.parse(e.height),
-				options: await r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		stream(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
 	}
 });
 var n = {}, P = (e) => new ReadableStream({ start: (r) => {
@@ -2333,7 +2277,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -2770,7 +2716,6 @@ function $e(e) {
 	}
 	return Tr(r, t, n);
 }
-Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -2805,7 +2750,6 @@ function Xe(e) {
 	}
 	return n().catch(() => {}), r;
 }
-xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -3791,24 +3735,6 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-ni({
-	tag: "seroval-plugins/web/Blob",
-	test(e) {
-		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
-	},
-	parse: { async async(e, r) {
-		return {
-			type: await r.parse(e.type),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
-	},
-	deserialize(e, r) {
-		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
-	}
-});
 function d(e) {
 	return {
 		detail: e.detail,
@@ -4033,44 +3959,6 @@ var l = ni({
 	},
 	deserialize(e, r) {
 		return new Headers(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/ImageData",
-	test(e) {
-		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		async async(e, r) {
-			return {
-				data: await r.parse(e.data),
-				width: await r.parse(e.width),
-				height: await r.parse(e.height),
-				options: await r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		stream(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
 	}
 });
 var n = {}, P = (e) => new ReadableStream({ start: (r) => {
@@ -4565,7 +4453,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -5002,7 +4892,6 @@ function $e(e) {
 	}
 	return Tr(r, t, n);
 }
-Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -5037,7 +4926,6 @@ function Xe(e) {
 	}
 	return n().catch(() => {}), r;
 }
-xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -6023,24 +5911,6 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-ni({
-	tag: "seroval-plugins/web/Blob",
-	test(e) {
-		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
-	},
-	parse: { async async(e, r) {
-		return {
-			type: await r.parse(e.type),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
-	},
-	deserialize(e, r) {
-		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
-	}
-});
 function d(e) {
 	return {
 		detail: e.detail,
@@ -6265,44 +6135,6 @@ var l = ni({
 	},
 	deserialize(e, r) {
 		return new Headers(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/ImageData",
-	test(e) {
-		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		async async(e, r) {
-			return {
-				data: await r.parse(e.data),
-				width: await r.parse(e.width),
-				height: await r.parse(e.height),
-				options: await r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		stream(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
 	}
 });
 var n = {}, P = (e) => new ReadableStream({ start: (r) => {
@@ -6814,7 +6646,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -7251,7 +7085,6 @@ function $e(e) {
 	}
 	return Tr(r, t, n);
 }
-Pr(C);
 var Rt = {}, Pt = {};
 var xt = {
 	0: {},
@@ -7286,7 +7119,6 @@ function Xe(e) {
 	}
 	return n().catch(() => {}), r;
 }
-xr(v$1, re);
 function pe$1(e, r) {
 	return {
 		plugins: r.plugins,
@@ -8272,24 +8104,6 @@ var i = {}, O = ni({
 		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
 	}
 });
-ni({
-	tag: "seroval-plugins/web/Blob",
-	test(e) {
-		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
-	},
-	parse: { async async(e, r) {
-		return {
-			type: await r.parse(e.type),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
-	},
-	deserialize(e, r) {
-		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
-	}
-});
 function d(e) {
 	return {
 		detail: e.detail,
@@ -8514,44 +8328,6 @@ var l = ni({
 	},
 	deserialize(e, r) {
 		return new Headers(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/ImageData",
-	test(e) {
-		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		async async(e, r) {
-			return {
-				data: await r.parse(e.data),
-				width: await r.parse(e.width),
-				height: await r.parse(e.height),
-				options: await r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		stream(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
 	}
 });
 var n = {}, P = (e) => new ReadableStream({ start: (r) => {

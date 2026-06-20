@@ -99,7 +99,7 @@ function onCleanup(fn) {
 function getOwner() {
 	return Owner;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function resumeEffects(e) {
 	Effects.push.apply(Effects, e);
 	e.length = 0;
@@ -139,20 +139,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -425,7 +428,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -447,7 +452,7 @@ function createProvider(id, options) {
 function createComponent(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
-const SuspenseListContext = /* @__PURE__ */ createContext();
+const SuspenseListContext = /* #__PURE__ */ createContext();
 function Suspense(props) {
 	let counter = 0, show, ctx, p, flicker, error;
 	const [inFallback, setFallback] = createSignal(false), SuspenseContext = getSuspenseContext(), store = {
@@ -767,7 +772,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div>\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div>Loading async component...\`), _tmpl$4 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$5 = /* @__PURE__ */ template(\`<li>\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>Suspense Demo</h2><button>Load Async Components\`), _tmpl$7 = /* @__PURE__ */ template(\`<div>Loading components...\`), _tmpl$8 = /* @__PURE__ */ template(\`<div>Loading slow component...\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div>\`), _tmpl$2 = /*#__PURE__*/ template(\`<p>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div>Loading async component...\`), _tmpl$4 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$5 = /*#__PURE__*/ template(\`<li>\`), _tmpl$6 = /*#__PURE__*/ template(\`<div><h2>Suspense Demo</h2><button>Load Async Components\`), _tmpl$7 = /*#__PURE__*/ template(\`<div>Loading components...\`), _tmpl$8 = /*#__PURE__*/ template(\`<div>Loading slow component...\`);
 const AsyncComponent = () => {
 	const [data, setData] = createSignal(null);
 	setTimeout(() => {
@@ -935,7 +940,7 @@ function onCleanup(fn) {
 function getOwner() {
 	return Owner;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function resumeEffects(e) {
 	Effects.push.apply(Effects, e);
 	e.length = 0;
@@ -975,20 +980,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1261,7 +1269,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -1283,7 +1293,7 @@ function createProvider(id, options) {
 function createComponent(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
-const SuspenseListContext = /* @__PURE__ */ createContext();
+const SuspenseListContext = /* #__PURE__ */ createContext();
 function Suspense(props) {
 	let counter = 0, show, ctx, p, flicker, error;
 	const [inFallback, setFallback] = createSignal(false), SuspenseContext = getSuspenseContext(), store = {
@@ -1603,7 +1613,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div>\`), _tmpl$2 = /* @__PURE__ */ template(\`<p>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div>Loading async component...\`), _tmpl$4 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$5 = /* @__PURE__ */ template(\`<li>\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>Suspense Demo</h2><button>Load Async Components\`), _tmpl$7 = /* @__PURE__ */ template(\`<div>Loading components...\`), _tmpl$8 = /* @__PURE__ */ template(\`<div>Loading slow component...\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div>\`), _tmpl$2 = /*#__PURE__*/ template(\`<p>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div>Loading async component...\`), _tmpl$4 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$5 = /*#__PURE__*/ template(\`<li>\`), _tmpl$6 = /*#__PURE__*/ template(\`<div><h2>Suspense Demo</h2><button>Load Async Components\`), _tmpl$7 = /*#__PURE__*/ template(\`<div>Loading components...\`), _tmpl$8 = /*#__PURE__*/ template(\`<div>Loading slow component...\`);
 const AsyncComponent = () => {
 	const [data, setData] = createSignal(null);
 	setTimeout(() => {

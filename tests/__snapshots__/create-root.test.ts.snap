@@ -78,7 +78,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -89,20 +89,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -613,7 +616,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div class=counter><p>Count: </p><button>Increment\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=root-component><h3>Root Component</h3><button>Dispose Root\`), _tmpl$3 = /* @__PURE__ */ template(\`<div class=app><h2>createRoot Example</h2><button>Mount Root</button><p>Root mounted: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=counter><p>Count: </p><button>Increment\`), _tmpl$2 = /*#__PURE__*/ template(\`<div class=root-component><h3>Root Component</h3><button>Dispose Root\`), _tmpl$3 = /*#__PURE__*/ template(\`<div class=app><h2>createRoot Example</h2><button>Mount Root</button><p>Root mounted: \`);
 const Counter = () => {
 	const [count, setCount] = createSignal(0);
 	return (() => {
@@ -745,7 +748,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -756,20 +759,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1280,7 +1286,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div class=counter><p>Count: </p><button>Increment\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=root-component><h3>Root Component</h3><button>Dispose Root\`), _tmpl$3 = /* @__PURE__ */ template(\`<div class=app><h2>createRoot Example</h2><button>Mount Root</button><p>Root mounted: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=counter><p>Count: </p><button>Increment\`), _tmpl$2 = /*#__PURE__*/ template(\`<div class=root-component><h3>Root Component</h3><button>Dispose Root\`), _tmpl$3 = /*#__PURE__*/ template(\`<div class=app><h2>createRoot Example</h2><button>Mount Root</button><p>Root mounted: \`);
 const Counter = () => {
 	const [count, setCount] = createSignal(0);
 	return (() => {

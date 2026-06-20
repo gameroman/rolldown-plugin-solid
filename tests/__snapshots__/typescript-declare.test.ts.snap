@@ -94,7 +94,7 @@ function onCleanup(fn) {
 	else Owner.cleanups.push(fn);
 	return fn;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -105,20 +105,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -725,7 +728,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`), _tmpl$3 = /* @__PURE__ */ template(\`<li>Item: \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Component <!>: \`), _tmpl$6 = /* @__PURE__ */ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`), _tmpl$7 = /* @__PURE__ */ template(\`<li>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`), _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`), _tmpl$3 = /*#__PURE__*/ template(\`<li>Item: \`), _tmpl$4 = /*#__PURE__*/ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`), _tmpl$5 = /*#__PURE__*/ template(\`<div>Component <!>: \`), _tmpl$6 = /*#__PURE__*/ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`), _tmpl$7 = /*#__PURE__*/ template(\`<li>\`);
 var UserStore = class {
 	constructor(id) {
 		this.id = id;
@@ -985,7 +988,7 @@ function onCleanup(fn) {
 	else Owner.cleanups.push(fn);
 	return fn;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -996,20 +999,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1616,7 +1622,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`), _tmpl$3 = /* @__PURE__ */ template(\`<li>Item: \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Component <!>: \`), _tmpl$6 = /* @__PURE__ */ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`), _tmpl$7 = /* @__PURE__ */ template(\`<li>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h1></h1><p>Email: </p><p>Age: </p><p>Status: \`), _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Store version: </p><p>Last modified: </p><p>Items count: </p><button>Add Item</button><ul>\`), _tmpl$3 = /*#__PURE__*/ template(\`<li>Item: \`), _tmpl$4 = /*#__PURE__*/ template(\`<div><p>API URL: </p><p>Timeout: <!>ms</p><p>Retries: </p><p>Debug: \`), _tmpl$5 = /*#__PURE__*/ template(\`<div>Component <!>: \`), _tmpl$6 = /*#__PURE__*/ template(\`<div><button>Add Items</button><p>Selected: </p><ul>\`), _tmpl$7 = /*#__PURE__*/ template(\`<li>\`);
 var UserStore = class {
 	constructor(id) {
 		this.id = id;

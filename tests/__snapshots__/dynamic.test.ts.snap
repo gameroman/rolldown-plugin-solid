@@ -73,7 +73,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -84,20 +84,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -505,7 +508,7 @@ function splitProps(props, ...keys) {
 	}
 	return objects;
 }
-const Properties = /* @__PURE__ */ new Set([
+const Properties = /*#__PURE__*/ new Set([
 	"className",
 	"value",
 	"readOnly",
@@ -572,17 +575,17 @@ const Properties = /* @__PURE__ */ new Set([
 		"sharedstoragewritable"
 	]
 ]);
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const PropAliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	class: "className",
 	novalidate: {
 		$: "noValidate",
@@ -671,7 +674,7 @@ function getPropAlias(prop, tagName) {
 	const a = PropAliases[prop];
 	return typeof a === "object" ? a[tagName] ? a["$"] : void 0 : a;
 }
-const DelegatedEvents = /* @__PURE__ */ new Set([
+const DelegatedEvents = /*#__PURE__*/ new Set([
 	"beforeinput",
 	"click",
 	"dblclick",
@@ -695,7 +698,7 @@ const DelegatedEvents = /* @__PURE__ */ new Set([
 	"touchmove",
 	"touchstart"
 ]);
-const SVGElements = /* @__PURE__ */ new Set([
+const SVGElements = /*#__PURE__*/ new Set([
 	"altGlyph",
 	"altGlyphDef",
 	"altGlyphItem",
@@ -1193,7 +1196,7 @@ function Dynamic(props) {
 	const [, others] = splitProps(props, ["component"]);
 	return createDynamic(() => props.component, others);
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<button>\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=card><h3></h3><p>\`), _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div class=dynamic-example><h2>Dynamic Component Example</h2><div class=controls></div><div class=dynamic-container></div><div class=conditional-dynamic><h3>Conditional Dynamic Rendering</h3><button>Clear Component</button><button>Show Button Again\`), _tmpl$6 = /* @__PURE__ */ template(\`<div>No Component\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<button>\`), _tmpl$2 = /*#__PURE__*/ template(\`<div class=card><h3></h3><p>\`), _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$4 = /*#__PURE__*/ template(\`<li>\`), _tmpl$5 = /*#__PURE__*/ template(\`<div class=dynamic-example><h2>Dynamic Component Example</h2><div class=controls></div><div class=dynamic-container></div><div class=conditional-dynamic><h3>Conditional Dynamic Rendering</h3><button>Clear Component</button><button>Show Button Again\`), _tmpl$6 = /*#__PURE__*/ template(\`<div>No Component\`);
 const Button = (props) => (() => {
 	var _el$ = _tmpl$();
 	addEventListener(_el$, "click", props.onClick, true);
@@ -1348,7 +1351,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -1359,20 +1362,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1780,7 +1786,7 @@ function splitProps(props, ...keys) {
 	}
 	return objects;
 }
-const Properties = /* @__PURE__ */ new Set([
+const Properties = /*#__PURE__*/ new Set([
 	"className",
 	"value",
 	"readOnly",
@@ -1847,17 +1853,17 @@ const Properties = /* @__PURE__ */ new Set([
 		"sharedstoragewritable"
 	]
 ]);
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const PropAliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	class: "className",
 	novalidate: {
 		$: "noValidate",
@@ -1946,7 +1952,7 @@ function getPropAlias(prop, tagName) {
 	const a = PropAliases[prop];
 	return typeof a === "object" ? a[tagName] ? a["$"] : void 0 : a;
 }
-const DelegatedEvents = /* @__PURE__ */ new Set([
+const DelegatedEvents = /*#__PURE__*/ new Set([
 	"beforeinput",
 	"click",
 	"dblclick",
@@ -1970,7 +1976,7 @@ const DelegatedEvents = /* @__PURE__ */ new Set([
 	"touchmove",
 	"touchstart"
 ]);
-const SVGElements = /* @__PURE__ */ new Set([
+const SVGElements = /*#__PURE__*/ new Set([
 	"altGlyph",
 	"altGlyphDef",
 	"altGlyphItem",
@@ -2468,7 +2474,7 @@ function Dynamic(props) {
 	const [, others] = splitProps(props, ["component"]);
 	return createDynamic(() => props.component, others);
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<button>\`), _tmpl$2 = /* @__PURE__ */ template(\`<div class=card><h3></h3><p>\`), _tmpl$3 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$4 = /* @__PURE__ */ template(\`<li>\`), _tmpl$5 = /* @__PURE__ */ template(\`<div class=dynamic-example><h2>Dynamic Component Example</h2><div class=controls></div><div class=dynamic-container></div><div class=conditional-dynamic><h3>Conditional Dynamic Rendering</h3><button>Clear Component</button><button>Show Button Again\`), _tmpl$6 = /* @__PURE__ */ template(\`<div>No Component\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<button>\`), _tmpl$2 = /*#__PURE__*/ template(\`<div class=card><h3></h3><p>\`), _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$4 = /*#__PURE__*/ template(\`<li>\`), _tmpl$5 = /*#__PURE__*/ template(\`<div class=dynamic-example><h2>Dynamic Component Example</h2><div class=controls></div><div class=dynamic-container></div><div class=conditional-dynamic><h3>Conditional Dynamic Rendering</h3><button>Clear Component</button><button>Show Button Again\`), _tmpl$6 = /*#__PURE__*/ template(\`<div>No Component\`);
 const Button = (props) => (() => {
 	var _el$ = _tmpl$();
 	addEventListener(_el$, "click", props.onClick, true);

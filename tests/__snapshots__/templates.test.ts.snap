@@ -62,7 +62,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -73,20 +73,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -353,7 +356,7 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-const Properties = /* @__PURE__ */ new Set([
+const Properties = /*#__PURE__*/ new Set([
 	"className",
 	"value",
 	"readOnly",
@@ -420,17 +423,17 @@ const Properties = /* @__PURE__ */ new Set([
 		"sharedstoragewritable"
 	]
 ]);
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const PropAliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	class: "className",
 	novalidate: {
 		$: "noValidate",
@@ -519,7 +522,7 @@ function getPropAlias(prop, tagName) {
 	const a = PropAliases[prop];
 	return typeof a === "object" ? a[tagName] ? a["$"] : void 0 : a;
 }
-const DelegatedEvents = /* @__PURE__ */ new Set([
+const DelegatedEvents = /*#__PURE__*/ new Set([
 	"beforeinput",
 	"click",
 	"dblclick",
@@ -930,7 +933,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`), _tmpl$6 = /*#__PURE__*/ template(\`<li>\`), _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`), _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
 }
@@ -1088,7 +1091,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -1099,20 +1102,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1379,7 +1385,7 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-const Properties = /* @__PURE__ */ new Set([
+const Properties = /*#__PURE__*/ new Set([
 	"className",
 	"value",
 	"readOnly",
@@ -1446,17 +1452,17 @@ const Properties = /* @__PURE__ */ new Set([
 		"sharedstoragewritable"
 	]
 ]);
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const PropAliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	class: "className",
 	novalidate: {
 		$: "noValidate",
@@ -1545,7 +1551,7 @@ function getPropAlias(prop, tagName) {
 	const a = PropAliases[prop];
 	return typeof a === "object" ? a[tagName] ? a["$"] : void 0 : a;
 }
-const DelegatedEvents = /* @__PURE__ */ new Set([
+const DelegatedEvents = /*#__PURE__*/ new Set([
 	"beforeinput",
 	"click",
 	"dblclick",
@@ -1956,7 +1962,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`), _tmpl$6 = /*#__PURE__*/ template(\`<li>\`), _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`), _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
 }
@@ -2114,7 +2120,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -2147,7 +2155,7 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator, C = Symbol.iterator, o$1 = void 0;
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -2323,573 +2331,9 @@ var Or = (e) => {
 	return n.buffer;
 };
 Or.toString();
-Pr(C);
-function te$1() {
-	return Rr();
-}
-xr(v$1, re);
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-function ni(e) {
-	return e;
-}
 var Eo = () => T, Io = Eo.toString();
 /=>/.test(Io);
-var u = (e) => {
-	let r = new AbortController(), a = r.abort.bind(r);
-	return e.then(a, a), r;
-};
-function E(e) {
-	e(this.reason);
-}
-function D(e) {
-	this.addEventListener("abort", E.bind(this, e), { once: !0 });
-}
-function c(e) {
-	return new Promise(D.bind(e));
-}
-var i = {};
-ni({
-	tag: "seroval-plugins/web/AbortSignal",
-	extends: [ni({
-		tag: "seroval-plugins/web/AbortControllerFactoryPlugin",
-		test(e) {
-			return e === i;
-		},
-		parse: {
-			sync() {
-				return i;
-			},
-			async async() {
-				return await Promise.resolve(i);
-			},
-			stream() {
-				return i;
-			}
-		},
-		serialize() {
-			return u.toString();
-		},
-		deserialize() {
-			return u;
-		}
-	})],
-	test(e) {
-		return typeof AbortSignal == "undefined" ? !1 : e instanceof AbortSignal;
-	},
-	parse: {
-		sync(e, r) {
-			return e.aborted ? { reason: r.parse(e.reason) } : {};
-		},
-		async async(e, r) {
-			if (e.aborted) return { reason: await r.parse(e.reason) };
-			let a = await c(e);
-			return { reason: await r.parse(a) };
-		},
-		stream(e, r) {
-			if (e.aborted) return { reason: r.parse(e.reason) };
-			let a = c(e);
-			return {
-				factory: r.parse(i),
-				controller: r.parse(a)
-			};
-		}
-	},
-	serialize(e, r) {
-		return e.reason ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : e.controller && e.factory ? "(" + r.serialize(e.factory) + ")(" + r.serialize(e.controller) + ").signal" : "(new AbortController).signal";
-	},
-	deserialize(e, r) {
-		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
-	}
-});
-ni({
-	tag: "seroval-plugins/web/Blob",
-	test(e) {
-		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
-	},
-	parse: { async async(e, r) {
-		return {
-			type: await r.parse(e.type),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
-	},
-	deserialize(e, r) {
-		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
-	}
-});
-function d(e) {
-	return {
-		detail: e.detail,
-		bubbles: e.bubbles,
-		cancelable: e.cancelable,
-		composed: e.composed
-	};
-}
-ni({
-	tag: "seroval-plugins/web/CustomEvent",
-	test(e) {
-		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(d(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				type: await r.parse(e.type),
-				options: await r.parse(d(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(d(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new CustomEvent(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/DOMException",
-	test(e) {
-		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				name: r.parse(e.name),
-				message: r.parse(e.message)
-			};
-		},
-		async async(e, r) {
-			return {
-				name: await r.parse(e.name),
-				message: await r.parse(e.message)
-			};
-		},
-		stream(e, r) {
-			return {
-				name: r.parse(e.name),
-				message: r.parse(e.message)
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new DOMException(" + r.serialize(e.message) + "," + r.serialize(e.name) + ")";
-	},
-	deserialize(e, r) {
-		return new DOMException(r.deserialize(e.message), r.deserialize(e.name));
-	}
-});
-function f(e) {
-	return {
-		bubbles: e.bubbles,
-		cancelable: e.cancelable,
-		composed: e.composed
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Event",
-	test(e) {
-		return typeof Event == "undefined" ? !1 : e instanceof Event;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(f(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				type: await r.parse(e.type),
-				options: await r.parse(f(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(f(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Event(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Event(r.deserialize(e.type), r.deserialize(e.options));
-	}
-});
-var m = ni({
-	tag: "seroval-plugins/web/File",
-	test(e) {
-		return typeof File == "undefined" ? !1 : e instanceof File;
-	},
-	parse: { async async(e, r) {
-		return {
-			name: await r.parse(e.name),
-			options: await r.parse({
-				type: e.type,
-				lastModified: e.lastModified
-			}),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new File([" + r.serialize(e.buffer) + "]," + r.serialize(e.name) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new File([r.deserialize(e.buffer)], r.deserialize(e.name), r.deserialize(e.options));
-	}
-});
-function y(e) {
-	let r = [];
-	return e.forEach((a, t) => {
-		r.push([t, a]);
-	}), r;
-}
-var o = {}, v = (e, r = new FormData(), a = 0, t = e.length, s) => {
-	for (; a < t; a++) s = e[a], r.append(s[0], s[1]);
-	return r;
-};
-ni({
-	tag: "seroval-plugins/web/FormData",
-	extends: [m, ni({
-		tag: "seroval-plugins/web/FormDataFactory",
-		test(e) {
-			return e === o;
-		},
-		parse: {
-			sync() {
-				return o;
-			},
-			async async() {
-				return await Promise.resolve(o);
-			},
-			stream() {
-				return o;
-			}
-		},
-		serialize() {
-			return v.toString();
-		},
-		deserialize() {
-			return o;
-		}
-	})],
-	test(e) {
-		return typeof FormData == "undefined" ? !1 : e instanceof FormData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				factory: r.parse(o),
-				entries: r.parse(y(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				factory: await r.parse(o),
-				entries: await r.parse(y(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				factory: r.parse(o),
-				entries: r.parse(y(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.entries) + ")";
-	},
-	deserialize(e, r) {
-		return v(r.deserialize(e.entries));
-	}
-});
-function g(e) {
-	let r = [];
-	return e.forEach((a, t) => {
-		r.push([t, a]);
-	}), r;
-}
-var l = ni({
-	tag: "seroval-plugins/web/Headers",
-	test(e) {
-		return typeof Headers == "undefined" ? !1 : e instanceof Headers;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(g(e)) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(g(e)) };
-		},
-		stream(e, r) {
-			return { value: r.parse(g(e)) };
-		}
-	},
-	serialize(e, r) {
-		return "new Headers(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new Headers(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/ImageData",
-	test(e) {
-		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		async async(e, r) {
-			return {
-				data: await r.parse(e.data),
-				width: await r.parse(e.width),
-				height: await r.parse(e.height),
-				options: await r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		stream(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
-	}
-});
-var n = {}, P = (e) => new ReadableStream({ start: (r) => {
-	e.on({
-		next: (a) => {
-			try {
-				r.enqueue(a);
-			} catch (t) {}
-		},
-		throw: (a) => {
-			r.error(a);
-		},
-		return: () => {
-			try {
-				r.close();
-			} catch (a) {}
-		}
-	});
-} }), x = ni({
-	tag: "seroval-plugins/web/ReadableStreamFactory",
-	test(e) {
-		return e === n;
-	},
-	parse: {
-		sync() {
-			return n;
-		},
-		async async() {
-			return await Promise.resolve(n);
-		},
-		stream() {
-			return n;
-		}
-	},
-	serialize() {
-		return P.toString();
-	},
-	deserialize() {
-		return n;
-	}
-});
-function w(e) {
-	let r = te$1(), a = e.getReader();
-	async function t() {
-		try {
-			let s = await a.read();
-			s.done ? r.return(s.value) : (r.next(s.value), await t());
-		} catch (s) {
-			r.throw(s);
-		}
-	}
-	return t().catch(() => {}), r;
-}
-var p = ni({
-	tag: "seroval/plugins/web/ReadableStream",
-	extends: [x],
-	test(e) {
-		return typeof ReadableStream == "undefined" ? !1 : e instanceof ReadableStream;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				factory: r.parse(n),
-				stream: r.parse(te$1())
-			};
-		},
-		async async(e, r) {
-			return {
-				factory: await r.parse(n),
-				stream: await r.parse(w(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				factory: r.parse(n),
-				stream: r.parse(w(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.stream) + ")";
-	},
-	deserialize(e, r) {
-		return P(r.deserialize(e.stream));
-	}
-});
-function N(e, r) {
-	return {
-		body: r,
-		cache: e.cache,
-		credentials: e.credentials,
-		headers: e.headers,
-		integrity: e.integrity,
-		keepalive: e.keepalive,
-		method: e.method,
-		mode: e.mode,
-		redirect: e.redirect,
-		referrer: e.referrer,
-		referrerPolicy: e.referrerPolicy
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Request",
-	extends: [p, l],
-	test(e) {
-		return typeof Request == "undefined" ? !1 : e instanceof Request;
-	},
-	parse: {
-		async async(e, r) {
-			return {
-				url: await r.parse(e.url),
-				options: await r.parse(N(e, e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null))
-			};
-		},
-		stream(e, r) {
-			return {
-				url: r.parse(e.url),
-				options: r.parse(N(e, e.body && !e.bodyUsed ? e.clone().body : null))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Request(" + r.serialize(e.url) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Request(r.deserialize(e.url), r.deserialize(e.options));
-	}
-});
-function h(e) {
-	return {
-		headers: e.headers,
-		status: e.status,
-		statusText: e.statusText
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Response",
-	extends: [p, l],
-	test(e) {
-		return typeof Response == "undefined" ? !1 : e instanceof Response;
-	},
-	parse: {
-		async async(e, r) {
-			return {
-				body: await r.parse(e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null),
-				options: await r.parse(h(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				body: r.parse(e.body && !e.bodyUsed ? e.clone().body : null),
-				options: r.parse(h(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Response(" + r.serialize(e.body) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Response(r.deserialize(e.body), r.deserialize(e.options));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/URL",
-	test(e) {
-		return typeof URL == "undefined" ? !1 : e instanceof URL;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(e.href) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(e.href) };
-		},
-		stream(e, r) {
-			return { value: r.parse(e.href) };
-		}
-	},
-	serialize(e, r) {
-		return "new URL(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new URL(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/URLSearchParams",
-	test(e) {
-		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(e.toString()) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(e.toString()) };
-		},
-		stream(e, r) {
-			return { value: r.parse(e.toString()) };
-		}
-	},
-	serialize(e, r) {
-		return "new URLSearchParams(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new URLSearchParams(r.deserialize(e.value));
-	}
-});
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -2933,15 +2377,15 @@ const booleans = [
 	"shadowrootserializable",
 	"sharedstoragewritable"
 ];
-const BooleanAttributes = /* @__PURE__ */ new Set(booleans);
+const BooleanAttributes = /*#__PURE__*/ new Set(booleans);
 [...booleans];
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
@@ -3215,7 +2659,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -3248,7 +2694,7 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator, C = Symbol.iterator, o$1 = void 0;
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -3424,573 +2870,9 @@ var Or = (e) => {
 	return n.buffer;
 };
 Or.toString();
-Pr(C);
-function te$1() {
-	return Rr();
-}
-xr(v$1, re);
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-function ni(e) {
-	return e;
-}
 var Eo = () => T, Io = Eo.toString();
 /=>/.test(Io);
-var u = (e) => {
-	let r = new AbortController(), a = r.abort.bind(r);
-	return e.then(a, a), r;
-};
-function E(e) {
-	e(this.reason);
-}
-function D(e) {
-	this.addEventListener("abort", E.bind(this, e), { once: !0 });
-}
-function c(e) {
-	return new Promise(D.bind(e));
-}
-var i = {};
-ni({
-	tag: "seroval-plugins/web/AbortSignal",
-	extends: [ni({
-		tag: "seroval-plugins/web/AbortControllerFactoryPlugin",
-		test(e) {
-			return e === i;
-		},
-		parse: {
-			sync() {
-				return i;
-			},
-			async async() {
-				return await Promise.resolve(i);
-			},
-			stream() {
-				return i;
-			}
-		},
-		serialize() {
-			return u.toString();
-		},
-		deserialize() {
-			return u;
-		}
-	})],
-	test(e) {
-		return typeof AbortSignal == "undefined" ? !1 : e instanceof AbortSignal;
-	},
-	parse: {
-		sync(e, r) {
-			return e.aborted ? { reason: r.parse(e.reason) } : {};
-		},
-		async async(e, r) {
-			if (e.aborted) return { reason: await r.parse(e.reason) };
-			let a = await c(e);
-			return { reason: await r.parse(a) };
-		},
-		stream(e, r) {
-			if (e.aborted) return { reason: r.parse(e.reason) };
-			let a = c(e);
-			return {
-				factory: r.parse(i),
-				controller: r.parse(a)
-			};
-		}
-	},
-	serialize(e, r) {
-		return e.reason ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : e.controller && e.factory ? "(" + r.serialize(e.factory) + ")(" + r.serialize(e.controller) + ").signal" : "(new AbortController).signal";
-	},
-	deserialize(e, r) {
-		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
-	}
-});
-ni({
-	tag: "seroval-plugins/web/Blob",
-	test(e) {
-		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
-	},
-	parse: { async async(e, r) {
-		return {
-			type: await r.parse(e.type),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
-	},
-	deserialize(e, r) {
-		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
-	}
-});
-function d(e) {
-	return {
-		detail: e.detail,
-		bubbles: e.bubbles,
-		cancelable: e.cancelable,
-		composed: e.composed
-	};
-}
-ni({
-	tag: "seroval-plugins/web/CustomEvent",
-	test(e) {
-		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(d(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				type: await r.parse(e.type),
-				options: await r.parse(d(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(d(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new CustomEvent(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/DOMException",
-	test(e) {
-		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				name: r.parse(e.name),
-				message: r.parse(e.message)
-			};
-		},
-		async async(e, r) {
-			return {
-				name: await r.parse(e.name),
-				message: await r.parse(e.message)
-			};
-		},
-		stream(e, r) {
-			return {
-				name: r.parse(e.name),
-				message: r.parse(e.message)
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new DOMException(" + r.serialize(e.message) + "," + r.serialize(e.name) + ")";
-	},
-	deserialize(e, r) {
-		return new DOMException(r.deserialize(e.message), r.deserialize(e.name));
-	}
-});
-function f(e) {
-	return {
-		bubbles: e.bubbles,
-		cancelable: e.cancelable,
-		composed: e.composed
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Event",
-	test(e) {
-		return typeof Event == "undefined" ? !1 : e instanceof Event;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(f(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				type: await r.parse(e.type),
-				options: await r.parse(f(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(f(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Event(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Event(r.deserialize(e.type), r.deserialize(e.options));
-	}
-});
-var m = ni({
-	tag: "seroval-plugins/web/File",
-	test(e) {
-		return typeof File == "undefined" ? !1 : e instanceof File;
-	},
-	parse: { async async(e, r) {
-		return {
-			name: await r.parse(e.name),
-			options: await r.parse({
-				type: e.type,
-				lastModified: e.lastModified
-			}),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new File([" + r.serialize(e.buffer) + "]," + r.serialize(e.name) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new File([r.deserialize(e.buffer)], r.deserialize(e.name), r.deserialize(e.options));
-	}
-});
-function y(e) {
-	let r = [];
-	return e.forEach((a, t) => {
-		r.push([t, a]);
-	}), r;
-}
-var o = {}, v = (e, r = new FormData(), a = 0, t = e.length, s) => {
-	for (; a < t; a++) s = e[a], r.append(s[0], s[1]);
-	return r;
-};
-ni({
-	tag: "seroval-plugins/web/FormData",
-	extends: [m, ni({
-		tag: "seroval-plugins/web/FormDataFactory",
-		test(e) {
-			return e === o;
-		},
-		parse: {
-			sync() {
-				return o;
-			},
-			async async() {
-				return await Promise.resolve(o);
-			},
-			stream() {
-				return o;
-			}
-		},
-		serialize() {
-			return v.toString();
-		},
-		deserialize() {
-			return o;
-		}
-	})],
-	test(e) {
-		return typeof FormData == "undefined" ? !1 : e instanceof FormData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				factory: r.parse(o),
-				entries: r.parse(y(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				factory: await r.parse(o),
-				entries: await r.parse(y(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				factory: r.parse(o),
-				entries: r.parse(y(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.entries) + ")";
-	},
-	deserialize(e, r) {
-		return v(r.deserialize(e.entries));
-	}
-});
-function g(e) {
-	let r = [];
-	return e.forEach((a, t) => {
-		r.push([t, a]);
-	}), r;
-}
-var l = ni({
-	tag: "seroval-plugins/web/Headers",
-	test(e) {
-		return typeof Headers == "undefined" ? !1 : e instanceof Headers;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(g(e)) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(g(e)) };
-		},
-		stream(e, r) {
-			return { value: r.parse(g(e)) };
-		}
-	},
-	serialize(e, r) {
-		return "new Headers(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new Headers(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/ImageData",
-	test(e) {
-		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		async async(e, r) {
-			return {
-				data: await r.parse(e.data),
-				width: await r.parse(e.width),
-				height: await r.parse(e.height),
-				options: await r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		stream(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
-	}
-});
-var n = {}, P = (e) => new ReadableStream({ start: (r) => {
-	e.on({
-		next: (a) => {
-			try {
-				r.enqueue(a);
-			} catch (t) {}
-		},
-		throw: (a) => {
-			r.error(a);
-		},
-		return: () => {
-			try {
-				r.close();
-			} catch (a) {}
-		}
-	});
-} }), x = ni({
-	tag: "seroval-plugins/web/ReadableStreamFactory",
-	test(e) {
-		return e === n;
-	},
-	parse: {
-		sync() {
-			return n;
-		},
-		async async() {
-			return await Promise.resolve(n);
-		},
-		stream() {
-			return n;
-		}
-	},
-	serialize() {
-		return P.toString();
-	},
-	deserialize() {
-		return n;
-	}
-});
-function w(e) {
-	let r = te$1(), a = e.getReader();
-	async function t() {
-		try {
-			let s = await a.read();
-			s.done ? r.return(s.value) : (r.next(s.value), await t());
-		} catch (s) {
-			r.throw(s);
-		}
-	}
-	return t().catch(() => {}), r;
-}
-var p = ni({
-	tag: "seroval/plugins/web/ReadableStream",
-	extends: [x],
-	test(e) {
-		return typeof ReadableStream == "undefined" ? !1 : e instanceof ReadableStream;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				factory: r.parse(n),
-				stream: r.parse(te$1())
-			};
-		},
-		async async(e, r) {
-			return {
-				factory: await r.parse(n),
-				stream: await r.parse(w(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				factory: r.parse(n),
-				stream: r.parse(w(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.stream) + ")";
-	},
-	deserialize(e, r) {
-		return P(r.deserialize(e.stream));
-	}
-});
-function N(e, r) {
-	return {
-		body: r,
-		cache: e.cache,
-		credentials: e.credentials,
-		headers: e.headers,
-		integrity: e.integrity,
-		keepalive: e.keepalive,
-		method: e.method,
-		mode: e.mode,
-		redirect: e.redirect,
-		referrer: e.referrer,
-		referrerPolicy: e.referrerPolicy
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Request",
-	extends: [p, l],
-	test(e) {
-		return typeof Request == "undefined" ? !1 : e instanceof Request;
-	},
-	parse: {
-		async async(e, r) {
-			return {
-				url: await r.parse(e.url),
-				options: await r.parse(N(e, e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null))
-			};
-		},
-		stream(e, r) {
-			return {
-				url: r.parse(e.url),
-				options: r.parse(N(e, e.body && !e.bodyUsed ? e.clone().body : null))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Request(" + r.serialize(e.url) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Request(r.deserialize(e.url), r.deserialize(e.options));
-	}
-});
-function h(e) {
-	return {
-		headers: e.headers,
-		status: e.status,
-		statusText: e.statusText
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Response",
-	extends: [p, l],
-	test(e) {
-		return typeof Response == "undefined" ? !1 : e instanceof Response;
-	},
-	parse: {
-		async async(e, r) {
-			return {
-				body: await r.parse(e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null),
-				options: await r.parse(h(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				body: r.parse(e.body && !e.bodyUsed ? e.clone().body : null),
-				options: r.parse(h(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Response(" + r.serialize(e.body) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Response(r.deserialize(e.body), r.deserialize(e.options));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/URL",
-	test(e) {
-		return typeof URL == "undefined" ? !1 : e instanceof URL;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(e.href) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(e.href) };
-		},
-		stream(e, r) {
-			return { value: r.parse(e.href) };
-		}
-	},
-	serialize(e, r) {
-		return "new URL(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new URL(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/URLSearchParams",
-	test(e) {
-		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(e.toString()) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(e.toString()) };
-		},
-		stream(e, r) {
-			return { value: r.parse(e.toString()) };
-		}
-	},
-	serialize(e, r) {
-		return "new URLSearchParams(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new URLSearchParams(r.deserialize(e.value));
-	}
-});
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -4034,15 +2916,15 @@ const booleans = [
 	"shadowrootserializable",
 	"sharedstoragewritable"
 ];
-const BooleanAttributes = /* @__PURE__ */ new Set(booleans);
+const BooleanAttributes = /*#__PURE__*/ new Set(booleans);
 [...booleans];
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
@@ -4343,7 +3225,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -4354,20 +3236,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -5274,7 +4159,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -5285,20 +4170,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -6205,7 +5093,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -6216,20 +5104,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -7136,7 +6027,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -7147,20 +6038,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -8040,7 +6934,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -8051,20 +6945,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -8331,7 +7228,7 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-const Properties = /* @__PURE__ */ new Set([
+const Properties = /*#__PURE__*/ new Set([
 	"className",
 	"value",
 	"readOnly",
@@ -8398,17 +7295,17 @@ const Properties = /* @__PURE__ */ new Set([
 		"sharedstoragewritable"
 	]
 ]);
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const PropAliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	class: "className",
 	novalidate: {
 		$: "noValidate",
@@ -8497,7 +7394,7 @@ function getPropAlias(prop, tagName) {
 	const a = PropAliases[prop];
 	return typeof a === "object" ? a[tagName] ? a["$"] : void 0 : a;
 }
-const DelegatedEvents = /* @__PURE__ */ new Set([
+const DelegatedEvents = /*#__PURE__*/ new Set([
 	"beforeinput",
 	"click",
 	"dblclick",
@@ -8908,7 +7805,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`), _tmpl$6 = /*#__PURE__*/ template(\`<li>\`), _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`), _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
 }
@@ -9061,7 +7958,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -9072,20 +7969,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -9352,7 +8252,7 @@ function castError(err) {
 function handleError(err, owner = Owner) {
 	throw castError(err);
 }
-const Properties = /* @__PURE__ */ new Set([
+const Properties = /*#__PURE__*/ new Set([
 	"className",
 	"value",
 	"readOnly",
@@ -9419,17 +8319,17 @@ const Properties = /* @__PURE__ */ new Set([
 		"sharedstoragewritable"
 	]
 ]);
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-const PropAliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const PropAliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	class: "className",
 	novalidate: {
 		$: "noValidate",
@@ -9518,7 +8418,7 @@ function getPropAlias(prop, tagName) {
 	const a = PropAliases[prop];
 	return typeof a === "object" ? a[tagName] ? a["$"] : void 0 : a;
 }
-const DelegatedEvents = /* @__PURE__ */ new Set([
+const DelegatedEvents = /*#__PURE__*/ new Set([
 	"beforeinput",
 	"click",
 	"dblclick",
@@ -9929,7 +8829,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /* @__PURE__ */ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Conditional content\`), _tmpl$6 = /* @__PURE__ */ template(\`<li>\`), _tmpl$7 = /* @__PURE__ */ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /* @__PURE__ */ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /* @__PURE__ */ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /* @__PURE__ */ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /* @__PURE__ */ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /* @__PURE__ */ template(\`<li>Item \`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Spread attributes\`), _tmpl$12 = /* @__PURE__ */ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /* @__PURE__ */ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`), _tmpl$6 = /*#__PURE__*/ template(\`<li>\`), _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`), _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
 }
@@ -10082,7 +8982,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -10135,7 +9037,7 @@ function createComponent(Comp, props) {
 	return Comp(props || {});
 }
 createContext();
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator, C = Symbol.iterator, o$1 = void 0;
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -10311,573 +9213,9 @@ var Or = (e) => {
 	return n.buffer;
 };
 Or.toString();
-Pr(C);
-function te$1() {
-	return Rr();
-}
-xr(v$1, re);
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-function ni(e) {
-	return e;
-}
 var Eo = () => T, Io = Eo.toString();
 /=>/.test(Io);
-var u = (e) => {
-	let r = new AbortController(), a = r.abort.bind(r);
-	return e.then(a, a), r;
-};
-function E(e) {
-	e(this.reason);
-}
-function D(e) {
-	this.addEventListener("abort", E.bind(this, e), { once: !0 });
-}
-function c(e) {
-	return new Promise(D.bind(e));
-}
-var i = {};
-ni({
-	tag: "seroval-plugins/web/AbortSignal",
-	extends: [ni({
-		tag: "seroval-plugins/web/AbortControllerFactoryPlugin",
-		test(e) {
-			return e === i;
-		},
-		parse: {
-			sync() {
-				return i;
-			},
-			async async() {
-				return await Promise.resolve(i);
-			},
-			stream() {
-				return i;
-			}
-		},
-		serialize() {
-			return u.toString();
-		},
-		deserialize() {
-			return u;
-		}
-	})],
-	test(e) {
-		return typeof AbortSignal == "undefined" ? !1 : e instanceof AbortSignal;
-	},
-	parse: {
-		sync(e, r) {
-			return e.aborted ? { reason: r.parse(e.reason) } : {};
-		},
-		async async(e, r) {
-			if (e.aborted) return { reason: await r.parse(e.reason) };
-			let a = await c(e);
-			return { reason: await r.parse(a) };
-		},
-		stream(e, r) {
-			if (e.aborted) return { reason: r.parse(e.reason) };
-			let a = c(e);
-			return {
-				factory: r.parse(i),
-				controller: r.parse(a)
-			};
-		}
-	},
-	serialize(e, r) {
-		return e.reason ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : e.controller && e.factory ? "(" + r.serialize(e.factory) + ")(" + r.serialize(e.controller) + ").signal" : "(new AbortController).signal";
-	},
-	deserialize(e, r) {
-		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
-	}
-});
-ni({
-	tag: "seroval-plugins/web/Blob",
-	test(e) {
-		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
-	},
-	parse: { async async(e, r) {
-		return {
-			type: await r.parse(e.type),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
-	},
-	deserialize(e, r) {
-		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
-	}
-});
-function d(e) {
-	return {
-		detail: e.detail,
-		bubbles: e.bubbles,
-		cancelable: e.cancelable,
-		composed: e.composed
-	};
-}
-ni({
-	tag: "seroval-plugins/web/CustomEvent",
-	test(e) {
-		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(d(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				type: await r.parse(e.type),
-				options: await r.parse(d(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(d(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new CustomEvent(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/DOMException",
-	test(e) {
-		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				name: r.parse(e.name),
-				message: r.parse(e.message)
-			};
-		},
-		async async(e, r) {
-			return {
-				name: await r.parse(e.name),
-				message: await r.parse(e.message)
-			};
-		},
-		stream(e, r) {
-			return {
-				name: r.parse(e.name),
-				message: r.parse(e.message)
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new DOMException(" + r.serialize(e.message) + "," + r.serialize(e.name) + ")";
-	},
-	deserialize(e, r) {
-		return new DOMException(r.deserialize(e.message), r.deserialize(e.name));
-	}
-});
-function f(e) {
-	return {
-		bubbles: e.bubbles,
-		cancelable: e.cancelable,
-		composed: e.composed
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Event",
-	test(e) {
-		return typeof Event == "undefined" ? !1 : e instanceof Event;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(f(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				type: await r.parse(e.type),
-				options: await r.parse(f(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(f(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Event(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Event(r.deserialize(e.type), r.deserialize(e.options));
-	}
-});
-var m = ni({
-	tag: "seroval-plugins/web/File",
-	test(e) {
-		return typeof File == "undefined" ? !1 : e instanceof File;
-	},
-	parse: { async async(e, r) {
-		return {
-			name: await r.parse(e.name),
-			options: await r.parse({
-				type: e.type,
-				lastModified: e.lastModified
-			}),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new File([" + r.serialize(e.buffer) + "]," + r.serialize(e.name) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new File([r.deserialize(e.buffer)], r.deserialize(e.name), r.deserialize(e.options));
-	}
-});
-function y(e) {
-	let r = [];
-	return e.forEach((a, t) => {
-		r.push([t, a]);
-	}), r;
-}
-var o = {}, v = (e, r = new FormData(), a = 0, t = e.length, s) => {
-	for (; a < t; a++) s = e[a], r.append(s[0], s[1]);
-	return r;
-};
-ni({
-	tag: "seroval-plugins/web/FormData",
-	extends: [m, ni({
-		tag: "seroval-plugins/web/FormDataFactory",
-		test(e) {
-			return e === o;
-		},
-		parse: {
-			sync() {
-				return o;
-			},
-			async async() {
-				return await Promise.resolve(o);
-			},
-			stream() {
-				return o;
-			}
-		},
-		serialize() {
-			return v.toString();
-		},
-		deserialize() {
-			return o;
-		}
-	})],
-	test(e) {
-		return typeof FormData == "undefined" ? !1 : e instanceof FormData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				factory: r.parse(o),
-				entries: r.parse(y(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				factory: await r.parse(o),
-				entries: await r.parse(y(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				factory: r.parse(o),
-				entries: r.parse(y(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.entries) + ")";
-	},
-	deserialize(e, r) {
-		return v(r.deserialize(e.entries));
-	}
-});
-function g(e) {
-	let r = [];
-	return e.forEach((a, t) => {
-		r.push([t, a]);
-	}), r;
-}
-var l = ni({
-	tag: "seroval-plugins/web/Headers",
-	test(e) {
-		return typeof Headers == "undefined" ? !1 : e instanceof Headers;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(g(e)) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(g(e)) };
-		},
-		stream(e, r) {
-			return { value: r.parse(g(e)) };
-		}
-	},
-	serialize(e, r) {
-		return "new Headers(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new Headers(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/ImageData",
-	test(e) {
-		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		async async(e, r) {
-			return {
-				data: await r.parse(e.data),
-				width: await r.parse(e.width),
-				height: await r.parse(e.height),
-				options: await r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		stream(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
-	}
-});
-var n = {}, P = (e) => new ReadableStream({ start: (r) => {
-	e.on({
-		next: (a) => {
-			try {
-				r.enqueue(a);
-			} catch (t) {}
-		},
-		throw: (a) => {
-			r.error(a);
-		},
-		return: () => {
-			try {
-				r.close();
-			} catch (a) {}
-		}
-	});
-} }), x = ni({
-	tag: "seroval-plugins/web/ReadableStreamFactory",
-	test(e) {
-		return e === n;
-	},
-	parse: {
-		sync() {
-			return n;
-		},
-		async async() {
-			return await Promise.resolve(n);
-		},
-		stream() {
-			return n;
-		}
-	},
-	serialize() {
-		return P.toString();
-	},
-	deserialize() {
-		return n;
-	}
-});
-function w(e) {
-	let r = te$1(), a = e.getReader();
-	async function t() {
-		try {
-			let s = await a.read();
-			s.done ? r.return(s.value) : (r.next(s.value), await t());
-		} catch (s) {
-			r.throw(s);
-		}
-	}
-	return t().catch(() => {}), r;
-}
-var p = ni({
-	tag: "seroval/plugins/web/ReadableStream",
-	extends: [x],
-	test(e) {
-		return typeof ReadableStream == "undefined" ? !1 : e instanceof ReadableStream;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				factory: r.parse(n),
-				stream: r.parse(te$1())
-			};
-		},
-		async async(e, r) {
-			return {
-				factory: await r.parse(n),
-				stream: await r.parse(w(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				factory: r.parse(n),
-				stream: r.parse(w(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.stream) + ")";
-	},
-	deserialize(e, r) {
-		return P(r.deserialize(e.stream));
-	}
-});
-function N(e, r) {
-	return {
-		body: r,
-		cache: e.cache,
-		credentials: e.credentials,
-		headers: e.headers,
-		integrity: e.integrity,
-		keepalive: e.keepalive,
-		method: e.method,
-		mode: e.mode,
-		redirect: e.redirect,
-		referrer: e.referrer,
-		referrerPolicy: e.referrerPolicy
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Request",
-	extends: [p, l],
-	test(e) {
-		return typeof Request == "undefined" ? !1 : e instanceof Request;
-	},
-	parse: {
-		async async(e, r) {
-			return {
-				url: await r.parse(e.url),
-				options: await r.parse(N(e, e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null))
-			};
-		},
-		stream(e, r) {
-			return {
-				url: r.parse(e.url),
-				options: r.parse(N(e, e.body && !e.bodyUsed ? e.clone().body : null))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Request(" + r.serialize(e.url) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Request(r.deserialize(e.url), r.deserialize(e.options));
-	}
-});
-function h(e) {
-	return {
-		headers: e.headers,
-		status: e.status,
-		statusText: e.statusText
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Response",
-	extends: [p, l],
-	test(e) {
-		return typeof Response == "undefined" ? !1 : e instanceof Response;
-	},
-	parse: {
-		async async(e, r) {
-			return {
-				body: await r.parse(e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null),
-				options: await r.parse(h(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				body: r.parse(e.body && !e.bodyUsed ? e.clone().body : null),
-				options: r.parse(h(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Response(" + r.serialize(e.body) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Response(r.deserialize(e.body), r.deserialize(e.options));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/URL",
-	test(e) {
-		return typeof URL == "undefined" ? !1 : e instanceof URL;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(e.href) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(e.href) };
-		},
-		stream(e, r) {
-			return { value: r.parse(e.href) };
-		}
-	},
-	serialize(e, r) {
-		return "new URL(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new URL(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/URLSearchParams",
-	test(e) {
-		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(e.toString()) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(e.toString()) };
-		},
-		stream(e, r) {
-			return { value: r.parse(e.toString()) };
-		}
-	},
-	serialize(e, r) {
-		return "new URLSearchParams(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new URLSearchParams(r.deserialize(e.value));
-	}
-});
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -10921,15 +9259,15 @@ const booleans = [
 	"shadowrootserializable",
 	"sharedstoragewritable"
 ];
-const BooleanAttributes = /* @__PURE__ */ new Set(booleans);
+const BooleanAttributes = /*#__PURE__*/ new Set(booleans);
 [...booleans];
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
@@ -11219,7 +9557,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -11272,7 +9612,7 @@ function createComponent(Comp, props) {
 	return Comp(props || {});
 }
 createContext();
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), v$1 = Symbol.asyncIterator, C = Symbol.iterator, o$1 = void 0;
+var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -11448,573 +9788,9 @@ var Or = (e) => {
 	return n.buffer;
 };
 Or.toString();
-Pr(C);
-function te$1() {
-	return Rr();
-}
-xr(v$1, re);
 var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-function ni(e) {
-	return e;
-}
 var Eo = () => T, Io = Eo.toString();
 /=>/.test(Io);
-var u = (e) => {
-	let r = new AbortController(), a = r.abort.bind(r);
-	return e.then(a, a), r;
-};
-function E(e) {
-	e(this.reason);
-}
-function D(e) {
-	this.addEventListener("abort", E.bind(this, e), { once: !0 });
-}
-function c(e) {
-	return new Promise(D.bind(e));
-}
-var i = {};
-ni({
-	tag: "seroval-plugins/web/AbortSignal",
-	extends: [ni({
-		tag: "seroval-plugins/web/AbortControllerFactoryPlugin",
-		test(e) {
-			return e === i;
-		},
-		parse: {
-			sync() {
-				return i;
-			},
-			async async() {
-				return await Promise.resolve(i);
-			},
-			stream() {
-				return i;
-			}
-		},
-		serialize() {
-			return u.toString();
-		},
-		deserialize() {
-			return u;
-		}
-	})],
-	test(e) {
-		return typeof AbortSignal == "undefined" ? !1 : e instanceof AbortSignal;
-	},
-	parse: {
-		sync(e, r) {
-			return e.aborted ? { reason: r.parse(e.reason) } : {};
-		},
-		async async(e, r) {
-			if (e.aborted) return { reason: await r.parse(e.reason) };
-			let a = await c(e);
-			return { reason: await r.parse(a) };
-		},
-		stream(e, r) {
-			if (e.aborted) return { reason: r.parse(e.reason) };
-			let a = c(e);
-			return {
-				factory: r.parse(i),
-				controller: r.parse(a)
-			};
-		}
-	},
-	serialize(e, r) {
-		return e.reason ? "AbortSignal.abort(" + r.serialize(e.reason) + ")" : e.controller && e.factory ? "(" + r.serialize(e.factory) + ")(" + r.serialize(e.controller) + ").signal" : "(new AbortController).signal";
-	},
-	deserialize(e, r) {
-		return e.reason ? AbortSignal.abort(r.deserialize(e.reason)) : e.controller ? u(r.deserialize(e.controller)).signal : new AbortController().signal;
-	}
-});
-ni({
-	tag: "seroval-plugins/web/Blob",
-	test(e) {
-		return typeof Blob == "undefined" ? !1 : e instanceof Blob;
-	},
-	parse: { async async(e, r) {
-		return {
-			type: await r.parse(e.type),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new Blob([" + r.serialize(e.buffer) + "],{type:" + r.serialize(e.type) + "})";
-	},
-	deserialize(e, r) {
-		return new Blob([r.deserialize(e.buffer)], { type: r.deserialize(e.type) });
-	}
-});
-function d(e) {
-	return {
-		detail: e.detail,
-		bubbles: e.bubbles,
-		cancelable: e.cancelable,
-		composed: e.composed
-	};
-}
-ni({
-	tag: "seroval-plugins/web/CustomEvent",
-	test(e) {
-		return typeof CustomEvent == "undefined" ? !1 : e instanceof CustomEvent;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(d(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				type: await r.parse(e.type),
-				options: await r.parse(d(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(d(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new CustomEvent(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new CustomEvent(r.deserialize(e.type), r.deserialize(e.options));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/DOMException",
-	test(e) {
-		return typeof DOMException == "undefined" ? !1 : e instanceof DOMException;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				name: r.parse(e.name),
-				message: r.parse(e.message)
-			};
-		},
-		async async(e, r) {
-			return {
-				name: await r.parse(e.name),
-				message: await r.parse(e.message)
-			};
-		},
-		stream(e, r) {
-			return {
-				name: r.parse(e.name),
-				message: r.parse(e.message)
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new DOMException(" + r.serialize(e.message) + "," + r.serialize(e.name) + ")";
-	},
-	deserialize(e, r) {
-		return new DOMException(r.deserialize(e.message), r.deserialize(e.name));
-	}
-});
-function f(e) {
-	return {
-		bubbles: e.bubbles,
-		cancelable: e.cancelable,
-		composed: e.composed
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Event",
-	test(e) {
-		return typeof Event == "undefined" ? !1 : e instanceof Event;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(f(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				type: await r.parse(e.type),
-				options: await r.parse(f(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				type: r.parse(e.type),
-				options: r.parse(f(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Event(" + r.serialize(e.type) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Event(r.deserialize(e.type), r.deserialize(e.options));
-	}
-});
-var m = ni({
-	tag: "seroval-plugins/web/File",
-	test(e) {
-		return typeof File == "undefined" ? !1 : e instanceof File;
-	},
-	parse: { async async(e, r) {
-		return {
-			name: await r.parse(e.name),
-			options: await r.parse({
-				type: e.type,
-				lastModified: e.lastModified
-			}),
-			buffer: await r.parse(await e.arrayBuffer())
-		};
-	} },
-	serialize(e, r) {
-		return "new File([" + r.serialize(e.buffer) + "]," + r.serialize(e.name) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new File([r.deserialize(e.buffer)], r.deserialize(e.name), r.deserialize(e.options));
-	}
-});
-function y(e) {
-	let r = [];
-	return e.forEach((a, t) => {
-		r.push([t, a]);
-	}), r;
-}
-var o = {}, v = (e, r = new FormData(), a = 0, t = e.length, s) => {
-	for (; a < t; a++) s = e[a], r.append(s[0], s[1]);
-	return r;
-};
-ni({
-	tag: "seroval-plugins/web/FormData",
-	extends: [m, ni({
-		tag: "seroval-plugins/web/FormDataFactory",
-		test(e) {
-			return e === o;
-		},
-		parse: {
-			sync() {
-				return o;
-			},
-			async async() {
-				return await Promise.resolve(o);
-			},
-			stream() {
-				return o;
-			}
-		},
-		serialize() {
-			return v.toString();
-		},
-		deserialize() {
-			return o;
-		}
-	})],
-	test(e) {
-		return typeof FormData == "undefined" ? !1 : e instanceof FormData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				factory: r.parse(o),
-				entries: r.parse(y(e))
-			};
-		},
-		async async(e, r) {
-			return {
-				factory: await r.parse(o),
-				entries: await r.parse(y(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				factory: r.parse(o),
-				entries: r.parse(y(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.entries) + ")";
-	},
-	deserialize(e, r) {
-		return v(r.deserialize(e.entries));
-	}
-});
-function g(e) {
-	let r = [];
-	return e.forEach((a, t) => {
-		r.push([t, a]);
-	}), r;
-}
-var l = ni({
-	tag: "seroval-plugins/web/Headers",
-	test(e) {
-		return typeof Headers == "undefined" ? !1 : e instanceof Headers;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(g(e)) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(g(e)) };
-		},
-		stream(e, r) {
-			return { value: r.parse(g(e)) };
-		}
-	},
-	serialize(e, r) {
-		return "new Headers(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new Headers(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/ImageData",
-	test(e) {
-		return typeof ImageData == "undefined" ? !1 : e instanceof ImageData;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		async async(e, r) {
-			return {
-				data: await r.parse(e.data),
-				width: await r.parse(e.width),
-				height: await r.parse(e.height),
-				options: await r.parse({ colorSpace: e.colorSpace })
-			};
-		},
-		stream(e, r) {
-			return {
-				data: r.parse(e.data),
-				width: r.parse(e.width),
-				height: r.parse(e.height),
-				options: r.parse({ colorSpace: e.colorSpace })
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new ImageData(" + r.serialize(e.data) + "," + r.serialize(e.width) + "," + r.serialize(e.height) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new ImageData(r.deserialize(e.data), r.deserialize(e.width), r.deserialize(e.height), r.deserialize(e.options));
-	}
-});
-var n = {}, P = (e) => new ReadableStream({ start: (r) => {
-	e.on({
-		next: (a) => {
-			try {
-				r.enqueue(a);
-			} catch (t) {}
-		},
-		throw: (a) => {
-			r.error(a);
-		},
-		return: () => {
-			try {
-				r.close();
-			} catch (a) {}
-		}
-	});
-} }), x = ni({
-	tag: "seroval-plugins/web/ReadableStreamFactory",
-	test(e) {
-		return e === n;
-	},
-	parse: {
-		sync() {
-			return n;
-		},
-		async async() {
-			return await Promise.resolve(n);
-		},
-		stream() {
-			return n;
-		}
-	},
-	serialize() {
-		return P.toString();
-	},
-	deserialize() {
-		return n;
-	}
-});
-function w(e) {
-	let r = te$1(), a = e.getReader();
-	async function t() {
-		try {
-			let s = await a.read();
-			s.done ? r.return(s.value) : (r.next(s.value), await t());
-		} catch (s) {
-			r.throw(s);
-		}
-	}
-	return t().catch(() => {}), r;
-}
-var p = ni({
-	tag: "seroval/plugins/web/ReadableStream",
-	extends: [x],
-	test(e) {
-		return typeof ReadableStream == "undefined" ? !1 : e instanceof ReadableStream;
-	},
-	parse: {
-		sync(e, r) {
-			return {
-				factory: r.parse(n),
-				stream: r.parse(te$1())
-			};
-		},
-		async async(e, r) {
-			return {
-				factory: await r.parse(n),
-				stream: await r.parse(w(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				factory: r.parse(n),
-				stream: r.parse(w(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "(" + r.serialize(e.factory) + ")(" + r.serialize(e.stream) + ")";
-	},
-	deserialize(e, r) {
-		return P(r.deserialize(e.stream));
-	}
-});
-function N(e, r) {
-	return {
-		body: r,
-		cache: e.cache,
-		credentials: e.credentials,
-		headers: e.headers,
-		integrity: e.integrity,
-		keepalive: e.keepalive,
-		method: e.method,
-		mode: e.mode,
-		redirect: e.redirect,
-		referrer: e.referrer,
-		referrerPolicy: e.referrerPolicy
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Request",
-	extends: [p, l],
-	test(e) {
-		return typeof Request == "undefined" ? !1 : e instanceof Request;
-	},
-	parse: {
-		async async(e, r) {
-			return {
-				url: await r.parse(e.url),
-				options: await r.parse(N(e, e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null))
-			};
-		},
-		stream(e, r) {
-			return {
-				url: r.parse(e.url),
-				options: r.parse(N(e, e.body && !e.bodyUsed ? e.clone().body : null))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Request(" + r.serialize(e.url) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Request(r.deserialize(e.url), r.deserialize(e.options));
-	}
-});
-function h(e) {
-	return {
-		headers: e.headers,
-		status: e.status,
-		statusText: e.statusText
-	};
-}
-ni({
-	tag: "seroval-plugins/web/Response",
-	extends: [p, l],
-	test(e) {
-		return typeof Response == "undefined" ? !1 : e instanceof Response;
-	},
-	parse: {
-		async async(e, r) {
-			return {
-				body: await r.parse(e.body && !e.bodyUsed ? await e.clone().arrayBuffer() : null),
-				options: await r.parse(h(e))
-			};
-		},
-		stream(e, r) {
-			return {
-				body: r.parse(e.body && !e.bodyUsed ? e.clone().body : null),
-				options: r.parse(h(e))
-			};
-		}
-	},
-	serialize(e, r) {
-		return "new Response(" + r.serialize(e.body) + "," + r.serialize(e.options) + ")";
-	},
-	deserialize(e, r) {
-		return new Response(r.deserialize(e.body), r.deserialize(e.options));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/URL",
-	test(e) {
-		return typeof URL == "undefined" ? !1 : e instanceof URL;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(e.href) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(e.href) };
-		},
-		stream(e, r) {
-			return { value: r.parse(e.href) };
-		}
-	},
-	serialize(e, r) {
-		return "new URL(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new URL(r.deserialize(e.value));
-	}
-});
-ni({
-	tag: "seroval-plugins/web/URLSearchParams",
-	test(e) {
-		return typeof URLSearchParams == "undefined" ? !1 : e instanceof URLSearchParams;
-	},
-	parse: {
-		sync(e, r) {
-			return { value: r.parse(e.toString()) };
-		},
-		async async(e, r) {
-			return { value: await r.parse(e.toString()) };
-		},
-		stream(e, r) {
-			return { value: r.parse(e.toString()) };
-		}
-	},
-	serialize(e, r) {
-		return "new URLSearchParams(" + r.serialize(e.value) + ")";
-	},
-	deserialize(e, r) {
-		return new URLSearchParams(r.deserialize(e.value));
-	}
-});
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -12058,15 +9834,15 @@ const booleans = [
 	"shadowrootserializable",
 	"sharedstoragewritable"
 ];
-const BooleanAttributes = /* @__PURE__ */ new Set(booleans);
+const BooleanAttributes = /*#__PURE__*/ new Set(booleans);
 [...booleans];
-const ChildProperties = /* @__PURE__ */ new Set([
+const ChildProperties = /*#__PURE__*/ new Set([
 	"innerHTML",
 	"textContent",
 	"innerText",
 	"children"
 ]);
-const Aliases = /* @__PURE__ */ Object.assign(Object.create(null), {
+const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });

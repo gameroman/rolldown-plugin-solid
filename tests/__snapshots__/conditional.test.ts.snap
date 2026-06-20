@@ -71,7 +71,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function children(fn) {
 	const children = createMemo(fn);
 	const memo = createMemo(() => resolveChildren(children()));
@@ -91,20 +91,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -377,7 +380,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -678,7 +683,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<h2>Welcome back!\`), _tmpl$2 = /* @__PURE__ */ template(\`<button>Logout\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Admin access granted\`), _tmpl$4 = /* @__PURE__ */ template(\`<p>User access granted\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Guest access only\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><div><p>User type: </p><button>Guest</button><button>User</button><button>Admin\`), _tmpl$7 = /* @__PURE__ */ template(\`<button>Login\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<h2>Welcome back!\`), _tmpl$2 = /*#__PURE__*/ template(\`<button>Logout\`), _tmpl$3 = /*#__PURE__*/ template(\`<p>Admin access granted\`), _tmpl$4 = /*#__PURE__*/ template(\`<p>User access granted\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Guest access only\`), _tmpl$6 = /*#__PURE__*/ template(\`<div><div><p>User type: </p><button>Guest</button><button>User</button><button>Admin\`), _tmpl$7 = /*#__PURE__*/ template(\`<button>Login\`);
 const ConditionalDemo = () => {
 	const [isLoggedIn, setIsLoggedIn] = createSignal(false);
 	const [userType, setUserType] = createSignal("guest");
@@ -818,7 +823,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function children(fn) {
 	const children = createMemo(fn);
 	const memo = createMemo(() => resolveChildren(children()));
@@ -838,20 +843,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1124,7 +1132,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -1425,7 +1435,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<h2>Welcome back!\`), _tmpl$2 = /* @__PURE__ */ template(\`<button>Logout\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Admin access granted\`), _tmpl$4 = /* @__PURE__ */ template(\`<p>User access granted\`), _tmpl$5 = /* @__PURE__ */ template(\`<p>Guest access only\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><div><p>User type: </p><button>Guest</button><button>User</button><button>Admin\`), _tmpl$7 = /* @__PURE__ */ template(\`<button>Login\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<h2>Welcome back!\`), _tmpl$2 = /*#__PURE__*/ template(\`<button>Logout\`), _tmpl$3 = /*#__PURE__*/ template(\`<p>Admin access granted\`), _tmpl$4 = /*#__PURE__*/ template(\`<p>User access granted\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Guest access only\`), _tmpl$6 = /*#__PURE__*/ template(\`<div><div><p>User type: </p><button>Guest</button><button>User</button><button>Admin\`), _tmpl$7 = /*#__PURE__*/ template(\`<button>Login\`);
 const ConditionalDemo = () => {
 	const [isLoggedIn, setIsLoggedIn] = createSignal(false);
 	const [userType, setUserType] = createSignal("guest");

@@ -94,7 +94,7 @@ function catchError(fn, handler) {
 		Owner = Owner.owner;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -105,20 +105,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -672,7 +675,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><p>This component works fine</p><button>Trigger Error\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Result: </p><button>Trigger Async Error\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Deep component level \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Nested Error Boundary</h3><button>Increase Level (Current: <!>)\`), _tmpl$5 = /* @__PURE__ */ template(\`<div><p>Inner Error Boundary: </p><button>Reset Inner\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>Error Boundary Demo\`), _tmpl$7 = /* @__PURE__ */ template(\`<div><h3>Something went wrong!</h3><p>Error: </p><button>Try Again\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><p>This component works fine</p><button>Trigger Error\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Result: </p><button>Trigger Async Error\`), _tmpl$3 = /*#__PURE__*/ template(\`<p>Deep component level \`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Nested Error Boundary</h3><button>Increase Level (Current: <!>)\`), _tmpl$5 = /*#__PURE__*/ template(\`<div><p>Inner Error Boundary: </p><button>Reset Inner\`), _tmpl$6 = /*#__PURE__*/ template(\`<div><h2>Error Boundary Demo\`), _tmpl$7 = /*#__PURE__*/ template(\`<div><h3>Something went wrong!</h3><p>Error: </p><button>Try Again\`);
 const ErrorProneComponent = () => {
 	const [shouldError, setShouldError] = createSignal(false);
 	if (shouldError()) throw new Error("This is a test error!");
@@ -852,7 +855,7 @@ function catchError(fn, handler) {
 		Owner = Owner.owner;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -863,20 +866,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1430,7 +1436,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><p>This component works fine</p><button>Trigger Error\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Result: </p><button>Trigger Async Error\`), _tmpl$3 = /* @__PURE__ */ template(\`<p>Deep component level \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Nested Error Boundary</h3><button>Increase Level (Current: <!>)\`), _tmpl$5 = /* @__PURE__ */ template(\`<div><p>Inner Error Boundary: </p><button>Reset Inner\`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h2>Error Boundary Demo\`), _tmpl$7 = /* @__PURE__ */ template(\`<div><h3>Something went wrong!</h3><p>Error: </p><button>Try Again\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><p>This component works fine</p><button>Trigger Error\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Result: </p><button>Trigger Async Error\`), _tmpl$3 = /*#__PURE__*/ template(\`<p>Deep component level \`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Nested Error Boundary</h3><button>Increase Level (Current: <!>)\`), _tmpl$5 = /*#__PURE__*/ template(\`<div><p>Inner Error Boundary: </p><button>Reset Inner\`), _tmpl$6 = /*#__PURE__*/ template(\`<div><h2>Error Boundary Demo\`), _tmpl$7 = /*#__PURE__*/ template(\`<div><h3>Something went wrong!</h3><p>Error: </p><button>Try Again\`);
 const ErrorProneComponent = () => {
 	const [shouldError, setShouldError] = createSignal(false);
 	if (shouldError()) throw new Error("This is a test error!");

@@ -62,7 +62,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -73,20 +73,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -535,21 +538,21 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
-var Enum4 = /* @__PURE__ */ function(Enum4) {
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
+var Enum4 = /*#__PURE__*/ function(Enum4) {
 	Enum4[Enum4["Foo"] = 0] = "Foo";
 	Enum4[Enum4["Bar"] = 1] = "Bar";
 	Enum4[Enum4["Baz"] = 2] = "Baz";
 	return Enum4;
 }(Enum4 || {});
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1) {
+var Enum1 = /*#__PURE__*/ function(Enum1) {
 	Enum1[Enum1["Foo"] = 0] = "Foo";
 	Enum1[Enum1["Bar"] = 1] = "Bar";
 	Enum1[Enum1["Baz"] = 2] = "Baz";
 	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2) {
+var Enum2 = /*#__PURE__*/ function(Enum2) {
 	Enum2["Foo"] = "FOO";
 	Enum2["Bar"] = "BAR";
 	Enum2["Baz"] = "BAZ";
@@ -697,7 +700,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -708,20 +711,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1170,21 +1176,21 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
-var Enum4 = /* @__PURE__ */ function(Enum4) {
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
+var Enum4 = /*#__PURE__*/ function(Enum4) {
 	Enum4[Enum4["Foo"] = 0] = "Foo";
 	Enum4[Enum4["Bar"] = 1] = "Bar";
 	Enum4[Enum4["Baz"] = 2] = "Baz";
 	return Enum4;
 }(Enum4 || {});
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1) {
+var Enum1 = /*#__PURE__*/ function(Enum1) {
 	Enum1[Enum1["Foo"] = 0] = "Foo";
 	Enum1[Enum1["Bar"] = 1] = "Bar";
 	Enum1[Enum1["Baz"] = 2] = "Baz";
 	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2) {
+var Enum2 = /*#__PURE__*/ function(Enum2) {
 	Enum2["Foo"] = "FOO";
 	Enum2["Bar"] = "BAR";
 	Enum2["Baz"] = "BAZ";
@@ -1332,7 +1338,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -1343,20 +1349,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1805,21 +1814,21 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
-var Enum4 = /* @__PURE__ */ function(Enum4) {
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
+var Enum4 = /*#__PURE__*/ function(Enum4) {
 	Enum4[Enum4["Foo"] = 0] = "Foo";
 	Enum4[Enum4["Bar"] = 1] = "Bar";
 	Enum4[Enum4["Baz"] = 2] = "Baz";
 	return Enum4;
 }(Enum4 || {});
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1) {
+var Enum1 = /*#__PURE__*/ function(Enum1) {
 	Enum1[Enum1["Foo"] = 0] = "Foo";
 	Enum1[Enum1["Bar"] = 1] = "Bar";
 	Enum1[Enum1["Baz"] = 2] = "Baz";
 	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2) {
+var Enum2 = /*#__PURE__*/ function(Enum2) {
 	Enum2["Foo"] = "FOO";
 	Enum2["Bar"] = "BAR";
 	Enum2["Baz"] = "BAZ";
@@ -1967,7 +1976,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -1978,20 +1987,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -2440,21 +2452,21 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
-var Enum4 = /* @__PURE__ */ function(Enum4) {
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
+var Enum4 = /*#__PURE__*/ function(Enum4) {
 	Enum4[Enum4["Foo"] = 0] = "Foo";
 	Enum4[Enum4["Bar"] = 1] = "Bar";
 	Enum4[Enum4["Baz"] = 2] = "Baz";
 	return Enum4;
 }(Enum4 || {});
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1) {
+var Enum1 = /*#__PURE__*/ function(Enum1) {
 	Enum1[Enum1["Foo"] = 0] = "Foo";
 	Enum1[Enum1["Bar"] = 1] = "Bar";
 	Enum1[Enum1["Baz"] = 2] = "Baz";
 	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2) {
+var Enum2 = /*#__PURE__*/ function(Enum2) {
 	Enum2["Foo"] = "FOO";
 	Enum2["Bar"] = "BAR";
 	Enum2["Baz"] = "BAZ";
@@ -2602,7 +2614,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -2613,20 +2625,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -3075,20 +3090,20 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
 const Enum4 = {
 	Foo: 0,
 	Bar: 1,
 	Baz: 2
 };
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1) {
+var Enum1 = /*#__PURE__*/ function(Enum1) {
 	Enum1[Enum1["Foo"] = 0] = "Foo";
 	Enum1[Enum1["Bar"] = 1] = "Bar";
 	Enum1[Enum1["Baz"] = 2] = "Baz";
 	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2) {
+var Enum2 = /*#__PURE__*/ function(Enum2) {
 	Enum2["Foo"] = "FOO";
 	Enum2["Bar"] = "BAR";
 	Enum2["Baz"] = "BAZ";
@@ -3236,7 +3251,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -3247,20 +3262,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -3709,20 +3727,20 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Namespace Test</h2><p>Circle area: </p><p>API URL: </p><p>Version: </p><p>Feature A: \`);
 const Enum4 = {
 	Foo: 0,
 	Bar: 1,
 	Baz: 2
 };
 const text = "text";
-var Enum1 = /* @__PURE__ */ function(Enum1) {
+var Enum1 = /*#__PURE__*/ function(Enum1) {
 	Enum1[Enum1["Foo"] = 0] = "Foo";
 	Enum1[Enum1["Bar"] = 1] = "Bar";
 	Enum1[Enum1["Baz"] = 2] = "Baz";
 	return Enum1;
 }(Enum1 || {});
-var Enum2 = /* @__PURE__ */ function(Enum2) {
+var Enum2 = /*#__PURE__*/ function(Enum2) {
 	Enum2["Foo"] = "FOO";
 	Enum2["Bar"] = "BAR";
 	Enum2["Baz"] = "BAZ";

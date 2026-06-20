@@ -15,7 +15,7 @@ All files                                                                       
  src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\preprocess.ts  |  100.00 |   41.67 | 11-24
  src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\transform.ts   |   90.91 |   82.04 | 47-48,76,79-82,84-87,100-106,109-113,198-203,205-211
  src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\utils.ts       |   83.78 |   80.95 | 59,102-103,132,159-164,180,189-191,256,260,312-317,332-333,360,366-371,387-388,390-400,402,404-417,427,430-436,442-450
- src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\validate.ts    |  100.00 |   81.40 | 63,73,78,84-88
+ src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\shared\validate.ts    |  100.00 |   81.40 | 64,74,79,85-89
  src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\ssr\element.ts        |   73.08 |   53.18 | 109-111,141-144,148-151,153-161,168,170-182,205-210,216-220,222-230,245-275,303-336,338-341,369-372,393-406,411-417,450-470,472-473,509,513-548,559-578,618-625,634-638,640-691,694,696-697,699-702,716
  src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\ssr\template.ts       |  100.00 |   98.48 |
  src\babel-plugin-jsx-dom-expressions\babel-plugin-jsx-dom-expressions\universal\element.ts  |   91.67 |   59.95 | 86-89,94-167,171-192,194,200-201,217,232,242-244,253-254,356-357,361-362,368-372,376-413,415

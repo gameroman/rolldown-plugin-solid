@@ -71,7 +71,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function createContext(defaultValue, options) {
 	const id = Symbol("context");
 	return {
@@ -103,20 +103,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -389,7 +392,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -688,7 +693,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Current theme: </p><button>Toggle Theme\`), _tmpl$3 = /* @__PURE__ */ template(\`<div>No user context\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><p>Please log in</p><button>Login as User</button><button>Login as Admin\`), _tmpl$5 = /* @__PURE__ */ template(\`<div><p>Welcome, <!>!</p><p>Role: </p><button>Logout\`), _tmpl$6 = /* @__PURE__ */ template(\`<div>No context available\`), _tmpl$7 = /* @__PURE__ */ template(\`<div><h3>Nested Context Usage</h3><p>Theme from parent: </p><p>User from parent: \`), _tmpl$8 = /* @__PURE__ */ template(\`<div><h2>Context Demo\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div>No theme context\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Current theme: </p><button>Toggle Theme\`), _tmpl$3 = /*#__PURE__*/ template(\`<div>No user context\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><p>Please log in</p><button>Login as User</button><button>Login as Admin\`), _tmpl$5 = /*#__PURE__*/ template(\`<div><p>Welcome, <!>!</p><p>Role: </p><button>Logout\`), _tmpl$6 = /*#__PURE__*/ template(\`<div>No context available\`), _tmpl$7 = /*#__PURE__*/ template(\`<div><h3>Nested Context Usage</h3><p>Theme from parent: </p><p>User from parent: \`), _tmpl$8 = /*#__PURE__*/ template(\`<div><h2>Context Demo\`);
 const ThemeContext = createContext();
 const UserContext = createContext();
 const ThemeProvider = (props) => {
@@ -866,7 +871,7 @@ function untrack(fn) {
 		Listener = listener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function createContext(defaultValue, options) {
 	const id = Symbol("context");
 	return {
@@ -898,20 +903,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1184,7 +1192,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -1483,7 +1493,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div>No theme context\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><p>Current theme: </p><button>Toggle Theme\`), _tmpl$3 = /* @__PURE__ */ template(\`<div>No user context\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><p>Please log in</p><button>Login as User</button><button>Login as Admin\`), _tmpl$5 = /* @__PURE__ */ template(\`<div><p>Welcome, <!>!</p><p>Role: </p><button>Logout\`), _tmpl$6 = /* @__PURE__ */ template(\`<div>No context available\`), _tmpl$7 = /* @__PURE__ */ template(\`<div><h3>Nested Context Usage</h3><p>Theme from parent: </p><p>User from parent: \`), _tmpl$8 = /* @__PURE__ */ template(\`<div><h2>Context Demo\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div>No theme context\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Current theme: </p><button>Toggle Theme\`), _tmpl$3 = /*#__PURE__*/ template(\`<div>No user context\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><p>Please log in</p><button>Login as User</button><button>Login as Admin\`), _tmpl$5 = /*#__PURE__*/ template(\`<div><p>Welcome, <!>!</p><p>Role: </p><button>Logout\`), _tmpl$6 = /*#__PURE__*/ template(\`<div>No context available\`), _tmpl$7 = /*#__PURE__*/ template(\`<div><h3>Nested Context Usage</h3><p>Theme from parent: </p><p>User from parent: \`), _tmpl$8 = /*#__PURE__*/ template(\`<div><h2>Context Demo\`);
 const ThemeContext = createContext();
 const UserContext = createContext();
 const ThemeProvider = (props) => {

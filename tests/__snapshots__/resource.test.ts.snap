@@ -245,7 +245,7 @@ function runWithOwner(o, fn) {
 		Listener = prevListener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function resumeEffects(e) {
 	Effects.push.apply(Effects, e);
 	e.length = 0;
@@ -285,20 +285,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -571,7 +574,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -593,7 +598,7 @@ function createProvider(id, options) {
 function createComponent(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
-const SuspenseListContext = /* @__PURE__ */ createContext();
+const SuspenseListContext = /* #__PURE__ */ createContext();
 function Suspense(props) {
 	let counter = 0, show, ctx, p, flicker, error;
 	const [inFallback, setFallback] = createSignal(false), SuspenseContext = getSuspenseContext(), store = {
@@ -913,7 +918,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>User Info</h3><button>Refresh User</button><button>Mutate User\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>Loading user...\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>ID: </p><p>Name: </p><p>Email: \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Posts</h3><button>Load Posts\`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Loading posts...\`), _tmpl$6 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$7 = /* @__PURE__ */ template(\`<li> (User ID: <!>)\`), _tmpl$8 = /* @__PURE__ */ template(\`<button>Refresh Posts\`), _tmpl$9 = /* @__PURE__ */ template(\`<div><h4>Comments for Post </h4><button>Refresh Comments\`), _tmpl$0 = /* @__PURE__ */ template(\`<div>Loading comments...\`), _tmpl$1 = /* @__PURE__ */ template(\`<p>No comments yet\`), _tmpl$10 = /* @__PURE__ */ template(\`<div><h2>createResource Demo</h2><div><h3>User Selection</h3><button>User 1</button><button>User 2</button><button>Invalid User</button></div><div style=margin-top:2rem></div><div style=margin-top:2rem></div><div style=margin-top:2rem><h3>Comments Selection</h3><button>Post 1 Comments</button><button>Post 2 Comments</button><button>Post 3 Comments\`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Loading selected user...\`), _tmpl$12 = /* @__PURE__ */ template(\`<div><p>Selected: </p><p>Email: \`), _tmpl$13 = /* @__PURE__ */ template(\`<div>Loading comments section...\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>User Info</h3><button>Refresh User</button><button>Mutate User\`), _tmpl$2 = /*#__PURE__*/ template(\`<div>Loading user...\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><p>ID: </p><p>Name: </p><p>Email: \`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Posts</h3><button>Load Posts\`), _tmpl$5 = /*#__PURE__*/ template(\`<div>Loading posts...\`), _tmpl$6 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$7 = /*#__PURE__*/ template(\`<li> (User ID: <!>)\`), _tmpl$8 = /*#__PURE__*/ template(\`<button>Refresh Posts\`), _tmpl$9 = /*#__PURE__*/ template(\`<div><h4>Comments for Post </h4><button>Refresh Comments\`), _tmpl$0 = /*#__PURE__*/ template(\`<div>Loading comments...\`), _tmpl$1 = /*#__PURE__*/ template(\`<p>No comments yet\`), _tmpl$10 = /*#__PURE__*/ template(\`<div><h2>createResource Demo</h2><div><h3>User Selection</h3><button>User 1</button><button>User 2</button><button>Invalid User</button></div><div style=margin-top:2rem></div><div style=margin-top:2rem></div><div style=margin-top:2rem><h3>Comments Selection</h3><button>Post 1 Comments</button><button>Post 2 Comments</button><button>Post 3 Comments\`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Loading selected user...\`), _tmpl$12 = /*#__PURE__*/ template(\`<div><p>Selected: </p><p>Email: \`), _tmpl$13 = /*#__PURE__*/ template(\`<div>Loading comments section...\`);
 const fetchUser = async (id) => {
 	await new Promise((resolve) => setTimeout(resolve, 1e3));
 	if (id === 1) return {
@@ -1356,7 +1361,7 @@ function runWithOwner(o, fn) {
 		Listener = prevListener;
 	}
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function resumeEffects(e) {
 	Effects.push.apply(Effects, e);
 	e.length = 0;
@@ -1396,20 +1401,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1682,7 +1690,9 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			Array.isArray(result) ? results.push.apply(results, result) : results.push(result);
+			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
+			else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			else results.push(result);
 		}
 		return results;
 	}
@@ -1704,7 +1714,7 @@ function createProvider(id, options) {
 function createComponent(Comp, props) {
 	return untrack(() => Comp(props || {}));
 }
-const SuspenseListContext = /* @__PURE__ */ createContext();
+const SuspenseListContext = /* #__PURE__ */ createContext();
 function Suspense(props) {
 	let counter = 0, show, ctx, p, flicker, error;
 	const [inFallback, setFallback] = createSignal(false), SuspenseContext = getSuspenseContext(), store = {
@@ -2024,7 +2034,7 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>User Info</h3><button>Refresh User</button><button>Mutate User\`), _tmpl$2 = /* @__PURE__ */ template(\`<div>Loading user...\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><p>ID: </p><p>Name: </p><p>Email: \`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Posts</h3><button>Load Posts\`), _tmpl$5 = /* @__PURE__ */ template(\`<div>Loading posts...\`), _tmpl$6 = /* @__PURE__ */ template(\`<ul>\`), _tmpl$7 = /* @__PURE__ */ template(\`<li> (User ID: <!>)\`), _tmpl$8 = /* @__PURE__ */ template(\`<button>Refresh Posts\`), _tmpl$9 = /* @__PURE__ */ template(\`<div><h4>Comments for Post </h4><button>Refresh Comments\`), _tmpl$0 = /* @__PURE__ */ template(\`<div>Loading comments...\`), _tmpl$1 = /* @__PURE__ */ template(\`<p>No comments yet\`), _tmpl$10 = /* @__PURE__ */ template(\`<div><h2>createResource Demo</h2><div><h3>User Selection</h3><button>User 1</button><button>User 2</button><button>Invalid User</button></div><div style=margin-top:2rem></div><div style=margin-top:2rem></div><div style=margin-top:2rem><h3>Comments Selection</h3><button>Post 1 Comments</button><button>Post 2 Comments</button><button>Post 3 Comments\`), _tmpl$11 = /* @__PURE__ */ template(\`<div>Loading selected user...\`), _tmpl$12 = /* @__PURE__ */ template(\`<div><p>Selected: </p><p>Email: \`), _tmpl$13 = /* @__PURE__ */ template(\`<div>Loading comments section...\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>User Info</h3><button>Refresh User</button><button>Mutate User\`), _tmpl$2 = /*#__PURE__*/ template(\`<div>Loading user...\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><p>ID: </p><p>Name: </p><p>Email: \`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Posts</h3><button>Load Posts\`), _tmpl$5 = /*#__PURE__*/ template(\`<div>Loading posts...\`), _tmpl$6 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$7 = /*#__PURE__*/ template(\`<li> (User ID: <!>)\`), _tmpl$8 = /*#__PURE__*/ template(\`<button>Refresh Posts\`), _tmpl$9 = /*#__PURE__*/ template(\`<div><h4>Comments for Post </h4><button>Refresh Comments\`), _tmpl$0 = /*#__PURE__*/ template(\`<div>Loading comments...\`), _tmpl$1 = /*#__PURE__*/ template(\`<p>No comments yet\`), _tmpl$10 = /*#__PURE__*/ template(\`<div><h2>createResource Demo</h2><div><h3>User Selection</h3><button>User 1</button><button>User 2</button><button>Invalid User</button></div><div style=margin-top:2rem></div><div style=margin-top:2rem></div><div style=margin-top:2rem><h3>Comments Selection</h3><button>Post 1 Comments</button><button>Post 2 Comments</button><button>Post 3 Comments\`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Loading selected user...\`), _tmpl$12 = /*#__PURE__*/ template(\`<div><p>Selected: </p><p>Email: \`), _tmpl$13 = /*#__PURE__*/ template(\`<div>Loading comments section...\`);
 const fetchUser = async (id) => {
 	await new Promise((resolve) => setTimeout(resolve, 1e3));
 	if (id === 1) return {

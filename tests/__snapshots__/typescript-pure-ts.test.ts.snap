@@ -94,7 +94,7 @@ function onCleanup(fn) {
 	else Owner.cleanups.push(fn);
 	return fn;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -105,20 +105,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -772,19 +775,6 @@ function paginateData(data, page, pageSize) {
 	const startIndex = (page - 1) * pageSize;
 	return data.slice(startIndex, startIndex + pageSize);
 }
-let UserRole = /* @__PURE__ */ function(UserRole) {
-	UserRole["Admin"] = "admin";
-	UserRole["User"] = "user";
-	UserRole["Guest"] = "guest";
-	return UserRole;
-}({});
-let UserStatus = /* @__PURE__ */ function(UserStatus) {
-	UserStatus["Active"] = "active";
-	UserStatus["Inactive"] = "inactive";
-	UserStatus["Pending"] = "pending";
-	UserStatus["Suspended"] = "suspended";
-	return UserStatus;
-}({});
 function createUserManagementService() {
 	const users = [];
 	const addUser = (userData) => {
@@ -835,7 +825,7 @@ function createUserManagementService() {
 		getUserCount: () => users.length
 	};
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div class=pagination><button>Previous</button><span>Page </span><button>Next\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h2>User Management System</h2><div class=stats-panel><h3>Statistics</h3><p>Total Users: </p><p>Active Users: </p><p>Average Age: </p></div><div class=filter-panel><h3>Filters</h3><input type=text placeholder="Search by name or email"><select><option value>All Roles</option><option>Admin</option><option>User</option><option>Guest</option></select><select><option value>All Statuses</option><option>Active</option><option>Inactive</option><option>Pending</option><option>Suspended</option></select><button>Add User</button></div><div class=users-list><h3>Users (<!> found)</h3><table><thead><tr><th>Name</th><th>Email</th><th>Age</th><th>Role</th><th>Status</th><th>Valid</th><th>Actions</th></tr></thead><tbody></tbody></table></div><div class=debug-panel><h3>API Response (Debug)</h3><pre>\`), _tmpl$3 = /* @__PURE__ */ template(\`<tr><td></td><td></td><td></td><td></td><td></td><td></td><td><button>Toggle Status</button><button>Delete\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Type Import Demo</h3><p>User Name: </p><p>User Valid: </p><p>Extended User Role: </p><p>Extended User Status: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=pagination><button>Previous</button><span>Page </span><button>Next\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h2>User Management System</h2><div class=stats-panel><h3>Statistics</h3><p>Total Users: </p><p>Active Users: </p><p>Average Age: </p></div><div class=filter-panel><h3>Filters</h3><input type=text placeholder="Search by name or email"><select><option value>All Roles</option><option>Admin</option><option>User</option><option>Guest</option></select><select><option value>All Statuses</option><option>Active</option><option>Inactive</option><option>Pending</option><option>Suspended</option></select><button>Add User</button></div><div class=users-list><h3>Users (<!> found)</h3><table><thead><tr><th>Name</th><th>Email</th><th>Age</th><th>Role</th><th>Status</th><th>Valid</th><th>Actions</th></tr></thead><tbody></tbody></table></div><div class=debug-panel><h3>API Response (Debug)</h3><pre>\`), _tmpl$3 = /*#__PURE__*/ template(\`<tr><td></td><td></td><td></td><td></td><td></td><td></td><td><button>Toggle Status</button><button>Delete\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Type Import Demo</h3><p>User Name: </p><p>User Valid: </p><p>Extended User Role: </p><p>Extended User Status: \`);
 function UserManagementComponent() {
 	const userService = createUserManagementService();
 	const [users, setUsers] = createSignal([]);
@@ -851,8 +841,8 @@ function UserManagementComponent() {
 				email: "john@example.com",
 				age: 30,
 				isActive: true,
-				role: UserRole.Admin,
-				status: UserStatus.Active,
+				role: "admin",
+				status: "active",
 				createdAt: /* @__PURE__ */ new Date("2023-01-01"),
 				updatedAt: /* @__PURE__ */ new Date()
 			},
@@ -862,8 +852,8 @@ function UserManagementComponent() {
 				email: "jane@example.com",
 				age: 25,
 				isActive: true,
-				role: UserRole.User,
-				status: UserStatus.Active,
+				role: "user",
+				status: "active",
 				createdAt: /* @__PURE__ */ new Date("2023-01-02"),
 				updatedAt: /* @__PURE__ */ new Date()
 			},
@@ -873,8 +863,8 @@ function UserManagementComponent() {
 				email: "bob@example.com",
 				age: 35,
 				isActive: false,
-				role: UserRole.Guest,
-				status: UserStatus.Inactive,
+				role: "guest",
+				status: "inactive",
 				createdAt: /* @__PURE__ */ new Date("2023-01-03"),
 				updatedAt: /* @__PURE__ */ new Date()
 			}
@@ -904,8 +894,8 @@ function UserManagementComponent() {
 			email: \`user\${Date.now()}@example.com\`,
 			age: Math.floor(Math.random() * 50) + 18,
 			isActive: true,
-			role: UserRole.User,
-			status: UserStatus.Active,
+			role: "user",
+			status: "active",
 			createdAt: /* @__PURE__ */ new Date(),
 			updatedAt: /* @__PURE__ */ new Date()
 		};
@@ -919,8 +909,8 @@ function UserManagementComponent() {
 	const toggleUserStatus = (id) => {
 		const user = users().find((u) => u.id === id);
 		if (user) {
-			const newStatus = user.status === UserStatus.Active ? UserStatus.Inactive : UserStatus.Active;
-			const newActive = newStatus === UserStatus.Active;
+			const newStatus = user.status === "active" ? "inactive" : "active";
+			const newActive = newStatus === "active";
 			userService.updateUser(id, {
 				status: newStatus,
 				isActive: newActive,
@@ -990,14 +980,14 @@ function UserManagementComponent() {
 		}), null);
 		insert(_el$39, () => JSON.stringify(apiResponse(), null, 2));
 		createRenderEffect(() => _el$11.value = searchTerm());
-		createRenderEffect(() => _el$14.value = UserRole.Admin);
-		createRenderEffect(() => _el$15.value = UserRole.User);
-		createRenderEffect(() => _el$16.value = UserRole.Guest);
+		createRenderEffect(() => _el$14.value = "admin");
+		createRenderEffect(() => _el$15.value = "user");
+		createRenderEffect(() => _el$16.value = "guest");
 		createRenderEffect(() => _el$12.value = selectedRole());
-		createRenderEffect(() => _el$19.value = UserStatus.Active);
-		createRenderEffect(() => _el$20.value = UserStatus.Inactive);
-		createRenderEffect(() => _el$21.value = UserStatus.Pending);
-		createRenderEffect(() => _el$22.value = UserStatus.Suspended);
+		createRenderEffect(() => _el$19.value = "active");
+		createRenderEffect(() => _el$20.value = "inactive");
+		createRenderEffect(() => _el$21.value = "pending");
+		createRenderEffect(() => _el$22.value = "suspended");
 		createRenderEffect(() => _el$17.value = selectedStatus());
 		return _el$;
 	})();
@@ -1012,8 +1002,8 @@ function TypeImportDemo() {
 	});
 	const [extendedUser] = createSignal({
 		...user(),
-		role: UserRole.User,
-		status: UserStatus.Active,
+		role: "user",
+		status: "active",
 		createdAt: /* @__PURE__ */ new Date(),
 		updatedAt: /* @__PURE__ */ new Date()
 	});
@@ -1132,7 +1122,7 @@ function onCleanup(fn) {
 	else Owner.cleanups.push(fn);
 	return fn;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -1143,20 +1133,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1810,19 +1803,6 @@ function paginateData(data, page, pageSize) {
 	const startIndex = (page - 1) * pageSize;
 	return data.slice(startIndex, startIndex + pageSize);
 }
-let UserRole = /* @__PURE__ */ function(UserRole) {
-	UserRole["Admin"] = "admin";
-	UserRole["User"] = "user";
-	UserRole["Guest"] = "guest";
-	return UserRole;
-}({});
-let UserStatus = /* @__PURE__ */ function(UserStatus) {
-	UserStatus["Active"] = "active";
-	UserStatus["Inactive"] = "inactive";
-	UserStatus["Pending"] = "pending";
-	UserStatus["Suspended"] = "suspended";
-	return UserStatus;
-}({});
 function createUserManagementService() {
 	const users = [];
 	const addUser = (userData) => {
@@ -1873,7 +1853,7 @@ function createUserManagementService() {
 		getUserCount: () => users.length
 	};
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div class=pagination><button>Previous</button><span>Page </span><button>Next\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h2>User Management System</h2><div class=stats-panel><h3>Statistics</h3><p>Total Users: </p><p>Active Users: </p><p>Average Age: </p></div><div class=filter-panel><h3>Filters</h3><input type=text placeholder="Search by name or email"><select><option value>All Roles</option><option>Admin</option><option>User</option><option>Guest</option></select><select><option value>All Statuses</option><option>Active</option><option>Inactive</option><option>Pending</option><option>Suspended</option></select><button>Add User</button></div><div class=users-list><h3>Users (<!> found)</h3><table><thead><tr><th>Name</th><th>Email</th><th>Age</th><th>Role</th><th>Status</th><th>Valid</th><th>Actions</th></tr></thead><tbody></tbody></table></div><div class=debug-panel><h3>API Response (Debug)</h3><pre>\`), _tmpl$3 = /* @__PURE__ */ template(\`<tr><td></td><td></td><td></td><td></td><td></td><td></td><td><button>Toggle Status</button><button>Delete\`), _tmpl$4 = /* @__PURE__ */ template(\`<div><h3>Type Import Demo</h3><p>User Name: </p><p>User Valid: </p><p>Extended User Role: </p><p>Extended User Status: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=pagination><button>Previous</button><span>Page </span><button>Next\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h2>User Management System</h2><div class=stats-panel><h3>Statistics</h3><p>Total Users: </p><p>Active Users: </p><p>Average Age: </p></div><div class=filter-panel><h3>Filters</h3><input type=text placeholder="Search by name or email"><select><option value>All Roles</option><option>Admin</option><option>User</option><option>Guest</option></select><select><option value>All Statuses</option><option>Active</option><option>Inactive</option><option>Pending</option><option>Suspended</option></select><button>Add User</button></div><div class=users-list><h3>Users (<!> found)</h3><table><thead><tr><th>Name</th><th>Email</th><th>Age</th><th>Role</th><th>Status</th><th>Valid</th><th>Actions</th></tr></thead><tbody></tbody></table></div><div class=debug-panel><h3>API Response (Debug)</h3><pre>\`), _tmpl$3 = /*#__PURE__*/ template(\`<tr><td></td><td></td><td></td><td></td><td></td><td></td><td><button>Toggle Status</button><button>Delete\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Type Import Demo</h3><p>User Name: </p><p>User Valid: </p><p>Extended User Role: </p><p>Extended User Status: \`);
 function UserManagementComponent() {
 	const userService = createUserManagementService();
 	const [users, setUsers] = createSignal([]);
@@ -1889,8 +1869,8 @@ function UserManagementComponent() {
 				email: "john@example.com",
 				age: 30,
 				isActive: true,
-				role: UserRole.Admin,
-				status: UserStatus.Active,
+				role: "admin",
+				status: "active",
 				createdAt: /* @__PURE__ */ new Date("2023-01-01"),
 				updatedAt: /* @__PURE__ */ new Date()
 			},
@@ -1900,8 +1880,8 @@ function UserManagementComponent() {
 				email: "jane@example.com",
 				age: 25,
 				isActive: true,
-				role: UserRole.User,
-				status: UserStatus.Active,
+				role: "user",
+				status: "active",
 				createdAt: /* @__PURE__ */ new Date("2023-01-02"),
 				updatedAt: /* @__PURE__ */ new Date()
 			},
@@ -1911,8 +1891,8 @@ function UserManagementComponent() {
 				email: "bob@example.com",
 				age: 35,
 				isActive: false,
-				role: UserRole.Guest,
-				status: UserStatus.Inactive,
+				role: "guest",
+				status: "inactive",
 				createdAt: /* @__PURE__ */ new Date("2023-01-03"),
 				updatedAt: /* @__PURE__ */ new Date()
 			}
@@ -1942,8 +1922,8 @@ function UserManagementComponent() {
 			email: \`user\${Date.now()}@example.com\`,
 			age: Math.floor(Math.random() * 50) + 18,
 			isActive: true,
-			role: UserRole.User,
-			status: UserStatus.Active,
+			role: "user",
+			status: "active",
 			createdAt: /* @__PURE__ */ new Date(),
 			updatedAt: /* @__PURE__ */ new Date()
 		};
@@ -1957,8 +1937,8 @@ function UserManagementComponent() {
 	const toggleUserStatus = (id) => {
 		const user = users().find((u) => u.id === id);
 		if (user) {
-			const newStatus = user.status === UserStatus.Active ? UserStatus.Inactive : UserStatus.Active;
-			const newActive = newStatus === UserStatus.Active;
+			const newStatus = user.status === "active" ? "inactive" : "active";
+			const newActive = newStatus === "active";
 			userService.updateUser(id, {
 				status: newStatus,
 				isActive: newActive,
@@ -2028,14 +2008,14 @@ function UserManagementComponent() {
 		}), null);
 		insert(_el$39, () => JSON.stringify(apiResponse(), null, 2));
 		createRenderEffect(() => _el$11.value = searchTerm());
-		createRenderEffect(() => _el$14.value = UserRole.Admin);
-		createRenderEffect(() => _el$15.value = UserRole.User);
-		createRenderEffect(() => _el$16.value = UserRole.Guest);
+		createRenderEffect(() => _el$14.value = "admin");
+		createRenderEffect(() => _el$15.value = "user");
+		createRenderEffect(() => _el$16.value = "guest");
 		createRenderEffect(() => _el$12.value = selectedRole());
-		createRenderEffect(() => _el$19.value = UserStatus.Active);
-		createRenderEffect(() => _el$20.value = UserStatus.Inactive);
-		createRenderEffect(() => _el$21.value = UserStatus.Pending);
-		createRenderEffect(() => _el$22.value = UserStatus.Suspended);
+		createRenderEffect(() => _el$19.value = "active");
+		createRenderEffect(() => _el$20.value = "inactive");
+		createRenderEffect(() => _el$21.value = "pending");
+		createRenderEffect(() => _el$22.value = "suspended");
 		createRenderEffect(() => _el$17.value = selectedStatus());
 		return _el$;
 	})();
@@ -2050,8 +2030,8 @@ function TypeImportDemo() {
 	});
 	const [extendedUser] = createSignal({
 		...user(),
-		role: UserRole.User,
-		status: UserStatus.Active,
+		role: "user",
+		status: "active",
 		createdAt: /* @__PURE__ */ new Date(),
 		updatedAt: /* @__PURE__ */ new Date()
 	});

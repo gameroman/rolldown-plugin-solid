@@ -94,7 +94,7 @@ function onCleanup(fn) {
 	else Owner.cleanups.push(fn);
 	return fn;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -105,20 +105,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -725,41 +728,41 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Const Enum Usage</h3><div>Direction: <!> (<!>)</div><div>Status: </div><div>Priority: </div><div><button>Up</button><button>Down</button><button>Left</button><button>Right</button></div><div><button>Pending</button><button>Loading</button><button>Success</button><button>Error\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Regular Enum Usage</h3><div>Selected Color: <!> = </div><div>Size: <button>Small</button><button>Medium</button><button>Large</button></div><div>Log Level: <!> (<!>)<button>Debug</button><button>Info</button><button>Warn</button><button>Error\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><h3>Mixed Enum Usage</h3><ul>\`), _tmpl$4 = /* @__PURE__ */ template(\`<li> <!>(Priority: <!>, Status: <!>)\`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h3>Enum Mapping</h3><div>Const Direction <!> = </div><div>Regular Color <!> = \`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h3>Complex Enum Flags</h3><div>Current: <!> (Binary: <!>)</div><div></div><button>Select All</button><button>Clear All\`), _tmpl$7 = /* @__PURE__ */ template(\`<label style=margin-right:1rem><input type=checkbox>Flag\`);
-var Direction = /* @__PURE__ */ function(Direction) {
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Const Enum Usage</h3><div>Direction: <!> (<!>)</div><div>Status: </div><div>Priority: </div><div><button>Up</button><button>Down</button><button>Left</button><button>Right</button></div><div><button>Pending</button><button>Loading</button><button>Success</button><button>Error\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Regular Enum Usage</h3><div>Selected Color: <!> = </div><div>Size: <button>Small</button><button>Medium</button><button>Large</button></div><div>Log Level: <!> (<!>)<button>Debug</button><button>Info</button><button>Warn</button><button>Error\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><h3>Mixed Enum Usage</h3><ul>\`), _tmpl$4 = /*#__PURE__*/ template(\`<li> <!>(Priority: <!>, Status: <!>)\`), _tmpl$5 = /*#__PURE__*/ template(\`<div><h3>Enum Mapping</h3><div>Const Direction <!> = </div><div>Regular Color <!> = \`), _tmpl$6 = /*#__PURE__*/ template(\`<div><h3>Complex Enum Flags</h3><div>Current: <!> (Binary: <!>)</div><div></div><button>Select All</button><button>Clear All\`), _tmpl$7 = /*#__PURE__*/ template(\`<label style=margin-right:1rem><input type=checkbox>Flag\`);
+var Direction = /*#__PURE__*/ function(Direction) {
 	Direction[Direction["Up"] = 0] = "Up";
 	Direction[Direction["Down"] = 1] = "Down";
 	Direction[Direction["Left"] = 2] = "Left";
 	Direction[Direction["Right"] = 3] = "Right";
 	return Direction;
 }(Direction || {});
-var Status = /* @__PURE__ */ function(Status) {
+var Status = /*#__PURE__*/ function(Status) {
 	Status["Pending"] = "pending";
 	Status["Loading"] = "loading";
 	Status["Success"] = "success";
 	Status["Error"] = "error";
 	return Status;
 }(Status || {});
-var Priority = /* @__PURE__ */ function(Priority) {
+var Priority = /*#__PURE__*/ function(Priority) {
 	Priority[Priority["Low"] = 1] = "Low";
 	Priority[Priority["Medium"] = 2] = "Medium";
 	Priority[Priority["High"] = 3] = "High";
 	Priority[Priority["Critical"] = 4] = "Critical";
 	return Priority;
 }(Priority || {});
-var Color = /* @__PURE__ */ function(Color) {
+var Color = /*#__PURE__*/ function(Color) {
 	Color["Red"] = "#FF0000";
 	Color["Green"] = "#00FF00";
 	Color["Blue"] = "#0000FF";
 	return Color;
 }(Color || {});
-var Size = /* @__PURE__ */ function(Size) {
+var Size = /*#__PURE__*/ function(Size) {
 	Size["Small"] = "small";
 	Size["Medium"] = "medium";
 	Size["Large"] = "large";
 	return Size;
 }(Size || {});
-var LogLevel = /* @__PURE__ */ function(LogLevel) {
+var LogLevel = /*#__PURE__*/ function(LogLevel) {
 	LogLevel[LogLevel["Debug"] = 0] = "Debug";
 	LogLevel[LogLevel["Info"] = 1] = "Info";
 	LogLevel[LogLevel["Warn"] = 2] = "Warn";
@@ -932,7 +935,7 @@ function EnumMappingComponent() {
 		return _el$53;
 	})();
 }
-var ComplexEnum = /* @__PURE__ */ function(ComplexEnum) {
+var ComplexEnum = /*#__PURE__*/ function(ComplexEnum) {
 	ComplexEnum[ComplexEnum["None"] = 0] = "None";
 	ComplexEnum[ComplexEnum["Flag1"] = 1] = "Flag1";
 	ComplexEnum[ComplexEnum["Flag2"] = 2] = "Flag2";
@@ -1069,7 +1072,7 @@ function onCleanup(fn) {
 	else Owner.cleanups.push(fn);
 	return fn;
 }
-const [transPending, setTransPending] = /* @__PURE__ */ createSignal(false);
+const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
 	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
@@ -1080,20 +1083,23 @@ function readSignal() {
 		Updates = updates;
 	}
 	if (Listener) {
-		const sSlot = this.observers ? this.observers.length : 0;
-		if (!Listener.sources) {
-			Listener.sources = [this];
-			Listener.sourceSlots = [sSlot];
-		} else {
-			Listener.sources.push(this);
-			Listener.sourceSlots.push(sSlot);
-		}
-		if (!this.observers) {
-			this.observers = [Listener];
-			this.observerSlots = [Listener.sources.length - 1];
-		} else {
-			this.observers.push(Listener);
-			this.observerSlots.push(Listener.sources.length - 1);
+		const observers = this.observers;
+		if (!observers || observers[observers.length - 1] !== Listener) {
+			const sSlot = observers ? observers.length : 0;
+			if (!Listener.sources) {
+				Listener.sources = [this];
+				Listener.sourceSlots = [sSlot];
+			} else {
+				Listener.sources.push(this);
+				Listener.sourceSlots.push(sSlot);
+			}
+			if (!observers) {
+				this.observers = [Listener];
+				this.observerSlots = [Listener.sources.length - 1];
+			} else {
+				observers.push(Listener);
+				this.observerSlots.push(Listener.sources.length - 1);
+			}
 		}
 	}
 	if (runningTransition && Transition.sources.has(this)) return this.tValue;
@@ -1700,41 +1706,41 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /* @__PURE__ */ template(\`<div><h3>Const Enum Usage</h3><div>Direction: <!> (<!>)</div><div>Status: </div><div>Priority: </div><div><button>Up</button><button>Down</button><button>Left</button><button>Right</button></div><div><button>Pending</button><button>Loading</button><button>Success</button><button>Error\`), _tmpl$2 = /* @__PURE__ */ template(\`<div><h3>Regular Enum Usage</h3><div>Selected Color: <!> = </div><div>Size: <button>Small</button><button>Medium</button><button>Large</button></div><div>Log Level: <!> (<!>)<button>Debug</button><button>Info</button><button>Warn</button><button>Error\`), _tmpl$3 = /* @__PURE__ */ template(\`<div><h3>Mixed Enum Usage</h3><ul>\`), _tmpl$4 = /* @__PURE__ */ template(\`<li> <!>(Priority: <!>, Status: <!>)\`), _tmpl$5 = /* @__PURE__ */ template(\`<div><h3>Enum Mapping</h3><div>Const Direction <!> = </div><div>Regular Color <!> = \`), _tmpl$6 = /* @__PURE__ */ template(\`<div><h3>Complex Enum Flags</h3><div>Current: <!> (Binary: <!>)</div><div></div><button>Select All</button><button>Clear All\`), _tmpl$7 = /* @__PURE__ */ template(\`<label style=margin-right:1rem><input type=checkbox>Flag\`);
-var Direction = /* @__PURE__ */ function(Direction) {
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h3>Const Enum Usage</h3><div>Direction: <!> (<!>)</div><div>Status: </div><div>Priority: </div><div><button>Up</button><button>Down</button><button>Left</button><button>Right</button></div><div><button>Pending</button><button>Loading</button><button>Success</button><button>Error\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Regular Enum Usage</h3><div>Selected Color: <!> = </div><div>Size: <button>Small</button><button>Medium</button><button>Large</button></div><div>Log Level: <!> (<!>)<button>Debug</button><button>Info</button><button>Warn</button><button>Error\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><h3>Mixed Enum Usage</h3><ul>\`), _tmpl$4 = /*#__PURE__*/ template(\`<li> <!>(Priority: <!>, Status: <!>)\`), _tmpl$5 = /*#__PURE__*/ template(\`<div><h3>Enum Mapping</h3><div>Const Direction <!> = </div><div>Regular Color <!> = \`), _tmpl$6 = /*#__PURE__*/ template(\`<div><h3>Complex Enum Flags</h3><div>Current: <!> (Binary: <!>)</div><div></div><button>Select All</button><button>Clear All\`), _tmpl$7 = /*#__PURE__*/ template(\`<label style=margin-right:1rem><input type=checkbox>Flag\`);
+var Direction = /*#__PURE__*/ function(Direction) {
 	Direction[Direction["Up"] = 0] = "Up";
 	Direction[Direction["Down"] = 1] = "Down";
 	Direction[Direction["Left"] = 2] = "Left";
 	Direction[Direction["Right"] = 3] = "Right";
 	return Direction;
 }(Direction || {});
-var Status = /* @__PURE__ */ function(Status) {
+var Status = /*#__PURE__*/ function(Status) {
 	Status["Pending"] = "pending";
 	Status["Loading"] = "loading";
 	Status["Success"] = "success";
 	Status["Error"] = "error";
 	return Status;
 }(Status || {});
-var Priority = /* @__PURE__ */ function(Priority) {
+var Priority = /*#__PURE__*/ function(Priority) {
 	Priority[Priority["Low"] = 1] = "Low";
 	Priority[Priority["Medium"] = 2] = "Medium";
 	Priority[Priority["High"] = 3] = "High";
 	Priority[Priority["Critical"] = 4] = "Critical";
 	return Priority;
 }(Priority || {});
-var Color = /* @__PURE__ */ function(Color) {
+var Color = /*#__PURE__*/ function(Color) {
 	Color["Red"] = "#FF0000";
 	Color["Green"] = "#00FF00";
 	Color["Blue"] = "#0000FF";
 	return Color;
 }(Color || {});
-var Size = /* @__PURE__ */ function(Size) {
+var Size = /*#__PURE__*/ function(Size) {
 	Size["Small"] = "small";
 	Size["Medium"] = "medium";
 	Size["Large"] = "large";
 	return Size;
 }(Size || {});
-var LogLevel = /* @__PURE__ */ function(LogLevel) {
+var LogLevel = /*#__PURE__*/ function(LogLevel) {
 	LogLevel[LogLevel["Debug"] = 0] = "Debug";
 	LogLevel[LogLevel["Info"] = 1] = "Info";
 	LogLevel[LogLevel["Warn"] = 2] = "Warn";
@@ -1907,7 +1913,7 @@ function EnumMappingComponent() {
 		return _el$53;
 	})();
 }
-var ComplexEnum = /* @__PURE__ */ function(ComplexEnum) {
+var ComplexEnum = /*#__PURE__*/ function(ComplexEnum) {
 	ComplexEnum[ComplexEnum["None"] = 0] = "None";
 	ComplexEnum[ComplexEnum["Flag1"] = 1] = "Flag1";
 	ComplexEnum[ComplexEnum["Flag2"] = 2] = "Flag2";
