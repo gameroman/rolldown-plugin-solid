@@ -1,6 +1,7 @@
+import { describe, test, expect } from "bun:test";
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
-import { describe, test, expect } from "bun:test";
+
 import { transform } from "../src/index.ts";
 
 export function runFixtures(name, fixturesDir, options) {

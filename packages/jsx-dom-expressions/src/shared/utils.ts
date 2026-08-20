@@ -1,5 +1,31 @@
 import { is, b } from "yuku-ast";
-import type { TransformContext, PluginConfig, DynamicBinding, Expression, Node, Identifier, MemberExpression, StringLiteral, BooleanLiteral, ArrowFunctionExpression, CallExpression, ConditionalExpression, LogicalExpression, BinaryExpression, UnaryExpression, JSXIdentifier, JSXMemberExpression, JSXNamespacedName, JSXElement, JSXFragment, JSXText, JSXExpressionContainer, JSXSpreadChild, JSXAttribute } from "../types";
+
+import type {
+  TransformContext,
+  PluginConfig,
+  DynamicBinding,
+  Expression,
+  Node,
+  Identifier,
+  MemberExpression,
+  StringLiteral,
+  BooleanLiteral,
+  ArrowFunctionExpression,
+  CallExpression,
+  ConditionalExpression,
+  LogicalExpression,
+  BinaryExpression,
+  UnaryExpression,
+  JSXIdentifier,
+  JSXMemberExpression,
+  JSXNamespacedName,
+  JSXElement,
+  JSXFragment,
+  JSXText,
+  JSXExpressionContainer,
+  JSXSpreadChild,
+  JSXAttribute,
+} from "../types";
 
 export const reservedNameSpaces = new Set([
   "class",
@@ -9,20 +35,34 @@ export const reservedNameSpaces = new Set([
   "use",
   "prop",
   "attr",
-  "bool"
+  "bool",
 ]);
 
-export const nonSpreadNameSpaces = new Set(["class", "style", "use", "prop", "attr", "bool"]);
+export const nonSpreadNameSpaces = new Set([
+  "class",
+  "style",
+  "use",
+  "prop",
+  "attr",
+  "bool",
+]);
 
 export function getConfig(ctx: TransformContext): PluginConfig {
   return ctx.config;
 }
 
-export function getRendererConfig(ctx: TransformContext, renderer: string): PluginConfig {
-  return ctx.config?.renderers?.find(r => r.name === renderer) ?? ctx.config;
+export function getRendererConfig(
+  ctx: TransformContext,
+  renderer: string,
+): PluginConfig {
+  return ctx.config?.renderers?.find((r) => r.name === renderer) ?? ctx.config;
 }
 
-export function registerImportMethod(ctx: TransformContext, name: string, moduleName?: string): Identifier {
+export function registerImportMethod(
+  ctx: TransformContext,
+  name: string,
+  moduleName?: string,
+): Identifier {
   moduleName = moduleName || ctx.config.moduleName;
   const key = `${moduleName}:${name}`;
   if (!ctx.imports.has(key)) {
@@ -32,7 +72,9 @@ export function registerImportMethod(ctx: TransformContext, name: string, module
   return b.Identifier({ name: ctx.imports.get(key)!.localName });
 }
 
-function jsxElementNameToString(node: JSXIdentifier | JSXMemberExpression | JSXNamespacedName): string {
+function jsxElementNameToString(
+  node: JSXIdentifier | JSXMemberExpression | JSXNamespacedName,
+): string {
   if (is.JSXMemberExpression(node)) {
     return `${jsxElementNameToString(node.object)}.${node.property.name}`;
   }
@@ -55,7 +97,7 @@ export function tagNameToIdentifier(name: string): Expression {
       object: base,
       property: b.Identifier({ name: part }),
       computed: false,
-      optional: false
+      optional: false,
     });
   }
   return base;
@@ -89,10 +131,20 @@ export function hasStaticMarker(object: any, ctx: TransformContext): boolean {
 export function isDynamic(
   ctx: TransformContext,
   node: Node,
-  opts: { checkMember?: boolean; checkTags?: boolean; checkCallExpressions?: boolean; native?: boolean } = {}
+  opts: {
+    checkMember?: boolean;
+    checkTags?: boolean;
+    checkCallExpressions?: boolean;
+    native?: boolean;
+  } = {},
 ): boolean {
   const config = getConfig(ctx);
-  const { checkMember = false, checkTags = false, checkCallExpressions = true, native } = opts;
+  const {
+    checkMember = false,
+    checkTags = false,
+    checkCallExpressions = true,
+    native,
+  } = opts;
   let effectiveCheckMember = checkMember;
   let effectiveCheckCallExpressions = checkCallExpressions;
 
@@ -133,7 +185,10 @@ export function isDynamic(
     return true;
   }
 
-  if (checkTags && (is.JSXElement(node) || (is.JSXFragment(node) && node.children.length))) {
+  if (
+    checkTags &&
+    (is.JSXElement(node) || (is.JSXFragment(node) && node.children.length))
+  ) {
     return true;
   }
 
@@ -142,33 +197,45 @@ export function isDynamic(
   function walkAndCheck(n: Node): void {
     if (dynamic) return;
     if (is.Function(n)) {
-      if (is.Property(n) && (n ).computed) {
-        walkAndCheck((n ).key);
+      if (is.Property(n) && n.computed) {
+        walkAndCheck(n.key);
       }
       return;
     }
     if (is.CallExpression(n) || is.TaggedTemplateExpression(n)) {
-      if (effectiveCheckCallExpressions) { dynamic = true; }
+      if (effectiveCheckCallExpressions) {
+        dynamic = true;
+      }
       return;
     }
     if (is.StaticMemberExpression(n) || is.ComputedMemberExpression(n)) {
-      if (effectiveCheckMember) { dynamic = true; }
+      if (effectiveCheckMember) {
+        dynamic = true;
+      }
       return;
     }
     if (is.SpreadElement(n)) {
-      if (effectiveCheckMember) { dynamic = true; }
+      if (effectiveCheckMember) {
+        dynamic = true;
+      }
       return;
     }
     if (is.BinaryExpression(n) && n.operator === "in") {
-      if (effectiveCheckMember) { dynamic = true; }
+      if (effectiveCheckMember) {
+        dynamic = true;
+      }
       return;
     }
     if (is.JSXElement(n)) {
-      if (checkTags) { dynamic = true; }
+      if (checkTags) {
+        dynamic = true;
+      }
       return;
     }
     if (is.JSXFragment(n)) {
-      if (checkTags && n.children.length) { dynamic = true; }
+      if (checkTags && n.children.length) {
+        dynamic = true;
+      }
       return;
     }
   }
@@ -177,7 +244,11 @@ export function isDynamic(
   return dynamic;
 }
 
-export function getStaticExpression(ctx: TransformContext, node: Node, parent: Node | null): string | number | false {
+export function getStaticExpression(
+  ctx: TransformContext,
+  node: Node,
+  parent: Node | null,
+): string | number | false {
   if (
     is.JSXExpressionContainer(node) &&
     parent &&
@@ -195,8 +266,11 @@ export function getStaticExpression(ctx: TransformContext, node: Node, parent: N
 }
 
 export function filterChildren(children: Node[]): Node[] {
-  return children.filter(child => {
-    if (is.JSXExpressionContainer(child) && is.JSXEmptyExpression((child as JSXExpressionContainer).expression)) {
+  return children.filter((child) => {
+    if (
+      is.JSXExpressionContainer(child) &&
+      is.JSXEmptyExpression((child as JSXExpressionContainer).expression)
+    ) {
       return false;
     }
     if (is.JSXText(child)) {
@@ -208,8 +282,11 @@ export function filterChildren(children: Node[]): Node[] {
 
 export function checkLength(children: Node[]): boolean {
   let i = 0;
-  children.forEach(child => {
-    if (is.JSXExpressionContainer(child) && is.JSXEmptyExpression((child as JSXExpressionContainer).expression)) {
+  children.forEach((child) => {
+    if (
+      is.JSXExpressionContainer(child) &&
+      is.JSXEmptyExpression((child as JSXExpressionContainer).expression)
+    ) {
       return;
     }
     if (is.JSXText(child)) {
@@ -227,7 +304,7 @@ export function trimWhitespace(text: string): string {
     text = text
       .split("\n")
       .map((t, i) => (i ? t.replace(/^\s*/g, "") : t))
-      .filter(s => !/^\s*$/.test(s))
+      .filter((s) => !/^\s*$/.test(s))
       .join(" ");
   }
   return text.replace(/\s+/g, " ");
@@ -238,7 +315,7 @@ export function toEventName(name: string): string {
 }
 
 export function toAttributeName(name: string): string {
-  return name.replace(/([A-Z])/g, g => `-${g[0].toLowerCase()}`);
+  return name.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 }
 
 export function toPropertyName(name: string): string {
@@ -272,7 +349,7 @@ export function transformCondition(
   ctx: TransformContext,
   expr: Expression,
   inline: boolean,
-  deep?: boolean
+  deep?: boolean,
 ): Expression | Statement[] {
   const config = getConfig(ctx);
   const memo = registerImportMethod(ctx, config.memoWrapper);
@@ -283,33 +360,59 @@ export function transformCondition(
 
   if (is.ConditionalExpression(expr)) {
     const ce = expr as ConditionalExpression;
-    if (isDynamic(ctx, ce.consequent, { checkTags: true, checkMember: true }) ||
-        isDynamic(ctx, ce.alternate, { checkTags: true, checkMember: true })) {
+    if (
+      isDynamic(ctx, ce.consequent, { checkTags: true, checkMember: true }) ||
+      isDynamic(ctx, ce.alternate, { checkTags: true, checkMember: true })
+    ) {
       dTest = isDynamic(ctx, ce.test, { checkMember: true });
       if (dTest) {
         cond = ce.test;
         if (!is.BinaryExpression(cond)) {
           cond = b.UnaryExpression({
             operator: "!",
-            argument: b.UnaryExpression({ operator: "!", argument: cond, prefix: true }),
-            prefix: true
+            argument: b.UnaryExpression({
+              operator: "!",
+              argument: cond,
+              prefix: true,
+            }),
+            prefix: true,
           });
         }
         if (inline) {
           id = b.CallExpression({
             callee: memo,
-            arguments: [b.ArrowFunctionExpression({ params: [], body: cond  })],
-            optional: false
+            arguments: [b.ArrowFunctionExpression({ params: [], body: cond })],
+            optional: false,
           });
         } else {
           id = b.Identifier({ name: generateUid(ctx, "_c$") });
         }
-        ce.test = b.CallExpression({ callee: id!, arguments: [], optional: false });
-        if (is.ConditionalExpression(ce.consequent) || is.LogicalExpression(ce.consequent)) {
-          ce.consequent = transformCondition(ctx, ce.consequent, true, true) as Expression;
+        ce.test = b.CallExpression({
+          callee: id!,
+          arguments: [],
+          optional: false,
+        });
+        if (
+          is.ConditionalExpression(ce.consequent) ||
+          is.LogicalExpression(ce.consequent)
+        ) {
+          ce.consequent = transformCondition(
+            ctx,
+            ce.consequent,
+            true,
+            true,
+          ) as Expression;
         }
-        if (is.ConditionalExpression(ce.alternate) || is.LogicalExpression(ce.alternate)) {
-          ce.alternate = transformCondition(ctx, ce.alternate, true, true) as Expression;
+        if (
+          is.ConditionalExpression(ce.alternate) ||
+          is.LogicalExpression(ce.alternate)
+        ) {
+          ce.alternate = transformCondition(
+            ctx,
+            ce.alternate,
+            true,
+            true,
+          ) as Expression;
         }
       }
     }
@@ -336,21 +439,29 @@ export function transformCondition(
       if (!is.BinaryExpression(cond)) {
         cond = b.UnaryExpression({
           operator: "!",
-          argument: b.UnaryExpression({ operator: "!", argument: cond, prefix: true }),
-          prefix: true
+          argument: b.UnaryExpression({
+            operator: "!",
+            argument: cond,
+            prefix: true,
+          }),
+          prefix: true,
         });
       }
       if (inline) {
         id = b.CallExpression({
           callee: memo,
-          arguments: [b.ArrowFunctionExpression({ params: [], body: cond  })],
-          optional: false
+          arguments: [b.ArrowFunctionExpression({ params: [], body: cond })],
+          optional: false,
         });
       } else {
         id = b.Identifier({ name: generateUid(ctx, "_c$") });
       }
       if (is.LogicalExpression(le)) {
-        (le as LogicalExpression).left = b.CallExpression({ callee: id!, arguments: [], optional: false });
+        (le as LogicalExpression).left = b.CallExpression({
+          callee: id!,
+          arguments: [],
+          optional: false,
+        });
       }
     }
   }
@@ -358,32 +469,38 @@ export function transformCondition(
   if (dTest && !inline) {
     const decl = b.VariableDeclaration({
       kind: "var",
-      declarations: [b.VariableDeclarator({
-        id: id as Identifier,
-        init: config.memoWrapper
-          ? b.CallExpression({
-              callee: memo,
-              arguments: [b.ArrowFunctionExpression({ params: [], body: cond  })],
-              optional: false
-            })
-          : b.ArrowFunctionExpression({ params: [], body: cond  })
-      })]
+      declarations: [
+        b.VariableDeclarator({
+          id: id as Identifier,
+          init: config.memoWrapper
+            ? b.CallExpression({
+                callee: memo,
+                arguments: [
+                  b.ArrowFunctionExpression({ params: [], body: cond }),
+                ],
+                optional: false,
+              })
+            : b.ArrowFunctionExpression({ params: [], body: cond }),
+        }),
+      ],
     });
-    const arrow = b.ArrowFunctionExpression({ params: [], body: expr  });
+    const arrow = b.ArrowFunctionExpression({ params: [], body: expr });
     if (deep) {
       return b.CallExpression({
         callee: b.ArrowFunctionExpression({
           params: [],
-          body: b.BlockStatement({ body: [decl, b.ReturnStatement({ argument: arrow })] })
+          body: b.BlockStatement({
+            body: [decl, b.ReturnStatement({ argument: arrow })],
+          }),
         }),
         arguments: [],
-        optional: false
+        optional: false,
       });
     }
     return [decl, b.ExpressionStatement({ expression: arrow })];
   }
   if (deep) return expr;
-  return b.ArrowFunctionExpression({ params: [], body: expr  });
+  return b.ArrowFunctionExpression({ params: [], body: expr });
 }
 
 export function escapeHTML(s: any, attr?: boolean): any {
@@ -431,7 +548,9 @@ export function escapeHTML(s: any, attr?: boolean): any {
   return left < s.length ? out + s.substring(left) : out;
 }
 
-export function convertJSXIdentifier(node: JSXIdentifier | JSXMemberExpression | JSXNamespacedName): Expression {
+export function convertJSXIdentifier(
+  node: JSXIdentifier | JSXMemberExpression | JSXNamespacedName,
+): Expression {
   if (is.JSXIdentifier(node)) {
     const name = (node as JSXIdentifier).name;
     if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(name)) {
@@ -445,17 +564,24 @@ export function convertJSXIdentifier(node: JSXIdentifier | JSXMemberExpression |
       object: convertJSXIdentifier(me.object),
       property: convertJSXIdentifier(me.property) as Identifier,
       computed: false,
-      optional: false
+      optional: false,
     });
   } else if (is.JSXNamespacedName(node)) {
     const ns = node as JSXNamespacedName;
     return b.Literal({ value: `${ns.namespace.name}:${ns.name.name}` });
   }
-  return node ;
+  return node;
 }
 
-export function canNativeSpread(key: string, opts?: { checkNameSpaces?: boolean }): boolean {
-  if (opts?.checkNameSpaces && key.includes(":") && nonSpreadNameSpaces.has(key.split(":")[0]))
+export function canNativeSpread(
+  key: string,
+  opts?: { checkNameSpaces?: boolean },
+): boolean {
+  if (
+    opts?.checkNameSpaces &&
+    key.includes(":") &&
+    nonSpreadNameSpaces.has(key.split(":")[0])
+  )
     return false;
   if (key === "ref") return false;
   return true;
@@ -475,7 +601,9 @@ export function getNumberedId(num: number): string {
 }
 
 export function escapeStringForTemplate(str: string): string {
-  return str.replace(/[{\\`\n\t\b\f\v\r\u2028\u2029]/g, ch => templateEscapes.get(ch)!);
+  return str.replace(/[{\\`\n\t\b\f\v\r\u2028\u2029]/g, (ch) =>
+    templateEscapes.get(ch)!,
+  );
 }
 
 const templateEscapes = new Map([
@@ -489,7 +617,7 @@ const templateEscapes = new Map([
   ["\v", "\\v"],
   ["\r", "\\r"],
   ["\u2028", "\\u2028"],
-  ["\u2029", "\\u2029"]
+  ["\u2029", "\\u2029"],
 ]);
 
 export function generateUid(ctx: TransformContext, prefix: string): string {
@@ -509,7 +637,7 @@ export function inferLang(filename?: string): "js" | "jsx" | "ts" | "tsx" {
 export function createTransformContext(
   config: PluginConfig,
   filename?: string,
-  comments: any[] = []
+  comments: any[] = [],
 ): TransformContext {
   return {
     config,
@@ -519,6 +647,6 @@ export function createTransformContext(
     events: new Set(),
     uidCounters: new Map(),
     filename,
-    comments
+    comments,
   };
 }

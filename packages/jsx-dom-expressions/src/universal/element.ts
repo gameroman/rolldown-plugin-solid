@@ -1,10 +1,6 @@
 import { is as t, b } from "yuku-ast";
-import type {
-  TransformContext, TransformResult, Expression, Statement,
-  VariableDeclarator, Identifier, JSXElement, JSXAttribute,
-  JSXSpreadAttribute, JSXIdentifier, JSXNamespacedName,
-  JSXExpressionContainer, Node
-} from "../types";
+
+import { transformNode } from "../shared/transform";
 import {
   getTagName,
   isDynamic,
@@ -17,11 +13,29 @@ import {
   canNativeSpread,
   transformCondition,
   escapeStringForTemplate,
-  generateUid
+  generateUid,
 } from "../shared/utils";
-import { transformNode } from "../shared/transform";
+import type {
+  TransformContext,
+  TransformResult,
+  Expression,
+  Statement,
+  VariableDeclarator,
+  Identifier,
+  JSXElement,
+  JSXAttribute,
+  JSXSpreadAttribute,
+  JSXIdentifier,
+  JSXNamespacedName,
+  JSXExpressionContainer,
+  Node,
+} from "../types";
 
-export function transformElement(ctx: TransformContext, node: JSXElement, info: WrappingInfo): TransformResult {
+export function transformElement(
+  ctx: TransformContext,
+  node: JSXElement,
+  info: WrappingInfo,
+): TransformResult {
   const tagName = getTagName(node);
   const results: TransformResult = {
     id: b.Identifier({ name: generateUid(ctx, "el$") }),
@@ -30,18 +44,22 @@ export function transformElement(ctx: TransformContext, node: JSXElement, info: 
     dynamics: [],
     postExprs: [],
     tagName,
-    renderer: "universal"
+    renderer: "universal",
   };
 
   results.declarations.push(
     b.VariableDeclarator({
       id: results.id,
       init: b.CallExpression({
-        callee: registerImportMethod(ctx, "createElement", getRendererConfig(ctx, "universal").moduleName),
+        callee: registerImportMethod(
+          ctx,
+          "createElement",
+          getRendererConfig(ctx, "universal").moduleName,
+        ),
         arguments: [b.Literal({ value: tagName })],
-        optional: false
-      })
-    })
+        optional: false,
+      }),
+    }),
   );
 
   transformAttributes(ctx, node, results);
@@ -57,33 +75,42 @@ function getAttrName(name: JSXIdentifier | JSXNamespacedName): string {
   return (name as JSXIdentifier).name;
 }
 
-function transformAttributes(ctx: TransformContext, node: JSXElement, results: TransformResult): void {
+function transformAttributes(
+  ctx: TransformContext,
+  node: JSXElement,
+  results: TransformResult,
+): void {
   let children: JSXExpressionContainer | undefined;
   let spreadExpr: Statement | undefined;
-  let attributes = node.openingElement.attributes as (JSXAttribute | JSXSpreadAttribute)[];
+  let attributes = node.openingElement.attributes as (
+    | JSXAttribute
+    | JSXSpreadAttribute
+  )[];
   const elem = results.id!;
   const hasChildren = node.children.length > 0;
   const config = getConfig(ctx);
 
-  if (attributes.some(a => t.JSXSpreadAttribute(a))) {
+  if (attributes.some((a) => t.JSXSpreadAttribute(a))) {
     [attributes, spreadExpr] = processSpreads(ctx, node, attributes, {
       elem,
       hasChildren,
-      wrapConditionals: config.wrapConditionals
+      wrapConditionals: config.wrapConditionals,
     });
   }
 
-  attributes.forEach(attribute => {
+  attributes.forEach((attribute) => {
     if (t.JSXSpreadAttribute(attribute)) return;
 
     const attr = attribute as JSXAttribute;
     let value: any = attr.value;
     const key = getAttrName(attr.name);
-    const reservedNameSpace = t.JSXNamespacedName(attr.name) && (attr.name as JSXNamespacedName).namespace.name === "use";
+    const reservedNameSpace =
+      t.JSXNamespacedName(attr.name) &&
+      (attr.name as JSXNamespacedName).namespace.name === "use";
 
     if (reservedNameSpace && !t.JSXExpressionContainer(value)) {
       attr.value = value = b.JSXExpressionContainer({
-        expression: (value ) || b.JSXEmptyExpression()
+        expression: value || b.JSXEmptyExpression(),
       });
     }
 
@@ -92,8 +119,11 @@ function transformAttributes(ctx: TransformContext, node: JSXElement, results: T
 
       if (key === "ref") {
         let valueExpr: Expression = expr;
-        while (t.TSNonNullExpression(valueExpr) || t.TSAsExpression(valueExpr)) {
-          valueExpr = (valueExpr ).expression;
+        while (
+          t.TSNonNullExpression(valueExpr) ||
+          t.TSAsExpression(valueExpr)
+        ) {
+          valueExpr = valueExpr.expression;
         }
 
         const refIdentifier = b.Identifier({ name: generateUid(ctx, "_ref$") });
@@ -104,63 +134,87 @@ function transformAttributes(ctx: TransformContext, node: JSXElement, results: T
           results.exprs.unshift(
             b.VariableDeclaration({
               kind: "var",
-              declarations: [b.VariableDeclarator({ id: refIdentifier, init: valueExpr })]
+              declarations: [
+                b.VariableDeclarator({ id: refIdentifier, init: valueExpr }),
+              ],
             }),
             b.ExpressionStatement({
               expression: b.ConditionalExpression({
                 test: b.BinaryExpression({
                   operator: "===",
-                  left: b.UnaryExpression({ operator: "typeof", argument: refIdentifier, prefix: true }),
+                  left: b.UnaryExpression({
+                    operator: "typeof",
+                    argument: refIdentifier,
+                    prefix: true,
+                  }),
                   right: b.Literal({ value: "function" }),
-                  optional: false
+                  optional: false,
                 }),
                 consequent: b.CallExpression({
-                  callee: registerImportMethod(ctx, "use", getRendererConfig(ctx, "universal").moduleName),
+                  callee: registerImportMethod(
+                    ctx,
+                    "use",
+                    getRendererConfig(ctx, "universal").moduleName,
+                  ),
                   arguments: [refIdentifier, elem],
-                  optional: false
+                  optional: false,
                 }),
                 alternate: b.AssignmentExpression({
                   operator: "=",
                   left: valueExpr,
-                  right: elem
+                  right: elem,
                 }),
-                optional: false
-              })
-            })
+                optional: false,
+              }),
+            }),
           );
         } else if (isConstant || isFunc) {
           results.exprs.unshift(
             b.ExpressionStatement({
               expression: b.CallExpression({
-                callee: registerImportMethod(ctx, "use", getRendererConfig(ctx, "universal").moduleName),
+                callee: registerImportMethod(
+                  ctx,
+                  "use",
+                  getRendererConfig(ctx, "universal").moduleName,
+                ),
                 arguments: [valueExpr, elem],
-                optional: false
-              })
-            })
+                optional: false,
+              }),
+            }),
           );
         } else {
           results.exprs.unshift(
             b.VariableDeclaration({
               kind: "var",
-              declarations: [b.VariableDeclarator({ id: refIdentifier, init: valueExpr })]
+              declarations: [
+                b.VariableDeclarator({ id: refIdentifier, init: valueExpr }),
+              ],
             }),
             b.ExpressionStatement({
               expression: b.LogicalExpression({
                 operator: "&&",
                 left: b.BinaryExpression({
                   operator: "===",
-                  left: b.UnaryExpression({ operator: "typeof", argument: refIdentifier, prefix: true }),
+                  left: b.UnaryExpression({
+                    operator: "typeof",
+                    argument: refIdentifier,
+                    prefix: true,
+                  }),
                   right: b.Literal({ value: "function" }),
-                  optional: false
+                  optional: false,
                 }),
                 right: b.CallExpression({
-                  callee: registerImportMethod(ctx, "use", getRendererConfig(ctx, "universal").moduleName),
+                  callee: registerImportMethod(
+                    ctx,
+                    "use",
+                    getRendererConfig(ctx, "universal").moduleName,
+                  ),
                   arguments: [refIdentifier, elem],
-                  optional: false
+                  optional: false,
                 }),
-                optional: false
-              })
-            })
+                optional: false,
+              }),
+            }),
           );
         }
       } else if (key.startsWith("use:")) {
@@ -168,18 +222,24 @@ function transformAttributes(ctx: TransformContext, node: JSXElement, results: T
         results.exprs.unshift(
           b.ExpressionStatement({
             expression: b.CallExpression({
-              callee: registerImportMethod(ctx, "use", getRendererConfig(ctx, "universal").moduleName),
+              callee: registerImportMethod(
+                ctx,
+                "use",
+                getRendererConfig(ctx, "universal").moduleName,
+              ),
               arguments: [
-                directiveName ,
+                directiveName,
                 elem,
                 b.ArrowFunctionExpression({
                   params: [],
-                  body: t.JSXEmptyExpression(expr) ? b.Literal({ value: true }) : expr
-                })
+                  body: t.JSXEmptyExpression(expr)
+                    ? b.Literal({ value: true })
+                    : expr,
+                }),
               ],
-              optional: false
-            })
-          })
+              optional: false,
+            }),
+          }),
         );
       } else if (key === "children") {
         children = value as JSXExpressionContainer;
@@ -190,19 +250,17 @@ function transformAttributes(ctx: TransformContext, node: JSXElement, results: T
         results.dynamics.push({ elem, key, value: expr });
       } else {
         results.exprs.push(
-          b.ExpressionStatement(setAttr(ctx, elem, key, expr))
+          b.ExpressionStatement(setAttr(ctx, elem, key, expr)),
         );
       }
     } else {
-      results.exprs.push(
-        b.ExpressionStatement(setAttr(ctx, elem, key, value))
-      );
+      results.exprs.push(b.ExpressionStatement(setAttr(ctx, elem, key, value)));
     }
   });
 
   if (spreadExpr) results.exprs.push(spreadExpr);
   if (!hasChildren && children) {
-    node.children.push(children );
+    node.children.push(children);
   }
 }
 
@@ -211,34 +269,48 @@ export function setAttr(
   elem: Expression,
   name: string,
   value: Expression,
-  opts?: { dynamic?: boolean; prevId?: Identifier }
+  opts?: { dynamic?: boolean; prevId?: Identifier },
 ): Expression {
   if (!value) value = b.Literal({ value: true });
   const args: Expression[] = opts?.prevId
     ? [elem, b.Literal({ value: name }), value, opts.prevId]
     : [elem, b.Literal({ value: name }), value];
   return b.CallExpression({
-    callee: registerImportMethod(ctx, "setProp", getRendererConfig(ctx, "universal").moduleName),
+    callee: registerImportMethod(
+      ctx,
+      "setProp",
+      getRendererConfig(ctx, "universal").moduleName,
+    ),
     arguments: args,
-    optional: false
+    optional: false,
   });
 }
 
-function transformChildren(ctx: TransformContext, node: JSXElement, results: TransformResult): void {
+function transformChildren(
+  ctx: TransformContext,
+  node: JSXElement,
+  results: TransformResult,
+): void {
   const filteredChildren = filterChildren(node.children);
   const multi = checkLength(filteredChildren);
-  const childNodes = filteredChildren.reduce((memo: TransformResult[], child) => {
-    const childResult = transformNode(ctx, child);
-    if (!childResult) return memo;
-    const i = memo.length;
-    if (childResult.text && i && memo[i - 1].text) {
-      memo[i - 1].template = (memo[i - 1].template as string) + (childResult.template as string);
-      memo[i - 1].templateWithClosingTags =
-        (memo[i - 1].templateWithClosingTags || memo[i - 1].template as string) +
-        (childResult.templateWithClosingTags || childResult.template as string);
-    } else memo.push(childResult);
-    return memo;
-  }, []);
+  const childNodes = filteredChildren.reduce(
+    (memo: TransformResult[], child) => {
+      const childResult = transformNode(ctx, child);
+      if (!childResult) return memo;
+      const i = memo.length;
+      if (childResult.text && i && memo[i - 1].text) {
+        memo[i - 1].template =
+          (memo[i - 1].template as string) + (childResult.template as string);
+        memo[i - 1].templateWithClosingTags =
+          (memo[i - 1].templateWithClosingTags ||
+            (memo[i - 1].template as string)) +
+          (childResult.templateWithClosingTags ||
+            (childResult.template as string));
+      } else memo.push(childResult);
+      return memo;
+    },
+    [],
+  );
 
   const appends: Statement[] = [];
   childNodes.forEach((child, index) => {
@@ -246,14 +318,22 @@ function transformChildren(ctx: TransformContext, node: JSXElement, results: Tra
     if (child.tagName && child.renderer !== "universal") {
       throw new Error(
         `<${child.tagName}> is not supported in <${getTagName(node)}>. ` +
-        `Wrap the usage with a component that would render this element, eg. Canvas`
+          `Wrap the usage with a component that would render this element, eg. Canvas`,
       );
     }
     if (child.id) {
-      const insertNode = registerImportMethod(ctx, "insertNode", getRendererConfig(ctx, "universal").moduleName);
+      const insertNode = registerImportMethod(
+        ctx,
+        "insertNode",
+        getRendererConfig(ctx, "universal").moduleName,
+      );
       let insert: Expression = child.id;
       if (child.text) {
-        const createTextNode = registerImportMethod(ctx, "createTextNode", getRendererConfig(ctx, "universal").moduleName);
+        const createTextNode = registerImportMethod(
+          ctx,
+          "createTextNode",
+          getRendererConfig(ctx, "universal").moduleName,
+        );
         if (multi) {
           results.declarations.push(
             b.VariableDeclarator({
@@ -262,24 +342,42 @@ function transformChildren(ctx: TransformContext, node: JSXElement, results: Tra
                 callee: createTextNode,
                 arguments: [
                   b.TemplateLiteral({
-                    quasis: [b.TemplateElement({ value: { raw: escapeStringForTemplate(child.template as string), cooked: child.template as string }, tail: true })],
-                    expressions: []
-                  })
+                    quasis: [
+                      b.TemplateElement({
+                        value: {
+                          raw: escapeStringForTemplate(
+                            child.template as string,
+                          ),
+                          cooked: child.template as string,
+                        },
+                        tail: true,
+                      }),
+                    ],
+                    expressions: [],
+                  }),
                 ],
-                optional: false
-              })
-            })
+                optional: false,
+              }),
+            }),
           );
         } else {
           insert = b.CallExpression({
             callee: createTextNode,
             arguments: [
               b.TemplateLiteral({
-                quasis: [b.TemplateElement({ value: { raw: escapeStringForTemplate(child.template as string), cooked: child.template as string }, tail: true })],
-                expressions: []
-              })
+                quasis: [
+                  b.TemplateElement({
+                    value: {
+                      raw: escapeStringForTemplate(child.template as string),
+                      cooked: child.template as string,
+                    },
+                    tail: true,
+                  }),
+                ],
+                expressions: [],
+              }),
             ],
-            optional: false
+            optional: false,
           });
         }
       }
@@ -288,15 +386,19 @@ function transformChildren(ctx: TransformContext, node: JSXElement, results: Tra
           expression: b.CallExpression({
             callee: insertNode,
             arguments: [results.id, insert],
-            optional: false
-          })
-        })
+            optional: false,
+          }),
+        }),
       );
       results.declarations.push(...child.declarations);
       results.exprs.push(...child.exprs);
       results.dynamics.push(...child.dynamics);
     } else if (child.exprs.length) {
-      const insert = registerImportMethod(ctx, "insert", getRendererConfig(ctx, "universal").moduleName);
+      const insert = registerImportMethod(
+        ctx,
+        "insert",
+        getRendererConfig(ctx, "universal").moduleName,
+      );
       if (multi) {
         results.exprs.push(
           b.ExpressionStatement({
@@ -304,12 +406,13 @@ function transformChildren(ctx: TransformContext, node: JSXElement, results: Tra
               callee: insert,
               arguments: [
                 results.id,
-                (child.exprs[0] as Statement & { expression: Expression }).expression,
-                nextChild(childNodes, index) || b.Literal({ value: null })
+                (child.exprs[0] as Statement & { expression: Expression })
+                  .expression,
+                nextChild(childNodes, index) || b.Literal({ value: null }),
               ],
-              optional: false
-            })
-          })
+              optional: false,
+            }),
+          }),
         );
       } else {
         results.exprs.push(
@@ -318,11 +421,12 @@ function transformChildren(ctx: TransformContext, node: JSXElement, results: Tra
               callee: insert,
               arguments: [
                 results.id,
-                (child.exprs[0] as Statement & { expression: Expression }).expression
+                (child.exprs[0] as Statement & { expression: Expression })
+                  .expression,
               ],
-              optional: false
-            })
-          })
+              optional: false,
+            }),
+          }),
         );
       }
     }
@@ -330,8 +434,14 @@ function transformChildren(ctx: TransformContext, node: JSXElement, results: Tra
   results.exprs.unshift(...appends);
 }
 
-function nextChild(children: TransformResult[], index: number): Expression | undefined {
-  return children[index + 1] && (children[index + 1].id || nextChild(children, index + 1));
+function nextChild(
+  children: TransformResult[],
+  index: number,
+): Expression | undefined {
+  return (
+    children[index + 1] &&
+    (children[index + 1].id || nextChild(children, index + 1))
+  );
 }
 
 interface WrappingInfo {
@@ -344,7 +454,7 @@ function processSpreads(
   ctx: TransformContext,
   node: JSXElement,
   attributes: (JSXAttribute | JSXSpreadAttribute)[],
-  { elem, hasChildren, wrapConditionals }: WrappingInfo
+  { elem, hasChildren, wrapConditionals }: WrappingInfo,
 ): [(JSXAttribute | JSXSpreadAttribute)[], Statement] {
   const filteredAttributes: (JSXAttribute | JSXSpreadAttribute)[] = [];
   const spreadArgs: Expression[] = [];
@@ -352,7 +462,7 @@ function processSpreads(
   let dynamicSpread = false;
   let firstSpread = false;
 
-  attributes.forEach(attribute => {
+  attributes.forEach((attribute) => {
     if (t.JSXSpreadAttribute(attribute)) {
       firstSpread = true;
       if (runningObject.length) {
@@ -364,11 +474,11 @@ function processSpreads(
         dynamicSpread = true;
         if (
           t.CallExpression(arg) &&
-          !(arg ).arguments.length &&
-          !t.CallExpression((arg ).callee) &&
-          !t.MemberExpression((arg ).callee)
+          !arg.arguments.length &&
+          !t.CallExpression(arg.callee) &&
+          !t.MemberExpression(arg.callee)
         ) {
-          spreadArgs.push((arg ).callee);
+          spreadArgs.push(arg.callee);
         } else {
           spreadArgs.push(b.ArrowFunctionExpression({ params: [], body: arg }));
         }
@@ -381,16 +491,25 @@ function processSpreads(
       const isContainer = t.JSXExpressionContainer(attr.value);
 
       if (
-        (firstSpread || (isContainer && isDynamic(ctx, (attr.value as JSXExpressionContainer).expression, { checkMember: true }))) &&
+        (firstSpread ||
+          (isContainer &&
+            isDynamic(ctx, (attr.value as JSXExpressionContainer).expression, {
+              checkMember: true,
+            }))) &&
         canNativeSpread(key, { checkNameSpaces: true })
       ) {
-        const dynamic = isContainer && isDynamic(ctx, (attr.value as JSXExpressionContainer).expression, { checkMember: true });
+        const dynamic =
+          isContainer &&
+          isDynamic(ctx, (attr.value as JSXExpressionContainer).expression, {
+            checkMember: true,
+          });
         if (dynamic) {
           const id = convertJSXIdentifier(attr.name);
           const innerExpr = (attr.value as JSXExpressionContainer).expression;
           const expr =
             wrapConditionals &&
-            (t.LogicalExpression(innerExpr) || t.ConditionalExpression(innerExpr))
+            (t.LogicalExpression(innerExpr) ||
+              t.ConditionalExpression(innerExpr))
               ? (transformCondition(ctx, innerExpr, true) as Expression)
               : b.ArrowFunctionExpression({ params: [], body: innerExpr });
           const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
@@ -400,26 +519,30 @@ function processSpreads(
               value: b.FunctionExpression({
                 params: [],
                 body: b.BlockStatement({
-                  body: [b.ReturnStatement({ argument: (expr ).body || expr })]
-                })
+                  body: [b.ReturnStatement({ argument: expr.body || expr })],
+                }),
               }),
               kind: "init",
               method: true,
               shorthand: false,
-              computed
-            })
+              computed,
+            }),
           );
         } else {
           const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
           runningObject.push(
             b.Property({
-              key: computed ? b.Literal({ value: key }) : b.Identifier({ name: key }),
-              value: isContainer ? (attr.value as JSXExpressionContainer).expression : (attr.value || b.Literal({ value: true })),
+              key: computed
+                ? b.Literal({ value: key })
+                : b.Identifier({ name: key }),
+              value: isContainer
+                ? (attr.value as JSXExpressionContainer).expression
+                : attr.value || b.Literal({ value: true }),
               kind: "init",
               method: false,
               shorthand: false,
-              computed
-            })
+              computed,
+            }),
           );
         }
       } else {
@@ -438,15 +561,19 @@ function processSpreads(
       : b.CallExpression({
           callee: registerImportMethod(ctx, "mergeProps"),
           arguments: spreadArgs,
-          optional: false
+          optional: false,
         });
 
   const spreadCall = b.ExpressionStatement({
     expression: b.CallExpression({
-      callee: registerImportMethod(ctx, "spread", getRendererConfig(ctx, "universal").moduleName),
+      callee: registerImportMethod(
+        ctx,
+        "spread",
+        getRendererConfig(ctx, "universal").moduleName,
+      ),
       arguments: [elem, props, b.Literal({ value: hasChildren })],
-      optional: false
-    })
+      optional: false,
+    }),
   });
 
   return [filteredAttributes, spreadCall];

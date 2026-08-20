@@ -1,7 +1,8 @@
 import { parse } from "node:path";
-import type { RolldownPlugin } from "rolldown";
+
 import transform from "@sozig/jsx-dom-expressions";
 import type { PluginConfig } from "@sozig/jsx-dom-expressions";
+import type { RolldownPlugin } from "rolldown";
 
 /** Configuration options */
 export interface Options {

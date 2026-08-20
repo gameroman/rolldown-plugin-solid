@@ -40,7 +40,7 @@ const booleans = [
   "shadowrootcustomelementregistry",
   "shadowrootdelegatesfocus",
   "shadowrootserializable",
-  "sharedstoragewritable"
+  "sharedstoragewritable",
 ];
 
 export const BooleanAttributes: Set<string> = new Set(booleans);
@@ -71,110 +71,116 @@ export const Properties: Set<string> = new Set([
   "shadowRootSerializable",
   "sharedStorageWritable",
 
-  ...booleans
+  ...booleans,
 ]);
 
 export const ChildProperties: Set<string> = new Set([
   "innerHTML",
   "textContent",
   "innerText",
-  "children"
+  "children",
 ]);
 
-export const Aliases: Record<string, string> = Object.assign(Object.create(null), {
-  className: "class",
-  htmlFor: "for"
-});
+export const Aliases: Record<string, string> = Object.assign(
+  Object.create(null),
+  {
+    className: "class",
+    htmlFor: "for",
+  },
+);
 
 const PropAliases = Object.assign(Object.create(null), {
   class: "className",
 
   novalidate: {
     $: "noValidate",
-    FORM: 1
+    FORM: 1,
   },
   formnovalidate: {
     $: "formNoValidate",
     BUTTON: 1,
-    INPUT: 1
+    INPUT: 1,
   },
   ismap: {
     $: "isMap",
-    IMG: 1
+    IMG: 1,
   },
   nomodule: {
     $: "noModule",
-    SCRIPT: 1
+    SCRIPT: 1,
   },
   playsinline: {
     $: "playsInline",
-    VIDEO: 1
+    VIDEO: 1,
   },
   readonly: {
     $: "readOnly",
     INPUT: 1,
-    TEXTAREA: 1
+    TEXTAREA: 1,
   },
 
   adauctionheaders: {
     $: "adAuctionHeaders",
-    IFRAME: 1
+    IFRAME: 1,
   },
   allowfullscreen: {
     $: "allowFullscreen",
-    IFRAME: 1
+    IFRAME: 1,
   },
   browsingtopics: {
     $: "browsingTopics",
-    IMG: 1
+    IMG: 1,
   },
   defaultchecked: {
     $: "defaultChecked",
-    INPUT: 1
+    INPUT: 1,
   },
   defaultmuted: {
     $: "defaultMuted",
     AUDIO: 1,
-    VIDEO: 1
+    VIDEO: 1,
   },
   defaultselected: {
     $: "defaultSelected",
-    OPTION: 1
+    OPTION: 1,
   },
   disablepictureinpicture: {
     $: "disablePictureInPicture",
-    VIDEO: 1
+    VIDEO: 1,
   },
   disableremoteplayback: {
     $: "disableRemotePlayback",
     AUDIO: 1,
-    VIDEO: 1
+    VIDEO: 1,
   },
   preservespitch: {
     $: "preservesPitch",
     AUDIO: 1,
-    VIDEO: 1
+    VIDEO: 1,
   },
   shadowrootclonable: {
     $: "shadowRootClonable",
-    TEMPLATE: 1
+    TEMPLATE: 1,
   },
   shadowrootdelegatesfocus: {
     $: "shadowRootDelegatesFocus",
-    TEMPLATE: 1
+    TEMPLATE: 1,
   },
   shadowrootserializable: {
     $: "shadowRootSerializable",
-    TEMPLATE: 1
+    TEMPLATE: 1,
   },
   sharedstoragewritable: {
     $: "sharedStorageWritable",
     IFRAME: 1,
-    IMG: 1
-  }
+    IMG: 1,
+  },
 });
 
-export function getPropAlias(prop: string, tagName: string): string | undefined {
+export function getPropAlias(
+  prop: string,
+  tagName: string,
+): string | undefined {
   const a = (PropAliases as Record<string, any>)[prop];
   return typeof a === "object" ? (a[tagName] ? a["$"] : undefined) : a;
 }
@@ -201,7 +207,7 @@ export const DelegatedEvents: Set<string> = new Set([
   "pointerup",
   "touchend",
   "touchmove",
-  "touchstart"
+  "touchstart",
 ]);
 
 export const SVGElements: Set<string> = new Set([
@@ -281,12 +287,12 @@ export const SVGElements: Set<string> = new Set([
   "tspan",
   "use",
   "view",
-  "vkern"
+  "vkern",
 ]);
 
 export const SVGNamespace: Record<string, string> = {
   xlink: "http://www.w3.org/1999/xlink",
-  xml: "http://www.w3.org/XML/1998/namespace"
+  xml: "http://www.w3.org/XML/1998/namespace",
 };
 
 export const DOMElements: Set<string> = new Set([
@@ -577,5 +583,5 @@ export const DOMElements: Set<string> = new Set([
   "multicol",
   "nextid",
   "noindex",
-  "search"
+  "search",
 ]);

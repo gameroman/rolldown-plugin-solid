@@ -1,9 +1,10 @@
-import { parse } from "yuku-parser";
-import { generate } from "yuku-codegen";
 import { is as t, walk, WalkContext } from "yuku-ast";
-import { transformJSX } from "./shared/transform";
+import { generate } from "yuku-codegen";
+import { parse } from "yuku-parser";
+
 import postprocess from "./shared/postprocess";
 import preprocess from "./shared/preprocess";
+import { transformJSX } from "./shared/transform";
 import { createTransformContext } from "./shared/utils";
 import type { PluginConfig, TransformContext, SourceLang } from "./types";
 import type { JSXElement, JSXFragment } from "./types";
@@ -19,7 +20,10 @@ export interface TransformResult {
   map: string | null;
 }
 
-export function transform(source: string, options: TransformOptions = {}): TransformResult {
+export function transform(
+  source: string,
+  options: TransformOptions = {},
+): TransformResult {
   const lang: SourceLang = options.filename
     ? options.filename.endsWith(".tsx")
       ? "tsx"
@@ -53,14 +57,18 @@ export function transform(source: string, options: TransformOptions = {}): Trans
     ...options,
   };
 
-  const { program, comments } = parse(source, { lang: lang === "ts" || lang === "tsx" ? "tsx" : "jsx" });
+  const { program, comments } = parse(source, {
+    lang: lang === "ts" || lang === "tsx" ? "tsx" : "jsx",
+  });
 
   const shouldProcess = preprocess(
     { config } as TransformContext,
-    comments.map(c => ({ value: c.value }))
+    comments.map((c) => ({ value: c.value })),
   );
   if (!shouldProcess) {
-    const { code } = generate(program, { sourceFileName: options.filename ?? "input.tsx" });
+    const { code } = generate(program, {
+      sourceFileName: options.filename ?? "input.tsx",
+    });
     return { code, map: null };
   }
 
@@ -69,11 +77,11 @@ export function transform(source: string, options: TransformOptions = {}): Trans
   walk(program, {
     JSXElement(node: JSXElement, wctx: WalkContext) {
       const expr = transformJSX(ctx, node);
-      wctx.replace({ type: "ExpressionStatement", expression: expr } );
+      wctx.replace({ type: "ExpressionStatement", expression: expr });
     },
     JSXFragment(node: JSXFragment, wctx: WalkContext) {
       const expr = transformJSX(ctx, node);
-      wctx.replace({ type: "ExpressionStatement", expression: expr } );
+      wctx.replace({ type: "ExpressionStatement", expression: expr });
     },
   });
 

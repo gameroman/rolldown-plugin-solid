@@ -1,17 +1,13 @@
-import { is as t, b } from "yuku-ast";
 import { decode } from "html-entities";
+import { is as t, b } from "yuku-ast";
+
 import {
   BooleanAttributes,
   Aliases,
   ChildProperties,
-  SVGElements
+  SVGElements,
 } from "../constants";
-import VoidElements from "../VoidElements";
-import type {
-  TransformContext, TransformResult, WrappingInfo, Expression, Statement,
-  JSXElement, JSXAttribute, JSXSpreadAttribute,
-  Identifier, JSXText, JSXExpressionContainer, JSXIdentifier, JSXNamespacedName
-} from "../types";
+import { transformNode, getCreateTemplate } from "../shared/transform";
 import {
   getTagName,
   registerImportMethod,
@@ -25,7 +21,22 @@ import {
   isComponent,
   convertJSXIdentifier,
 } from "../shared/utils";
-import { transformNode, getCreateTemplate } from "../shared/transform";
+import type {
+  TransformContext,
+  TransformResult,
+  WrappingInfo,
+  Expression,
+  Statement,
+  JSXElement,
+  JSXAttribute,
+  JSXSpreadAttribute,
+  Identifier,
+  JSXText,
+  JSXExpressionContainer,
+  JSXIdentifier,
+  JSXNamespacedName,
+} from "../types";
+import VoidElements from "../VoidElements";
 import { createTemplate } from "./template";
 
 function appendToTemplate(template: string[], value: string | string[]): void {
@@ -37,13 +48,17 @@ function appendToTemplate(template: string[], value: string | string[]): void {
   if (array && array.length) template.push.apply(template, array);
 }
 
-export function transformElement(ctx: TransformContext, node: JSXElement, info: WrappingInfo): TransformResult {
+export function transformElement(
+  ctx: TransformContext,
+  node: JSXElement,
+  info: WrappingInfo,
+): TransformResult {
   const config = getConfig(ctx);
   const tagName = getTagName(node);
   const doNotEscape = tagName === "script" || tagName === "style";
 
   if (node.openingElement.attributes.some((a: any) => t.JSXSpreadAttribute(a)))
-    return createElement(ctx, node, { ...info, ...config } );
+    return createElement(ctx, node, { ...info, ...config });
 
   const voidTag = VoidElements.indexOf(tagName) > -1;
   const results: TransformResult = {
@@ -55,7 +70,7 @@ export function transformElement(ctx: TransformContext, node: JSXElement, info: 
     dynamics: [],
     postExprs: [],
     tagName,
-    renderer: "ssr"
+    renderer: "ssr",
   };
 
   if (info.topLevel && config.hydratable) {
@@ -77,20 +92,24 @@ export function transformElement(ctx: TransformContext, node: JSXElement, info: 
                     value: b.FunctionExpression({
                       params: [],
                       body: b.BlockStatement({
-                        body: [b.ReturnStatement({ argument: createTemplate(ctx, child) })]
-                      })
+                        body: [
+                          b.ReturnStatement({
+                            argument: createTemplate(ctx, child),
+                          }),
+                        ],
+                      }),
                     }),
                     kind: "init",
                     method: true,
                     shorthand: false,
-                    computed: false
-                  })
-                ]
-              })
+                    computed: false,
+                  }),
+                ],
+              }),
             ],
-            optional: false
-          })
-        })
+            optional: false,
+          }),
+        }),
       );
       return results;
     }
@@ -99,14 +118,14 @@ export function transformElement(ctx: TransformContext, node: JSXElement, info: 
       b.CallExpression({
         callee: registerImportMethod(ctx, "ssrHydrationKey"),
         arguments: [],
-        optional: false
-      })
+        optional: false,
+      }),
     );
   }
-  transformAttributes(ctx, node, results, { ...config, ...info } );
+  transformAttributes(ctx, node, results, { ...config, ...info });
   appendToTemplate(results.template as string[], ">");
   if (!voidTag) {
-    transformChildren(ctx, node, results, { ...config, ...info } );
+    transformChildren(ctx, node, results, { ...config, ...info });
     appendToTemplate(results.template as string[], `</${tagName}>`);
   }
   return results;
@@ -123,11 +142,15 @@ function setAttr(
   results: TransformResult,
   name: string,
   value: Expression,
-  isSVG: boolean
+  isSVG: boolean,
 ): void {
   let parts: string[] | undefined;
   let namespace: string | undefined;
-  if ((parts = name.split(":")) && parts[1] && reservedNameSpaces.has(parts[0])) {
+  if (
+    (parts = name.split(":")) &&
+    parts[1] &&
+    reservedNameSpaces.has(parts[0])
+  ) {
     name = parts[1];
     namespace = parts[0];
   }
@@ -135,12 +158,8 @@ function setAttr(
   name = toAttribute(name, isSVG);
   const attr = b.CallExpression({
     callee: registerImportMethod(ctx, "ssrAttribute"),
-    arguments: [
-      b.Literal({ value: name }),
-      value,
-      b.Literal({ value: false })
-    ],
-    optional: false
+    arguments: [b.Literal({ value: name }), value, b.Literal({ value: false })],
+    optional: false,
   });
   const template = results.template as string[];
   const templateValues = results.templateValues!;
@@ -153,7 +172,7 @@ function setAttr(
       operator: "+",
       left: templateValues[last],
       right: attr,
-      optional: false
+      optional: false,
     });
   }
 }
@@ -162,86 +181,135 @@ function escapeExpression(
   ctx: TransformContext,
   expression: Expression,
   attr: boolean,
-  escapeLiterals?: boolean
+  escapeLiterals?: boolean,
 ): Expression {
   if (
     t.Literal(expression) ||
-    (t.TemplateLiteral(expression) && (expression ).expressions.length === 0)
+    (t.TemplateLiteral(expression) && expression.expressions.length === 0)
   ) {
     if (escapeLiterals) {
-      if (t.Literal(expression) && typeof (expression ).value === "string") {
-        return b.Literal({ value: escapeHTML((expression ).value, attr) });
+      if (t.Literal(expression) && typeof expression.value === "string") {
+        return b.Literal({ value: escapeHTML(expression.value, attr) });
       } else if (t.TemplateLiteral(expression)) {
-        return b.Literal({ value: escapeHTML((expression ).quasis[0].value.raw, attr) });
+        return b.Literal({
+          value: escapeHTML(expression.quasis[0].value.raw, attr),
+        });
       }
     }
     return expression;
   } else if (t.Function(expression)) {
-    if (t.BlockStatement((expression ).body)) {
-      (expression ).body.body = (expression ).body.body.map((e: any) => {
+    if (t.BlockStatement(expression.body)) {
+      expression.body.body = expression.body.body.map((e: any) => {
         if (t.ReturnStatement(e)) {
           e.argument = escapeExpression(ctx, e.argument, attr, escapeLiterals);
         }
         return e;
       });
     } else {
-      (expression ).body = escapeExpression(ctx, (expression ).body, attr, escapeLiterals);
+      expression.body = escapeExpression(
+        ctx,
+        expression.body,
+        attr,
+        escapeLiterals,
+      );
     }
     return expression;
   } else if (t.TemplateLiteral(expression)) {
     if (attr) escapeTemplateQuasis(expression, true);
-    (expression ).expressions = (expression ).expressions.map((e: any) =>
-      escapeExpression(ctx, e, attr, escapeLiterals)
+    expression.expressions = expression.expressions.map((e: any) =>
+      escapeExpression(ctx, e, attr, escapeLiterals),
     );
     return expression;
   } else if (t.UnaryExpression(expression)) {
     return expression;
   } else if (t.BinaryExpression(expression)) {
-    (expression ).left = escapeExpression(ctx, (expression ).left, attr, escapeLiterals);
-    (expression ).right = escapeExpression(ctx, (expression ).right, attr, escapeLiterals);
+    expression.left = escapeExpression(
+      ctx,
+      expression.left,
+      attr,
+      escapeLiterals,
+    );
+    expression.right = escapeExpression(
+      ctx,
+      expression.right,
+      attr,
+      escapeLiterals,
+    );
     return expression;
   } else if (t.ConditionalExpression(expression)) {
-    (expression ).consequent = escapeExpression(ctx, (expression ).consequent, attr, escapeLiterals);
-    (expression ).alternate = escapeExpression(ctx, (expression ).alternate, attr, escapeLiterals);
+    expression.consequent = escapeExpression(
+      ctx,
+      expression.consequent,
+      attr,
+      escapeLiterals,
+    );
+    expression.alternate = escapeExpression(
+      ctx,
+      expression.alternate,
+      attr,
+      escapeLiterals,
+    );
     return expression;
   } else if (t.LogicalExpression(expression)) {
-    if ((expression ).operator === "&&") {
-      (expression ).right = escapeExpression(ctx, (expression ).right, attr, escapeLiterals);
+    if (expression.operator === "&&") {
+      expression.right = escapeExpression(
+        ctx,
+        expression.right,
+        attr,
+        escapeLiterals,
+      );
       return expression;
     }
-  } else if (t.CallExpression(expression) && t.Function((expression ).callee)) {
-    if (t.BlockStatement((expression ).callee.body)) {
-      (expression ).callee.body.body = (expression ).callee.body.body.map((e: any) => {
-        if (t.ReturnStatement(e)) {
-          e.argument = escapeExpression(ctx, e.argument, attr, escapeLiterals);
-        }
-        return e;
-      });
+  } else if (t.CallExpression(expression) && t.Function(expression.callee)) {
+    if (t.BlockStatement(expression.callee.body)) {
+      expression.callee.body.body = expression.callee.body.body.map(
+        (e: any) => {
+          if (t.ReturnStatement(e)) {
+            e.argument = escapeExpression(
+              ctx,
+              e.argument,
+              attr,
+              escapeLiterals,
+            );
+          }
+          return e;
+        },
+      );
     } else {
-      (expression ).callee.body = escapeExpression(ctx, (expression ).callee.body, attr, escapeLiterals);
+      expression.callee.body = escapeExpression(
+        ctx,
+        expression.callee.body,
+        attr,
+        escapeLiterals,
+      );
     }
     return expression;
-  } else if (t.JSXElement(expression) && !isComponent(getTagName(expression as JSXElement))) {
-    (expression ).wontEscape = true;
+  } else if (
+    t.JSXElement(expression) &&
+    !isComponent(getTagName(expression as JSXElement))
+  ) {
+    expression.wontEscape = true;
     return expression;
   }
 
   return b.CallExpression({
     callee: registerImportMethod(ctx, "escape"),
-    arguments: attr
-      ? [expression, b.Literal({ value: true })]
-      : [expression],
-    optional: false
+    arguments: attr ? [expression, b.Literal({ value: true })] : [expression],
+    optional: false,
   });
 }
 
 function escapeTemplateQuasis(expression: Expression, attr: boolean): void {
-  for (const quasi of (expression ).quasis) {
-    const src = quasi.value.cooked != null ? quasi.value.cooked : quasi.value.raw;
+  for (const quasi of expression.quasis) {
+    const src =
+      quasi.value.cooked != null ? quasi.value.cooked : quasi.value.raw;
     const escaped = escapeHTML(src, attr);
     if (typeof escaped !== "string" || escaped === src) continue;
     quasi.value.cooked = escaped;
-    quasi.value.raw = escaped.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
+    quasi.value.raw = escaped
+      .replace(/\\/g, "\\\\")
+      .replace(/`/g, "\\`")
+      .replace(/\$\{/g, "\\${");
   }
 }
 
@@ -249,10 +317,10 @@ function transformToObject(
   ctx: TransformContext,
   attrName: string,
   attributes: JSXAttribute[],
-  selectedIndices: number[]
+  selectedIndices: number[],
 ): void {
   const properties: any[] = [];
-  const existingAttr = attributes.find(a => {
+  const existingAttr = attributes.find((a) => {
     const name = t.JSXNamespacedName(a.name)
       ? (a.name as JSXNamespacedName).name.name
       : (a.name as JSXIdentifier).name;
@@ -267,43 +335,58 @@ function transformToObject(
     const isComputed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(nsName);
     properties.push(
       b.Property({
-        key: isComputed ? b.Literal({ value: nsName }) : b.Identifier({ name: nsName }),
+        key: isComputed
+          ? b.Literal({ value: nsName })
+          : b.Identifier({ name: nsName }),
         value: t.JSXExpressionContainer(attr.value)
           ? (attr.value as JSXExpressionContainer).expression
-          : (attr.value ),
+          : attr.value,
         kind: "init",
         method: false,
         shorthand: false,
-        computed: isComputed
-      })
+        computed: isComputed,
+      }),
     );
   }
 
   if (
     existingAttr &&
     t.JSXExpressionContainer(existingAttr.value) &&
-    t.ObjectExpression((existingAttr.value as JSXExpressionContainer).expression)
+    t.ObjectExpression(
+      (existingAttr.value as JSXExpressionContainer).expression,
+    )
   ) {
-    ((existingAttr.value as JSXExpressionContainer).expression ).properties.push(...properties);
+    (existingAttr.value as JSXExpressionContainer).expression.properties.push(
+      ...properties,
+    );
   } else {
     const target = existingAttr || attributes[selectedIndices[0]];
     target.value = b.JSXExpressionContainer({
-      expression: b.ObjectExpression({ properties })
+      expression: b.ObjectExpression({ properties }),
     });
   }
 }
 
-function normalizeAttributes(ctx: TransformContext, node: JSXElement): JSXAttribute[] {
+function normalizeAttributes(
+  ctx: TransformContext,
+  node: JSXElement,
+): JSXAttribute[] {
   const attributes = node.openingElement.attributes as JSXAttribute[];
   const styleAttributes = attributes.filter(
-    (a: any) => t.JSXNamespacedName(a.name) && (a.name as JSXNamespacedName).namespace.name === "style"
+    (a: any) =>
+      t.JSXNamespacedName(a.name) &&
+      (a.name as JSXNamespacedName).namespace.name === "style",
   );
   const classNamespaceAttributes = attributes.filter(
-    (a: any) => t.JSXNamespacedName(a.name) && (a.name as JSXNamespacedName).namespace.name === "class"
+    (a: any) =>
+      t.JSXNamespacedName(a.name) &&
+      (a.name as JSXNamespacedName).namespace.name === "class",
   );
 
   if (classNamespaceAttributes.length) {
-    const classNsIndices = classNamespaceAttributes.map(a => attributes.indexOf(a));
+    const classNsIndices = classNamespaceAttributes.map((a) =>
+      attributes.indexOf(a),
+    );
     transformToObject(ctx, "classList", attributes, classNsIndices);
   }
 
@@ -320,7 +403,9 @@ function normalizeAttributes(ctx: TransformContext, node: JSXElement): JSXAttrib
       ? (first.name as JSXNamespacedName).name.name
       : (first.name as JSXIdentifier).name;
     const values: Expression[] = [];
-    const quasis: any[] = [b.TemplateElement({ value: { cooked: "", raw: "" }, tail: false })];
+    const quasis: any[] = [
+      b.TemplateElement({ value: { cooked: "", raw: "" }, tail: false }),
+    ];
 
     for (let i = 0; i < classAttributes.length; i++) {
       const attr = classAttributes[i];
@@ -335,16 +420,25 @@ function normalizeAttributes(ctx: TransformContext, node: JSXElement): JSXAttrib
         quasis.push(
           b.TemplateElement({
             value: {
-              raw: (prev ? prev.value.raw : "") + `${(attrValue ).value}` + (isLast ? "" : " "),
-              cooked: (prev ? prev.value.cooked : "") + `${(attrValue ).value}` + (isLast ? "" : " ")
+              raw:
+                (prev ? prev.value.raw : "") +
+                `${attrValue.value}` +
+                (isLast ? "" : " "),
+              cooked:
+                (prev ? prev.value.cooked : "") +
+                `${attrValue.value}` +
+                (isLast ? "" : " "),
             },
-            tail: isLast
-          })
+            tail: isLast,
+          }),
         );
       } else {
         let expr = (attrValue as JSXExpressionContainer).expression;
         if (nsName === "classList") {
-          if (t.ObjectExpression(expr) && !(expr ).properties.some((p: any) => t.SpreadElement(p))) {
+          if (
+            t.ObjectExpression(expr) &&
+            !expr.properties.some((p: any) => t.SpreadElement(p))
+          ) {
             transformClasslistObject(ctx, expr, values, quasis);
             if (!isLast) quasis[quasis.length - 1].value.raw += " ";
             continue;
@@ -352,30 +446,34 @@ function normalizeAttributes(ctx: TransformContext, node: JSXElement): JSXAttrib
           expr = b.CallExpression({
             callee: registerImportMethod(ctx, "ssrClassList"),
             arguments: [expr],
-            optional: false
+            optional: false,
           });
         }
-        values.push(b.LogicalExpression({
-          operator: "||",
-          left: expr,
-          right: b.Literal({ value: "" }),
-          optional: false
-        }));
-        quasis.push(b.TemplateElement({
-          value: { raw: isLast ? "" : " ", cooked: isLast ? "" : " " },
-          tail: isLast
-        }));
+        values.push(
+          b.LogicalExpression({
+            operator: "||",
+            left: expr,
+            right: b.Literal({ value: "" }),
+            optional: false,
+          }),
+        );
+        quasis.push(
+          b.TemplateElement({
+            value: { raw: isLast ? "" : " ", cooked: isLast ? "" : " " },
+            tail: isLast,
+          }),
+        );
       }
     }
 
     first.name = b.JSXIdentifier({ name: "class" });
     first.value = b.JSXExpressionContainer({
-      expression: b.TemplateLiteral({ quasis, expressions: values })
+      expression: b.TemplateLiteral({ quasis, expressions: values }),
     });
   }
 
   if (styleAttributes.length) {
-    const styleNsIndices = styleAttributes.map(a => attributes.indexOf(a));
+    const styleNsIndices = styleAttributes.map((a) => attributes.indexOf(a));
     transformToObject(ctx, "style", attributes, styleNsIndices);
   }
 
@@ -386,7 +484,7 @@ function transformAttributes(
   ctx: TransformContext,
   node: JSXElement,
   results: TransformResult,
-  info: PluginConfig & WrappingInfo
+  info: PluginConfig & WrappingInfo,
 ): void {
   const tagName = getTagName(node);
   const isSVG = SVGElements.has(tagName);
@@ -401,14 +499,17 @@ function transformAttributes(
       ? `${(attrNode.name as JSXNamespacedName).namespace.name}:${(attrNode.name as JSXNamespacedName).name.name}`
       : (attrNode.name as JSXIdentifier).name;
     const reservedNameSpace =
-      t.JSXNamespacedName(attrNode.name) && reservedNameSpaces.has((attrNode.name as JSXNamespacedName).namespace.name);
+      t.JSXNamespacedName(attrNode.name) &&
+      reservedNameSpaces.has(
+        (attrNode.name as JSXNamespacedName).namespace.name,
+      );
 
     if (
       (reservedNameSpace || ChildProperties.has(key)) &&
       !t.JSXExpressionContainer(value)
     ) {
       attrNode.value = value = b.JSXExpressionContainer({
-        expression: value || b.JSXEmptyExpression()
+        expression: value || b.JSXEmptyExpression(),
       });
     }
 
@@ -419,7 +520,9 @@ function transformAttributes(
         !(
           t.Literal((value as JSXExpressionContainer).expression) ||
           t.NumericLiteral((value as JSXExpressionContainer).expression) ||
-          (t.Literal((value as JSXExpressionContainer).expression) && typeof ((value as JSXExpressionContainer).expression ).value === "boolean")
+          (t.Literal((value as JSXExpressionContainer).expression) &&
+            typeof (value as JSXExpressionContainer).expression.value ===
+              "boolean")
         ))
     ) {
       const expr = (value as JSXExpressionContainer).expression;
@@ -438,7 +541,7 @@ function transformAttributes(
             operator: "||",
             left: expr,
             right: b.Literal({ value: " " }),
-            optional: false
+            optional: false,
           });
         }
         children = value;
@@ -454,9 +557,9 @@ function transformAttributes(
             arguments: [
               b.Literal({ value: attrKey }),
               expr,
-              b.Literal({ value: true })
+              b.Literal({ value: true }),
             ],
-            optional: false
+            optional: false,
           });
           results.templateValues!.push(fn);
           return;
@@ -465,11 +568,11 @@ function transformAttributes(
         if (attrKey === "style") {
           if (
             t.ObjectExpression(expr) &&
-            !(expr ).properties.some((p: any) => t.SpreadElement(p))
+            !expr.properties.some((p: any) => t.SpreadElement(p))
           ) {
-            if ((expr ).properties.length === 0) return;
+            if (expr.properties.length === 0) return;
 
-            const props = (expr ).properties.map((p: any, i: number) => {
+            const props = expr.properties.map((p: any, i: number) => {
               if (p.computed) {
                 return b.CallExpression({
                   callee: registerImportMethod(ctx, "ssrStyleProperty"),
@@ -478,22 +581,25 @@ function transformAttributes(
                       operator: "+",
                       left: p.key,
                       right: b.Literal({ value: ":" }),
-                      optional: false
+                      optional: false,
                     }),
-                    escapeExpression(ctx, p.value, true, true)
+                    escapeExpression(ctx, p.value, true, true),
                   ],
-                  optional: false
+                  optional: false,
                 });
               }
               return b.CallExpression({
                 callee: registerImportMethod(ctx, "ssrStyleProperty"),
                 arguments: [
                   b.Literal({
-                    value: (i ? ";" : "") + (t.Identifier(p.key) ? p.key.name : p.key.value) + ":"
+                    value:
+                      (i ? ";" : "") +
+                      (t.Identifier(p.key) ? p.key.name : p.key.value) +
+                      ":",
                   }),
-                  escapeExpression(ctx, p.value, true, true)
+                  escapeExpression(ctx, p.value, true, true),
                 ],
-                optional: false
+                optional: false,
               });
             });
 
@@ -503,7 +609,7 @@ function transformAttributes(
                 operator: "+",
                 left: res,
                 right: props[i],
-                optional: false
+                optional: false,
               });
             }
             (value as JSXExpressionContainer).expression = res;
@@ -511,7 +617,7 @@ function transformAttributes(
             (value as JSXExpressionContainer).expression = b.CallExpression({
               callee: registerImportMethod(ctx, "ssrStyle"),
               arguments: [expr],
-              optional: false
+              optional: false,
             });
           }
           doEscape = false;
@@ -520,26 +626,37 @@ function transformAttributes(
         if (attrKey === "classList") {
           if (
             t.ObjectExpression(expr) &&
-            !(expr ).properties.some((p: any) => t.SpreadElement(p))
+            !expr.properties.some((p: any) => t.SpreadElement(p))
           ) {
             const clsValues: Expression[] = [];
-            const clsQuasis: any[] = [b.TemplateElement({ value: { raw: "", cooked: "" }, tail: false })];
+            const clsQuasis: any[] = [
+              b.TemplateElement({
+                value: { raw: "", cooked: "" },
+                tail: false,
+              }),
+            ];
             transformClasslistObject(ctx, expr, clsValues, clsQuasis);
             if (!clsValues.length) {
-              (value as JSXExpressionContainer).expression = b.Literal({ value: clsQuasis[0].value.raw });
-            } else if (clsValues.length === 1 && !clsQuasis[0].value.raw && !clsQuasis[1].value.raw) {
+              (value as JSXExpressionContainer).expression = b.Literal({
+                value: clsQuasis[0].value.raw,
+              });
+            } else if (
+              clsValues.length === 1 &&
+              !clsQuasis[0].value.raw &&
+              !clsQuasis[1].value.raw
+            ) {
               (value as JSXExpressionContainer).expression = clsValues[0];
             } else {
               (value as JSXExpressionContainer).expression = b.TemplateLiteral({
                 quasis: clsQuasis,
-                expressions: clsValues
+                expressions: clsValues,
               });
             }
           } else {
             (value as JSXExpressionContainer).expression = b.CallExpression({
               callee: registerImportMethod(ctx, "ssrClassList"),
               arguments: [expr],
-              optional: false
+              optional: false,
             });
           }
           attrKey = "class";
@@ -547,7 +664,11 @@ function transformAttributes(
         }
 
         if (doEscape) {
-          (value as JSXExpressionContainer).expression = escapeExpression(ctx, expr, true);
+          (value as JSXExpressionContainer).expression = escapeExpression(
+            ctx,
+            expr,
+            true,
+          );
         }
 
         if (!doEscape || t.Literal(expr)) {
@@ -561,13 +682,14 @@ function transformAttributes(
       }
     } else {
       if (key === "$ServerOnly") return;
-      if (t.JSXExpressionContainer(value)) value = (value as JSXExpressionContainer).expression;
+      if (t.JSXExpressionContainer(value))
+        value = (value as JSXExpressionContainer).expression;
       const normalizedKey = toAttribute(key, isSVG);
       const isBoolean = BooleanAttributes.has(normalizedKey);
-      if (isBoolean && value && (value ).value !== "" && !(value ).value) return;
+      if (isBoolean && value && value.value !== "" && !value.value) return;
       appendToTemplate(results.template as string[], ` ${normalizedKey}`);
       if (!value) return;
-      let text = isBoolean ? "" : (value ).value;
+      let text = isBoolean ? "" : value.value;
       if (normalizedKey === "style" || normalizedKey === "class") {
         text = trimWhitespace(String(text));
         if (normalizedKey === "style") {
@@ -576,13 +698,13 @@ function transformAttributes(
       }
       appendToTemplate(
         results.template as string[],
-        String(text) === "" ? `` : `="${escapeHTML(text, true)}"`
+        String(text) === "" ? `` : `="${escapeHTML(text, true)}"`,
       );
     }
   });
 
   if (!hasChildren && children) {
-    node.children.push(children );
+    node.children.push(children);
   }
 }
 
@@ -590,10 +712,10 @@ function transformClasslistObject(
   ctx: TransformContext,
   expr: Expression,
   values: Expression[],
-  quasis: any[]
+  quasis: any[],
 ): void {
-  (expr ).properties.forEach((prop: any, i: number) => {
-    const isLast = (expr ).properties.length - 1 === i;
+  expr.properties.forEach((prop: any, i: number) => {
+    const isLast = expr.properties.length - 1 === i;
     let key = prop.key;
     if (t.Identifier(prop.key) && !prop.computed) {
       key = b.Literal({ value: prop.key.name });
@@ -601,7 +723,7 @@ function transformClasslistObject(
       key = b.CallExpression({
         callee: registerImportMethod(ctx, "escape"),
         arguments: [prop.key, b.Literal({ value: true })],
-        optional: false
+        optional: false,
       });
     } else {
       key = b.Literal({ value: escapeHTML(prop.key.value) });
@@ -614,31 +736,45 @@ function transformClasslistObject(
           quasis.push(
             b.TemplateElement({
               value: {
-                raw: (prev ? prev.value.raw : "") + (i ? " " : "") + `${key.value}` + (isLast ? "" : " "),
-                cooked: (prev ? prev.value.cooked : "") + (i ? " " : "") + `${key.value}` + (isLast ? "" : " ")
+                raw:
+                  (prev ? prev.value.raw : "") +
+                  (i ? " " : "") +
+                  `${key.value}` +
+                  (isLast ? "" : " "),
+                cooked:
+                  (prev ? prev.value.cooked : "") +
+                  (i ? " " : "") +
+                  `${key.value}` +
+                  (isLast ? "" : " "),
               },
-              tail: isLast
-            })
+              tail: isLast,
+            }),
           );
         } else {
           values.push(key);
-          quasis.push(b.TemplateElement({
-            value: { raw: isLast ? "" : " ", cooked: isLast ? "" : " " },
-            tail: isLast
-          }));
+          quasis.push(
+            b.TemplateElement({
+              value: { raw: isLast ? "" : " ", cooked: isLast ? "" : " " },
+              tail: isLast,
+            }),
+          );
         }
       }
     } else {
-      values.push(b.ConditionalExpression({
-        test: prop.value,
-        consequent: key,
-        alternate: b.Literal({ value: "" }),
-        optional: false
-      }));
-      quasis.push(b.TemplateElement({
-        value: { raw: isLast ? "" : " ", cooked: isLast ? "" : " " },
-        tail: isLast
-      }));
+      values.push(
+        b.ConditionalExpression({
+          test: prop.value,
+          consequent: key,
+          alternate: b.Literal({ value: "" }),
+          optional: false,
+        }),
+      );
+      quasis.push(
+        b.TemplateElement({
+          value: { raw: isLast ? "" : " ", cooked: isLast ? "" : " " },
+          tail: isLast,
+        }),
+      );
     }
   });
 }
@@ -647,16 +783,23 @@ function transformChildren(
   ctx: TransformContext,
   node: JSXElement,
   results: TransformResult,
-  { hydratable }: { hydratable: boolean }
+  { hydratable }: { hydratable: boolean },
 ): void {
-  const doNotEscape = getTagName(node) === "script" || getTagName(node) === "style";
+  const doNotEscape =
+    getTagName(node) === "script" || getTagName(node) === "style";
   const filteredChildren = filterChildren(node.children);
   const multi = checkLength(filteredChildren);
   const markers = hydratable && multi;
 
-  filteredChildren.forEach(childNode => {
-    if (t.JSXElement(childNode) && getTagName(childNode as JSXElement) === "head") {
-      const child = transformNode(ctx, childNode, { doNotEscape, hydratable: false } );
+  filteredChildren.forEach((childNode) => {
+    if (
+      t.JSXElement(childNode) &&
+      getTagName(childNode as JSXElement) === "head"
+    ) {
+      const child = transformNode(ctx, childNode, {
+        doNotEscape,
+        hydratable: false,
+      });
       if (!child) return;
       registerImportMethod(ctx, "NoHydration");
       registerImportMethod(ctx, "createComponent");
@@ -673,24 +816,28 @@ function transformChildren(
                   value: b.FunctionExpression({
                     params: [],
                     body: b.BlockStatement({
-                      body: [b.ReturnStatement({ argument: createTemplate(ctx, child) })]
-                    })
+                      body: [
+                        b.ReturnStatement({
+                          argument: createTemplate(ctx, child),
+                        }),
+                      ],
+                    }),
                   }),
                   kind: "init",
                   method: true,
                   shorthand: false,
-                  computed: false
-                })
-              ]
-            })
+                  computed: false,
+                }),
+              ],
+            }),
           ],
-          optional: false
-        })
+          optional: false,
+        }),
       );
       return;
     }
 
-    const child = transformNode(ctx, childNode, { doNotEscape } );
+    const child = transformNode(ctx, childNode, { doNotEscape });
     if (!child) return;
     appendToTemplate(results.template as string[], child.template as string);
     if (child.templateValues) {
@@ -698,16 +845,19 @@ function transformChildren(
     }
     if (child.exprs.length) {
       if (!doNotEscape && !child.spreadElement) {
-        child.exprs[0] = { type: "ExpressionStatement", expression: escapeExpression(ctx, (child.exprs[0] ).expression, false) } ;
+        child.exprs[0] = {
+          type: "ExpressionStatement",
+          expression: escapeExpression(ctx, child.exprs[0].expression, false),
+        };
       }
       if (markers && !child.spreadElement) {
         appendToTemplate(results.template as string[], `<!--$-->`);
         (results.template as string[]).push("");
-        results.templateValues!.push((child.exprs[0] ).expression);
+        results.templateValues!.push(child.exprs[0].expression);
         appendToTemplate(results.template as string[], `<!--/-->`);
       } else {
         (results.template as string[]).push("");
-        results.templateValues!.push((child.exprs[0] ).expression);
+        results.templateValues!.push(child.exprs[0].expression);
       }
     }
   });
@@ -716,7 +866,7 @@ function transformChildren(
 function createElement(
   ctx: TransformContext,
   node: JSXElement,
-  { topLevel, hydratable }: WrappingInfo & { hydratable: boolean }
+  { topLevel, hydratable }: WrappingInfo & { hydratable: boolean },
 ): TransformResult {
   const tagName = getTagName(node);
   const config = getConfig(ctx);
@@ -726,26 +876,32 @@ function createElement(
   const filteredChildren = filterChildren(node.children);
   const multi = checkLength(filteredChildren);
   const markers = hydratable && multi;
-  const childNodes: Expression[] = filteredChildren.reduce((memo: Expression[], childNode) => {
-    if (t.JSXText(childNode)) {
-      const v = decode(trimWhitespace((childNode as JSXText).raw));
-      if (v.length) memo.push(b.Literal({ value: v }));
-    } else {
-      const child = transformNode(ctx, childNode);
-      if (!child) return memo;
-      if (markers && child.exprs.length && !child.spreadElement) {
-        memo.push(b.Literal({ value: "<!--$-->" }));
+  const childNodes: Expression[] = filteredChildren.reduce(
+    (memo: Expression[], childNode) => {
+      if (t.JSXText(childNode)) {
+        const v = decode(trimWhitespace((childNode as JSXText).raw));
+        if (v.length) memo.push(b.Literal({ value: v }));
+      } else {
+        const child = transformNode(ctx, childNode);
+        if (!child) return memo;
+        if (markers && child.exprs.length && !child.spreadElement) {
+          memo.push(b.Literal({ value: "<!--$-->" }));
+        }
+        if (child.exprs.length && !doNotEscape && !child.spreadElement) {
+          child.exprs[0] = {
+            type: "ExpressionStatement",
+            expression: escapeExpression(ctx, child.exprs[0].expression, false),
+          };
+        }
+        memo.push(getCreateTemplate(config, child)(ctx, child, true));
+        if (markers && child.exprs.length && !child.spreadElement) {
+          memo.push(b.Literal({ value: "<!--/-->" }));
+        }
       }
-      if (child.exprs.length && !doNotEscape && !child.spreadElement) {
-        child.exprs[0] = { type: "ExpressionStatement", expression: escapeExpression(ctx, (child.exprs[0] ).expression, false) } ;
-      }
-      memo.push(getCreateTemplate(config, child)(ctx, child, true));
-      if (markers && child.exprs.length && !child.spreadElement) {
-        memo.push(b.Literal({ value: "<!--/-->" }));
-      }
-    }
-    return memo;
-  }, []);
+      return memo;
+    },
+    [],
+  );
 
   let props: Expression;
   if (attributes.length === 1 && t.JSXSpreadAttribute(attributes[0])) {
@@ -768,13 +924,15 @@ function createElement(
           dynamicSpread = true;
           if (
             t.CallExpression(arg) &&
-            !(arg ).arguments.length &&
-            !t.CallExpression((arg ).callee) &&
-            !t.MemberExpression((arg ).callee)
+            !arg.arguments.length &&
+            !t.CallExpression(arg.callee) &&
+            !t.MemberExpression(arg.callee)
           ) {
-            propsList.push((arg ).callee);
+            propsList.push(arg.callee);
           } else {
-            propsList.push(b.ArrowFunctionExpression({ params: [], body: arg }));
+            propsList.push(
+              b.ArrowFunctionExpression({ params: [], body: arg }),
+            );
           }
         } else {
           propsList.push(arg);
@@ -797,9 +955,15 @@ function createElement(
 
         if (t.JSXExpressionContainer(attrValue)) {
           const innerExpr = (attrValue as JSXExpressionContainer).expression;
-          const isValDynamic = isDynamic(ctx, innerExpr, { checkMember: true, checkTags: true });
+          const isValDynamic = isDynamic(ctx, innerExpr, {
+            checkMember: true,
+            checkTags: true,
+          });
           if (isValDynamic) {
-            let expr = b.ArrowFunctionExpression({ params: [], body: innerExpr });
+            let expr = b.ArrowFunctionExpression({
+              params: [],
+              body: innerExpr,
+            });
             const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
             runningObject.push(
               b.Property({
@@ -807,14 +971,14 @@ function createElement(
                 value: b.FunctionExpression({
                   params: [],
                   body: b.BlockStatement({
-                    body: [b.ReturnStatement({ argument: expr.body })]
-                  })
+                    body: [b.ReturnStatement({ argument: expr.body })],
+                  }),
                 }),
                 kind: "init",
                 method: true,
                 shorthand: false,
-                computed
-              })
+                computed,
+              }),
             );
           } else {
             const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
@@ -825,8 +989,8 @@ function createElement(
                 kind: "init",
                 method: false,
                 shorthand: false,
-                computed
-              })
+                computed,
+              }),
             );
           }
         } else {
@@ -838,8 +1002,8 @@ function createElement(
               kind: "init",
               method: false,
               shorthand: false,
-              computed
-            })
+              computed,
+            }),
           );
         }
       }
@@ -852,7 +1016,7 @@ function createElement(
       props = b.CallExpression({
         callee: registerImportMethod(ctx, "mergeProps"),
         arguments: propsList,
-        optional: false
+        optional: false,
       });
     } else {
       props = propsList[0];
@@ -863,7 +1027,10 @@ function createElement(
     ? hydratable
       ? b.ArrowFunctionExpression({
           params: [],
-          body: childNodes.length === 1 ? childNodes[0] : b.ArrayExpression({ elements: childNodes })
+          body:
+            childNodes.length === 1
+              ? childNodes[0]
+              : b.ArrayExpression({ elements: childNodes }),
         })
       : childNodes.length === 1
         ? childNodes[0]
@@ -878,11 +1045,11 @@ function createElement(
           b.Literal({ value: tagName }),
           props,
           childArg,
-          b.Literal({ value: Boolean(topLevel && config.hydratable) })
+          b.Literal({ value: Boolean(topLevel && config.hydratable) }),
         ],
-        optional: false
-      })
-    })
+        optional: false,
+      }),
+    }),
   ];
 
   return {
@@ -893,6 +1060,6 @@ function createElement(
     exprs,
     dynamics: [],
     postExprs: [],
-    spreadElement: true
+    spreadElement: true,
   };
 }

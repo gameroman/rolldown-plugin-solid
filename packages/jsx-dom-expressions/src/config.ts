@@ -17,5 +17,5 @@ export default {
   effectWrapper: "effect",
   memoWrapper: "memo",
   validate: true,
-  inlineStyles: true
+  inlineStyles: true,
 };

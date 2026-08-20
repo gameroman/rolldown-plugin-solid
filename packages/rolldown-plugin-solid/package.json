@@ -2,13 +2,16 @@
   "name": "@rolldown-plugin/solid",
   "version": "0.1.0",
   "description": "A Rolldown plugin for compiling SolidJS JSX/TSX files",
+  "license": "MIT",
+  "author": "gameroman",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rolldown-plugin/rolldown-plugin-solid.git",
     "directory": "packages/rolldown-plugin-solid"
   },
-  "license": "MIT",
-  "author": "gameroman",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "imports": {
     "#universal-mode-renderer": "./tests/helpers/universal-mode-renderer.ts"
@@ -17,9 +20,6 @@
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsdown",
     "prepublishOnly": "bun run build",

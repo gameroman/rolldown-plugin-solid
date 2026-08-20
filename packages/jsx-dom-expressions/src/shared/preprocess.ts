@@ -1,6 +1,9 @@
 import type { TransformContext } from "../types";
 
-export default function preprocess(ctx: TransformContext, comments: any[]): boolean {
+export default function preprocess(
+  ctx: TransformContext,
+  comments: any[],
+): boolean {
   const lib = ctx.config.requireImportSource;
   if (lib) {
     let process = false;

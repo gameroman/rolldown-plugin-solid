@@ -1,24 +1,29 @@
 import { b } from "yuku-ast";
-import type { TransformContext } from "../types";
-import { getRendererConfig, registerImportMethod } from "./utils";
+
 import { appendTemplates as appendTemplatesDOM } from "../dom/template";
 import { appendTemplates as appendTemplatesSSR } from "../ssr/template";
+import type { TransformContext } from "../types";
+import { getRendererConfig, registerImportMethod } from "./utils";
 import { isInvalidMarkup } from "./validate";
 
 export default function postprocess(ctx: TransformContext): void {
   if (ctx.events.size > 0) {
-    const delegateEvents = registerImportMethod(ctx, "delegateEvents", getRendererConfig(ctx, "dom").moduleName);
+    const delegateEvents = registerImportMethod(
+      ctx,
+      "delegateEvents",
+      getRendererConfig(ctx, "dom").moduleName,
+    );
     const eventsArray = b.ArrayExpression({
-      elements: Array.from(ctx.events).map(e => b.Literal({ value: e }))
+      elements: Array.from(ctx.events).map((e) => b.Literal({ value: e })),
     });
     ctx.out.body.push(
       b.ExpressionStatement({
         expression: b.CallExpression({
           callee: delegateEvents,
           arguments: [eventsArray],
-          optional: false
-        })
-      })
+          optional: false,
+        }),
+      }),
     );
   }
 
@@ -39,8 +44,12 @@ export default function postprocess(ctx: TransformContext): void {
         }
       }
     }
-    const domTemplates = ctx.templates.filter(temp => temp.renderer === "dom");
-    const ssrTemplates = ctx.templates.filter(temp => temp.renderer === "ssr");
+    const domTemplates = ctx.templates.filter(
+      (temp) => temp.renderer === "dom",
+    );
+    const ssrTemplates = ctx.templates.filter(
+      (temp) => temp.renderer === "ssr",
+    );
     if (domTemplates.length > 0) appendTemplatesDOM(ctx, domTemplates);
     if (ssrTemplates.length > 0) appendTemplatesSSR(ctx, ssrTemplates);
   }

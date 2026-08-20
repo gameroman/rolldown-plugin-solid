@@ -1,24 +1,40 @@
 import { is, b } from "yuku-ast";
-import type { TransformContext, TransformResult, Expression, Statement, VariableDeclarator, Identifier } from "../types";
+
 import {
   escapeStringForTemplate,
   getConfig,
   getNumberedId,
   getRendererConfig,
   registerImportMethod,
-  generateUid
+  generateUid,
 } from "../shared/utils";
+import type {
+  TransformContext,
+  TransformResult,
+  Expression,
+  Statement,
+  VariableDeclarator,
+  Identifier,
+} from "../types";
 import { setAttr } from "./element";
 
-export function createTemplate(ctx: TransformContext, result: TransformResult, wrap: boolean): Expression {
+export function createTemplate(
+  ctx: TransformContext,
+  result: TransformResult,
+  wrap: boolean,
+): Expression {
   const config = getConfig(ctx);
   if (result.id) {
     registerTemplate(ctx, result);
     if (
-      !(result.exprs.length || result.dynamics.length || result.postExprs.length) &&
+      !(
+        result.exprs.length ||
+        result.dynamics.length ||
+        result.postExprs.length
+      ) &&
       result.decl!.declarations.length === 1
     ) {
-      return (result.decl!.declarations[0] ).init;
+      return result.decl!.declarations[0].init;
     } else {
       return b.CallExpression({
         callee: b.ArrowFunctionExpression({
@@ -28,80 +44,99 @@ export function createTemplate(ctx: TransformContext, result: TransformResult, w
               result.decl!,
               ...result.exprs.concat(
                 wrapDynamics(ctx, result) || [],
-                result.postExprs || []
+                result.postExprs || [],
               ),
-              b.ReturnStatement({ argument: result.id })
-            ]
-          })
+              b.ReturnStatement({ argument: result.id }),
+            ],
+          }),
         }),
         arguments: [],
-        optional: false
+        optional: false,
       });
     }
   }
   if (wrap && result.dynamic && config.memoWrapper) {
     return b.CallExpression({
       callee: registerImportMethod(ctx, config.memoWrapper),
-      arguments: [result.exprs[0] ? (result.exprs[0] ).expression : b.Identifier({ name: "undefined" })],
-      optional: false
+      arguments: [
+        result.exprs[0]
+          ? result.exprs[0].expression
+          : b.Identifier({ name: "undefined" }),
+      ],
+      optional: false,
     });
   }
-  return result.exprs[0] ? (result.exprs[0] ).expression : b.Identifier({ name: "undefined" });
+  return result.exprs[0]
+    ? result.exprs[0].expression
+    : b.Identifier({ name: "undefined" });
 }
 
-export function appendTemplates(ctx: TransformContext, templates: TransformResult[]): void {
-  const declarators = templates.map(template => {
+export function appendTemplates(
+  ctx: TransformContext,
+  templates: TransformResult[],
+): void {
+  const declarators = templates.map((template) => {
     const tmpl = {
       cooked: template.template,
-      raw: escapeStringForTemplate(template.template)
+      raw: escapeStringForTemplate(template.template),
     };
 
-    const shouldUseImportNode = template.hasCustomElement || template.isImportNode;
+    const shouldUseImportNode =
+      template.hasCustomElement || template.isImportNode;
     const isMathML =
       /^<(math|annotation|annotation-xml|maction|math|merror|mfrac|mi|mmultiscripts|mn|mo|mover|mpadded|mphantom|mprescripts|mroot|mrow|ms|mspace|msqrt|mstyle|msub|msubsup|msup|mtable|mtd|mtext|mtr|munder|munderover|semantics|menclose|mfenced)(\s|>)/.test(
-        template.template
+        template.template,
       );
 
     const args: Expression[] = [
       b.TemplateLiteral({
         quasis: [b.TemplateElement({ value: tmpl, tail: true })],
-        expressions: []
-      })
+        expressions: [],
+      }),
     ];
 
     if (template.isSVG || shouldUseImportNode || isMathML) {
       args.push(
         b.Literal({ value: !!shouldUseImportNode }),
         b.Literal({ value: !!template.isSVG }),
-        b.Literal({ value: isMathML })
+        b.Literal({ value: isMathML }),
       );
     }
 
     return b.VariableDeclarator({
       id: b.Identifier({ name: template.id }),
       init: b.CallExpression({
-        callee: registerImportMethod(ctx, "template", getRendererConfig(ctx, "dom").moduleName),
+        callee: registerImportMethod(
+          ctx,
+          "template",
+          getRendererConfig(ctx, "dom").moduleName,
+        ),
         arguments: args,
-        optional: false
-      })
+        optional: false,
+      }),
     });
   });
 
   ctx.out.body.unshift(
     b.VariableDeclaration({
       kind: "var",
-      declarations: declarators
-    })
+      declarations: declarators,
+    }),
   );
 }
 
-function registerTemplate(ctx: TransformContext, results: TransformResult): void {
+function registerTemplate(
+  ctx: TransformContext,
+  results: TransformResult,
+): void {
   const { hydratable } = getConfig(ctx);
   let templateId: string | undefined;
 
   if (results.template.length) {
     if (!results.skipTemplate) {
-      const existing = ctx.templates.find(t => t.template === results.template);
+      const existing = ctx.templates.find(
+        (t) => t.template === results.template,
+      );
       if (existing) {
         templateId = existing.id;
       } else {
@@ -113,7 +148,7 @@ function registerTemplate(ctx: TransformContext, results: TransformResult): void
           isSVG: !!results.isSVG,
           isCE: !!results.hasCustomElement,
           isImportNode: !!results.isImportNode,
-          renderer: "dom"
+          renderer: "dom",
         });
       }
     }
@@ -122,15 +157,19 @@ function registerTemplate(ctx: TransformContext, results: TransformResult): void
       id: results.id!,
       init: hydratable
         ? b.CallExpression({
-            callee: registerImportMethod(ctx, "getNextElement", getRendererConfig(ctx, "dom").moduleName),
+            callee: registerImportMethod(
+              ctx,
+              "getNextElement",
+              getRendererConfig(ctx, "dom").moduleName,
+            ),
             arguments: templateId ? [b.Identifier({ name: templateId })] : [],
-            optional: false
+            optional: false,
           })
         : b.CallExpression({
             callee: b.Identifier({ name: templateId! }),
             arguments: [],
-            optional: false
-          })
+            optional: false,
+          }),
     });
 
     results.declarations.unshift(decl);
@@ -138,11 +177,14 @@ function registerTemplate(ctx: TransformContext, results: TransformResult): void
 
   results.decl = b.VariableDeclaration({
     kind: "var",
-    declarations: results.declarations
+    declarations: results.declarations,
   });
 }
 
-function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement[] {
+function wrapDynamics(
+  ctx: TransformContext,
+  result: TransformResult,
+): Statement[] {
   if (!result.dynamics.length) return [];
   const config = getConfig(ctx);
   const effectWrapperId = registerImportMethod(ctx, config.effectWrapper);
@@ -160,7 +202,7 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
       result.dynamics[0].value = b.AssignmentExpression({
         operator: "=",
         left: prevValue!,
-        right: result.dynamics[0].value
+        right: result.dynamics[0].value,
       });
     } else if (
       result.dynamics[0].key.startsWith("class:") &&
@@ -169,8 +211,12 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
     ) {
       result.dynamics[0].value = b.UnaryExpression({
         operator: "!",
-        argument: b.UnaryExpression({ operator: "!", argument: result.dynamics[0].value, prefix: true }),
-        prefix: true
+        argument: b.UnaryExpression({
+          operator: "!",
+          argument: result.dynamics[0].value,
+          prefix: true,
+        }),
+        prefix: true,
       });
     }
 
@@ -181,18 +227,24 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
           arguments: [
             b.ArrowFunctionExpression({
               params: prevValue ? [prevValue] : [],
-              body: setAttr(ctx, result.dynamics[0].elem, result.dynamics[0].key, result.dynamics[0].value, {
-                isSVG: result.dynamics[0].isSVG,
-                isCE: result.dynamics[0].isCE,
-                tagName: result.dynamics[0].tagName,
-                dynamic: true,
-                prevId: prevValue
-              })
-            })
+              body: setAttr(
+                ctx,
+                result.dynamics[0].elem,
+                result.dynamics[0].key,
+                result.dynamics[0].value,
+                {
+                  isSVG: result.dynamics[0].isSVG,
+                  isCE: result.dynamics[0].isCE,
+                  tagName: result.dynamics[0].tagName,
+                  dynamic: true,
+                  prevId: prevValue,
+                },
+              ),
+            }),
           ],
-          optional: false
-        })
-      })
+          optional: false,
+        }),
+      }),
     ];
   }
 
@@ -201,62 +253,86 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
   const statements: Statement[] = [];
   const properties: Identifier[] = [];
 
-  result.dynamics.forEach(({ elem, key, value, isSVG, isCE, tagName }, index) => {
-    const varIdent = b.Identifier({ name: generateUid(ctx, "v$") });
-    const propIdent = b.Identifier({ name: getNumberedId(index) });
-    const propMember = b.MemberExpression({
-      object: prevId,
-      property: propIdent,
-      computed: true,
-      optional: false
-    });
-
-    if (key.startsWith("class:") && !is.BooleanLiteral(value) && !is.UnaryExpression(value)) {
-      value = b.UnaryExpression({
-        operator: "!",
-        argument: b.UnaryExpression({ operator: "!", argument: value, prefix: true }),
-        prefix: true
+  result.dynamics.forEach(
+    ({ elem, key, value, isSVG, isCE, tagName }, index) => {
+      const varIdent = b.Identifier({ name: generateUid(ctx, "v$") });
+      const propIdent = b.Identifier({ name: getNumberedId(index) });
+      const propMember = b.MemberExpression({
+        object: prevId,
+        property: propIdent,
+        computed: true,
+        optional: false,
       });
-    }
 
-    properties.push(propIdent);
-    declarations.push(b.VariableDeclarator({ id: varIdent, init: value }));
+      if (
+        key.startsWith("class:") &&
+        !is.BooleanLiteral(value) &&
+        !is.UnaryExpression(value)
+      ) {
+        value = b.UnaryExpression({
+          operator: "!",
+          argument: b.UnaryExpression({
+            operator: "!",
+            argument: value,
+            prefix: true,
+          }),
+          prefix: true,
+        });
+      }
 
-    if (key === "classList" || key === "style") {
-      statements.push(
-        b.ExpressionStatement({
-          expression: b.AssignmentExpression({
-            operator: "=",
-            left: propMember,
-            right: setAttr(ctx, elem, key, varIdent, {
-              isSVG,
-              isCE,
-              tagName,
-              dynamic: true,
-              prevId: propMember
-            })
-          })
-        })
-      );
-    } else {
-      const prev = key.startsWith("style:") ? varIdent : undefined;
-      statements.push(
-        b.ExpressionStatement({
-          expression: b.LogicalExpression({
-            operator: "&&",
-            left: b.BinaryExpression({ operator: "!==", left: varIdent, right: propMember }),
-            right: setAttr(ctx, elem, key, b.AssignmentExpression({ operator: "=", left: propMember, right: varIdent }), {
-              isSVG,
-              isCE,
-              tagName,
-              dynamic: true,
-              prevId: prev
-            })
-          })
-        })
-      );
-    }
-  });
+      properties.push(propIdent);
+      declarations.push(b.VariableDeclarator({ id: varIdent, init: value }));
+
+      if (key === "classList" || key === "style") {
+        statements.push(
+          b.ExpressionStatement({
+            expression: b.AssignmentExpression({
+              operator: "=",
+              left: propMember,
+              right: setAttr(ctx, elem, key, varIdent, {
+                isSVG,
+                isCE,
+                tagName,
+                dynamic: true,
+                prevId: propMember,
+              }),
+            }),
+          }),
+        );
+      } else {
+        const prev = key.startsWith("style:") ? varIdent : undefined;
+        statements.push(
+          b.ExpressionStatement({
+            expression: b.LogicalExpression({
+              operator: "&&",
+              left: b.BinaryExpression({
+                operator: "!==",
+                left: varIdent,
+                right: propMember,
+              }),
+              right: setAttr(
+                ctx,
+                elem,
+                key,
+                b.AssignmentExpression({
+                  operator: "=",
+                  left: propMember,
+                  right: varIdent,
+                }),
+                {
+                  isSVG,
+                  isCE,
+                  tagName,
+                  dynamic: true,
+                  prevId: prev,
+                },
+              ),
+            }),
+          }),
+        );
+      }
+    },
+  );
 
   return [
     b.ExpressionStatement({
@@ -269,21 +345,23 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
               body: [
                 b.VariableDeclaration({ kind: "var", declarations }),
                 ...statements,
-                b.ReturnStatement({ argument: prevId })
-              ]
-            })
+                b.ReturnStatement({ argument: prevId }),
+              ],
+            }),
           }),
           b.ObjectExpression({
-            properties: properties.map(id => b.Property({
-              key: id,
-              value: b.Identifier({ name: "undefined" }),
-              computed: false,
-              shorthand: false
-            }))
-          })
+            properties: properties.map((id) =>
+              b.Property({
+                key: id,
+                value: b.Identifier({ name: "undefined" }),
+                computed: false,
+                shorthand: false,
+              }),
+            ),
+          }),
         ],
-        optional: false
-      })
-    })
+        optional: false,
+      }),
+    }),
   ];
 }

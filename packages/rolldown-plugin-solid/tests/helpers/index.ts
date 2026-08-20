@@ -1,6 +1,6 @@
 import { describe, expect, it, spyOn } from "bun:test";
-
 import { resolve } from "node:path";
+
 import { build } from "rolldown";
 
 import solidPluginDist from "../../dist/index.mjs";

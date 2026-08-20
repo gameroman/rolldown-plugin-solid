@@ -1,20 +1,41 @@
 import { is as t, b } from "yuku-ast";
-import type { TransformContext, TransformResult, Expression, Statement, VariableDeclarator, Identifier } from "../types";
-import { getConfig, getNumberedId, registerImportMethod, generateUid } from "../shared/utils";
+
+import {
+  getConfig,
+  getNumberedId,
+  registerImportMethod,
+  generateUid,
+} from "../shared/utils";
+import type {
+  TransformContext,
+  TransformResult,
+  Expression,
+  Statement,
+  VariableDeclarator,
+  Identifier,
+} from "../types";
 import { setAttr } from "./element";
 
-export function createTemplate(ctx: TransformContext, result: TransformResult, wrap: boolean): Expression {
+export function createTemplate(
+  ctx: TransformContext,
+  result: TransformResult,
+  wrap: boolean,
+): Expression {
   const config = getConfig(ctx);
   if (result.id) {
     result.decl = b.VariableDeclaration({
       kind: "var",
-      declarations: result.declarations
+      declarations: result.declarations,
     });
     if (
-      !(result.exprs.length || result.dynamics.length || result.postExprs.length) &&
+      !(
+        result.exprs.length ||
+        result.dynamics.length ||
+        result.postExprs.length
+      ) &&
       result.decl!.declarations.length === 1
     ) {
-      return (result.decl!.declarations[0] ).init;
+      return result.decl!.declarations[0].init;
     } else {
       return b.CallExpression({
         callee: b.ArrowFunctionExpression({
@@ -24,28 +45,37 @@ export function createTemplate(ctx: TransformContext, result: TransformResult, w
               result.decl!,
               ...result.exprs.concat(
                 wrapDynamics(ctx, result) || [],
-                result.postExprs || []
+                result.postExprs || [],
               ),
-              b.ReturnStatement({ argument: result.id })
-            ]
-          })
+              b.ReturnStatement({ argument: result.id }),
+            ],
+          }),
         }),
         arguments: [],
-        optional: false
+        optional: false,
       });
     }
   }
   if (wrap && result.dynamic && config.memoWrapper) {
     return b.CallExpression({
       callee: registerImportMethod(ctx, config.memoWrapper),
-      arguments: [result.exprs[0] ? (result.exprs[0] ).expression : b.Identifier({ name: "undefined" })],
-      optional: false
+      arguments: [
+        result.exprs[0]
+          ? result.exprs[0].expression
+          : b.Identifier({ name: "undefined" }),
+      ],
+      optional: false,
     });
   }
-  return result.exprs[0] ? (result.exprs[0] ).expression : b.Identifier({ name: "undefined" });
+  return result.exprs[0]
+    ? result.exprs[0].expression
+    : b.Identifier({ name: "undefined" });
 }
 
-function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement | undefined {
+function wrapDynamics(
+  ctx: TransformContext,
+  result: TransformResult,
+): Statement | undefined {
   if (!result.dynamics.length) return undefined;
   const config = getConfig(ctx);
 
@@ -60,14 +90,20 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
         arguments: [
           b.ArrowFunctionExpression({
             params: [prevValue],
-            body: setAttr(ctx, result.dynamics[0].elem, result.dynamics[0].key, result.dynamics[0].value, {
-              dynamic: true,
-              prevId: prevValue
-            })
-          })
+            body: setAttr(
+              ctx,
+              result.dynamics[0].elem,
+              result.dynamics[0].key,
+              result.dynamics[0].value,
+              {
+                dynamic: true,
+                prevId: prevValue,
+              },
+            ),
+          }),
         ],
-        optional: false
-      })
+        optional: false,
+      }),
     });
   }
 
@@ -83,7 +119,7 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
       object: prevId,
       property: propIdent,
       computed: true,
-      optional: false
+      optional: false,
     });
 
     properties.push(propIdent);
@@ -97,16 +133,19 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
             operator: "!==",
             left: varIdent,
             right: propMember,
-            optional: false
+            optional: false,
           }),
           right: b.AssignmentExpression({
             operator: "=",
             left: propMember,
-            right: setAttr(ctx, elem, key, varIdent, { dynamic: true, prevId: propMember })
+            right: setAttr(ctx, elem, key, varIdent, {
+              dynamic: true,
+              prevId: propMember,
+            }),
           }),
-          optional: false
-        })
-      })
+          optional: false,
+        }),
+      }),
     );
   });
 
@@ -120,22 +159,24 @@ function wrapDynamics(ctx: TransformContext, result: TransformResult): Statement
             body: [
               b.VariableDeclaration({ kind: "var", declarations }),
               ...statements,
-              b.ReturnStatement({ argument: prevId })
-            ]
-          })
+              b.ReturnStatement({ argument: prevId }),
+            ],
+          }),
         }),
         b.ObjectExpression({
-          properties: properties.map(id => b.Property({
-            key: id,
-            value: b.Identifier({ name: "undefined" }),
-            kind: "init",
-            method: false,
-            shorthand: false,
-            computed: false
-          }))
-        })
+          properties: properties.map((id) =>
+            b.Property({
+              key: id,
+              value: b.Identifier({ name: "undefined" }),
+              kind: "init",
+              method: false,
+              shorthand: false,
+              computed: false,
+            }),
+          ),
+        }),
       ],
-      optional: false
-    })
+      optional: false,
+    }),
   });
 }

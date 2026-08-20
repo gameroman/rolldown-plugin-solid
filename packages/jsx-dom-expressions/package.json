@@ -7,9 +7,10 @@
     "url": "git+https://github.com/rolldown-plugin/rolldown-plugin-solid.git",
     "directory": "packages/jsx-dom-expressions"
   },
-  "readmeFilename": "README.md",
+  "files": [
+    "dist"
+  ],
   "exports": "./index.js",
-  "files": ["dist"],
   "scripts": {
     "build": "tsdown",
     "test": "bun test --dots",
