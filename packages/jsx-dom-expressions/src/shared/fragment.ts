@@ -20,7 +20,7 @@ export default function transformFragmentChildren(
   const filteredChildren = filterChildren(children);
   const childNodes = filteredChildren.reduce((memo: any[], child) => {
     if (is.JSXText(child)) {
-      const v = decode(trimWhitespace((child as JSXText).raw));
+      const v = decode(trimWhitespace(child.raw));
       if (v.length) memo.push(b.Literal({ value: v }));
     } else {
       const childResult = transformNode(ctx, child, {

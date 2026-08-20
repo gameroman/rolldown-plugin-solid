@@ -51,15 +51,12 @@ export default function transformComponent(
   let dynamicSpread = false;
   const hasChildren = node.children.length > 0;
 
-  if (
-    is.Identifier(tagId) &&
-    config.builtIns.indexOf((tagId as Identifier).name) > -1
-  ) {
-    const newTagId = registerImportMethod(ctx, (tagId as Identifier).name);
-    (tagId as Identifier).name = newTagId.name;
+  if (is.Identifier(tagId) && config.builtIns.indexOf(tagId.name) > -1) {
+    const newTagId = registerImportMethod(ctx, tagId.name);
+    tagId.name = newTagId.name;
   }
 
-  node.openingElement.attributes.forEach((attr: any) => {
+  node.openingElement.attributes.forEach((attr) => {
     if (is.JSXSpreadAttribute(attr)) {
       if (runningObject.length) {
         props.push(b.ObjectExpression({ properties: runningObject }));
@@ -82,7 +79,7 @@ export default function transformComponent(
           ? b.Literal({ value: attr.value.value })
           : attr.value) || b.Literal({ value: true });
       const id = convertJSXIdentifier(attr.name);
-      const key = is.Identifier(id) ? (id as Identifier).name : "";
+      const key = is.Identifier(id) ? id.name : "";
       if (hasChildren && key === "children") return;
       if (is.JSXExpressionContainer(value)) {
         if (key === "ref") {

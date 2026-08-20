@@ -78,11 +78,11 @@ export function transformElement(
   const isCustomElement =
     tagName.indexOf("-") > -1 ||
     node.openingElement.attributes.some(
-      (a: any) => a?.name?.name === "is" || a.name?.name === "is",
+      (a) => a?.name?.name === "is" || a.name?.name === "is",
     );
   const isImportNode =
     (tagName === "img" || tagName === "iframe") &&
-    node.openingElement.attributes.some((a: any) => a.name?.name === "loading");
+    node.openingElement.attributes.some((a) => a.name?.name === "loading");
 
   const results: TransformResult = {
     template: `<${tagName}`,
@@ -404,7 +404,7 @@ function transformAttributes(
   const isSVG = SVGElements.has(tagName);
   const isCE =
     tagName.includes("-") ||
-    node.openingElement.attributes.some((a: any) => a.name?.name === "is");
+    node.openingElement.attributes.some((a) => a.name?.name === "is");
   const hasChildren = node.children.length > 0;
 
   let needsSpacing = true;
@@ -466,7 +466,7 @@ function transformAttributes(
     }
   }
 
-  node.openingElement.attributes.forEach((attribute: any) => {
+  node.openingElement.attributes.forEach((attribute) => {
     const node = attribute;
     let value = node.value;
     const key = is.JSXNamespacedName(node.name)
@@ -886,7 +886,12 @@ function transformChildren(
   config: TransformContext["config"],
 ): void {
   const filteredChildren = filterChildren(node.children);
-  const lastElement = findLastElement(ctx, filteredChildren, config.hydratable);
+  const lastElement = findLastElement(
+    ctx,
+    filteredChildren,
+    config.hydratable,
+    node,
+  );
 
   let tempPath = results.id?.name || "";
   let nextPlaceholder: Identifier | null = null;
@@ -905,7 +910,8 @@ function transformChildren(
         lastElement: index === lastElement,
         skipId:
           !results.id ||
-          !detectExpressions(ctx, filteredChildren, index, config),
+          !detectExpressions(ctx, filteredChildren, index, config, node),
+        parent: node,
       });
       if (!transformed) return memo;
       const i = memo.length;
@@ -1153,13 +1159,14 @@ function detectExpressions(
   children: Node[],
   index: number,
   config: TransformContext["config"],
+  parent?: Node,
 ): boolean {
   if (children[index - 1]) {
     const node = children[index - 1];
     if (
       is.JSXExpressionContainer(node) &&
       !is.JSXEmptyExpression(node.expression) &&
-      getStaticExpression(ctx, node, null) === false
+      getStaticExpression(ctx, node, parent || null) === false
     )
       return true;
     if (is.JSXElement(node)) {
@@ -1172,7 +1179,7 @@ function detectExpressions(
     if (is.JSXExpressionContainer(child)) {
       if (
         !is.JSXEmptyExpression(child.expression) &&
-        getStaticExpression(ctx, child, null) === false
+        getStaticExpression(ctx, child, parent || null) === false
       )
         return true;
     } else if (is.JSXElement(child)) {
@@ -1182,14 +1189,12 @@ function detectExpressions(
         config.contextToCustomElements &&
         (tagName === "slot" ||
           tagName.indexOf("-") > -1 ||
-          child.openingElement.attributes.some(
-            (a: any) => a.name?.name === "is",
-          ))
+          child.openingElement.attributes.some((a) => a.name?.name === "is"))
       )
         return true;
       if (
         child.openingElement.attributes.some(
-          (attr: any) =>
+          (attr) =>
             is.JSXSpreadAttribute(attr) ||
             ["textContent", "innerHTML", "innerText"].includes(
               attr.name?.name,
@@ -1220,6 +1225,7 @@ function findLastElement(
   ctx: TransformContext,
   children: Node[],
   hydratable?: boolean,
+  parent?: Node,
 ): number {
   let lastElement = -1;
   let tagName: string | undefined;
@@ -1228,7 +1234,7 @@ function findLastElement(
     if (
       hydratable ||
       is.JSXText(node) ||
-      getStaticExpression(ctx, node, null) !== false ||
+      getStaticExpression(ctx, node, parent || null) !== false ||
       (is.JSXElement(node) &&
         (tagName = getTagName(node)) &&
         !isComponent(tagName))

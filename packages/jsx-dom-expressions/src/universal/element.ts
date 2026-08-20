@@ -70,7 +70,7 @@ function getAttrName(name: JSXIdentifier | JSXNamespacedName): string {
   if (is.JSXNamespacedName(name)) {
     return `${name.namespace.name}:${name.name.name}`;
   }
-  return (name as JSXIdentifier).name;
+  return name.name;
 }
 
 function transformAttributes(
@@ -80,10 +80,7 @@ function transformAttributes(
 ): void {
   let children: JSXExpressionContainer | undefined;
   let spreadExpr: Statement | undefined;
-  let attributes = node.openingElement.attributes as (
-    | JSXAttribute
-    | JSXSpreadAttribute
-  )[];
+  let attributes = node.openingElement.attributes;
   const elem = results.id!;
   const hasChildren = node.children.length > 0;
   const config = getConfig(ctx);
@@ -99,12 +96,11 @@ function transformAttributes(
   attributes.forEach((attribute) => {
     if (is.JSXSpreadAttribute(attribute)) return;
 
-    const attr = attribute as JSXAttribute;
+    const attr = attribute;
     let value: any = attr.value;
     const key = getAttrName(attr.name);
     const reservedNameSpace =
-      is.JSXNamespacedName(attr.name) &&
-      (attr.name as JSXNamespacedName).namespace.name === "use";
+      is.JSXNamespacedName(attr.name) && attr.name.namespace.name === "use";
 
     if (reservedNameSpace && !is.JSXExpressionContainer(value)) {
       attr.value = value = b.JSXExpressionContainer({
@@ -113,10 +109,10 @@ function transformAttributes(
     }
 
     if (is.JSXExpressionContainer(value)) {
-      const expr = (value as JSXExpressionContainer).expression;
+      const expr = value.expression;
 
       if (key === "ref") {
-        let valueExpr: Expression = expr;
+        let valueExpr = expr;
         while (
           is.TSNonNullExpression(valueExpr) ||
           is.TSAsExpression(valueExpr)
@@ -240,7 +236,7 @@ function transformAttributes(
           }),
         );
       } else if (key === "children") {
-        children = value as JSXExpressionContainer;
+        children = value;
       } else if (
         config.effectWrapper &&
         isDynamic(ctx, expr, { checkMember: true })
@@ -467,7 +463,7 @@ function processSpreads(
         spreadArgs.push(b.ObjectExpression({ properties: runningObject }));
         runningObject = [];
       }
-      const arg = (attribute as JSXSpreadAttribute).argument;
+      const arg = attribute.argument;
       if (isDynamic(ctx, arg, { checkMember: true })) {
         dynamicSpread = true;
         if (
@@ -484,36 +480,36 @@ function processSpreads(
         spreadArgs.push(arg);
       }
     } else if (is.JSXAttribute(attribute)) {
-      const attr = attribute as JSXAttribute;
+      const attr = attribute;
       const key = getAttrName(attr.name);
       const isContainer = is.JSXExpressionContainer(attr.value);
 
       if (
         (firstSpread ||
           (isContainer &&
-            isDynamic(ctx, (attr.value as JSXExpressionContainer).expression, {
+            isDynamic(ctx, attr.value.expression, {
               checkMember: true,
             }))) &&
         canNativeSpread(key, { checkNameSpaces: true })
       ) {
         const dynamic =
           isContainer &&
-          isDynamic(ctx, (attr.value as JSXExpressionContainer).expression, {
+          isDynamic(ctx, attr.value.expression, {
             checkMember: true,
           });
         if (dynamic) {
           const id = convertJSXIdentifier(attr.name);
-          const innerExpr = (attr.value as JSXExpressionContainer).expression;
+          const innerExpr = attr.value.expression;
           const expr =
             wrapConditionals &&
             (is.LogicalExpression(innerExpr) ||
               is.ConditionalExpression(innerExpr))
-              ? (transformCondition(ctx, innerExpr, true) as Expression)
+              ? transformCondition(ctx, innerExpr, true)
               : b.ArrowFunctionExpression({ params: [], body: innerExpr });
           const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
           runningObject.push(
             b.Property({
-              key: computed ? b.Literal({ value: key }) : (id as Identifier),
+              key: computed ? b.Literal({ value: key }) : id,
               value: b.FunctionExpression({
                 params: [],
                 body: b.BlockStatement({
@@ -534,7 +530,7 @@ function processSpreads(
                 ? b.Literal({ value: key })
                 : b.Identifier({ name: key }),
               value: isContainer
-                ? (attr.value as JSXExpressionContainer).expression
+                ? attr.value.expression
                 : attr.value || b.Literal({ value: true }),
               kind: "init",
               method: false,

@@ -3,28 +3,14 @@ import { is, b } from "yuku-ast";
 import type {
   TransformContext,
   PluginConfig,
-  DynamicBinding,
   Expression,
   Node,
   Identifier,
-  MemberExpression,
-  StringLiteral,
-  BooleanLiteral,
-  ArrowFunctionExpression,
-  CallExpression,
   ConditionalExpression,
-  LogicalExpression,
-  BinaryExpression,
-  UnaryExpression,
   JSXIdentifier,
   JSXMemberExpression,
   JSXNamespacedName,
   JSXElement,
-  JSXFragment,
-  JSXText,
-  JSXExpressionContainer,
-  JSXSpreadChild,
-  JSXAttribute,
 } from "../types";
 
 export const reservedNameSpaces = new Set([
@@ -208,6 +194,17 @@ export function isDynamic(
       }
       return;
     }
+    if (is.ConditionalExpression(n)) {
+      walkAndCheck(n.test);
+      walkAndCheck(n.consequent);
+      walkAndCheck(n.alternate);
+      return;
+    }
+    if (is.LogicalExpression(n)) {
+      walkAndCheck(n.left);
+      walkAndCheck(n.right);
+      return;
+    }
     if (is.StaticMemberExpression(n) || is.ComputedMemberExpression(n)) {
       if (effectiveCheckMember) {
         dynamic = true;
@@ -255,7 +252,7 @@ export function getStaticExpression(
     is.JSXElement(parent) &&
     !isComponent(getTagName(parent))
   ) {
-    const expr = (node as JSXExpressionContainer).expression;
+    const expr = node.expression;
     if (is.SequenceExpression(expr)) return false;
     if (is.StringLiteral(expr)) return expr.value;
     if (is.NumericLiteral(expr)) return expr.value;
@@ -269,12 +266,12 @@ export function filterChildren(children: Node[]): Node[] {
   return children.filter((child) => {
     if (
       is.JSXExpressionContainer(child) &&
-      is.JSXEmptyExpression((child as JSXExpressionContainer).expression)
+      is.JSXEmptyExpression(child.expression)
     ) {
       return false;
     }
     if (is.JSXText(child)) {
-      return !/^[\r\n]\s*$/.test((child as JSXText).raw);
+      return !/^[\r\n]\s*$/.test(child.raw);
     }
     return true;
   });
@@ -285,12 +282,12 @@ export function checkLength(children: Node[]): boolean {
   children.forEach((child) => {
     if (
       is.JSXExpressionContainer(child) &&
-      is.JSXEmptyExpression((child as JSXExpressionContainer).expression)
+      is.JSXEmptyExpression(child.expression)
     ) {
       return;
     }
     if (is.JSXText(child)) {
-      const raw = (child as JSXText).raw;
+      const raw = child.raw;
       if (/^\s*$/.test(raw) || /^ *$/.test(raw)) return;
     }
     i++;
@@ -349,8 +346,7 @@ export function transformCondition(
   ctx: TransformContext,
   expr: Expression,
   inline: boolean,
-  deep?: boolean,
-): Expression | Statement[] {
+): Expression {
   const config = getConfig(ctx);
   const memo = registerImportMethod(ctx, config.memoWrapper);
 
@@ -359,7 +355,7 @@ export function transformCondition(
   let id: Expression | undefined;
 
   if (is.ConditionalExpression(expr)) {
-    const ce = expr as ConditionalExpression;
+    const ce = expr;
     if (
       isDynamic(ctx, ce.consequent, { checkTags: true, checkMember: true }) ||
       isDynamic(ctx, ce.alternate, { checkTags: true, checkMember: true })
@@ -396,34 +392,24 @@ export function transformCondition(
           is.ConditionalExpression(ce.consequent) ||
           is.LogicalExpression(ce.consequent)
         ) {
-          ce.consequent = transformCondition(
-            ctx,
-            ce.consequent,
-            true,
-            true,
-          ) as Expression;
+          ce.consequent = transformCondition(ctx, ce.consequent, true);
         }
         if (
           is.ConditionalExpression(ce.alternate) ||
           is.LogicalExpression(ce.alternate)
         ) {
-          ce.alternate = transformCondition(
-            ctx,
-            ce.alternate,
-            true,
-            true,
-          ) as Expression;
+          ce.alternate = transformCondition(ctx, ce.alternate, true);
         }
       }
     }
   } else if (is.LogicalExpression(expr)) {
-    const le = expr as LogicalExpression;
+    const le = expr;
     let operator = le.operator;
     let leftNode: Expression = le.left;
 
     // handle top-level or, ie cond && <A/> || <B/>
     while (operator !== "&&" && is.LogicalExpression(leftNode)) {
-      const inner = leftNode as LogicalExpression;
+      const inner = leftNode;
       operator = inner.operator;
       leftNode = inner.left;
     }
@@ -457,7 +443,7 @@ export function transformCondition(
         id = b.Identifier({ name: generateUid(ctx, "_c$") });
       }
       if (is.LogicalExpression(le)) {
-        (le as LogicalExpression).left = b.CallExpression({
+        le.left = b.CallExpression({
           callee: id!,
           arguments: [],
           optional: false,
@@ -471,7 +457,7 @@ export function transformCondition(
       kind: "var",
       declarations: [
         b.VariableDeclarator({
-          id: id as Identifier,
+          id: id,
           init: config.memoWrapper
             ? b.CallExpression({
                 callee: memo,
@@ -485,21 +471,17 @@ export function transformCondition(
       ],
     });
     const arrow = b.ArrowFunctionExpression({ params: [], body: expr });
-    if (deep) {
-      return b.CallExpression({
-        callee: b.ArrowFunctionExpression({
-          params: [],
-          body: b.BlockStatement({
-            body: [decl, b.ReturnStatement({ argument: arrow })],
-          }),
+    return b.CallExpression({
+      callee: b.ArrowFunctionExpression({
+        params: [],
+        body: b.BlockStatement({
+          body: [decl, b.ReturnStatement({ argument: arrow })],
         }),
-        arguments: [],
-        optional: false,
-      });
-    }
-    return [decl, b.ExpressionStatement({ expression: arrow })];
+      }),
+      arguments: [],
+      optional: false,
+    });
   }
-  if (deep) return expr;
   return b.ArrowFunctionExpression({ params: [], body: expr });
 }
 
@@ -552,22 +534,22 @@ export function convertJSXIdentifier(
   node: JSXIdentifier | JSXMemberExpression | JSXNamespacedName,
 ): Expression {
   if (is.JSXIdentifier(node)) {
-    const name = (node as JSXIdentifier).name;
+    const name = node.name;
     if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(name)) {
       return b.Identifier({ name });
     } else {
       return b.Literal({ value: name });
     }
   } else if (is.JSXMemberExpression(node)) {
-    const me = node as JSXMemberExpression;
+    const me = node;
     return b.MemberExpression({
       object: convertJSXIdentifier(me.object),
-      property: convertJSXIdentifier(me.property) as Identifier,
+      property: convertJSXIdentifier(me.property),
       computed: false,
       optional: false,
     });
   } else if (is.JSXNamespacedName(node)) {
-    const ns = node as JSXNamespacedName;
+    const ns = node;
     return b.Literal({ value: `${ns.namespace.name}:${ns.name.name}` });
   }
   return node;

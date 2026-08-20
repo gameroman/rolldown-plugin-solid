@@ -12,9 +12,7 @@ import type {
   Node,
   JSXElement,
   JSXFragment,
-  JSXText,
   JSXExpressionContainer,
-  JSXSpreadChild,
   CallExpression,
   Statement,
 } from "../types";
@@ -91,14 +89,15 @@ export function transformNode(
     return results;
   } else if (
     is.JSXText(node) ||
-    (staticValue = getStaticExpression(ctx, node, null)) !== false
+    (staticValue = getStaticExpression(ctx, node, info.parent || null)) !==
+      false
   ) {
     const text =
       staticValue !== undefined
         ? info.doNotEscape
           ? staticValue.toString()
           : escapeHTML(staticValue.toString())
-        : trimWhitespace((node as JSXText).raw);
+        : trimWhitespace(node.raw);
     if (!text.length) return null;
     const results: TransformResult = {
       template: text,
@@ -155,11 +154,7 @@ export function transformNode(
             });
 
     let exprs: Statement[];
-    if (is.ArrowFunctionExpression(expr)) {
-      exprs = [b.ExpressionStatement({ expression: expr })];
-    } else {
-      exprs = [b.ExpressionStatement({ expression: expr })];
-    }
+    exprs = [b.ExpressionStatement({ expression: expr })];
 
     return {
       exprs,

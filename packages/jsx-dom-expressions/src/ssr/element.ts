@@ -30,11 +30,7 @@ import type {
   JSXElement,
   JSXAttribute,
   JSXSpreadAttribute,
-  Identifier,
-  JSXText,
   JSXExpressionContainer,
-  JSXIdentifier,
-  JSXNamespacedName,
 } from "../types";
 import VoidElements from "../VoidElements";
 import { createTemplate } from "./template";
@@ -57,7 +53,7 @@ export function transformElement(
   const tagName = getTagName(node);
   const doNotEscape = tagName === "script" || tagName === "style";
 
-  if (node.openingElement.attributes.some((a: any) => is.JSXSpreadAttribute(a)))
+  if (node.openingElement.attributes.some((a) => is.JSXSpreadAttribute(a)))
     return createElement(ctx, node, { ...info, ...config });
 
   const voidTag = VoidElements.indexOf(tagName) > -1;
@@ -199,7 +195,7 @@ function escapeExpression(
     return expression;
   } else if (is.Function(expression)) {
     if (is.BlockStatement(expression.body)) {
-      expression.body.body = expression.body.body.map((e: any) => {
+      expression.body.body = expression.body.body.map((e) => {
         if (is.ReturnStatement(e)) {
           e.argument = escapeExpression(ctx, e.argument, attr, escapeLiterals);
         }
@@ -216,7 +212,7 @@ function escapeExpression(
     return expression;
   } else if (is.TemplateLiteral(expression)) {
     if (attr) escapeTemplateQuasis(expression, true);
-    expression.expressions = expression.expressions.map((e: any) =>
+    expression.expressions = expression.expressions.map((e) =>
       escapeExpression(ctx, e, attr, escapeLiterals),
     );
     return expression;
@@ -262,19 +258,12 @@ function escapeExpression(
     }
   } else if (is.CallExpression(expression) && is.Function(expression.callee)) {
     if (is.BlockStatement(expression.callee.body)) {
-      expression.callee.body.body = expression.callee.body.body.map(
-        (e: any) => {
-          if (is.ReturnStatement(e)) {
-            e.argument = escapeExpression(
-              ctx,
-              e.argument,
-              attr,
-              escapeLiterals,
-            );
-          }
-          return e;
-        },
-      );
+      expression.callee.body.body = expression.callee.body.body.map((e) => {
+        if (is.ReturnStatement(e)) {
+          e.argument = escapeExpression(ctx, e.argument, attr, escapeLiterals);
+        }
+        return e;
+      });
     } else {
       expression.callee.body = escapeExpression(
         ctx,
@@ -321,17 +310,15 @@ function transformToObject(
 ): void {
   const properties: any[] = [];
   const existingAttr = attributes.find((a) => {
-    const name = is.JSXNamespacedName(a.name)
-      ? (a.name as JSXNamespacedName).name.name
-      : (a.name as JSXIdentifier).name;
+    const name = is.JSXNamespacedName(a.name) ? a.name.name.name : a.name.name;
     return name === attrName;
   });
 
   for (let i = 0; i < selectedIndices.length; i++) {
     const attr = attributes[selectedIndices[i]];
     const nsName = is.JSXNamespacedName(attr.name)
-      ? (attr.name as JSXNamespacedName).name.name
-      : (attr.name as JSXIdentifier).name;
+      ? attr.name.name.name
+      : attr.name.name;
     const isComputed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(nsName);
     properties.push(
       b.Property({
@@ -367,16 +354,12 @@ function normalizeAttributes(
   ctx: TransformContext,
   node: JSXElement,
 ): JSXAttribute[] {
-  const attributes = node.openingElement.attributes as JSXAttribute[];
+  const attributes = node.openingElement.attributes;
   const styleAttributes = attributes.filter(
-    (a: any) =>
-      is.JSXNamespacedName(a.name) &&
-      (a.name as JSXNamespacedName).namespace.name === "style",
+    (a) => is.JSXNamespacedName(a.name) && a.name.namespace.name === "style",
   );
   const classNamespaceAttributes = attributes.filter(
-    (a: any) =>
-      is.JSXNamespacedName(a.name) &&
-      (a.name as JSXNamespacedName).namespace.name === "class",
+    (a) => is.JSXNamespacedName(a.name) && a.name.namespace.name === "class",
   );
 
   if (classNamespaceAttributes.length) {
@@ -386,30 +369,28 @@ function normalizeAttributes(
     transformToObject(ctx, "classList", attributes, classNsIndices);
   }
 
-  const classAttributes = attributes.filter((a: any) => {
-    const name = is.JSXNamespacedName(a.name)
-      ? (a.name as JSXNamespacedName).name.name
-      : (a.name as JSXIdentifier).name;
+  const classAttributes = attributes.filter((a) => {
+    const name = is.JSXNamespacedName(a.name) ? a.name.name.name : a.name.name;
     return name === "class" || name === "className" || name === "classList";
   });
 
   if (classAttributes.length > 1) {
-    const first = classAttributes[0];
+    const first = classAttributes[0]!;
     const firstNsName = is.JSXNamespacedName(first.name)
-      ? (first.name as JSXNamespacedName).name.name
-      : (first.name as JSXIdentifier).name;
+      ? first.name.name.name
+      : first.name.name;
     const values: Expression[] = [];
     const quasis: any[] = [
       b.TemplateElement({ value: { cooked: "", raw: "" }, tail: false }),
     ];
 
     for (let i = 0; i < classAttributes.length; i++) {
-      const attr = classAttributes[i];
+      const attr = classAttributes[i]!;
       const isLast = i === classAttributes.length - 1;
       const attrValue = attr.value;
       const nsName = is.JSXNamespacedName(attr.name)
-        ? (attr.name as JSXNamespacedName).name.name
-        : (attr.name as JSXIdentifier).name;
+        ? attr.name.name.name
+        : attr.name.name;
 
       if (!is.JSXExpressionContainer(attrValue)) {
         const prev = quasis.pop();
@@ -433,7 +414,7 @@ function normalizeAttributes(
         if (nsName === "classList") {
           if (
             is.ObjectExpression(expr) &&
-            !expr.properties.some((p: any) => is.SpreadElement(p))
+            !expr.properties.some((p) => is.SpreadElement(p))
           ) {
             transformClasslistObject(ctx, expr, values, quasis);
             if (!isLast) quasis[quasis.length - 1].value.raw += " ";
@@ -488,17 +469,15 @@ function transformAttributes(
   const attributes = normalizeAttributes(ctx, node);
   let children: JSXExpressionContainer | undefined;
 
-  attributes.forEach((attribute: any) => {
+  attributes.forEach((attribute) => {
     const attrNode = attribute;
     let value: any = attrNode.value;
     const key = is.JSXNamespacedName(attrNode.name)
-      ? `${(attrNode.name as JSXNamespacedName).namespace.name}:${(attrNode.name as JSXNamespacedName).name.name}`
-      : (attrNode.name as JSXIdentifier).name;
+      ? `${attrNode.name.namespace.name}:${attrNode.name.name.name}`
+      : attrNode.name.name;
     const reservedNameSpace =
       is.JSXNamespacedName(attrNode.name) &&
-      reservedNameSpaces.has(
-        (attrNode.name as JSXNamespacedName).namespace.name,
-      );
+      reservedNameSpaces.has(attrNode.name.namespace.name);
 
     if (
       (reservedNameSpace || ChildProperties.has(key)) &&
@@ -563,7 +542,7 @@ function transformAttributes(
         if (attrKey === "style") {
           if (
             is.ObjectExpression(expr) &&
-            !expr.properties.some((p: any) => is.SpreadElement(p))
+            !expr.properties.some((p) => is.SpreadElement(p))
           ) {
             if (expr.properties.length === 0) return;
 
@@ -621,7 +600,7 @@ function transformAttributes(
         if (attrKey === "classList") {
           if (
             is.ObjectExpression(expr) &&
-            !expr.properties.some((p: any) => is.SpreadElement(p))
+            !expr.properties.some((p) => is.SpreadElement(p))
           ) {
             const clsValues: Expression[] = [];
             const clsQuasis: any[] = [
@@ -866,7 +845,7 @@ function createElement(
   const childNodes: Expression[] = filteredChildren.reduce(
     (memo: Expression[], childNode) => {
       if (is.JSXText(childNode)) {
-        const v = decode(trimWhitespace((childNode as JSXText).raw));
+        const v = decode(trimWhitespace(childNode.raw));
         if (v.length) memo.push(b.Literal({ value: v }));
       } else {
         const child = transformNode(ctx, childNode);
@@ -899,7 +878,7 @@ function createElement(
     let dynamicSpread = false;
     const hasChildren = node.children.length > 0;
 
-    attributes.forEach((attribute: any) => {
+    attributes.forEach((attribute) => {
       if (is.JSXSpreadAttribute(attribute)) {
         if (runningObject.length) {
           propsList.push(b.ObjectExpression({ properties: runningObject }));
@@ -928,8 +907,8 @@ function createElement(
         const attrValue = attribute.value || b.Literal({ value: true });
         const id = convertJSXIdentifier(attribute.name);
         const key = is.JSXNamespacedName(attribute.name)
-          ? `${(attribute.name as JSXNamespacedName).namespace.name}:${(attribute.name as JSXNamespacedName).name.name}`
-          : (attribute.name as JSXIdentifier).name;
+          ? `${attribute.name.namespace.name}:${attribute.name.name.name}`
+          : attribute.name.name;
 
         if (hasChildren && key === "children") return;
         if (

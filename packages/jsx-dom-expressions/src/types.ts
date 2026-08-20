@@ -198,4 +198,5 @@ export interface WrappingInfo {
   fragmentChild?: boolean;
   toBeClosed?: Set<string>;
   doNotEscape?: boolean;
+  parent?: Node;
 }
