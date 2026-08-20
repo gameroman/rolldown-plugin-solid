@@ -1,4 +1,4 @@
-import { is as t, b } from "yuku-ast";
+import { is, b } from "yuku-ast";
 
 import { transformNode } from "../shared/transform";
 import {
@@ -20,7 +20,6 @@ import type {
   TransformResult,
   Expression,
   Statement,
-  VariableDeclarator,
   Identifier,
   JSXElement,
   JSXAttribute,
@@ -28,7 +27,6 @@ import type {
   JSXIdentifier,
   JSXNamespacedName,
   JSXExpressionContainer,
-  Node,
 } from "../types";
 
 export function transformElement(
@@ -69,7 +67,7 @@ export function transformElement(
 }
 
 function getAttrName(name: JSXIdentifier | JSXNamespacedName): string {
-  if (t.JSXNamespacedName(name)) {
+  if (is.JSXNamespacedName(name)) {
     return `${name.namespace.name}:${name.name.name}`;
   }
   return (name as JSXIdentifier).name;
@@ -90,7 +88,7 @@ function transformAttributes(
   const hasChildren = node.children.length > 0;
   const config = getConfig(ctx);
 
-  if (attributes.some((a) => t.JSXSpreadAttribute(a))) {
+  if (attributes.some((a) => is.JSXSpreadAttribute(a))) {
     [attributes, spreadExpr] = processSpreads(ctx, node, attributes, {
       elem,
       hasChildren,
@@ -99,38 +97,38 @@ function transformAttributes(
   }
 
   attributes.forEach((attribute) => {
-    if (t.JSXSpreadAttribute(attribute)) return;
+    if (is.JSXSpreadAttribute(attribute)) return;
 
     const attr = attribute as JSXAttribute;
     let value: any = attr.value;
     const key = getAttrName(attr.name);
     const reservedNameSpace =
-      t.JSXNamespacedName(attr.name) &&
+      is.JSXNamespacedName(attr.name) &&
       (attr.name as JSXNamespacedName).namespace.name === "use";
 
-    if (reservedNameSpace && !t.JSXExpressionContainer(value)) {
+    if (reservedNameSpace && !is.JSXExpressionContainer(value)) {
       attr.value = value = b.JSXExpressionContainer({
         expression: value || b.JSXEmptyExpression(),
       });
     }
 
-    if (t.JSXExpressionContainer(value)) {
+    if (is.JSXExpressionContainer(value)) {
       const expr = (value as JSXExpressionContainer).expression;
 
       if (key === "ref") {
         let valueExpr: Expression = expr;
         while (
-          t.TSNonNullExpression(valueExpr) ||
-          t.TSAsExpression(valueExpr)
+          is.TSNonNullExpression(valueExpr) ||
+          is.TSAsExpression(valueExpr)
         ) {
           valueExpr = valueExpr.expression;
         }
 
         const refIdentifier = b.Identifier({ name: generateUid(ctx, "_ref$") });
-        const isConstant = t.Identifier(valueExpr);
-        const isFunc = t.Function(valueExpr);
+        const isConstant = is.Identifier(valueExpr);
+        const isFunc = is.Function(valueExpr);
 
-        if (!isConstant && t.Identifier(valueExpr)) {
+        if (!isConstant && is.Identifier(valueExpr)) {
           results.exprs.unshift(
             b.VariableDeclaration({
               kind: "var",
@@ -232,7 +230,7 @@ function transformAttributes(
                 elem,
                 b.ArrowFunctionExpression({
                   params: [],
-                  body: t.JSXEmptyExpression(expr)
+                  body: is.JSXEmptyExpression(expr)
                     ? b.Literal({ value: true })
                     : expr,
                 }),
@@ -463,7 +461,7 @@ function processSpreads(
   let firstSpread = false;
 
   attributes.forEach((attribute) => {
-    if (t.JSXSpreadAttribute(attribute)) {
+    if (is.JSXSpreadAttribute(attribute)) {
       firstSpread = true;
       if (runningObject.length) {
         spreadArgs.push(b.ObjectExpression({ properties: runningObject }));
@@ -473,10 +471,10 @@ function processSpreads(
       if (isDynamic(ctx, arg, { checkMember: true })) {
         dynamicSpread = true;
         if (
-          t.CallExpression(arg) &&
+          is.CallExpression(arg) &&
           !arg.arguments.length &&
-          !t.CallExpression(arg.callee) &&
-          !t.MemberExpression(arg.callee)
+          !is.CallExpression(arg.callee) &&
+          !is.MemberExpression(arg.callee)
         ) {
           spreadArgs.push(arg.callee);
         } else {
@@ -485,10 +483,10 @@ function processSpreads(
       } else {
         spreadArgs.push(arg);
       }
-    } else if (t.JSXAttribute(attribute)) {
+    } else if (is.JSXAttribute(attribute)) {
       const attr = attribute as JSXAttribute;
       const key = getAttrName(attr.name);
-      const isContainer = t.JSXExpressionContainer(attr.value);
+      const isContainer = is.JSXExpressionContainer(attr.value);
 
       if (
         (firstSpread ||
@@ -508,8 +506,8 @@ function processSpreads(
           const innerExpr = (attr.value as JSXExpressionContainer).expression;
           const expr =
             wrapConditionals &&
-            (t.LogicalExpression(innerExpr) ||
-              t.ConditionalExpression(innerExpr))
+            (is.LogicalExpression(innerExpr) ||
+              is.ConditionalExpression(innerExpr))
               ? (transformCondition(ctx, innerExpr, true) as Expression)
               : b.ArrowFunctionExpression({ params: [], body: innerExpr });
           const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);

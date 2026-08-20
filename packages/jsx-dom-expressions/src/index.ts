@@ -1,4 +1,4 @@
-import { is as t, walk, WalkContext } from "yuku-ast";
+import { walk, WalkContext } from "yuku-ast";
 import { generate } from "yuku-codegen";
 import { parse } from "yuku-parser";
 

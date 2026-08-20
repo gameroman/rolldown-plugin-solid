@@ -15,9 +15,6 @@ import type {
   JSXText,
   JSXExpressionContainer,
   JSXSpreadChild,
-  Identifier,
-  ArrowFunctionExpression,
-  BlockStatement,
   CallExpression,
   Statement,
 } from "../types";

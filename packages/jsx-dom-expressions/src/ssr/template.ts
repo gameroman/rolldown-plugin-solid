@@ -1,4 +1,4 @@
-import { is as t, b } from "yuku-ast";
+import { is, b } from "yuku-ast";
 
 import { registerImportMethod, generateUid } from "../shared/utils";
 import type {
@@ -65,7 +65,7 @@ export function createTemplate(
     } else if (
       result.template.length === 2 &&
       result.templateValues &&
-      t.CallExpression(result.templateValues[0]) &&
+      is.CallExpression(result.templateValues[0]) &&
       result.templateValues[0].callee?.name === "_$ssrHydrationKey"
     ) {
       return b.BinaryExpression({

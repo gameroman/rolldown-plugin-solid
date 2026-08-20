@@ -9,8 +9,8 @@
   "scripts": {
     "format": "oxfmt",
     "lint": "oxlint",
-    "test": "bun run --cwd='./packages/rolldown-plugin-solid' test",
-    "build": "bun run --cwd='./packages/rolldown-plugin-solid' build"
+    "test": "bun run --sequential --filter='./packages/*' test",
+    "build": "bun run --sequential --filter='./packages/*' build"
   },
   "devDependencies": {
     "@gameroman/config": "0.2.9",

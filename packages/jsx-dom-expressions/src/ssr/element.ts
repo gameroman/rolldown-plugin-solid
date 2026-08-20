@@ -1,5 +1,5 @@
 import { decode } from "html-entities";
-import { is as t, b } from "yuku-ast";
+import { is, b } from "yuku-ast";
 
 import {
   BooleanAttributes,
@@ -57,7 +57,7 @@ export function transformElement(
   const tagName = getTagName(node);
   const doNotEscape = tagName === "script" || tagName === "style";
 
-  if (node.openingElement.attributes.some((a: any) => t.JSXSpreadAttribute(a)))
+  if (node.openingElement.attributes.some((a: any) => is.JSXSpreadAttribute(a)))
     return createElement(ctx, node, { ...info, ...config });
 
   const voidTag = VoidElements.indexOf(tagName) > -1;
@@ -184,23 +184,23 @@ function escapeExpression(
   escapeLiterals?: boolean,
 ): Expression {
   if (
-    t.Literal(expression) ||
-    (t.TemplateLiteral(expression) && expression.expressions.length === 0)
+    is.Literal(expression) ||
+    (is.TemplateLiteral(expression) && expression.expressions.length === 0)
   ) {
     if (escapeLiterals) {
-      if (t.Literal(expression) && typeof expression.value === "string") {
+      if (is.Literal(expression) && typeof expression.value === "string") {
         return b.Literal({ value: escapeHTML(expression.value, attr) });
-      } else if (t.TemplateLiteral(expression)) {
+      } else if (is.TemplateLiteral(expression)) {
         return b.Literal({
           value: escapeHTML(expression.quasis[0].value.raw, attr),
         });
       }
     }
     return expression;
-  } else if (t.Function(expression)) {
-    if (t.BlockStatement(expression.body)) {
+  } else if (is.Function(expression)) {
+    if (is.BlockStatement(expression.body)) {
       expression.body.body = expression.body.body.map((e: any) => {
-        if (t.ReturnStatement(e)) {
+        if (is.ReturnStatement(e)) {
           e.argument = escapeExpression(ctx, e.argument, attr, escapeLiterals);
         }
         return e;
@@ -214,15 +214,15 @@ function escapeExpression(
       );
     }
     return expression;
-  } else if (t.TemplateLiteral(expression)) {
+  } else if (is.TemplateLiteral(expression)) {
     if (attr) escapeTemplateQuasis(expression, true);
     expression.expressions = expression.expressions.map((e: any) =>
       escapeExpression(ctx, e, attr, escapeLiterals),
     );
     return expression;
-  } else if (t.UnaryExpression(expression)) {
+  } else if (is.UnaryExpression(expression)) {
     return expression;
-  } else if (t.BinaryExpression(expression)) {
+  } else if (is.BinaryExpression(expression)) {
     expression.left = escapeExpression(
       ctx,
       expression.left,
@@ -236,7 +236,7 @@ function escapeExpression(
       escapeLiterals,
     );
     return expression;
-  } else if (t.ConditionalExpression(expression)) {
+  } else if (is.ConditionalExpression(expression)) {
     expression.consequent = escapeExpression(
       ctx,
       expression.consequent,
@@ -250,7 +250,7 @@ function escapeExpression(
       escapeLiterals,
     );
     return expression;
-  } else if (t.LogicalExpression(expression)) {
+  } else if (is.LogicalExpression(expression)) {
     if (expression.operator === "&&") {
       expression.right = escapeExpression(
         ctx,
@@ -260,11 +260,11 @@ function escapeExpression(
       );
       return expression;
     }
-  } else if (t.CallExpression(expression) && t.Function(expression.callee)) {
-    if (t.BlockStatement(expression.callee.body)) {
+  } else if (is.CallExpression(expression) && is.Function(expression.callee)) {
+    if (is.BlockStatement(expression.callee.body)) {
       expression.callee.body.body = expression.callee.body.body.map(
         (e: any) => {
-          if (t.ReturnStatement(e)) {
+          if (is.ReturnStatement(e)) {
             e.argument = escapeExpression(
               ctx,
               e.argument,
@@ -285,7 +285,7 @@ function escapeExpression(
     }
     return expression;
   } else if (
-    t.JSXElement(expression) &&
+    is.JSXElement(expression) &&
     !isComponent(getTagName(expression as JSXElement))
   ) {
     expression.wontEscape = true;
@@ -321,7 +321,7 @@ function transformToObject(
 ): void {
   const properties: any[] = [];
   const existingAttr = attributes.find((a) => {
-    const name = t.JSXNamespacedName(a.name)
+    const name = is.JSXNamespacedName(a.name)
       ? (a.name as JSXNamespacedName).name.name
       : (a.name as JSXIdentifier).name;
     return name === attrName;
@@ -329,7 +329,7 @@ function transformToObject(
 
   for (let i = 0; i < selectedIndices.length; i++) {
     const attr = attributes[selectedIndices[i]];
-    const nsName = t.JSXNamespacedName(attr.name)
+    const nsName = is.JSXNamespacedName(attr.name)
       ? (attr.name as JSXNamespacedName).name.name
       : (attr.name as JSXIdentifier).name;
     const isComputed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(nsName);
@@ -338,7 +338,7 @@ function transformToObject(
         key: isComputed
           ? b.Literal({ value: nsName })
           : b.Identifier({ name: nsName }),
-        value: t.JSXExpressionContainer(attr.value)
+        value: is.JSXExpressionContainer(attr.value)
           ? (attr.value as JSXExpressionContainer).expression
           : attr.value,
         kind: "init",
@@ -351,8 +351,8 @@ function transformToObject(
 
   if (
     existingAttr &&
-    t.JSXExpressionContainer(existingAttr.value) &&
-    t.ObjectExpression(
+    is.JSXExpressionContainer(existingAttr.value) &&
+    is.ObjectExpression(
       (existingAttr.value as JSXExpressionContainer).expression,
     )
   ) {
@@ -374,12 +374,12 @@ function normalizeAttributes(
   const attributes = node.openingElement.attributes as JSXAttribute[];
   const styleAttributes = attributes.filter(
     (a: any) =>
-      t.JSXNamespacedName(a.name) &&
+      is.JSXNamespacedName(a.name) &&
       (a.name as JSXNamespacedName).namespace.name === "style",
   );
   const classNamespaceAttributes = attributes.filter(
     (a: any) =>
-      t.JSXNamespacedName(a.name) &&
+      is.JSXNamespacedName(a.name) &&
       (a.name as JSXNamespacedName).namespace.name === "class",
   );
 
@@ -391,7 +391,7 @@ function normalizeAttributes(
   }
 
   const classAttributes = attributes.filter((a: any) => {
-    const name = t.JSXNamespacedName(a.name)
+    const name = is.JSXNamespacedName(a.name)
       ? (a.name as JSXNamespacedName).name.name
       : (a.name as JSXIdentifier).name;
     return name === "class" || name === "className" || name === "classList";
@@ -399,7 +399,7 @@ function normalizeAttributes(
 
   if (classAttributes.length > 1) {
     const first = classAttributes[0];
-    const firstNsName = t.JSXNamespacedName(first.name)
+    const firstNsName = is.JSXNamespacedName(first.name)
       ? (first.name as JSXNamespacedName).name.name
       : (first.name as JSXIdentifier).name;
     const values: Expression[] = [];
@@ -411,11 +411,11 @@ function normalizeAttributes(
       const attr = classAttributes[i];
       const isLast = i === classAttributes.length - 1;
       const attrValue = attr.value;
-      const nsName = t.JSXNamespacedName(attr.name)
+      const nsName = is.JSXNamespacedName(attr.name)
         ? (attr.name as JSXNamespacedName).name.name
         : (attr.name as JSXIdentifier).name;
 
-      if (!t.JSXExpressionContainer(attrValue)) {
+      if (!is.JSXExpressionContainer(attrValue)) {
         const prev = quasis.pop();
         quasis.push(
           b.TemplateElement({
@@ -436,8 +436,8 @@ function normalizeAttributes(
         let expr = (attrValue as JSXExpressionContainer).expression;
         if (nsName === "classList") {
           if (
-            t.ObjectExpression(expr) &&
-            !expr.properties.some((p: any) => t.SpreadElement(p))
+            is.ObjectExpression(expr) &&
+            !expr.properties.some((p: any) => is.SpreadElement(p))
           ) {
             transformClasslistObject(ctx, expr, values, quasis);
             if (!isLast) quasis[quasis.length - 1].value.raw += " ";
@@ -495,18 +495,18 @@ function transformAttributes(
   attributes.forEach((attribute: any) => {
     const attrNode = attribute;
     let value: any = attrNode.value;
-    const key = t.JSXNamespacedName(attrNode.name)
+    const key = is.JSXNamespacedName(attrNode.name)
       ? `${(attrNode.name as JSXNamespacedName).namespace.name}:${(attrNode.name as JSXNamespacedName).name.name}`
       : (attrNode.name as JSXIdentifier).name;
     const reservedNameSpace =
-      t.JSXNamespacedName(attrNode.name) &&
+      is.JSXNamespacedName(attrNode.name) &&
       reservedNameSpaces.has(
         (attrNode.name as JSXNamespacedName).namespace.name,
       );
 
     if (
       (reservedNameSpace || ChildProperties.has(key)) &&
-      !t.JSXExpressionContainer(value)
+      !is.JSXExpressionContainer(value)
     ) {
       attrNode.value = value = b.JSXExpressionContainer({
         expression: value || b.JSXEmptyExpression(),
@@ -514,13 +514,13 @@ function transformAttributes(
     }
 
     if (
-      t.JSXExpressionContainer(value) &&
+      is.JSXExpressionContainer(value) &&
       (reservedNameSpace ||
         ChildProperties.has(key) ||
         !(
-          t.Literal((value as JSXExpressionContainer).expression) ||
-          t.NumericLiteral((value as JSXExpressionContainer).expression) ||
-          (t.Literal((value as JSXExpressionContainer).expression) &&
+          is.Literal((value as JSXExpressionContainer).expression) ||
+          is.NumericLiteral((value as JSXExpressionContainer).expression) ||
+          (is.Literal((value as JSXExpressionContainer).expression) &&
             typeof (value as JSXExpressionContainer).expression.value ===
               "boolean")
         ))
@@ -567,8 +567,8 @@ function transformAttributes(
 
         if (attrKey === "style") {
           if (
-            t.ObjectExpression(expr) &&
-            !expr.properties.some((p: any) => t.SpreadElement(p))
+            is.ObjectExpression(expr) &&
+            !expr.properties.some((p: any) => is.SpreadElement(p))
           ) {
             if (expr.properties.length === 0) return;
 
@@ -594,7 +594,7 @@ function transformAttributes(
                   b.Literal({
                     value:
                       (i ? ";" : "") +
-                      (t.Identifier(p.key) ? p.key.name : p.key.value) +
+                      (is.Identifier(p.key) ? p.key.name : p.key.value) +
                       ":",
                   }),
                   escapeExpression(ctx, p.value, true, true),
@@ -625,8 +625,8 @@ function transformAttributes(
 
         if (attrKey === "classList") {
           if (
-            t.ObjectExpression(expr) &&
-            !expr.properties.some((p: any) => t.SpreadElement(p))
+            is.ObjectExpression(expr) &&
+            !expr.properties.some((p: any) => is.SpreadElement(p))
           ) {
             const clsValues: Expression[] = [];
             const clsQuasis: any[] = [
@@ -671,7 +671,7 @@ function transformAttributes(
           );
         }
 
-        if (!doEscape || t.Literal(expr)) {
+        if (!doEscape || is.Literal(expr)) {
           const normalizedKey = toAttribute(attrKey, isSVG);
           appendToTemplate(results.template as string[], ` ${normalizedKey}="`);
           (results.template as string[]).push(`"`);
@@ -682,7 +682,7 @@ function transformAttributes(
       }
     } else {
       if (key === "$ServerOnly") return;
-      if (t.JSXExpressionContainer(value))
+      if (is.JSXExpressionContainer(value))
         value = (value as JSXExpressionContainer).expression;
       const normalizedKey = toAttribute(key, isSVG);
       const isBoolean = BooleanAttributes.has(normalizedKey);
@@ -717,7 +717,7 @@ function transformClasslistObject(
   expr.properties.forEach((prop: any, i: number) => {
     const isLast = expr.properties.length - 1 === i;
     let key = prop.key;
-    if (t.Identifier(prop.key) && !prop.computed) {
+    if (is.Identifier(prop.key) && !prop.computed) {
       key = b.Literal({ value: prop.key.name });
     } else if (prop.computed) {
       key = b.CallExpression({
@@ -729,7 +729,7 @@ function transformClasslistObject(
       key = b.Literal({ value: escapeHTML(prop.key.value) });
     }
 
-    if (t.Literal(prop.value) && typeof prop.value.value === "boolean") {
+    if (is.Literal(prop.value) && typeof prop.value.value === "boolean") {
       if (prop.value.value === true) {
         if (!prop.computed) {
           const prev = quasis.pop();
@@ -793,7 +793,7 @@ function transformChildren(
 
   filteredChildren.forEach((childNode) => {
     if (
-      t.JSXElement(childNode) &&
+      is.JSXElement(childNode) &&
       getTagName(childNode as JSXElement) === "head"
     ) {
       const child = transformNode(ctx, childNode, {
@@ -878,7 +878,7 @@ function createElement(
   const markers = hydratable && multi;
   const childNodes: Expression[] = filteredChildren.reduce(
     (memo: Expression[], childNode) => {
-      if (t.JSXText(childNode)) {
+      if (is.JSXText(childNode)) {
         const v = decode(trimWhitespace((childNode as JSXText).raw));
         if (v.length) memo.push(b.Literal({ value: v }));
       } else {
@@ -904,7 +904,7 @@ function createElement(
   );
 
   let props: Expression;
-  if (attributes.length === 1 && t.JSXSpreadAttribute(attributes[0])) {
+  if (attributes.length === 1 && is.JSXSpreadAttribute(attributes[0])) {
     props = (attributes[0] as JSXSpreadAttribute).argument;
   } else {
     const propsList: Expression[] = [];
@@ -913,7 +913,7 @@ function createElement(
     const hasChildren = node.children.length > 0;
 
     attributes.forEach((attribute: any) => {
-      if (t.JSXSpreadAttribute(attribute)) {
+      if (is.JSXSpreadAttribute(attribute)) {
         if (runningObject.length) {
           propsList.push(b.ObjectExpression({ properties: runningObject }));
           runningObject = [];
@@ -923,10 +923,10 @@ function createElement(
         if (isArgDynamic) {
           dynamicSpread = true;
           if (
-            t.CallExpression(arg) &&
+            is.CallExpression(arg) &&
             !arg.arguments.length &&
-            !t.CallExpression(arg.callee) &&
-            !t.MemberExpression(arg.callee)
+            !is.CallExpression(arg.callee) &&
+            !is.MemberExpression(arg.callee)
           ) {
             propsList.push(arg.callee);
           } else {
@@ -940,7 +940,7 @@ function createElement(
       } else {
         const attrValue = attribute.value || b.Literal({ value: true });
         const id = convertJSXIdentifier(attribute.name);
-        const key = t.JSXNamespacedName(attribute.name)
+        const key = is.JSXNamespacedName(attribute.name)
           ? `${(attribute.name as JSXNamespacedName).namespace.name}:${(attribute.name as JSXNamespacedName).name.name}`
           : (attribute.name as JSXIdentifier).name;
 
@@ -953,7 +953,7 @@ function createElement(
         )
           return;
 
-        if (t.JSXExpressionContainer(attrValue)) {
+        if (is.JSXExpressionContainer(attrValue)) {
           const innerExpr = (attrValue as JSXExpressionContainer).expression;
           const isValDynamic = isDynamic(ctx, innerExpr, {
             checkMember: true,

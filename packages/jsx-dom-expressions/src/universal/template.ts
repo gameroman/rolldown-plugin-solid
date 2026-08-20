@@ -1,4 +1,4 @@
-import { is as t, b } from "yuku-ast";
+import { b } from "yuku-ast";
 
 import {
   getConfig,
