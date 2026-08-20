@@ -1,0 +1,31 @@
+{
+  "name": "@sozig/jsx-dom-expressions",
+  "version": "0.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolldown-plugin/rolldown-plugin-solid.git",
+    "directory": "packages/jsx-dom-expressions"
+  },
+  "readmeFilename": "README.md",
+  "exports": "./index.js",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsdown",
+    "test": "bun test --dots",
+    "test:coverage": "bun test --dots --coverage",
+    "pretest": "bun run build",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "html-entities": "^2.6.0",
+    "parse5": "^8.0.1",
+    "yuku-ast": "^0.8.7",
+    "yuku-codegen": "^0.8.7",
+    "yuku-parser": "^0.8.7"
+  },
+  "devDependencies": {
+    "tsdown": "0.22.14",
+    "typescript": "7.0.2"
+  }
+}

@@ -4,7 +4,8 @@
   "description": "A Rolldown plugin for compiling SolidJS JSX/TSX files",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gameroman/rolldown-plugin-solid.git"
+    "url": "git+https://github.com/rolldown-plugin/rolldown-plugin-solid.git",
+    "directory": "packages/rolldown-plugin-solid"
   },
   "license": "MIT",
   "author": "gameroman",
@@ -16,7 +17,6 @@
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
   },
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -28,7 +28,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "babel-plugin-jsx-dom-expressions": "workspace:*",
+    "@sozig/jsx-dom-expressions": "workspace:*",
     "html-entities": "^2.6.0",
     "parse5": "^8.0.1",
     "yuku-ast": "^0.8.7",
