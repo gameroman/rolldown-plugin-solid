@@ -12,8 +12,6 @@ import type {
   Node,
   JSXElement,
   JSXFragment,
-  JSXExpressionContainer,
-  CallExpression,
   Statement,
 } from "../types";
 import { transformElement as transformElementUniversal } from "../universal/element";
@@ -71,7 +69,7 @@ export function transformNode(
   let staticValue: string | number | false;
 
   if (is.JSXElement(node)) {
-    return transformElement(ctx, node as JSXElement, info);
+    return transformElement(ctx, node, info);
   } else if (is.JSXFragment(node)) {
     let results: TransformResult = {
       template: "",
@@ -80,12 +78,7 @@ export function transformNode(
       dynamics: [],
       postExprs: [],
     };
-    transformFragmentChildren(
-      ctx,
-      (node as JSXFragment).children,
-      results,
-      config,
-    );
+    transformFragmentChildren(ctx, node.children, results, config);
     return results;
   } else if (
     is.JSXText(node) ||
@@ -112,7 +105,7 @@ export function transformNode(
     }
     return results;
   } else if (is.JSXExpressionContainer(node)) {
-    const container = node as JSXExpressionContainer;
+    const container = node;
     if (is.JSXEmptyExpression(container.expression)) return null;
     if (
       !isDynamic(ctx, container.expression, {
@@ -134,24 +127,24 @@ export function transformNode(
       config.generate !== "ssr" &&
       (is.LogicalExpression(container.expression) ||
         is.ConditionalExpression(container.expression))
-        ? (transformCondition(
+        ? transformCondition(
             ctx,
             container.expression,
             info.componentChild || info.fragmentChild || false,
-          ) as Expression)
-        : !info.componentChild &&
-            (config.generate !== "ssr" || info.fragmentChild) &&
-            is.CallExpression(container.expression) &&
-            !(container.expression as CallExpression).callee &&
-            !is.MemberExpression(
-              (container.expression as CallExpression).callee,
-            ) &&
-            (container.expression as CallExpression).arguments.length === 0
-          ? ((container.expression as CallExpression).callee as Expression)
-          : b.ArrowFunctionExpression({
-              params: [],
-              body: container.expression,
-            });
+          )
+        : info.componentChild || info.fragmentChild
+          ? container.expression
+          : !info.componentChild &&
+              (config.generate !== "ssr" || info.fragmentChild) &&
+              is.CallExpression(container.expression) &&
+              !container.expression.callee &&
+              !is.MemberExpression(container.expression.callee) &&
+              container.expression.arguments.length === 0
+            ? container.expression.callee
+            : b.ArrowFunctionExpression({
+                params: [],
+                body: container.expression,
+              });
 
     let exprs: Statement[];
     exprs = [b.ExpressionStatement({ expression: expr })];

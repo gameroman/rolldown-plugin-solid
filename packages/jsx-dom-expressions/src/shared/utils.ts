@@ -205,19 +205,40 @@ export function isDynamic(
       walkAndCheck(n.right);
       return;
     }
-    if (is.StaticMemberExpression(n) || is.ComputedMemberExpression(n)) {
+    if (is.ChainExpression(n)) {
+      walkAndCheck(n.expression);
+      return;
+    }
+    if (is.UnaryExpression(n)) {
+      walkAndCheck(n.argument);
+      return;
+    }
+    if (is.UpdateExpression(n)) {
+      walkAndCheck(n.argument);
+      return;
+    }
+    if (is.BinaryExpression(n)) {
+      if (n.operator === "in") {
+        if (effectiveCheckMember) {
+          dynamic = true;
+        }
+        return;
+      }
+      walkAndCheck(n.left);
+      walkAndCheck(n.right);
+      return;
+    }
+    if (
+      is.MemberExpression(n) ||
+      is.StaticMemberExpression(n) ||
+      is.ComputedMemberExpression(n)
+    ) {
       if (effectiveCheckMember) {
         dynamic = true;
       }
       return;
     }
     if (is.SpreadElement(n)) {
-      if (effectiveCheckMember) {
-        dynamic = true;
-      }
-      return;
-    }
-    if (is.BinaryExpression(n) && n.operator === "in") {
       if (effectiveCheckMember) {
         dynamic = true;
       }
@@ -610,7 +631,7 @@ const templateEscapes = new Map([
 export function generateUid(ctx: TransformContext, prefix: string): string {
   const count = (ctx.uidCounters.get(prefix) ?? 0) + 1;
   ctx.uidCounters.set(prefix, count);
-  return `_${prefix}${count !== 1 ? count : ""}`;
+  return count === 1 ? prefix : `${prefix}${count}`;
 }
 
 export function inferLang(filename?: string): "js" | "jsx" | "ts" | "tsx" {

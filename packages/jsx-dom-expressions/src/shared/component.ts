@@ -95,7 +95,12 @@ export default function transformComponent(
           let binding: any;
           const isConstant =
             is.Identifier(valueExpr) && (binding = valueExpr) && true;
-          if (!isConstant && is.Identifier(valueExpr)) {
+          if (
+            !isConstant &&
+            (is.Identifier(valueExpr) ||
+              is.MemberExpression(valueExpr) ||
+              is.CallExpression(valueExpr))
+          ) {
             const refIdentifier = b.Identifier({
               name: generateUid(ctx, "_ref$"),
             });

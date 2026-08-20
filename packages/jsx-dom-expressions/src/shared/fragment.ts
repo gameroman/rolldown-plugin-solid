@@ -6,7 +6,6 @@ import type {
   TransformResult,
   PluginConfig,
   Node,
-  JSXText,
 } from "../types";
 import { transformNode, getCreateTemplate } from "./transform";
 import { filterChildren, trimWhitespace } from "./utils";
