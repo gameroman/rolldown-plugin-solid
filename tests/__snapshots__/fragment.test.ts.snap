@@ -59,8 +59,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -81,12 +83,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -164,14 +168,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -208,10 +214,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -406,18 +415,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -568,9 +578,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -593,14 +604,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -702,8 +714,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -724,12 +738,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -807,14 +823,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -851,10 +869,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -1049,18 +1070,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -1211,9 +1233,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -1236,14 +1259,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -1329,8 +1353,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -1351,12 +1377,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -1434,14 +1462,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -1478,10 +1508,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -1676,18 +1709,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -1870,9 +1904,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -1895,14 +1930,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -1932,7 +1968,12 @@ function cleanChildren(parent, current, marker, replacement) {
 function getHydrationKey() {
 	return sharedConfig.getNextContextId();
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<h2>Child Component\`), _tmpl$2 = /*#__PURE__*/ template(\`<p>\`), _tmpl$3 = /*#__PURE__*/ template(\`<button>Update Message\`), _tmpl$4 = /*#__PURE__*/ template(\`<h1>Fragment Example\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Count: <!$><!/>\`), _tmpl$6 = /*#__PURE__*/ template(\`<button>Increment\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<h2>Child Component\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<p>\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<button>Update Message\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<h1>Fragment Example\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<p>Count: <!$><!/>\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<button>Increment\`);
 const ChildComponent = () => {
 	const [message, setMessage] = createSignal("Hello from child!");
 	return [
@@ -2016,8 +2057,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -2038,12 +2081,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -2121,14 +2166,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -2165,10 +2212,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -2363,18 +2413,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -2557,9 +2608,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -2582,14 +2634,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -2619,7 +2672,12 @@ function cleanChildren(parent, current, marker, replacement) {
 function getHydrationKey() {
 	return sharedConfig.getNextContextId();
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<h2>Child Component\`), _tmpl$2 = /*#__PURE__*/ template(\`<p>\`), _tmpl$3 = /*#__PURE__*/ template(\`<button>Update Message\`), _tmpl$4 = /*#__PURE__*/ template(\`<h1>Fragment Example\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Count: <!$><!/>\`), _tmpl$6 = /*#__PURE__*/ template(\`<button>Increment\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<h2>Child Component\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<p>\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<button>Update Message\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<h1>Fragment Example\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<p>Count: <!$><!/>\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<button>Increment\`);
 const ChildComponent = () => {
 	const [message, setMessage] = createSignal("Hello from child!");
 	return [
@@ -2697,8 +2755,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -2716,12 +2776,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -2799,14 +2861,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -3043,8 +3107,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -3062,12 +3128,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -3145,14 +3213,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -3413,8 +3483,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -3444,12 +3516,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -3527,14 +3601,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -3571,10 +3647,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -3873,9 +3952,10 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (array.length === 0) {
 				const replacement = cleanChildren(parent, current, marker);
 				if (multi) return current = replacement;
-			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-			else if (current == null || current === "") appendNodes(parent, array);
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
 			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
 			current = array;
 		} else {
@@ -3895,14 +3975,15 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
 			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
-			else if (t === "function") if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-			else normalized.push(item);
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
 		}
 		return dynamic;
 	}
@@ -3937,18 +4018,19 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 					while (i < bEnd) map.set(b[i], i++);
 				}
 				const index = map.get(a[aStart]);
-				if (index != null) if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) insertNode(parentNode, b[bStart++], node);
-					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
-				} else aStart++;
-				else removeNode(parentNode, a[aStart++]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
 			}
 		}
 	}
@@ -4074,8 +4156,8 @@ const App = () => {
 			return _el$6;
 		})(),
 		(() => {
-			var _el$8 = createElement("p");
-			insertNode(_el$8, createTextNode(\`Count: \`));
+			var _el$8 = createElement("p"), _el$9 = createTextNode(\`Count: \`);
+			insertNode(_el$8, _el$9);
 			insert(_el$8, count, null);
 			return _el$8;
 		})(),
@@ -4153,8 +4235,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -4184,12 +4268,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -4267,14 +4353,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -4311,10 +4399,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -4613,9 +4704,10 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (array.length === 0) {
 				const replacement = cleanChildren(parent, current, marker);
 				if (multi) return current = replacement;
-			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-			else if (current == null || current === "") appendNodes(parent, array);
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
 			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
 			current = array;
 		} else {
@@ -4635,14 +4727,15 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
 			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
-			else if (t === "function") if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-			else normalized.push(item);
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
 		}
 		return dynamic;
 	}
@@ -4677,18 +4770,19 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 					while (i < bEnd) map.set(b[i], i++);
 				}
 				const index = map.get(a[aStart]);
-				if (index != null) if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) insertNode(parentNode, b[bStart++], node);
-					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
-				} else aStart++;
-				else removeNode(parentNode, a[aStart++]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
 			}
 		}
 	}
@@ -4814,8 +4908,8 @@ const App = () => {
 			return _el$6;
 		})(),
 		(() => {
-			var _el$8 = createElement("p");
-			insertNode(_el$8, createTextNode(\`Count: \`));
+			var _el$8 = createElement("p"), _el$9 = createTextNode(\`Count: \`);
+			insertNode(_el$8, _el$9);
 			insert(_el$8, count, null);
 			return _el$8;
 		})(),

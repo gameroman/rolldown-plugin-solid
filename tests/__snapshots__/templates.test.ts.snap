@@ -43,8 +43,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -65,12 +67,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -148,14 +152,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -192,10 +198,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -581,18 +590,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -638,11 +648,12 @@ function className(node, value) {
 	else node.className = value;
 }
 function addEventListener(node, name, handler, delegate) {
-	if (delegate) if (Array.isArray(handler)) {
-		node[\`$$\${name}\`] = handler[0];
-		node[\`$$\${name}Data\`] = handler[1];
-	} else node[\`$$\${name}\`] = handler;
-	else if (Array.isArray(handler)) {
+	if (delegate) {
+		if (Array.isArray(handler)) {
+			node[\`$$\${name}\`] = handler[0];
+			node[\`$$\${name}Data\`] = handler[1];
+		} else node[\`$$\${name}\`] = handler;
+	} else if (Array.isArray(handler)) {
 		const handlerFn = handler[0];
 		node.addEventListener(name, handler[0] = (e) => handlerFn.call(node, handler[1], e));
 	} else node.addEventListener(name, handler, typeof handler !== "function" && handler);
@@ -760,6 +771,7 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
 		} else if (isHydrating(node)) return value;
 		if (prop === "class" || prop === "className") className(node, value);
 		else if (isCE && !isProp && !isChildProp) node[toPropertyName(prop)] = value;
+		else if ((prop === "value" || prop === "defaultValue") && (node.nodeName === "INPUT" || node.nodeName === "TEXTAREA")) node[propAlias || prop] = value ?? "";
 		else node[propAlias || prop] = value;
 	} else {
 		const ns = isSVG && prop.indexOf(":") > -1 && SVGNamespace[prop.split(":")[0]];
@@ -874,9 +886,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -899,14 +912,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -933,7 +947,21 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`), _tmpl$6 = /*#__PURE__*/ template(\`<li>\`), _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`), _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<li>\`);
+var _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`);
+var _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`);
+var _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`);
+var _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`);
+var _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`);
+var _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`);
+var _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`);
+var _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`);
+var _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
 }
@@ -1072,8 +1100,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -1094,12 +1124,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -1177,14 +1209,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -1221,10 +1255,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -1610,18 +1647,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -1667,11 +1705,12 @@ function className(node, value) {
 	else node.className = value;
 }
 function addEventListener(node, name, handler, delegate) {
-	if (delegate) if (Array.isArray(handler)) {
-		node[\`$$\${name}\`] = handler[0];
-		node[\`$$\${name}Data\`] = handler[1];
-	} else node[\`$$\${name}\`] = handler;
-	else if (Array.isArray(handler)) {
+	if (delegate) {
+		if (Array.isArray(handler)) {
+			node[\`$$\${name}\`] = handler[0];
+			node[\`$$\${name}Data\`] = handler[1];
+		} else node[\`$$\${name}\`] = handler;
+	} else if (Array.isArray(handler)) {
 		const handlerFn = handler[0];
 		node.addEventListener(name, handler[0] = (e) => handlerFn.call(node, handler[1], e));
 	} else node.addEventListener(name, handler, typeof handler !== "function" && handler);
@@ -1789,6 +1828,7 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
 		} else if (isHydrating(node)) return value;
 		if (prop === "class" || prop === "className") className(node, value);
 		else if (isCE && !isProp && !isChildProp) node[toPropertyName(prop)] = value;
+		else if ((prop === "value" || prop === "defaultValue") && (node.nodeName === "INPUT" || node.nodeName === "TEXTAREA")) node[propAlias || prop] = value ?? "";
 		else node[propAlias || prop] = value;
 	} else {
 		const ns = isSVG && prop.indexOf(":") > -1 && SVGNamespace[prop.split(":")[0]];
@@ -1903,9 +1943,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -1928,14 +1969,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -1962,7 +2004,21 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`), _tmpl$6 = /*#__PURE__*/ template(\`<li>\`), _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`), _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<li>\`);
+var _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`);
+var _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`);
+var _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`);
+var _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`);
+var _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`);
+var _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`);
+var _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`);
+var _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`);
+var _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
 }
@@ -2082,8 +2138,10 @@ function createOwner() {
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o];
-	else Owner.owned.push(o);
+	if (Owner) {
+		if (!Owner.owned) Owner.owned = [o];
+		else Owner.owned.push(o);
+	}
 	return o;
 }
 function createMemo(fn, value) {
@@ -2120,9 +2178,10 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
-			else for (let j = 0; j < result.length; j++) results.push(result[j]);
-			else results.push(result);
+			if (Array.isArray(result)) {
+				if (result.length < 32768) results.push.apply(results, result);
+				else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			} else results.push(result);
 		}
 		return results;
 	}
@@ -2155,7 +2214,8 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
+var L = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L || {});
+var o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -2173,40 +2233,42 @@ function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 		l: d
 	};
 }
-function F(e) {
+function B$1(e) {
 	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-F(2);
-F(3);
-F(1);
-F(0);
-F(4);
-F(5);
-F(6);
-F(7);
-var U = "__SEROVAL_REFS__", j = /* @__PURE__ */ new Map();
+B$1(2);
+B$1(3);
+B$1(1);
+B$1(0);
+B$1(4);
+B$1(5);
+B$1(6);
+B$1(7);
+var U = "__SEROVAL_REFS__";
+var j$1 = /* @__PURE__ */ new Map();
 typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 });
-var { toString: ys } = Object.prototype, re = () => {
+var { toString: bs } = Object.prototype;
+var ee$1 = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -2215,15 +2277,17 @@ var { toString: ys } = Object.prototype, re = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn = (e, r) => {
+};
+var In = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
+};
+var Rn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 };
-re.toString();
-vn.toString();
-Cn.toString();
-var Rr = () => {
+ee$1.toString();
+In.toString();
+Rn.toString();
+var xr = () => {
 	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g](l);
 	}, i = (l, g, S, d) => {
@@ -2245,8 +2309,8 @@ var Rr = () => {
 		}
 	};
 };
-Rr.toString();
-var Pr = (e) => (r) => () => {
+xr.toString();
+var Tr = (e) => (r) => () => {
 	let t = 0, n = {
 		[e]: () => n,
 		next: () => {
@@ -2264,8 +2328,8 @@ var Pr = (e) => (r) => () => {
 	};
 	return n;
 };
-Pr.toString();
-var xr = (e, r) => (t) => () => {
+Tr.toString();
+var Or = (e, r) => (t) => () => {
 	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
 		for (; S < d; S++) u[S].s({
 			done: !0,
@@ -2296,14 +2360,14 @@ var xr = (e, r) => (t) => () => {
 		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K = n++;
-				if (K >= i.length) {
-					let et = r();
-					return u.push(et), et.p;
+				let G = n++;
+				if (G >= i.length) {
+					let tt = r();
+					return u.push(tt), tt.p;
 				}
 				return {
 					done: !1,
-					value: i[K]
+					value: i[G]
 				};
 			}
 			if (n > a) return {
@@ -2324,16 +2388,17 @@ var xr = (e, r) => (t) => () => {
 	};
 	return g;
 };
-xr.toString();
-var Or = (e) => {
+Or.toString();
+var wr = (e) => {
 	let r = atob(e), t = r.length, n = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
 	return n.buffer;
 };
-Or.toString();
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-var Eo = () => T, Io = Eo.toString();
-/=>/.test(Io);
+wr.toString();
+var oe$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(oe$1 || {});
+var Ro = () => T;
+var Po = Ro.toString();
+/=>/.test(Po);
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -2389,7 +2454,7 @@ const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-L$1.AggregateError | L$1.BigIntTypedArray;
+L.AggregateError | L.BigIntTypedArray;
 const VOID_ELEMENTS = /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
@@ -2453,9 +2518,10 @@ function ssrElement(tag, props, children, needsId) {
 			let n;
 			result += \`class="\${escape(((n = props.class) ? n + " " : "") + ((n = props.className) ? n + " " : ""), true) + ssrClassList(props.classList)}"\`;
 			classResolved = true;
-		} else if (BooleanAttributes.has(prop)) if (value) result += prop;
-		else continue;
-		else if (value == void 0 || prop === "ref" || prop.slice(0, 2) === "on" || prop.slice(0, 5) === "prop:") continue;
+		} else if (BooleanAttributes.has(prop)) {
+			if (value) result += prop;
+			else continue;
+		} else if (value == void 0 || prop === "ref" || prop.slice(0, 2) === "on" || prop.slice(0, 5) === "prop:") continue;
 		else if (prop.slice(0, 5) === "bool:") {
 			if (!value) continue;
 			result += escape(prop.slice(5));
@@ -2480,7 +2546,11 @@ function escape(s, attr) {
 			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
-		if (attr && t === "boolean") return String(s);
+		if (attr) {
+			if (t === "boolean") return String(s);
+			if (s == null || t === "number") return s;
+			return escape(String(s), attr);
+		}
 		return s;
 	}
 	const delim = attr ? "\\"" : "<";
@@ -2535,16 +2605,29 @@ function getHydrationKey() {
 	const hydrate = sharedConfig.context;
 	return hydrate && !hydrate.noHydrate && sharedConfig.getNextContextId();
 }
-var _tmpl$ = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>", _tmpl$2 = "<div><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>", _tmpl$3 = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>", _tmpl$4 = [
+var _tmpl$ = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>";
+var _tmpl$2 = "<div><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>";
+var _tmpl$3 = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>";
+var _tmpl$4 = [
 	"<div class=\\"container\\"><h1>Title</h1>",
 	"<ul>",
 	"</ul><div style=\\"",
 	"\\">Styled content</div></div>"
-], _tmpl$5 = "<p>Conditional content</p>", _tmpl$6 = ["<li>", "</li>"], _tmpl$7 = "<div id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>", _tmpl$8 = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>", _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$0 = "<div><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>", _tmpl$1 = [
+];
+var _tmpl$5 = "<p>Conditional content</p>";
+var _tmpl$6 = ["<li>", "</li>"];
+var _tmpl$7 = "<div id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>";
+var _tmpl$8 = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>";
+var _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>";
+var _tmpl$0 = "<div><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>";
+var _tmpl$1 = [
 	"<div><p>Static content</p><div>",
 	"</div><ul>",
 	"</ul></div>"
-], _tmpl$10 = ["<li>Item ", "</li>"], _tmpl$11 = "<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>", _tmpl$12 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>";
+];
+var _tmpl$10 = ["<li>Item ", "</li>"];
+var _tmpl$11 = "<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>";
+var _tmpl$12 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>";
 function TestSvgWrap() {
 	return ssr(_tmpl$);
 }
@@ -2621,8 +2704,10 @@ function createOwner() {
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o];
-	else Owner.owned.push(o);
+	if (Owner) {
+		if (!Owner.owned) Owner.owned = [o];
+		else Owner.owned.push(o);
+	}
 	return o;
 }
 function createMemo(fn, value) {
@@ -2659,9 +2744,10 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
-			else for (let j = 0; j < result.length; j++) results.push(result[j]);
-			else results.push(result);
+			if (Array.isArray(result)) {
+				if (result.length < 32768) results.push.apply(results, result);
+				else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			} else results.push(result);
 		}
 		return results;
 	}
@@ -2694,7 +2780,8 @@ function getContextId(count) {
 	return sharedConfig.context.id + (len ? String.fromCharCode(96 + len) : "") + num;
 }
 createContext();
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
+var L = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L || {});
+var o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -2712,40 +2799,42 @@ function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 		l: d
 	};
 }
-function F(e) {
+function B$1(e) {
 	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-F(2);
-F(3);
-F(1);
-F(0);
-F(4);
-F(5);
-F(6);
-F(7);
-var U = "__SEROVAL_REFS__", j = /* @__PURE__ */ new Map();
+B$1(2);
+B$1(3);
+B$1(1);
+B$1(0);
+B$1(4);
+B$1(5);
+B$1(6);
+B$1(7);
+var U = "__SEROVAL_REFS__";
+var j$1 = /* @__PURE__ */ new Map();
 typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 });
-var { toString: ys } = Object.prototype, re = () => {
+var { toString: bs } = Object.prototype;
+var ee$1 = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -2754,15 +2843,17 @@ var { toString: ys } = Object.prototype, re = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn = (e, r) => {
+};
+var In = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
+};
+var Rn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 };
-re.toString();
-vn.toString();
-Cn.toString();
-var Rr = () => {
+ee$1.toString();
+In.toString();
+Rn.toString();
+var xr = () => {
 	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g](l);
 	}, i = (l, g, S, d) => {
@@ -2784,8 +2875,8 @@ var Rr = () => {
 		}
 	};
 };
-Rr.toString();
-var Pr = (e) => (r) => () => {
+xr.toString();
+var Tr = (e) => (r) => () => {
 	let t = 0, n = {
 		[e]: () => n,
 		next: () => {
@@ -2803,8 +2894,8 @@ var Pr = (e) => (r) => () => {
 	};
 	return n;
 };
-Pr.toString();
-var xr = (e, r) => (t) => () => {
+Tr.toString();
+var Or = (e, r) => (t) => () => {
 	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
 		for (; S < d; S++) u[S].s({
 			done: !0,
@@ -2835,14 +2926,14 @@ var xr = (e, r) => (t) => () => {
 		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K = n++;
-				if (K >= i.length) {
-					let et = r();
-					return u.push(et), et.p;
+				let G = n++;
+				if (G >= i.length) {
+					let tt = r();
+					return u.push(tt), tt.p;
 				}
 				return {
 					done: !1,
-					value: i[K]
+					value: i[G]
 				};
 			}
 			if (n > a) return {
@@ -2863,16 +2954,17 @@ var xr = (e, r) => (t) => () => {
 	};
 	return g;
 };
-xr.toString();
-var Or = (e) => {
+Or.toString();
+var wr = (e) => {
 	let r = atob(e), t = r.length, n = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
 	return n.buffer;
 };
-Or.toString();
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-var Eo = () => T, Io = Eo.toString();
-/=>/.test(Io);
+wr.toString();
+var oe$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(oe$1 || {});
+var Ro = () => T;
+var Po = Ro.toString();
+/=>/.test(Po);
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -2928,7 +3020,7 @@ const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-L$1.AggregateError | L$1.BigIntTypedArray;
+L.AggregateError | L.BigIntTypedArray;
 const VOID_ELEMENTS = /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
@@ -2992,9 +3084,10 @@ function ssrElement(tag, props, children, needsId) {
 			let n;
 			result += \`class="\${escape(((n = props.class) ? n + " " : "") + ((n = props.className) ? n + " " : ""), true) + ssrClassList(props.classList)}"\`;
 			classResolved = true;
-		} else if (BooleanAttributes.has(prop)) if (value) result += prop;
-		else continue;
-		else if (value == void 0 || prop === "ref" || prop.slice(0, 2) === "on" || prop.slice(0, 5) === "prop:") continue;
+		} else if (BooleanAttributes.has(prop)) {
+			if (value) result += prop;
+			else continue;
+		} else if (value == void 0 || prop === "ref" || prop.slice(0, 2) === "on" || prop.slice(0, 5) === "prop:") continue;
 		else if (prop.slice(0, 5) === "bool:") {
 			if (!value) continue;
 			result += escape(prop.slice(5));
@@ -3019,7 +3112,11 @@ function escape(s, attr) {
 			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
-		if (attr && t === "boolean") return String(s);
+		if (attr) {
+			if (t === "boolean") return String(s);
+			if (s == null || t === "number") return s;
+			return escape(String(s), attr);
+		}
 		return s;
 	}
 	const delim = attr ? "\\"" : "<";
@@ -3074,16 +3171,29 @@ function getHydrationKey() {
 	const hydrate = sharedConfig.context;
 	return hydrate && !hydrate.noHydrate && sharedConfig.getNextContextId();
 }
-var _tmpl$ = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>", _tmpl$2 = "<div><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>", _tmpl$3 = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>", _tmpl$4 = [
+var _tmpl$ = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>";
+var _tmpl$2 = "<div><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>";
+var _tmpl$3 = "<div><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>";
+var _tmpl$4 = [
 	"<div class=\\"container\\"><h1>Title</h1>",
 	"<ul>",
 	"</ul><div style=\\"",
 	"\\">Styled content</div></div>"
-], _tmpl$5 = "<p>Conditional content</p>", _tmpl$6 = ["<li>", "</li>"], _tmpl$7 = "<div id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>", _tmpl$8 = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>", _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$0 = "<div><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>", _tmpl$1 = [
+];
+var _tmpl$5 = "<p>Conditional content</p>";
+var _tmpl$6 = ["<li>", "</li>"];
+var _tmpl$7 = "<div id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>";
+var _tmpl$8 = "<svg width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>";
+var _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>";
+var _tmpl$0 = "<div><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>";
+var _tmpl$1 = [
 	"<div><p>Static content</p><div>",
 	"</div><ul>",
 	"</ul></div>"
-], _tmpl$10 = ["<li>Item ", "</li>"], _tmpl$11 = "<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>", _tmpl$12 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>";
+];
+var _tmpl$10 = ["<li>Item ", "</li>"];
+var _tmpl$11 = "<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>";
+var _tmpl$12 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>";
 function TestSvgWrap() {
 	return ssr(_tmpl$);
 }
@@ -3197,8 +3307,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -3228,12 +3340,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -3311,14 +3425,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -3355,10 +3471,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -3657,9 +3776,10 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (array.length === 0) {
 				const replacement = cleanChildren(parent, current, marker);
 				if (multi) return current = replacement;
-			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-			else if (current == null || current === "") appendNodes(parent, array);
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
 			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
 			current = array;
 		} else {
@@ -3679,14 +3799,15 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
 			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
-			else if (t === "function") if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-			else normalized.push(item);
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
 		}
 		return dynamic;
 	}
@@ -3721,18 +3842,19 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 					while (i < bEnd) map.set(b[i], i++);
 				}
 				const index = map.get(a[aStart]);
-				if (index != null) if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) insertNode(parentNode, b[bStart++], node);
-					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
-				} else aStart++;
-				else removeNode(parentNode, a[aStart++]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
 			}
 		}
 	}
@@ -3999,8 +4121,8 @@ function TestSSRHydration() {
 			2,
 			3
 		].map((item) => (() => {
-			var _el$53 = createElement("li");
-			insertNode(_el$53, createTextNode(\`Item \`));
+			var _el$53 = createElement("li"), _el$54 = createTextNode(\`Item \`);
+			insertNode(_el$53, _el$54);
 			insert(_el$53, item, null);
 			return _el$53;
 		})()));
@@ -4131,8 +4253,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -4162,12 +4286,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -4245,14 +4371,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -4289,10 +4417,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -4591,9 +4722,10 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (array.length === 0) {
 				const replacement = cleanChildren(parent, current, marker);
 				if (multi) return current = replacement;
-			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-			else if (current == null || current === "") appendNodes(parent, array);
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
 			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
 			current = array;
 		} else {
@@ -4613,14 +4745,15 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
 			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
-			else if (t === "function") if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-			else normalized.push(item);
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
 		}
 		return dynamic;
 	}
@@ -4655,18 +4788,19 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 					while (i < bEnd) map.set(b[i], i++);
 				}
 				const index = map.get(a[aStart]);
-				if (index != null) if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) insertNode(parentNode, b[bStart++], node);
-					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
-				} else aStart++;
-				else removeNode(parentNode, a[aStart++]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
 			}
 		}
 	}
@@ -4933,8 +5067,8 @@ function TestSSRHydration() {
 			2,
 			3
 		].map((item) => (() => {
-			var _el$53 = createElement("li");
-			insertNode(_el$53, createTextNode(\`Item \`));
+			var _el$53 = createElement("li"), _el$54 = createTextNode(\`Item \`);
+			insertNode(_el$53, _el$54);
 			insert(_el$53, item, null);
 			return _el$53;
 		})()));
@@ -5065,8 +5199,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -5096,12 +5232,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -5179,14 +5317,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -5223,10 +5363,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -5525,9 +5668,10 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (array.length === 0) {
 				const replacement = cleanChildren(parent, current, marker);
 				if (multi) return current = replacement;
-			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-			else if (current == null || current === "") appendNodes(parent, array);
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
 			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
 			current = array;
 		} else {
@@ -5547,14 +5691,15 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
 			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
-			else if (t === "function") if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-			else normalized.push(item);
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
 		}
 		return dynamic;
 	}
@@ -5589,18 +5734,19 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 					while (i < bEnd) map.set(b[i], i++);
 				}
 				const index = map.get(a[aStart]);
-				if (index != null) if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) insertNode(parentNode, b[bStart++], node);
-					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
-				} else aStart++;
-				else removeNode(parentNode, a[aStart++]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
 			}
 		}
 	}
@@ -5867,8 +6013,8 @@ function TestSSRHydration() {
 			2,
 			3
 		].map((item) => (() => {
-			var _el$53 = createElement("li");
-			insertNode(_el$53, createTextNode(\`Item \`));
+			var _el$53 = createElement("li"), _el$54 = createTextNode(\`Item \`);
+			insertNode(_el$53, _el$54);
 			insert(_el$53, item, null);
 			return _el$53;
 		})()));
@@ -5999,8 +6145,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -6030,12 +6178,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -6113,14 +6263,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -6157,10 +6309,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -6459,9 +6614,10 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (array.length === 0) {
 				const replacement = cleanChildren(parent, current, marker);
 				if (multi) return current = replacement;
-			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-			else if (current == null || current === "") appendNodes(parent, array);
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
 			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
 			current = array;
 		} else {
@@ -6481,14 +6637,15 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
 			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
-			else if (t === "function") if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-			else normalized.push(item);
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
 		}
 		return dynamic;
 	}
@@ -6523,18 +6680,19 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 					while (i < bEnd) map.set(b[i], i++);
 				}
 				const index = map.get(a[aStart]);
-				if (index != null) if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) insertNode(parentNode, b[bStart++], node);
-					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
-				} else aStart++;
-				else removeNode(parentNode, a[aStart++]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
 			}
 		}
 	}
@@ -6801,8 +6959,8 @@ function TestSSRHydration() {
 			2,
 			3
 		].map((item) => (() => {
-			var _el$53 = createElement("li");
-			insertNode(_el$53, createTextNode(\`Item \`));
+			var _el$53 = createElement("li"), _el$54 = createTextNode(\`Item \`);
+			insertNode(_el$53, _el$54);
 			insert(_el$53, item, null);
 			return _el$53;
 		})()));
@@ -6915,8 +7073,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -6937,12 +7097,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -7020,14 +7182,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -7064,10 +7228,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -7453,18 +7620,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -7510,11 +7678,12 @@ function className(node, value) {
 	else node.className = value;
 }
 function addEventListener(node, name, handler, delegate) {
-	if (delegate) if (Array.isArray(handler)) {
-		node[\`$$\${name}\`] = handler[0];
-		node[\`$$\${name}Data\`] = handler[1];
-	} else node[\`$$\${name}\`] = handler;
-	else if (Array.isArray(handler)) {
+	if (delegate) {
+		if (Array.isArray(handler)) {
+			node[\`$$\${name}\`] = handler[0];
+			node[\`$$\${name}Data\`] = handler[1];
+		} else node[\`$$\${name}\`] = handler;
+	} else if (Array.isArray(handler)) {
 		const handlerFn = handler[0];
 		node.addEventListener(name, handler[0] = (e) => handlerFn.call(node, handler[1], e));
 	} else node.addEventListener(name, handler, typeof handler !== "function" && handler);
@@ -7632,6 +7801,7 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
 		} else if (isHydrating(node)) return value;
 		if (prop === "class" || prop === "className") className(node, value);
 		else if (isCE && !isProp && !isChildProp) node[toPropertyName(prop)] = value;
+		else if ((prop === "value" || prop === "defaultValue") && (node.nodeName === "INPUT" || node.nodeName === "TEXTAREA")) node[propAlias || prop] = value ?? "";
 		else node[propAlias || prop] = value;
 	} else {
 		const ns = isSVG && prop.indexOf(":") > -1 && SVGNamespace[prop.split(":")[0]];
@@ -7746,9 +7916,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -7771,14 +7942,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -7805,7 +7977,21 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`), _tmpl$6 = /*#__PURE__*/ template(\`<li>\`), _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`), _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<li>\`);
+var _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`);
+var _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`);
+var _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`);
+var _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`);
+var _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`);
+var _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`);
+var _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`);
+var _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`);
+var _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
 }
@@ -7939,8 +8125,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -7961,12 +8149,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -8044,14 +8234,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -8088,10 +8280,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -8477,18 +8672,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -8534,11 +8730,12 @@ function className(node, value) {
 	else node.className = value;
 }
 function addEventListener(node, name, handler, delegate) {
-	if (delegate) if (Array.isArray(handler)) {
-		node[\`$$\${name}\`] = handler[0];
-		node[\`$$\${name}Data\`] = handler[1];
-	} else node[\`$$\${name}\`] = handler;
-	else if (Array.isArray(handler)) {
+	if (delegate) {
+		if (Array.isArray(handler)) {
+			node[\`$$\${name}\`] = handler[0];
+			node[\`$$\${name}Data\`] = handler[1];
+		} else node[\`$$\${name}\`] = handler;
+	} else if (Array.isArray(handler)) {
 		const handlerFn = handler[0];
 		node.addEventListener(name, handler[0] = (e) => handlerFn.call(node, handler[1], e));
 	} else node.addEventListener(name, handler, typeof handler !== "function" && handler);
@@ -8656,6 +8853,7 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
 		} else if (isHydrating(node)) return value;
 		if (prop === "class" || prop === "className") className(node, value);
 		else if (isCE && !isProp && !isChildProp) node[toPropertyName(prop)] = value;
+		else if ((prop === "value" || prop === "defaultValue") && (node.nodeName === "INPUT" || node.nodeName === "TEXTAREA")) node[propAlias || prop] = value ?? "";
 		else node[propAlias || prop] = value;
 	} else {
 		const ns = isSVG && prop.indexOf(":") > -1 && SVGNamespace[prop.split(":")[0]];
@@ -8770,9 +8968,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -8795,14 +8994,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -8829,7 +9029,21 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`), _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`), _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`), _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`), _tmpl$6 = /*#__PURE__*/ template(\`<li>\`), _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`), _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`), _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`), _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`), _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`), _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`), _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`), _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><foreignObject x=10 y=10 width=80 height=80><div><p>HTML content inside SVG\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<div><svg><g><rect x=0 y=0 width=100 height=100>\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<div><button>Click me</button><div>Hover me</div><input><form><select><option value=1>Option 1</option><option value=2>Option 2\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div class=container><h1>Title</h1><ul></ul><div style=color:red;font-size:16px>Styled content\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<p>Conditional content\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<li>\`);
+var _tmpl$7 = /*#__PURE__*/ template(\`<div id=test class=my-class data-testid=element aria-label="Accessible element"role=button tabindex=0><img src=test.jpg alt="test image"width=100 height=100><input type=text placeholder="Enter text"required>\`);
+var _tmpl$8 = /*#__PURE__*/ template(\`<svg width=100 height=100><circle cx=50 cy=50 r=40 fill=red></circle><rect x=10 y=10 width=30 height=30 fill=blue></rect><text x=50 y=50 text-anchor=middle>SVG Text\`);
+var _tmpl$9 = /*#__PURE__*/ template(\`<head><title>SSR Test</title><meta charset=utf-8><meta name=viewport content="width=device-width">\`);
+var _tmpl$0 = /*#__PURE__*/ template(\`<div><script>console.log('test');<\\/script><style>body \\{ margin: 0; }\`);
+var _tmpl$1 = /*#__PURE__*/ template(\`<div><p>Static content</p><div></div><ul>\`);
+var _tmpl$10 = /*#__PURE__*/ template(\`<li>Item \`);
+var _tmpl$11 = /*#__PURE__*/ template(\`<div>Spread attributes\`);
+var _tmpl$12 = /*#__PURE__*/ template(\`<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2\`);
+var _tmpl$13 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=test.jpg alt=test><br><hr>\`);
 function TestSvgWrap() {
 	return _tmpl$();
 }
@@ -8944,8 +9158,10 @@ function createOwner() {
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o];
-	else Owner.owned.push(o);
+	if (Owner) {
+		if (!Owner.owned) Owner.owned = [o];
+		else Owner.owned.push(o);
+	}
 	return o;
 }
 function createMemo(fn, value) {
@@ -8982,9 +9198,10 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
-			else for (let j = 0; j < result.length; j++) results.push(result[j]);
-			else results.push(result);
+			if (Array.isArray(result)) {
+				if (result.length < 32768) results.push.apply(results, result);
+				else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			} else results.push(result);
 		}
 		return results;
 	}
@@ -9037,7 +9254,8 @@ function createComponent(Comp, props) {
 	return Comp(props || {});
 }
 createContext();
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
+var L = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L || {});
+var o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -9055,40 +9273,42 @@ function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 		l: d
 	};
 }
-function F(e) {
+function B$1(e) {
 	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-F(2);
-F(3);
-F(1);
-F(0);
-F(4);
-F(5);
-F(6);
-F(7);
-var U = "__SEROVAL_REFS__", j = /* @__PURE__ */ new Map();
+B$1(2);
+B$1(3);
+B$1(1);
+B$1(0);
+B$1(4);
+B$1(5);
+B$1(6);
+B$1(7);
+var U = "__SEROVAL_REFS__";
+var j$1 = /* @__PURE__ */ new Map();
 typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 });
-var { toString: ys } = Object.prototype, re = () => {
+var { toString: bs } = Object.prototype;
+var ee$1 = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -9097,15 +9317,17 @@ var { toString: ys } = Object.prototype, re = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn = (e, r) => {
+};
+var In = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
+};
+var Rn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 };
-re.toString();
-vn.toString();
-Cn.toString();
-var Rr = () => {
+ee$1.toString();
+In.toString();
+Rn.toString();
+var xr = () => {
 	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g](l);
 	}, i = (l, g, S, d) => {
@@ -9127,8 +9349,8 @@ var Rr = () => {
 		}
 	};
 };
-Rr.toString();
-var Pr = (e) => (r) => () => {
+xr.toString();
+var Tr = (e) => (r) => () => {
 	let t = 0, n = {
 		[e]: () => n,
 		next: () => {
@@ -9146,8 +9368,8 @@ var Pr = (e) => (r) => () => {
 	};
 	return n;
 };
-Pr.toString();
-var xr = (e, r) => (t) => () => {
+Tr.toString();
+var Or = (e, r) => (t) => () => {
 	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
 		for (; S < d; S++) u[S].s({
 			done: !0,
@@ -9178,14 +9400,14 @@ var xr = (e, r) => (t) => () => {
 		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K = n++;
-				if (K >= i.length) {
-					let et = r();
-					return u.push(et), et.p;
+				let G = n++;
+				if (G >= i.length) {
+					let tt = r();
+					return u.push(tt), tt.p;
 				}
 				return {
 					done: !1,
-					value: i[K]
+					value: i[G]
 				};
 			}
 			if (n > a) return {
@@ -9206,16 +9428,17 @@ var xr = (e, r) => (t) => () => {
 	};
 	return g;
 };
-xr.toString();
-var Or = (e) => {
+Or.toString();
+var wr = (e) => {
 	let r = atob(e), t = r.length, n = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
 	return n.buffer;
 };
-Or.toString();
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-var Eo = () => T, Io = Eo.toString();
-/=>/.test(Io);
+wr.toString();
+var oe$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(oe$1 || {});
+var Ro = () => T;
+var Po = Ro.toString();
+/=>/.test(Po);
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -9271,7 +9494,7 @@ const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-L$1.AggregateError | L$1.BigIntTypedArray;
+L.AggregateError | L.BigIntTypedArray;
 const VOID_ELEMENTS = /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
@@ -9335,9 +9558,10 @@ function ssrElement(tag, props, children, needsId) {
 			let n;
 			result += \`class="\${escape(((n = props.class) ? n + " " : "") + ((n = props.className) ? n + " " : ""), true) + ssrClassList(props.classList)}"\`;
 			classResolved = true;
-		} else if (BooleanAttributes.has(prop)) if (value) result += prop;
-		else continue;
-		else if (value == void 0 || prop === "ref" || prop.slice(0, 2) === "on" || prop.slice(0, 5) === "prop:") continue;
+		} else if (BooleanAttributes.has(prop)) {
+			if (value) result += prop;
+			else continue;
+		} else if (value == void 0 || prop === "ref" || prop.slice(0, 2) === "on" || prop.slice(0, 5) === "prop:") continue;
 		else if (prop.slice(0, 5) === "bool:") {
 			if (!value) continue;
 			result += escape(prop.slice(5));
@@ -9362,7 +9586,11 @@ function escape(s, attr) {
 			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
-		if (attr && t === "boolean") return String(s);
+		if (attr) {
+			if (t === "boolean") return String(s);
+			if (s == null || t === "number") return s;
+			return escape(String(s), attr);
+		}
 		return s;
 	}
 	const delim = attr ? "\\"" : "<";
@@ -9421,26 +9649,39 @@ function NoHydration(props) {
 	if (sharedConfig.context) sharedConfig.context.noHydrate = true;
 	return props.children;
 }
-var _tmpl$ = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>"], _tmpl$2 = ["<div", "><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>"], _tmpl$3 = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"], _tmpl$4 = [
+var _tmpl$ = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>"];
+var _tmpl$2 = ["<div", "><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>"];
+var _tmpl$3 = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"];
+var _tmpl$4 = [
 	"<div",
 	" class=\\"container\\"><h1>Title</h1><!--$-->",
 	"<!--/--><ul>",
 	"</ul><div style=\\"",
 	"\\">Styled content</div></div>"
-], _tmpl$5 = ["<p", ">Conditional content</p>"], _tmpl$6 = [
+];
+var _tmpl$5 = ["<p", ">Conditional content</p>"];
+var _tmpl$6 = [
 	"<li",
 	">",
 	"</li>"
-], _tmpl$7 = ["<div", " id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>"], _tmpl$8 = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>"], _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$0 = ["<div", "><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>"], _tmpl$1 = [
+];
+var _tmpl$7 = ["<div", " id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>"];
+var _tmpl$8 = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>"];
+var _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>";
+var _tmpl$0 = ["<div", "><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>"];
+var _tmpl$1 = [
 	"<div",
 	"><p>Static content</p><div>",
 	"</div><ul>",
 	"</ul></div>"
-], _tmpl$10 = [
+];
+var _tmpl$10 = [
 	"<li",
 	">Item <!--$-->",
 	"<!--/--></li>"
-], _tmpl$11 = ["<table", "><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>"], _tmpl$12 = ["<div", "><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>"];
+];
+var _tmpl$11 = ["<table", "><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>"];
+var _tmpl$12 = ["<div", "><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>"];
 function TestSvgWrap() {
 	return ssr(_tmpl$, ssrHydrationKey());
 }
@@ -9519,8 +9760,10 @@ function createOwner() {
 		owned: null,
 		cleanups: null
 	};
-	if (Owner) if (!Owner.owned) Owner.owned = [o];
-	else Owner.owned.push(o);
+	if (Owner) {
+		if (!Owner.owned) Owner.owned = [o];
+		else Owner.owned.push(o);
+	}
 	return o;
 }
 function createMemo(fn, value) {
@@ -9557,9 +9800,10 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
-			else for (let j = 0; j < result.length; j++) results.push(result[j]);
-			else results.push(result);
+			if (Array.isArray(result)) {
+				if (result.length < 32768) results.push.apply(results, result);
+				else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			} else results.push(result);
 		}
 		return results;
 	}
@@ -9612,7 +9856,8 @@ function createComponent(Comp, props) {
 	return Comp(props || {});
 }
 createContext();
-var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
+var L = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L || {});
+var o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -9630,40 +9875,42 @@ function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 		l: d
 	};
 }
-function F(e) {
+function B$1(e) {
 	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-F(2);
-F(3);
-F(1);
-F(0);
-F(4);
-F(5);
-F(6);
-F(7);
-var U = "__SEROVAL_REFS__", j = /* @__PURE__ */ new Map();
+B$1(2);
+B$1(3);
+B$1(1);
+B$1(0);
+B$1(4);
+B$1(5);
+B$1(6);
+B$1(7);
+var U = "__SEROVAL_REFS__";
+var j$1 = /* @__PURE__ */ new Map();
 typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 });
-var { toString: ys } = Object.prototype, re = () => {
+var { toString: bs } = Object.prototype;
+var ee$1 = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -9672,15 +9919,17 @@ var { toString: ys } = Object.prototype, re = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn = (e, r) => {
+};
+var In = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
+};
+var Rn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 };
-re.toString();
-vn.toString();
-Cn.toString();
-var Rr = () => {
+ee$1.toString();
+In.toString();
+Rn.toString();
+var xr = () => {
 	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g](l);
 	}, i = (l, g, S, d) => {
@@ -9702,8 +9951,8 @@ var Rr = () => {
 		}
 	};
 };
-Rr.toString();
-var Pr = (e) => (r) => () => {
+xr.toString();
+var Tr = (e) => (r) => () => {
 	let t = 0, n = {
 		[e]: () => n,
 		next: () => {
@@ -9721,8 +9970,8 @@ var Pr = (e) => (r) => () => {
 	};
 	return n;
 };
-Pr.toString();
-var xr = (e, r) => (t) => () => {
+Tr.toString();
+var Or = (e, r) => (t) => () => {
 	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
 		for (; S < d; S++) u[S].s({
 			done: !0,
@@ -9753,14 +10002,14 @@ var xr = (e, r) => (t) => () => {
 		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K = n++;
-				if (K >= i.length) {
-					let et = r();
-					return u.push(et), et.p;
+				let G = n++;
+				if (G >= i.length) {
+					let tt = r();
+					return u.push(tt), tt.p;
 				}
 				return {
 					done: !1,
-					value: i[K]
+					value: i[G]
 				};
 			}
 			if (n > a) return {
@@ -9781,16 +10030,17 @@ var xr = (e, r) => (t) => () => {
 	};
 	return g;
 };
-xr.toString();
-var Or = (e) => {
+Or.toString();
+var wr = (e) => {
 	let r = atob(e), t = r.length, n = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
 	return n.buffer;
 };
-Or.toString();
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-var Eo = () => T, Io = Eo.toString();
-/=>/.test(Io);
+wr.toString();
+var oe$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(oe$1 || {});
+var Ro = () => T;
+var Po = Ro.toString();
+/=>/.test(Po);
 const booleans = [
 	"allowfullscreen",
 	"async",
@@ -9846,7 +10096,7 @@ const Aliases = /*#__PURE__*/ Object.assign(Object.create(null), {
 	className: "class",
 	htmlFor: "for"
 });
-L$1.AggregateError | L$1.BigIntTypedArray;
+L.AggregateError | L.BigIntTypedArray;
 const VOID_ELEMENTS = /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
@@ -9910,9 +10160,10 @@ function ssrElement(tag, props, children, needsId) {
 			let n;
 			result += \`class="\${escape(((n = props.class) ? n + " " : "") + ((n = props.className) ? n + " " : ""), true) + ssrClassList(props.classList)}"\`;
 			classResolved = true;
-		} else if (BooleanAttributes.has(prop)) if (value) result += prop;
-		else continue;
-		else if (value == void 0 || prop === "ref" || prop.slice(0, 2) === "on" || prop.slice(0, 5) === "prop:") continue;
+		} else if (BooleanAttributes.has(prop)) {
+			if (value) result += prop;
+			else continue;
+		} else if (value == void 0 || prop === "ref" || prop.slice(0, 2) === "on" || prop.slice(0, 5) === "prop:") continue;
 		else if (prop.slice(0, 5) === "bool:") {
 			if (!value) continue;
 			result += escape(prop.slice(5));
@@ -9937,7 +10188,11 @@ function escape(s, attr) {
 			for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
 			return s;
 		}
-		if (attr && t === "boolean") return String(s);
+		if (attr) {
+			if (t === "boolean") return String(s);
+			if (s == null || t === "number") return s;
+			return escape(String(s), attr);
+		}
 		return s;
 	}
 	const delim = attr ? "\\"" : "<";
@@ -9996,26 +10251,39 @@ function NoHydration(props) {
 	if (sharedConfig.context) sharedConfig.context.noHydrate = true;
 	return props.children;
 }
-var _tmpl$ = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>"], _tmpl$2 = ["<div", "><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>"], _tmpl$3 = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"], _tmpl$4 = [
+var _tmpl$ = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><foreignObject x=\\"10\\" y=\\"10\\" width=\\"80\\" height=\\"80\\"><div><p>HTML content inside SVG</p></div></foreignObject></svg>"];
+var _tmpl$2 = ["<div", "><svg><g><rect x=\\"0\\" y=\\"0\\" width=\\"100\\" height=\\"100\\"></rect></g></svg></div>"];
+var _tmpl$3 = ["<div", "><button>Click me</button><div>Hover me</div><input><form><select><option value=\\"1\\">Option 1</option><option value=\\"2\\">Option 2</option></select></form></div>"];
+var _tmpl$4 = [
 	"<div",
 	" class=\\"container\\"><h1>Title</h1><!--$-->",
 	"<!--/--><ul>",
 	"</ul><div style=\\"",
 	"\\">Styled content</div></div>"
-], _tmpl$5 = ["<p", ">Conditional content</p>"], _tmpl$6 = [
+];
+var _tmpl$5 = ["<p", ">Conditional content</p>"];
+var _tmpl$6 = [
 	"<li",
 	">",
 	"</li>"
-], _tmpl$7 = ["<div", " id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>"], _tmpl$8 = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>"], _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>", _tmpl$0 = ["<div", "><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>"], _tmpl$1 = [
+];
+var _tmpl$7 = ["<div", " id=\\"test\\" class=\\"my-class\\" data-testid=\\"element\\" aria-label=\\"Accessible element\\" role=\\"button\\" tabindex=\\"0\\"><img src=\\"test.jpg\\" alt=\\"test image\\" width=\\"100\\" height=\\"100\\"><input type=\\"text\\" placeholder=\\"Enter text\\" required></div>"];
+var _tmpl$8 = ["<svg", " width=\\"100\\" height=\\"100\\"><circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\"></circle><rect x=\\"10\\" y=\\"10\\" width=\\"30\\" height=\\"30\\" fill=\\"blue\\"></rect><text x=\\"50\\" y=\\"50\\" text-anchor=\\"middle\\">SVG Text</text></svg>"];
+var _tmpl$9 = "<head><title>SSR Test</title><meta charset=\\"utf-8\\"><meta name=\\"viewport\\" content=\\"width=device-width\\"></head>";
+var _tmpl$0 = ["<div", "><script>console.log('test');<\\/script><style>body { margin: 0; }</style></div>"];
+var _tmpl$1 = [
 	"<div",
 	"><p>Static content</p><div>",
 	"</div><ul>",
 	"</ul></div>"
-], _tmpl$10 = [
+];
+var _tmpl$10 = [
 	"<li",
 	">Item <!--$-->",
 	"<!--/--></li>"
-], _tmpl$11 = ["<table", "><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>"], _tmpl$12 = ["<div", "><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>"];
+];
+var _tmpl$11 = ["<table", "><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>"];
+var _tmpl$12 = ["<div", "><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section><table><tr><td>Cell 1</td><td>Cell 2</td></tr></table><img src=\\"test.jpg\\" alt=\\"test\\"><br><hr></div>"];
 function TestSvgWrap() {
 	return ssr(_tmpl$, ssrHydrationKey());
 }

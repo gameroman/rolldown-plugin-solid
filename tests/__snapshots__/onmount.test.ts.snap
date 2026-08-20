@@ -46,8 +46,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -98,12 +100,14 @@ function useContext(context) {
 let SuspenseContext;
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -181,14 +185,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -225,10 +231,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -446,18 +455,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -538,9 +548,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -563,14 +574,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -597,7 +609,15 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div class=data-loader><h3>Data Loader Component\`), _tmpl$2 = /*#__PURE__*/ template(\`<p>Loading posts...\`), _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$4 = /*#__PURE__*/ template(\`<li>\`), _tmpl$5 = /*#__PURE__*/ template(\`<div class=timer-component><h4>Timer: <!>s\`), _tmpl$6 = /*#__PURE__*/ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`), _tmpl$7 = /*#__PURE__*/ template(\`<p class=error>Error: \`), _tmpl$8 = /*#__PURE__*/ template(\`<pre>\`), _tmpl$9 = /*#__PURE__*/ template(\`<p>Loading data...\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=data-loader><h3>Data Loader Component\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<p>Loading posts...\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<li>\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<div class=timer-component><h4>Timer: <!>s\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`);
+var _tmpl$7 = /*#__PURE__*/ template(\`<p class=error>Error: \`);
+var _tmpl$8 = /*#__PURE__*/ template(\`<pre>\`);
+var _tmpl$9 = /*#__PURE__*/ template(\`<p>Loading data...\`);
 const OnMountExample = () => {
 	const [mountedTime, setMountedTime] = createSignal("");
 	const [elapsed, setElapsed] = createSignal(0);
@@ -606,7 +626,8 @@ const OnMountExample = () => {
 	let intervalId;
 	onMount(() => {
 		console.log("Component mounted!");
-		setMountedTime((/* @__PURE__ */ new Date()).toLocaleTimeString());
+		const mountTime = (/* @__PURE__ */ new Date()).toLocaleTimeString();
+		setMountedTime(mountTime);
 		intervalId = window.setInterval(() => {
 			setElapsed((e) => e + 1);
 		}, 1e3);
@@ -633,7 +654,8 @@ const OnMountExample = () => {
 		onMount(async () => {
 			try {
 				setLoading(true);
-				setPosts(await (await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")).json());
+				const data = await (await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")).json();
+				setPosts(data);
 			} catch (err) {
 				console.error("Failed to load posts:", err);
 			} finally {
@@ -753,8 +775,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -805,12 +829,14 @@ function useContext(context) {
 let SuspenseContext;
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -888,14 +914,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -932,10 +960,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -1153,18 +1184,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -1245,9 +1277,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -1270,14 +1303,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -1304,7 +1338,15 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div class=data-loader><h3>Data Loader Component\`), _tmpl$2 = /*#__PURE__*/ template(\`<p>Loading posts...\`), _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`), _tmpl$4 = /*#__PURE__*/ template(\`<li>\`), _tmpl$5 = /*#__PURE__*/ template(\`<div class=timer-component><h4>Timer: <!>s\`), _tmpl$6 = /*#__PURE__*/ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`), _tmpl$7 = /*#__PURE__*/ template(\`<p class=error>Error: \`), _tmpl$8 = /*#__PURE__*/ template(\`<pre>\`), _tmpl$9 = /*#__PURE__*/ template(\`<p>Loading data...\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div class=data-loader><h3>Data Loader Component\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<p>Loading posts...\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<ul>\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<li>\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<div class=timer-component><h4>Timer: <!>s\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<div class=onmount-example><h2>onMount Example</h2><div class=mount-info><p>Mounted at: </p><p>Time elapsed: <!>s</p></div><div class=async-data><h3>Async Data Loading</h3></div><div class=instructions><p>✅ Component mounted - check console for logs</p><p>🔄 Timer and resize listener are active</p><p>📊 Data fetched from API on mount\`);
+var _tmpl$7 = /*#__PURE__*/ template(\`<p class=error>Error: \`);
+var _tmpl$8 = /*#__PURE__*/ template(\`<pre>\`);
+var _tmpl$9 = /*#__PURE__*/ template(\`<p>Loading data...\`);
 const OnMountExample = () => {
 	const [mountedTime, setMountedTime] = createSignal("");
 	const [elapsed, setElapsed] = createSignal(0);
@@ -1313,7 +1355,8 @@ const OnMountExample = () => {
 	let intervalId;
 	onMount(() => {
 		console.log("Component mounted!");
-		setMountedTime((/* @__PURE__ */ new Date()).toLocaleTimeString());
+		const mountTime = (/* @__PURE__ */ new Date()).toLocaleTimeString();
+		setMountedTime(mountTime);
 		intervalId = window.setInterval(() => {
 			setElapsed((e) => e + 1);
 		}, 1e3);
@@ -1340,7 +1383,8 @@ const OnMountExample = () => {
 		onMount(async () => {
 			try {
 				setLoading(true);
-				setPosts(await (await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")).json());
+				const data = await (await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")).json();
+				setPosts(data);
 			} catch (err) {
 				console.error("Failed to load posts:", err);
 			} finally {

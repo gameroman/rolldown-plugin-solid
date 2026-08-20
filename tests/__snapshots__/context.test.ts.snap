@@ -43,8 +43,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -95,12 +97,14 @@ function children(fn) {
 }
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -178,14 +182,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -222,10 +228,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -392,9 +401,10 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
-			else for (let j = 0; j < result.length; j++) results.push(result[j]);
-			else results.push(result);
+			if (Array.isArray(result)) {
+				if (result.length < 32768) results.push.apply(results, result);
+				else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			} else results.push(result);
 		}
 		return results;
 	}
@@ -447,18 +457,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -490,11 +501,12 @@ function setAttribute(node, name, value) {
 	else node.setAttribute(name, value);
 }
 function addEventListener(node, name, handler, delegate) {
-	if (delegate) if (Array.isArray(handler)) {
-		node[\`$$\${name}\`] = handler[0];
-		node[\`$$\${name}Data\`] = handler[1];
-	} else node[\`$$\${name}\`] = handler;
-	else if (Array.isArray(handler)) {
+	if (delegate) {
+		if (Array.isArray(handler)) {
+			node[\`$$\${name}\`] = handler[0];
+			node[\`$$\${name}Data\`] = handler[1];
+		} else node[\`$$\${name}\`] = handler;
+	} else if (Array.isArray(handler)) {
 		const handlerFn = handler[0];
 		node.addEventListener(name, handler[0] = (e) => handlerFn.call(node, handler[1], e));
 	} else node.addEventListener(name, handler, typeof handler !== "function" && handler);
@@ -634,9 +646,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -659,14 +672,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -693,7 +707,14 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div>No theme context\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Current theme: </p><button>Toggle Theme\`), _tmpl$3 = /*#__PURE__*/ template(\`<div>No user context\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><p>Please log in</p><button>Login as User</button><button>Login as Admin\`), _tmpl$5 = /*#__PURE__*/ template(\`<div><p>Welcome, <!>!</p><p>Role: </p><button>Logout\`), _tmpl$6 = /*#__PURE__*/ template(\`<div>No context available\`), _tmpl$7 = /*#__PURE__*/ template(\`<div><h3>Nested Context Usage</h3><p>Theme from parent: </p><p>User from parent: \`), _tmpl$8 = /*#__PURE__*/ template(\`<div><h2>Context Demo\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div>No theme context\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Current theme: </p><button>Toggle Theme\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<div>No user context\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div><p>Please log in</p><button>Login as User</button><button>Login as Admin\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<div><p>Welcome, <!>!</p><p>Role: </p><button>Logout\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<div>No context available\`);
+var _tmpl$7 = /*#__PURE__*/ template(\`<div><h3>Nested Context Usage</h3><p>Theme from parent: </p><p>User from parent: \`);
+var _tmpl$8 = /*#__PURE__*/ template(\`<div><h2>Context Demo\`);
 const ThemeContext = createContext();
 const UserContext = createContext();
 const ThemeProvider = (props) => {
@@ -843,8 +864,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -895,12 +918,14 @@ function children(fn) {
 }
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -978,14 +1003,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -1022,10 +1049,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -1192,9 +1222,10 @@ function resolveChildren(children) {
 		const results = [];
 		for (let i = 0; i < children.length; i++) {
 			const result = resolveChildren(children[i]);
-			if (Array.isArray(result)) if (result.length < 32768) results.push.apply(results, result);
-			else for (let j = 0; j < result.length; j++) results.push(result[j]);
-			else results.push(result);
+			if (Array.isArray(result)) {
+				if (result.length < 32768) results.push.apply(results, result);
+				else for (let j = 0; j < result.length; j++) results.push(result[j]);
+			} else results.push(result);
 		}
 		return results;
 	}
@@ -1247,18 +1278,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -1290,11 +1322,12 @@ function setAttribute(node, name, value) {
 	else node.setAttribute(name, value);
 }
 function addEventListener(node, name, handler, delegate) {
-	if (delegate) if (Array.isArray(handler)) {
-		node[\`$$\${name}\`] = handler[0];
-		node[\`$$\${name}Data\`] = handler[1];
-	} else node[\`$$\${name}\`] = handler;
-	else if (Array.isArray(handler)) {
+	if (delegate) {
+		if (Array.isArray(handler)) {
+			node[\`$$\${name}\`] = handler[0];
+			node[\`$$\${name}Data\`] = handler[1];
+		} else node[\`$$\${name}\`] = handler;
+	} else if (Array.isArray(handler)) {
 		const handlerFn = handler[0];
 		node.addEventListener(name, handler[0] = (e) => handlerFn.call(node, handler[1], e));
 	} else node.addEventListener(name, handler, typeof handler !== "function" && handler);
@@ -1434,9 +1467,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -1459,14 +1493,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -1493,7 +1528,14 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div>No theme context\`), _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Current theme: </p><button>Toggle Theme\`), _tmpl$3 = /*#__PURE__*/ template(\`<div>No user context\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><p>Please log in</p><button>Login as User</button><button>Login as Admin\`), _tmpl$5 = /*#__PURE__*/ template(\`<div><p>Welcome, <!>!</p><p>Role: </p><button>Logout\`), _tmpl$6 = /*#__PURE__*/ template(\`<div>No context available\`), _tmpl$7 = /*#__PURE__*/ template(\`<div><h3>Nested Context Usage</h3><p>Theme from parent: </p><p>User from parent: \`), _tmpl$8 = /*#__PURE__*/ template(\`<div><h2>Context Demo\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div>No theme context\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<div><p>Current theme: </p><button>Toggle Theme\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<div>No user context\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div><p>Please log in</p><button>Login as User</button><button>Login as Admin\`);
+var _tmpl$5 = /*#__PURE__*/ template(\`<div><p>Welcome, <!>!</p><p>Role: </p><button>Logout\`);
+var _tmpl$6 = /*#__PURE__*/ template(\`<div>No context available\`);
+var _tmpl$7 = /*#__PURE__*/ template(\`<div><h3>Nested Context Usage</h3><p>Theme from parent: </p><p>User from parent: \`);
+var _tmpl$8 = /*#__PURE__*/ template(\`<div><h2>Context Demo\`);
 const ThemeContext = createContext();
 const UserContext = createContext();
 const ThemeProvider = (props) => {

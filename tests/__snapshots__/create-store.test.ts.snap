@@ -48,8 +48,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -97,12 +99,14 @@ function useContext(context) {
 let SuspenseContext;
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -180,14 +184,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -224,10 +230,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -442,18 +451,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -619,9 +629,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -644,14 +655,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -678,7 +690,10 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-const $RAW = Symbol("store-raw"), $NODE = Symbol("store-node"), $HAS = Symbol("store-has"), $SELF = Symbol("store-self");
+const $RAW = Symbol("store-raw");
+const $NODE = Symbol("store-node");
+const $HAS = Symbol("store-has");
+const $SELF = Symbol("store-self");
 function wrap$1(value) {
 	let p = value[$PROXY];
 	if (!p) {
@@ -775,7 +790,7 @@ const proxyTraps$1 = {
 		if (property === $NODE || property === $HAS || property === "__proto__") return value;
 		if (!tracked) {
 			const desc = Object.getOwnPropertyDescriptor(target, property);
-			if (getListener() && (typeof value !== "function" || target.hasOwnProperty(property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
+			if (getListener() && (typeof value !== "function" || Object.prototype.hasOwnProperty.call(target, property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
 		}
 		return isWrappable(value) ? wrap$1(value) : value;
 	},
@@ -880,7 +895,10 @@ function createStore(...[store, options]) {
 	}
 	return [wrappedStore, setStore];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Users List\`), _tmpl$3 = /*#__PURE__*/ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Users List\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
 const StoreExample = () => {
 	const [store, setStore] = createStore({
 		currentUser: null,
@@ -949,10 +967,14 @@ const StoreExample = () => {
 	};
 	const handleSelectUser = (id) => {
 		setSelectedUserId(id);
-		setCurrentUser(store.users.find((u) => u.id === id) || null);
+		const user = store.users.find((u) => u.id === id);
+		setCurrentUser(user || null);
 	};
 	const handleToggleTheme = () => {
-		if (store.currentUser) setStore("currentUser", "preferences", "theme", store.currentUser.preferences.theme === "light" ? "dark" : "light");
+		if (store.currentUser) {
+			const newTheme = store.currentUser.preferences.theme === "light" ? "dark" : "light";
+			setStore("currentUser", "preferences", "theme", newTheme);
+		}
 	};
 	const handleUpdateAddress = () => {
 		if (store.currentUser) updateCurrentAddress("city", "Updated City");
@@ -1093,8 +1115,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -1142,12 +1166,14 @@ function useContext(context) {
 let SuspenseContext;
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -1225,14 +1251,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -1269,10 +1297,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -1487,18 +1518,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -1664,9 +1696,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -1689,14 +1722,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -1723,7 +1757,10 @@ function cleanChildren(parent, current, marker, replacement) {
 	} else parent.insertBefore(node, marker);
 	return [node];
 }
-const $RAW = Symbol("store-raw"), $NODE = Symbol("store-node"), $HAS = Symbol("store-has"), $SELF = Symbol("store-self");
+const $RAW = Symbol("store-raw");
+const $NODE = Symbol("store-node");
+const $HAS = Symbol("store-has");
+const $SELF = Symbol("store-self");
 function wrap$1(value) {
 	let p = value[$PROXY];
 	if (!p) {
@@ -1820,7 +1857,7 @@ const proxyTraps$1 = {
 		if (property === $NODE || property === $HAS || property === "__proto__") return value;
 		if (!tracked) {
 			const desc = Object.getOwnPropertyDescriptor(target, property);
-			if (getListener() && (typeof value !== "function" || target.hasOwnProperty(property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
+			if (getListener() && (typeof value !== "function" || Object.prototype.hasOwnProperty.call(target, property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
 		}
 		return isWrappable(value) ? wrap$1(value) : value;
 	},
@@ -1925,7 +1962,10 @@ function createStore(...[store, options]) {
 	}
 	return [wrappedStore, setStore];
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`), _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Users List\`), _tmpl$3 = /*#__PURE__*/ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><h2>Store Management Example</h2><div><button>Add Sample Users</button><p>Total Users: </p></div><div><h3>Store Debug Info</h3><p>Is Loading: </p><p>Error: </p><p>Selected User ID: \`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<div><h3>Users List\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<div style="border:1px solid #ccc;margin:10px;padding:10px"><p><strong></strong> (<!>)</p><p>City: </p><p>Theme: </p><p>Notifications: Email=<!>, Push=</p><button>Select User</button><button>Toggle Email\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div><h3>Current User: </h3><p>Theme: </p><p>Address: <!>, <!>, </p><div><h4>Actions:</h4><button>Toggle Theme</button><button>Update Address City</button><button>Toggle Email Notifications</button><button>Toggle Push Notifications</button><button>Toggle Marketing</button></div><div><h4>Notification Preferences:</h4><p>Email: </p><p>Push: </p><p>Marketing: \`);
 const StoreExample = () => {
 	const [store, setStore] = createStore({
 		currentUser: null,
@@ -1994,10 +2034,14 @@ const StoreExample = () => {
 	};
 	const handleSelectUser = (id) => {
 		setSelectedUserId(id);
-		setCurrentUser(store.users.find((u) => u.id === id) || null);
+		const user = store.users.find((u) => u.id === id);
+		setCurrentUser(user || null);
 	};
 	const handleToggleTheme = () => {
-		if (store.currentUser) setStore("currentUser", "preferences", "theme", store.currentUser.preferences.theme === "light" ? "dark" : "light");
+		if (store.currentUser) {
+			const newTheme = store.currentUser.preferences.theme === "light" ? "dark" : "light";
+			setStore("currentUser", "preferences", "theme", newTheme);
+		}
 	};
 	const handleUpdateAddress = () => {
 		if (store.currentUser) updateCurrentAddress("city", "Updated City");

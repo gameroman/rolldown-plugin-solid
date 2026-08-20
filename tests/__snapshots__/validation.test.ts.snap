@@ -23,7 +23,10 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div><p>Well-formed HTML\`), _tmpl$2 = /*#__PURE__*/ template(\`<table><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$3 = /*#__PURE__*/ template(\`<img src=test.jpg alt=test>\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><p>Well-formed HTML\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<table><tr><td>Cell 1</td><td>Cell 2\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<img src=test.jpg alt=test>\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer\`);
 function TestValidation() {
 	return _tmpl$();
 }
@@ -63,7 +66,10 @@ function template(html, isImportNode, isSVG, isMathML) {
 	fn.cloneNode = fn;
 	return fn;
 }
-var _tmpl$ = /*#__PURE__*/ template(\`<div><p>Well-formed HTML\`), _tmpl$2 = /*#__PURE__*/ template(\`<table><tr><td>Cell 1</td><td>Cell 2\`), _tmpl$3 = /*#__PURE__*/ template(\`<img src=test.jpg alt=test>\`), _tmpl$4 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer\`);
+var _tmpl$ = /*#__PURE__*/ template(\`<div><p>Well-formed HTML\`);
+var _tmpl$2 = /*#__PURE__*/ template(\`<table><tr><td>Cell 1</td><td>Cell 2\`);
+var _tmpl$3 = /*#__PURE__*/ template(\`<img src=test.jpg alt=test>\`);
+var _tmpl$4 = /*#__PURE__*/ template(\`<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer\`);
 function TestValidation() {
 	return _tmpl$();
 }
@@ -81,7 +87,8 @@ export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements
 `;
 
 exports[`rolldown-plugin-solid src should transform complex HTML with SSR 1`] = `
-"var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
+"var L = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L || {});
+var o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -99,40 +106,42 @@ function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 		l: d
 	};
 }
-function F(e) {
+function B$1(e) {
 	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-F(2);
-F(3);
-F(1);
-F(0);
-F(4);
-F(5);
-F(6);
-F(7);
-var U = "__SEROVAL_REFS__", j = /* @__PURE__ */ new Map();
+B$1(2);
+B$1(3);
+B$1(1);
+B$1(0);
+B$1(4);
+B$1(5);
+B$1(6);
+B$1(7);
+var U = "__SEROVAL_REFS__";
+var j$1 = /* @__PURE__ */ new Map();
 typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 });
-var { toString: ys } = Object.prototype, re = () => {
+var { toString: bs } = Object.prototype;
+var ee$1 = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -141,15 +150,17 @@ var { toString: ys } = Object.prototype, re = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn = (e, r) => {
+};
+var In = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
+};
+var Rn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 };
-re.toString();
-vn.toString();
-Cn.toString();
-var Rr = () => {
+ee$1.toString();
+In.toString();
+Rn.toString();
+var xr = () => {
 	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g](l);
 	}, i = (l, g, S, d) => {
@@ -171,8 +182,8 @@ var Rr = () => {
 		}
 	};
 };
-Rr.toString();
-var Pr = (e) => (r) => () => {
+xr.toString();
+var Tr = (e) => (r) => () => {
 	let t = 0, n = {
 		[e]: () => n,
 		next: () => {
@@ -190,8 +201,8 @@ var Pr = (e) => (r) => () => {
 	};
 	return n;
 };
-Pr.toString();
-var xr = (e, r) => (t) => () => {
+Tr.toString();
+var Or = (e, r) => (t) => () => {
 	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
 		for (; S < d; S++) u[S].s({
 			done: !0,
@@ -222,14 +233,14 @@ var xr = (e, r) => (t) => () => {
 		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K = n++;
-				if (K >= i.length) {
-					let et = r();
-					return u.push(et), et.p;
+				let G = n++;
+				if (G >= i.length) {
+					let tt = r();
+					return u.push(tt), tt.p;
 				}
 				return {
 					done: !1,
-					value: i[K]
+					value: i[G]
 				};
 			}
 			if (n > a) return {
@@ -250,17 +261,18 @@ var xr = (e, r) => (t) => () => {
 	};
 	return g;
 };
-xr.toString();
-var Or = (e) => {
+Or.toString();
+var wr = (e) => {
 	let r = atob(e), t = r.length, n = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
 	return n.buffer;
 };
-Or.toString();
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-var Eo = () => T, Io = Eo.toString();
-/=>/.test(Io);
-L$1.AggregateError | L$1.BigIntTypedArray;
+wr.toString();
+var oe$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(oe$1 || {});
+var Ro = () => T;
+var Po = Ro.toString();
+/=>/.test(Po);
+L.AggregateError | L.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
@@ -290,7 +302,10 @@ function resolveSSRNode(node, top) {
 	if (t === "function") return resolveSSRNode(node());
 	return String(node);
 }
-var _tmpl$ = "<div><p>Well-formed HTML</p></div>", _tmpl$2 = "<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>", _tmpl$3 = "<img src=\\"test.jpg\\" alt=\\"test\\">", _tmpl$4 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section></div>";
+var _tmpl$ = "<div><p>Well-formed HTML</p></div>";
+var _tmpl$2 = "<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>";
+var _tmpl$3 = "<img src=\\"test.jpg\\" alt=\\"test\\">";
+var _tmpl$4 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section></div>";
 function TestValidation() {
 	return ssr(_tmpl$);
 }
@@ -308,7 +323,8 @@ export { TestNestedElements, TestTableElements, TestValidation, TestVoidElements
 `;
 
 exports[`rolldown-plugin-solid dist should transform complex HTML with SSR 1`] = `
-"var L$1 = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L$1 || {}), o$1 = void 0;
+"var L = ((i) => (i[i.AggregateError = 1] = "AggregateError", i[i.ArrowFunction = 2] = "ArrowFunction", i[i.ErrorPrototypeStack = 4] = "ErrorPrototypeStack", i[i.ObjectAssign = 8] = "ObjectAssign", i[i.BigIntTypedArray = 16] = "BigIntTypedArray", i[i.RegExp = 32] = "RegExp", i))(L || {});
+var o$1 = void 0;
 Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY;
 function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 	return {
@@ -326,40 +342,42 @@ function c$1(e, r, t, n, a, s, i, u, l, g, S, d) {
 		l: d
 	};
 }
-function F(e) {
+function B$1(e) {
 	return c$1(2, o$1, e, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1, o$1);
 }
-F(2);
-F(3);
-F(1);
-F(0);
-F(4);
-F(5);
-F(6);
-F(7);
-var U = "__SEROVAL_REFS__", j = /* @__PURE__ */ new Map();
+B$1(2);
+B$1(3);
+B$1(1);
+B$1(0);
+B$1(4);
+B$1(5);
+B$1(6);
+B$1(7);
+var U = "__SEROVAL_REFS__";
+var j$1 = /* @__PURE__ */ new Map();
 typeof globalThis != "undefined" ? Object.defineProperty(globalThis, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof window != "undefined" ? Object.defineProperty(window, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof self != "undefined" ? Object.defineProperty(self, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 }) : typeof global != "undefined" && Object.defineProperty(global, U, {
-	value: j,
+	value: j$1,
 	configurable: !0,
 	writable: !1,
 	enumerable: !1
 });
-var { toString: ys } = Object.prototype, re = () => {
+var { toString: bs } = Object.prototype;
+var ee$1 = () => {
 	let e = {
 		p: 0,
 		s: 0,
@@ -368,15 +386,17 @@ var { toString: ys } = Object.prototype, re = () => {
 	return e.p = new Promise((r, t) => {
 		e.s = r, e.f = t;
 	}), e;
-}, vn = (e, r) => {
+};
+var In = (e, r) => {
 	e.s(r), e.p.s = 1, e.p.v = r;
-}, Cn = (e, r) => {
+};
+var Rn = (e, r) => {
 	e.f(r), e.p.s = 2, e.p.v = r;
 };
-re.toString();
-vn.toString();
-Cn.toString();
-var Rr = () => {
+ee$1.toString();
+In.toString();
+Rn.toString();
+var xr = () => {
 	let e = [], r = [], t = !0, n = !1, a = 0, s = (l, g, S) => {
 		for (S = 0; S < a; S++) r[S] && r[S][g](l);
 	}, i = (l, g, S, d) => {
@@ -398,8 +418,8 @@ var Rr = () => {
 		}
 	};
 };
-Rr.toString();
-var Pr = (e) => (r) => () => {
+xr.toString();
+var Tr = (e) => (r) => () => {
 	let t = 0, n = {
 		[e]: () => n,
 		next: () => {
@@ -417,8 +437,8 @@ var Pr = (e) => (r) => () => {
 	};
 	return n;
 };
-Pr.toString();
-var xr = (e, r) => (t) => () => {
+Tr.toString();
+var Or = (e, r) => (t) => () => {
 	let n = 0, a = -1, s = !1, i = [], u = [], l = (S = 0, d = u.length) => {
 		for (; S < d; S++) u[S].s({
 			done: !0,
@@ -449,14 +469,14 @@ var xr = (e, r) => (t) => () => {
 		[e]: () => g,
 		next: () => {
 			if (a === -1) {
-				let K = n++;
-				if (K >= i.length) {
-					let et = r();
-					return u.push(et), et.p;
+				let G = n++;
+				if (G >= i.length) {
+					let tt = r();
+					return u.push(tt), tt.p;
 				}
 				return {
 					done: !1,
-					value: i[K]
+					value: i[G]
 				};
 			}
 			if (n > a) return {
@@ -477,17 +497,18 @@ var xr = (e, r) => (t) => () => {
 	};
 	return g;
 };
-xr.toString();
-var Or = (e) => {
+Or.toString();
+var wr = (e) => {
 	let r = atob(e), t = r.length, n = new Uint8Array(t);
 	for (let a = 0; a < t; a++) n[a] = r.charCodeAt(a);
 	return n.buffer;
 };
-Or.toString();
-var ae = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(ae || {});
-var Eo = () => T, Io = Eo.toString();
-/=>/.test(Io);
-L$1.AggregateError | L$1.BigIntTypedArray;
+wr.toString();
+var oe$1 = ((t) => (t[t.Vanilla = 1] = "Vanilla", t[t.Cross = 2] = "Cross", t))(oe$1 || {});
+var Ro = () => T;
+var Po = Ro.toString();
+/=>/.test(Po);
+L.AggregateError | L.BigIntTypedArray;
 function ssr(t, ...nodes) {
 	if (nodes.length) {
 		let result = "";
@@ -517,7 +538,10 @@ function resolveSSRNode(node, top) {
 	if (t === "function") return resolveSSRNode(node());
 	return String(node);
 }
-var _tmpl$ = "<div><p>Well-formed HTML</p></div>", _tmpl$2 = "<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>", _tmpl$3 = "<img src=\\"test.jpg\\" alt=\\"test\\">", _tmpl$4 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section></div>";
+var _tmpl$ = "<div><p>Well-formed HTML</p></div>";
+var _tmpl$2 = "<table><tr><td>Cell 1</td><td>Cell 2</td></tr></table>";
+var _tmpl$3 = "<img src=\\"test.jpg\\" alt=\\"test\\">";
+var _tmpl$4 = "<div><section><article><header><h1>Title</h1></header><main><p>Content</p></main><footer><small>Footer</small></footer></article></section></div>";
 function TestValidation() {
 	return ssr(_tmpl$);
 }
@@ -595,8 +619,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -626,12 +652,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -709,14 +737,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -753,10 +783,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -1055,9 +1088,10 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (array.length === 0) {
 				const replacement = cleanChildren(parent, current, marker);
 				if (multi) return current = replacement;
-			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-			else if (current == null || current === "") appendNodes(parent, array);
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
 			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
 			current = array;
 		} else {
@@ -1077,14 +1111,15 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
 			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
-			else if (t === "function") if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-			else normalized.push(item);
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
 		}
 		return dynamic;
 	}
@@ -1119,18 +1154,19 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 					while (i < bEnd) map.set(b[i], i++);
 				}
 				const index = map.get(a[aStart]);
-				if (index != null) if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) insertNode(parentNode, b[bStart++], node);
-					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
-				} else aStart++;
-				else removeNode(parentNode, a[aStart++]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
 			}
 		}
 	}
@@ -1335,8 +1371,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -1366,12 +1404,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -1449,14 +1489,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -1493,10 +1535,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -1795,9 +1840,10 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (array.length === 0) {
 				const replacement = cleanChildren(parent, current, marker);
 				if (multi) return current = replacement;
-			} else if (Array.isArray(current)) if (current.length === 0) appendNodes(parent, array, marker);
-			else reconcileArrays(parent, current, array);
-			else if (current == null || current === "") appendNodes(parent, array);
+			} else if (Array.isArray(current)) {
+				if (current.length === 0) appendNodes(parent, array, marker);
+				else reconcileArrays(parent, current, array);
+			} else if (current == null || current === "") appendNodes(parent, array);
 			else reconcileArrays(parent, multi && current || [getFirstChild(parent)], array);
 			current = array;
 		} else {
@@ -1817,14 +1863,15 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 			if (item == null || item === true || item === false);
 			else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item) || dynamic;
 			else if ((t = typeof item) === "string" || t === "number") normalized.push(createTextNode(item));
-			else if (t === "function") if (unwrap) {
-				while (typeof item === "function") item = item();
-				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
-			} else {
-				normalized.push(item);
-				dynamic = true;
-			}
-			else normalized.push(item);
+			else if (t === "function") {
+				if (unwrap) {
+					while (typeof item === "function") item = item();
+					dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item]) || dynamic;
+				} else {
+					normalized.push(item);
+					dynamic = true;
+				}
+			} else normalized.push(item);
 		}
 		return dynamic;
 	}
@@ -1859,18 +1906,19 @@ function createRenderer$1({ createElement, createTextNode, isTextNode, replaceTe
 					while (i < bEnd) map.set(b[i], i++);
 				}
 				const index = map.get(a[aStart]);
-				if (index != null) if (bStart < index && index < bEnd) {
-					let i = aStart, sequence = 1, t;
-					while (++i < aEnd && i < bEnd) {
-						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-						sequence++;
-					}
-					if (sequence > index - bStart) {
-						const node = a[aStart];
-						while (bStart < index) insertNode(parentNode, b[bStart++], node);
-					} else replaceNode(parentNode, b[bStart++], a[aStart++]);
-				} else aStart++;
-				else removeNode(parentNode, a[aStart++]);
+				if (index != null) {
+					if (bStart < index && index < bEnd) {
+						let i = aStart, sequence = 1, t;
+						while (++i < aEnd && i < bEnd) {
+							if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+							sequence++;
+						}
+						if (sequence > index - bStart) {
+							const node = a[aStart];
+							while (bStart < index) insertNode(parentNode, b[bStart++], node);
+						} else replaceNode(parentNode, b[bStart++], a[aStart++]);
+					} else aStart++;
+				} else removeNode(parentNode, a[aStart++]);
 			}
 		}
 	}
@@ -2057,8 +2105,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -2079,12 +2129,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -2162,14 +2214,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -2206,10 +2260,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -2401,18 +2458,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -2552,9 +2610,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -2577,14 +2636,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
@@ -2669,8 +2729,10 @@ function createSignal(value, options) {
 		comparator: options.equals || void 0
 	};
 	const setter = (value) => {
-		if (typeof value === "function") if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
-		else value = value(s.value);
+		if (typeof value === "function") {
+			if (Transition && Transition.running && Transition.sources.has(s)) value = value(s.tValue);
+			else value = value(s.value);
+		}
 		return writeSignal(s, value);
 	};
 	return [readSignal.bind(s), setter];
@@ -2691,12 +2753,14 @@ function untrack(fn) {
 const [transPending, setTransPending] = /*@__PURE__*/ createSignal(false);
 function readSignal() {
 	const runningTransition = Transition && Transition.running;
-	if (this.sources && (runningTransition ? this.tState : this.state)) if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
-	else {
-		const updates = Updates;
-		Updates = null;
-		runUpdates(() => lookUpstream(this), false);
-		Updates = updates;
+	if (this.sources && (runningTransition ? this.tState : this.state)) {
+		if ((runningTransition ? this.tState : this.state) === STALE) updateComputation(this);
+		else {
+			const updates = Updates;
+			Updates = null;
+			runUpdates(() => lookUpstream(this), false);
+			Updates = updates;
+		}
 	}
 	if (Listener) {
 		const observers = this.observers;
@@ -2774,14 +2838,16 @@ function runComputation(node, value, time) {
 	try {
 		nextValue = node.fn(value);
 	} catch (err) {
-		if (node.pure) if (Transition && Transition.running) {
-			node.tState = STALE;
-			node.tOwned && node.tOwned.forEach(cleanNode);
-			node.tOwned = void 0;
-		} else {
-			node.state = STALE;
-			node.owned && node.owned.forEach(cleanNode);
-			node.owned = null;
+		if (node.pure) {
+			if (Transition && Transition.running) {
+				node.tState = STALE;
+				node.tOwned && node.tOwned.forEach(cleanNode);
+				node.tOwned = void 0;
+			} else {
+				node.state = STALE;
+				node.owned && node.owned.forEach(cleanNode);
+				node.owned = null;
+			}
 		}
 		node.updatedAt = time + 1;
 		return handleError(err);
@@ -2818,10 +2884,13 @@ function createComputation(fn, init, pure, state = STALE, options) {
 		c.tState = state;
 	}
 	if (Owner === null);
-	else if (Owner !== UNOWNED) if (Transition && Transition.running && Owner.pure) if (!Owner.tOwned) Owner.tOwned = [c];
-	else Owner.tOwned.push(c);
-	else if (!Owner.owned) Owner.owned = [c];
-	else Owner.owned.push(c);
+	else if (Owner !== UNOWNED) {
+		if (Transition && Transition.running && Owner.pure) {
+			if (!Owner.tOwned) Owner.tOwned = [c];
+			else Owner.tOwned.push(c);
+		} else if (!Owner.owned) Owner.owned = [c];
+		else Owner.owned.push(c);
+	}
 	return c;
 }
 function runTop(node) {
@@ -3013,18 +3082,19 @@ function reconcileArrays(parentNode, a, b) {
 				while (i < bEnd) map.set(b[i], i++);
 			}
 			const index = map.get(a[aStart]);
-			if (index != null) if (bStart < index && index < bEnd) {
-				let i = aStart, sequence = 1, t;
-				while (++i < aEnd && i < bEnd) {
-					if ((t = map.get(a[i])) == null || t !== index + sequence) break;
-					sequence++;
-				}
-				if (sequence > index - bStart) {
-					const node = a[aStart];
-					while (bStart < index) parentNode.insertBefore(b[bStart++], node);
-				} else parentNode.replaceChild(b[bStart++], a[aStart++]);
-			} else aStart++;
-			else a[aStart++].remove();
+			if (index != null) {
+				if (bStart < index && index < bEnd) {
+					let i = aStart, sequence = 1, t;
+					while (++i < aEnd && i < bEnd) {
+						if ((t = map.get(a[i])) == null || t !== index + sequence) break;
+						sequence++;
+					}
+					if (sequence > index - bStart) {
+						const node = a[aStart];
+						while (bStart < index) parentNode.insertBefore(b[bStart++], node);
+					} else parentNode.replaceChild(b[bStart++], a[aStart++]);
+				} else aStart++;
+			} else a[aStart++].remove();
 		}
 	}
 }
@@ -3164,9 +3234,10 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
 		if (array.length === 0) {
 			current = cleanChildren(parent, current, marker);
 			if (multi) return current;
-		} else if (currentArray) if (current.length === 0) appendNodes(parent, array, marker);
-		else reconcileArrays(parent, current, array);
-		else {
+		} else if (currentArray) {
+			if (current.length === 0) appendNodes(parent, array, marker);
+			else reconcileArrays(parent, current, array);
+		} else {
 			current && cleanChildren(parent);
 			appendNodes(parent, array);
 		}
@@ -3189,14 +3260,15 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
 		if (item == null || item === true || item === false);
 		else if ((t = typeof item) === "object" && item.nodeType) normalized.push(item);
 		else if (Array.isArray(item)) dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-		else if (t === "function") if (unwrap) {
-			while (typeof item === "function") item = item();
-			dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+		else if (t === "function") {
+			if (unwrap) {
+				while (typeof item === "function") item = item();
+				dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
+			} else {
+				normalized.push(item);
+				dynamic = true;
+			}
 		} else {
-			normalized.push(item);
-			dynamic = true;
-		}
-		else {
 			const value = String(item);
 			if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);
 			else normalized.push(document.createTextNode(value));
