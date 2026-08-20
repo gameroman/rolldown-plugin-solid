@@ -1,4 +1,4 @@
-import { walk, WalkContext } from "yuku-ast";
+import { b, walk, WalkContext } from "yuku-ast";
 import { generate } from "yuku-codegen";
 import { parse } from "yuku-parser";
 
@@ -77,15 +77,34 @@ export function transform(
   walk(program, {
     JSXElement(node: JSXElement, wctx: WalkContext) {
       const expr = transformJSX(ctx, node);
-      wctx.replace({ type: "ExpressionStatement", expression: expr });
+      wctx.replace(expr);
     },
     JSXFragment(node: JSXFragment, wctx: WalkContext) {
       const expr = transformJSX(ctx, node);
-      wctx.replace({ type: "ExpressionStatement", expression: expr });
+      wctx.replace(expr);
     },
   });
 
   postprocess(ctx);
+
+  const imports = Array.from(ctx.imports.values()).map((imp) => {
+    const imported =
+      imp.importedName === imp.localName
+        ? b.Identifier({ name: imp.importedName })
+        : b.Identifier({ name: imp.importedName });
+    return b.ImportDeclaration({
+      specifiers: [
+        b.ImportSpecifier({
+          local: b.Identifier({ name: imp.localName }),
+          imported,
+        }),
+      ],
+      source: b.Literal({ value: imp.moduleName }),
+      importKind: "value",
+    });
+  });
+
+  program.body.unshift(...imports, ...ctx.out.body);
 
   const { code, map } = generate(program, {
     sourceFileName: options.filename ?? "input.tsx",

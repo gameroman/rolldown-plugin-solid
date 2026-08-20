@@ -149,6 +149,8 @@ export default function transformComponent(
                 }),
                 computed: false,
                 shorthand: false,
+                kind: "method",
+                method: true,
               }),
             );
           } else if (isConstant || is.Function(valueExpr)) {
@@ -187,6 +189,7 @@ export default function transformComponent(
                 }),
                 computed: !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key),
                 shorthand: false,
+                kind: "get",
               }),
             );
           } else {
@@ -204,6 +207,7 @@ export default function transformComponent(
                 }),
                 computed: !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key),
                 shorthand: false,
+                kind: "get",
               }),
             );
           }
@@ -242,6 +246,7 @@ export default function transformComponent(
           }),
           computed: false,
           shorthand: false,
+          kind: "get",
         }),
       );
     } else {
