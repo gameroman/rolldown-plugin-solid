@@ -1,0 +1,33 @@
+{
+  "name": "babel-plugin-jsx-dom-expressions",
+  "description": "A JSX to DOM plugin that wraps expressions for fine grained change detection",
+  "version": "0.40.10",
+  "author": "Ryan Carniato",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryansolid/dom-expressions/blob/main/packages/babel-plugin-jsx-dom-expressions"
+  },
+  "readmeFilename": "README.md",
+  "main": "index.js",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsdown",
+    "test": "pnpm run build && jest --no-cache",
+    "test:coverage": "pnpm run build && jest --coverage --no-cache",
+    "prepublishOnly": "pnpm run build",
+    "prepare": "pnpm run build"
+  },
+  "dependencies": {
+    "html-entities": "2.3.3",
+    "parse5": "^7.1.2",
+    "yuku-ast": "^0.8.7",
+    "yuku-codegen": "^0.8.7",
+    "yuku-parser": "^0.8.7"
+  },
+  "devDependencies": {
+    "tsdown": "^0.22.14",
+    "typescript": "^7.0.0"
+  },
+  "gitHead": "eb463c653325e24824422cff6bfed0d35113ef33"
+}

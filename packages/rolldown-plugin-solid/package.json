@@ -28,15 +28,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@babel/core": "^8.0.1",
-    "@babel/helper-module-imports": "^8.0.0",
-    "@babel/helper-plugin-utils": "^8.0.1",
-    "@babel/helper-validator-option": "^8.0.0",
-    "@babel/template": "^8.0.0",
-    "@babel/traverse": "^8.0.0",
-    "@babel/types": "^8.0.0",
+    "babel-plugin-jsx-dom-expressions": "workspace:*",
     "html-entities": "^2.6.0",
-    "parse5": "^8.0.1"
+    "parse5": "^8.0.1",
+    "yuku-ast": "^0.8.7",
+    "yuku-codegen": "^0.8.7",
+    "yuku-parser": "^0.8.7"
   },
   "devDependencies": {
     "@gameroman/config": "0.2.9",
