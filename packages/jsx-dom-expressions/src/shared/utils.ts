@@ -256,6 +256,10 @@ export function getStaticExpression(
     if (is.SequenceExpression(expr)) return false;
     if (is.StringLiteral(expr)) return expr.value;
     if (is.NumericLiteral(expr)) return expr.value;
+    if (is.Literal(expr)) {
+      if (typeof expr.value === "string") return expr.value;
+      if (typeof expr.value === "number") return expr.value;
+    }
     if (is.Identifier(expr) && expr.name === "undefined") return false;
     return false;
   }
@@ -482,6 +486,7 @@ export function transformCondition(
       optional: false,
     });
   }
+  if (inline) return expr;
   return b.ArrowFunctionExpression({ params: [], body: expr });
 }
 
@@ -605,7 +610,7 @@ const templateEscapes = new Map([
 export function generateUid(ctx: TransformContext, prefix: string): string {
   const count = (ctx.uidCounters.get(prefix) ?? 0) + 1;
   ctx.uidCounters.set(prefix, count);
-  return count === 1 ? `_${prefix}` : `_${prefix}$${count}`;
+  return `_${prefix}${count !== 1 ? count : ""}`;
 }
 
 export function inferLang(filename?: string): "js" | "jsx" | "ts" | "tsx" {
