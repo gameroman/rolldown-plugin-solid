@@ -33,7 +33,7 @@ export default function reconcileArrays(parentNode, a, b) {
       // remove
     } else if (bEnd === bStart) {
       while (aStart < aEnd) {
-        if (!map || !map.has(a[aStart])) a[aStart].remove();
+        if (!map?.has(a[aStart])) a[aStart].remove();
         aStart++;
       }
       // swap backward

@@ -1,13 +1,12 @@
 import { createSignal, For, Show } from "solid-js";
+import type { ExtendedUser, User } from "./utils";
 import {
   calculateUserStats,
   createApiResponse,
   createUserManagementService,
   DEFAULT_PAGE_SIZE,
-  type ExtendedUser,
   formatUserName,
   paginateData,
-  type User,
   UserRole,
   UserStatus,
   validateUser,

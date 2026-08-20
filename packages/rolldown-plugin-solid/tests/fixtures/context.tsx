@@ -1,10 +1,5 @@
-import {
-  type Accessor,
-  createContext,
-  createSignal,
-  type ParentComponent,
-  useContext,
-} from "solid-js";
+import type { Accessor, ParentComponent } from "solid-js";
+import { createContext, createSignal, useContext } from "solid-js";
 
 interface ThemeContextType {
   theme: Accessor<"light" | "dark">;

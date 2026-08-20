@@ -254,7 +254,7 @@ export default function transformComponent(path) {
     });
 
   const childResult = transformComponentChildren(path.get("children"), config);
-  if (childResult && childResult[0]) {
+  if (childResult?.[0]) {
     if (childResult[1]) {
       const body =
         t.isCallExpression(childResult[0]) &&

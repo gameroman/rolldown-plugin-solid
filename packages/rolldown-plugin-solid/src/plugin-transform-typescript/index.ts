@@ -638,7 +638,7 @@ const pluginTransformTypescript = declare((api, opts: Options) => {
         path.replaceWith(path.node.expression);
       },
 
-      ["TSAsExpression|TSSatisfiesExpression"](
+      "TSAsExpression|TSSatisfiesExpression"(
         path: NodePath<t.TSAsExpression | t.TSSatisfiesExpression>,
       ) {
         let { node }: { node: t.Expression } = path;

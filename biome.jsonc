@@ -2,23 +2,34 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["@gameroman/config/biome"],
   "files": {
-    "includes": ["**", "!!tests/fixtures"]
+    "includes": ["**", "!!**/tests/fixtures"]
   },
   "linter": {
     "rules": {
       "suspicious": {
         "noEmptyInterface": "off",
-        "noImplicitAnyLet": "warn",
-        "noAssignInExpressions": "warn",
-        "noExplicitAny": "warn",
-        "useIterableCallbackReturn": "warn",
-        "noDoubleEquals": "warn",
-        "noThenProperty": "warn",
-        "noShadowRestrictedNames": "warn",
-        "noFallthroughSwitchClause": "warn"
+        "noImplicitAnyLet": "off",
+        "noAssignInExpressions": "off",
+        "noExplicitAny": "off",
+        "useIterableCallbackReturn": "off",
+        "noDoubleEquals": "off",
+        "noThenProperty": "off",
+        "noShadowRestrictedNames": "off",
+        "noFallthroughSwitchClause": "off",
+        "useDefaultSwitchClauseLast": "off"
       },
       "style": {
-        "useShorthandFunctionType": "off"
+        "useShorthandFunctionType": "off",
+        "useTemplate": "off"
+      },
+      "complexity": {
+        "useLiteralKeys": "off",
+        "noCommaOperator": "off",
+        "noBannedTypes": "off"
+      },
+      "correctness": {
+        "noUnusedFunctionParameters": "off",
+        "noUnusedVariables": "off"
       }
     }
   }

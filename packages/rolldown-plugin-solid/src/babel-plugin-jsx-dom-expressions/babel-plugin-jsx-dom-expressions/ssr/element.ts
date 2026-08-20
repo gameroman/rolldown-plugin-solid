@@ -29,7 +29,7 @@ function appendToTemplate(template, value) {
     [value, ...array] = value;
   }
   template[template.length - 1] += value;
-  if (array && array.length) template.push.apply(template, array);
+  if (array?.length) template.push.apply(template, array);
 }
 
 export function transformElement(path, info) {
@@ -390,12 +390,7 @@ function transformAttributes(path, results, info) {
       )
         return;
       else if (ChildProperties.has(key)) {
-        if (
-          info.hydratable &&
-          key === "textContent" &&
-          value &&
-          value.expression
-        ) {
+        if (info.hydratable && key === "textContent" && value?.expression) {
           value.expression = t.logicalExpression(
             "||",
             value.expression,

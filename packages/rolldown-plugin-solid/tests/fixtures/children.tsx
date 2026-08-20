@@ -1,4 +1,5 @@
-import { createSignal, type ParentComponent } from "solid-js";
+import type { ParentComponent } from "solid-js";
+import { createSignal } from "solid-js";
 
 const Card: ParentComponent<{ title?: string }> = (props) => {
   return (

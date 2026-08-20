@@ -41,8 +41,7 @@ export function transformJSX(path, state) {
   path.traverse({
     enter(path) {
       if (
-        path.node.leadingComments &&
-        path.node.leadingComments[0] &&
+        path.node.leadingComments?.[0] &&
         path.node.leadingComments[0].value.trim() === config.staticMarker
       ) {
         path.node.leadingComments.shift();

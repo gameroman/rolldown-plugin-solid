@@ -97,13 +97,12 @@ export function renderToStream(code, options = {}) {
   const onDone = () => {
     writeTasks();
     doShell();
-    onCompleteAll &&
-      onCompleteAll({
-        write(v) {
-          !completed && buffer.write(v);
-        },
-      });
-    writable && writable.end();
+    onCompleteAll?.({
+      write(v) {
+        !completed && buffer.write(v);
+      },
+    });
+    writable?.end();
     completed = true;
     if (firstFlushed) dispose();
   };
@@ -252,12 +251,11 @@ export function renderToStream(code, options = {}) {
     if (tasks.length) html = injectScripts(html, tasks, nonce);
     buffer.write(html);
     tasks = "";
-    onCompleteShell &&
-      onCompleteShell({
-        write(v) {
-          !completed && buffer.write(v);
-        },
-      });
+    onCompleteShell?.({
+      write(v) {
+        !completed && buffer.write(v);
+      },
+    });
     shellCompleted = true;
   }
   return {
@@ -543,7 +541,7 @@ export function mergeProps(...sources) {
           enumerable: true,
           get() {
             for (let i = sources.length - 1; i >= 0; i--) {
-              const v = (sources[i] || {})[key];
+              const v = sources[i]?.[key];
               if (v !== undefined) return v;
             }
           },
@@ -613,7 +611,7 @@ function allSettled(promises) {
 }
 
 function injectAssets(assets, html) {
-  if (!assets || !assets.length) return html;
+  if (!assets?.length) return html;
   let out = "";
   for (let i = 0, len = assets.length; i < len; i++) out += assets[i]();
   const index = html.indexOf("</head>");
@@ -654,7 +652,7 @@ export const RequestContext = Symbol();
 export function getRequestEvent() {
   return globalThis[RequestContext]
     ? globalThis[RequestContext].getStore() ||
-        (sharedConfig.context && sharedConfig.context.event) ||
+        sharedConfig.context?.event ||
         console.log(
           "RequestEvent is missing. This is most likely due to accessing `getRequestEvent` non-managed async scope in a partially polyfilled environment. Try moving it above all `await` calls.",
         )

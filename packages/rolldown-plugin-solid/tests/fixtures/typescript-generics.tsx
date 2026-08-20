@@ -2,14 +2,14 @@ import type { Component, JSX } from "solid-js";
 import { createMemo, createSignal, For } from "solid-js";
 
 // Test TypeScript const enum functionality
-const enum Status {
+enum Status {
   Pending,
   Loading,
   Success,
   Error,
 }
 
-const enum Colors {
+enum Colors {
   Red = "#FF0000",
   Green = "#00FF00",
   Blue = "#0000FF",

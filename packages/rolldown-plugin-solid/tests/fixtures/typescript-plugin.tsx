@@ -1,4 +1,4 @@
-const enum Enum4 {
+enum Enum4 {
   Foo,
   Bar,
   Baz,

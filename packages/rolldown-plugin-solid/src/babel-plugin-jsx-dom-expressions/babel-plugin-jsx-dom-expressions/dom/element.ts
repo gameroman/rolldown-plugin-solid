@@ -1179,7 +1179,7 @@ function findLastElement(children, hydratable) {
 }
 
 function transformChildren(path, results, config) {
-  let tempPath = results.id && results.id.name,
+  let tempPath = results.id?.name,
     tagName = getTagName(path.node),
     nextPlaceholder,
     childPostExprs = [],
@@ -1440,8 +1440,8 @@ function detectExpressions(children, index, config) {
       )
         return true;
       const nextChildren = filterChildren(children[i].get("children"));
-      if (nextChildren.length)
-        if (detectExpressions(nextChildren, 0, config)) return true;
+      if (nextChildren.length && detectExpressions(nextChildren, 0, config))
+        return true;
     }
   }
 }
@@ -1486,8 +1486,7 @@ function processSpreads(
         : node.name.name);
     if (t.isJSXSpreadAttribute(node)) {
       const isStatic =
-        node.innerComments &&
-        node.innerComments[0] &&
+        node.innerComments?.[0] &&
         node.innerComments[0].value.trim() === config.staticMarker;
 
       firstSpread = true;

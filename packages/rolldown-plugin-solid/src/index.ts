@@ -2,9 +2,8 @@ import { parse } from "node:path";
 import { transformAsync } from "@babel/core";
 import type { RolldownPlugin } from "rolldown";
 import jsxTransform from "./babel-plugin-jsx-dom-expressions";
-import typescriptPreset, {
-  type PresetTypescriptOptions,
-} from "./preset-typescript";
+import type { PresetTypescriptOptions } from "./preset-typescript";
+import typescriptPreset from "./preset-typescript";
 
 function solidPreset(_context: unknown, options = {}) {
   const plugins = [
@@ -109,26 +108,24 @@ export interface Options {
 
 const rolldownPluginSolid = (options?: Options): RolldownPlugin => {
   // Validate universal mode configuration
-  if (options?.solid?.generate === "universal") {
-    if (!options?.solid?.moduleName) {
-      throw new Error(
-        `Universal mode requires a 'moduleName' option pointing to your custom renderer.\n\n` +
-          `Please provide a moduleName that exports the required universal renderer functions:\n` +
-          `- createElement\n` +
-          `- createTextNode\n` +
-          `- insertNode\n` +
-          `- setProp\n` +
-          `- insert\n` +
-          `- spread\n` +
-          `- mergeProps\n` +
-          `- effect\n` +
-          `- memo\n` +
-          `- use\n\n` +
-          `Example configuration:\n` +
-          `{ solid: { generate: "universal", moduleName: "my-custom-renderer" } }\n\n` +
-          `Your custom renderer should be created using 'createRenderer' from 'solid-js/universal'.`,
-      );
-    }
+  if (options?.solid?.generate === "universal" && !options?.solid?.moduleName) {
+    throw new Error(
+      `Universal mode requires a 'moduleName' option pointing to your custom renderer.\n\n` +
+        `Please provide a moduleName that exports the required universal renderer functions:\n` +
+        `- createElement\n` +
+        `- createTextNode\n` +
+        `- insertNode\n` +
+        `- setProp\n` +
+        `- insert\n` +
+        `- spread\n` +
+        `- mergeProps\n` +
+        `- effect\n` +
+        `- memo\n` +
+        `- use\n\n` +
+        `Example configuration:\n` +
+        `{ solid: { generate: "universal", moduleName: "my-custom-renderer" } }\n\n` +
+        `Your custom renderer should be created using 'createRenderer' from 'solid-js/universal'.`,
+    );
   }
 
   return {

@@ -43,13 +43,11 @@ export function createRenderer({
           replaceText(node, value);
         } else node = createTextNode(value);
         current = cleanChildren(parent, current, marker, node);
+      } else if (current !== "" && typeof current === "string") {
+        replaceText(getFirstChild(parent), (current = value));
       } else {
-        if (current !== "" && typeof current === "string") {
-          replaceText(getFirstChild(parent), (current = value));
-        } else {
-          cleanChildren(parent, current, marker, createTextNode(value));
-          current = value;
-        }
+        cleanChildren(parent, current, marker, createTextNode(value));
+        current = value;
       }
     } else if (value == null || t === "boolean") {
       current = cleanChildren(parent, current, marker);
@@ -72,20 +70,18 @@ export function createRenderer({
       if (array.length === 0) {
         const replacement = cleanChildren(parent, current, marker);
         if (multi) return (current = replacement);
+      } else if (Array.isArray(current)) {
+        if (current.length === 0) {
+          appendNodes(parent, array, marker);
+        } else reconcileArrays(parent, current, array);
+      } else if (current == null || current === "") {
+        appendNodes(parent, array);
       } else {
-        if (Array.isArray(current)) {
-          if (current.length === 0) {
-            appendNodes(parent, array, marker);
-          } else reconcileArrays(parent, current, array);
-        } else if (current == null || current === "") {
-          appendNodes(parent, array);
-        } else {
-          reconcileArrays(
-            parent,
-            (multi && current) || [getFirstChild(parent)],
-            array,
-          );
-        }
+        reconcileArrays(
+          parent,
+          (multi && current) || [getFirstChild(parent)],
+          array,
+        );
       }
       current = array;
     } else {
@@ -165,7 +161,7 @@ export function createRenderer({
         // remove
       } else if (bEnd === bStart) {
         while (aStart < aEnd) {
-          if (!map || !map.has(a[aStart])) removeNode(parentNode, a[aStart]);
+          if (!map?.has(a[aStart])) removeNode(parentNode, a[aStart]);
           aStart++;
         }
         // swap backward
@@ -253,7 +249,7 @@ export function createRenderer({
           )),
       );
     }
-    effect(() => props.ref && props.ref(node));
+    effect(() => props.ref?.(node));
     effect(() => {
       for (const prop in props) {
         if (prop === "children" || prop === "ref") continue;

@@ -459,9 +459,11 @@ function assignProp(node, prop, value, prev, isSVG, skipRef, props) {
 }
 
 function eventHandler(e) {
-  if (sharedConfig.registry && sharedConfig.events) {
-    if (sharedConfig.events.find(([el, ev]) => ev === e)) return;
-  }
+  if (
+    sharedConfig.registry &&
+    sharedConfig.events?.find(([el, ev]) => ev === e)
+  )
+    return;
 
   let node = e.target;
   const key = `$$${e.type}`;
@@ -543,7 +545,7 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
   if (value === current) return current;
   const t = typeof value,
     multi = marker !== undefined;
-  parent = (multi && current[0] && current[0].parentNode) || parent;
+  parent = (multi && current[0]?.parentNode) || parent;
 
   if (t === "string" || t === "number") {
     if (hydrating) return current;
@@ -557,11 +559,9 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
         node.data !== value && (node.data = value);
       } else node = document.createTextNode(value);
       current = cleanChildren(parent, current, marker, node);
-    } else {
-      if (current !== "" && typeof current === "string") {
-        current = parent.firstChild.data = value;
-      } else current = parent.textContent = value;
-    }
+    } else if (current !== "" && typeof current === "string") {
+      current = parent.firstChild.data = value;
+    } else current = parent.textContent = value;
   } else if (value == null || t === "boolean") {
     if (hydrating) return current;
     current = cleanChildren(parent, current, marker);
@@ -623,7 +623,7 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
   let dynamic = false;
   for (let i = 0, len = array.length; i < len; i++) {
     let item = array[i],
-      prev = current && current[normalized.length],
+      prev = current?.[normalized.length],
       t;
     if (item == null || item === true || item === false) {
       // matches null, undefined, true or false

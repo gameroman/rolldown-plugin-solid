@@ -1,4 +1,5 @@
-import { type Component, createSignal } from "solid-js";
+import type { Component } from "solid-js";
+import { createSignal } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 const Button: Component<{ text: string; onClick: () => void }> = (props) => (

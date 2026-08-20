@@ -76,8 +76,7 @@ export function isComponent(tagName) {
 export function hasStaticMarker(object, path) {
   if (!object) return false;
   if (
-    object.leadingComments &&
-    object.leadingComments[0] &&
+    object.leadingComments?.[0] &&
     object.leadingComments[0].value.trim() === getConfig(path).staticMarker
   )
     return true;
@@ -96,8 +95,7 @@ export function isDynamic(
   const expr = path.node;
   if (t.isFunction(expr)) return false;
   if (
-    expr.leadingComments &&
-    expr.leadingComments[0] &&
+    expr.leadingComments?.[0] &&
     expr.leadingComments[0].value.trim() === config.staticMarker
   ) {
     return false;
@@ -128,7 +126,7 @@ export function isDynamic(
     ) {
       const binding = path.scope.getBinding(object.name);
 
-      if (binding && binding.path.isImportNamespaceSpecifier()) {
+      if (binding?.path.isImportNamespaceSpecifier()) {
         return false;
       }
     }
