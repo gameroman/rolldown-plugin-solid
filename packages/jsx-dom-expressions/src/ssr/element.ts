@@ -308,7 +308,7 @@ function transformToObject(
   attributes: JSXAttribute[],
   selectedIndices: number[],
 ): void {
-  const properties: any[] = [];
+  const properties = [];
   const existingAttr = attributes.find((a) => {
     const name = is.JSXNamespacedName(a.name) ? a.name.name.name : a.name.name;
     return name === attrName;
@@ -380,7 +380,7 @@ function normalizeAttributes(
       ? first.name.name.name
       : first.name.name;
     const values: Expression[] = [];
-    const quasis: any[] = [
+    const quasis = [
       b.TemplateElement({ value: { cooked: "", raw: "" }, tail: false }),
     ];
 
@@ -471,7 +471,7 @@ function transformAttributes(
 
   attributes.forEach((attribute) => {
     const attrNode = attribute;
-    let value: any = attrNode.value;
+    let value = attrNode.value;
     const key = is.JSXNamespacedName(attrNode.name)
       ? `${attrNode.name.namespace.name}:${attrNode.name.name.name}`
       : attrNode.name.name;
@@ -546,7 +546,7 @@ function transformAttributes(
           ) {
             if (expr.properties.length === 0) return;
 
-            const props = expr.properties.map((p: any, i: number) => {
+            const props = expr.properties.map((p, i) => {
               if (p.computed) {
                 return b.CallExpression({
                   callee: registerImportMethod(ctx, "ssrStyleProperty"),
@@ -603,7 +603,7 @@ function transformAttributes(
             !expr.properties.some((p) => is.SpreadElement(p))
           ) {
             const clsValues: Expression[] = [];
-            const clsQuasis: any[] = [
+            const clsQuasis = [
               b.TemplateElement({
                 value: { raw: "", cooked: "" },
                 tail: false,
@@ -683,7 +683,7 @@ function transformClasslistObject(
   values: Expression[],
   quasis: any[],
 ): void {
-  expr.properties.forEach((prop: any, i: number) => {
+  expr.properties.forEach((prop, i) => {
     const isLast = expr.properties.length - 1 === i;
     let key = prop.key;
     if (is.Identifier(prop.key) && !prop.computed) {
@@ -874,7 +874,7 @@ function createElement(
     props = (attributes[0] as JSXSpreadAttribute).argument;
   } else {
     const propsList: Expression[] = [];
-    let runningObject: any[] = [];
+    let runningObject = [];
     let dynamicSpread = false;
     const hasChildren = node.children.length > 0;
 

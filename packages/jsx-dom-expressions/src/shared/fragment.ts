@@ -17,7 +17,7 @@ export default function transformFragmentChildren(
   config: PluginConfig,
 ): void {
   const filteredChildren = filterChildren(children);
-  const childNodes = filteredChildren.reduce((memo: any[], child) => {
+  const childNodes = filteredChildren.reduce((memo, child) => {
     if (is.JSXText(child)) {
       const v = decode(trimWhitespace(child.raw));
       if (v.length) memo.push(b.Literal({ value: v }));

@@ -97,7 +97,7 @@ function transformAttributes(
     if (is.JSXSpreadAttribute(attribute)) return;
 
     const attr = attribute;
-    let value: any = attr.value;
+    let value = attr.value;
     const key = getAttrName(attr.name);
     const reservedNameSpace =
       is.JSXNamespacedName(attr.name) && attr.name.namespace.name === "use";
@@ -452,7 +452,7 @@ function processSpreads(
 ): [(JSXAttribute | JSXSpreadAttribute)[], Statement] {
   const filteredAttributes: (JSXAttribute | JSXSpreadAttribute)[] = [];
   const spreadArgs: Expression[] = [];
-  let runningObject: any[] = [];
+  let runningObject = [];
   let dynamicSpread = false;
   let firstSpread = false;
 

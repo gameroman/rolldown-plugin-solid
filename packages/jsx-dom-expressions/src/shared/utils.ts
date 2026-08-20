@@ -631,7 +631,8 @@ const templateEscapes = new Map([
 export function generateUid(ctx: TransformContext, prefix: string): string {
   const count = (ctx.uidCounters.get(prefix) ?? 0) + 1;
   ctx.uidCounters.set(prefix, count);
-  return count === 1 ? prefix : `${prefix}${count}`;
+  const base = prefix.startsWith("_") ? prefix : `_${prefix}`;
+  return count === 1 ? base : `${base}${count}`;
 }
 
 export function inferLang(filename?: string): "js" | "jsx" | "ts" | "tsx" {

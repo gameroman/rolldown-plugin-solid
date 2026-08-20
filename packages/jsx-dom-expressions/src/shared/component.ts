@@ -5,7 +5,6 @@ import type {
   TransformContext,
   TransformResult,
   Expression,
-  Identifier,
   JSXElement,
   Node,
 } from "../types";
@@ -47,7 +46,7 @@ export default function transformComponent(
   const config = getConfig(ctx);
   const tagId = convertComponentIdentifier(node.openingElement.name);
   let props: Expression[] = [];
-  let runningObject: any[] = [];
+  let runningObject = [];
   let dynamicSpread = false;
   const hasChildren = node.children.length > 0;
 
@@ -303,29 +302,26 @@ function transformComponentChildren(
   if (!filteredChildren.length) return null;
   let dynamic = false;
 
-  let transformedChildren: any[] = filteredChildren.reduce(
-    (memo: any[], child) => {
-      if (is.JSXText(child)) {
-        const v = decode(trimWhitespace(child.raw));
-        if (v.length) {
-          memo.push(b.Literal({ value: v }));
-        }
-      } else {
-        const childResult = transformNode(ctx, child, {
-          topLevel: true,
-          componentChild: true,
-          lastElement: true,
-        });
-        if (childResult) {
-          dynamic = dynamic || !!childResult.dynamic;
-          const templateFn = getCreateTemplate(config, childResult);
-          memo.push(templateFn(ctx, childResult, filteredChildren.length > 1));
-        }
+  let transformedChildren = filteredChildren.reduce((memo, child) => {
+    if (is.JSXText(child)) {
+      const v = decode(trimWhitespace(child.raw));
+      if (v.length) {
+        memo.push(b.Literal({ value: v }));
       }
-      return memo;
-    },
-    [],
-  );
+    } else {
+      const childResult = transformNode(ctx, child, {
+        topLevel: true,
+        componentChild: true,
+        lastElement: true,
+      });
+      if (childResult) {
+        dynamic = dynamic || !!childResult.dynamic;
+        const templateFn = getCreateTemplate(config, childResult);
+        memo.push(templateFn(ctx, childResult, filteredChildren.length > 1));
+      }
+    }
+    return memo;
+  }, []);
 
   if (transformedChildren.length === 1) {
     let result = transformedChildren[0];
