@@ -170,7 +170,7 @@ export function transformNode(
       dynamic: true,
     };
   } else if (is.JSXSpreadChild(node)) {
-    const spreadChild = node as JSXSpreadChild;
+    const spreadChild = node;
     if (
       !isDynamic(ctx, spreadChild.expression, {
         checkMember: true,

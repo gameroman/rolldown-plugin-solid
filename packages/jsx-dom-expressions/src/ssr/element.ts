@@ -286,7 +286,7 @@ function escapeExpression(
     return expression;
   } else if (
     is.JSXElement(expression) &&
-    !isComponent(getTagName(expression as JSXElement))
+    !isComponent(getTagName(expression))
   ) {
     expression.wontEscape = true;
     return expression;
@@ -339,7 +339,7 @@ function transformToObject(
           ? b.Literal({ value: nsName })
           : b.Identifier({ name: nsName }),
         value: is.JSXExpressionContainer(attr.value)
-          ? (attr.value as JSXExpressionContainer).expression
+          ? attr.value.expression
           : attr.value,
         kind: "init",
         method: false,
@@ -352,13 +352,9 @@ function transformToObject(
   if (
     existingAttr &&
     is.JSXExpressionContainer(existingAttr.value) &&
-    is.ObjectExpression(
-      (existingAttr.value as JSXExpressionContainer).expression,
-    )
+    is.ObjectExpression(existingAttr.value.expression)
   ) {
-    (existingAttr.value as JSXExpressionContainer).expression.properties.push(
-      ...properties,
-    );
+    existingAttr.value.expression.properties.push(...properties);
   } else {
     const target = existingAttr || attributes[selectedIndices[0]];
     target.value = b.JSXExpressionContainer({
@@ -433,7 +429,7 @@ function normalizeAttributes(
           }),
         );
       } else {
-        let expr = (attrValue as JSXExpressionContainer).expression;
+        let expr = attrValue.expression;
         if (nsName === "classList") {
           if (
             is.ObjectExpression(expr) &&
@@ -518,14 +514,13 @@ function transformAttributes(
       (reservedNameSpace ||
         ChildProperties.has(key) ||
         !(
-          is.Literal((value as JSXExpressionContainer).expression) ||
-          is.NumericLiteral((value as JSXExpressionContainer).expression) ||
-          (is.Literal((value as JSXExpressionContainer).expression) &&
-            typeof (value as JSXExpressionContainer).expression.value ===
-              "boolean")
+          is.Literal(value.expression) ||
+          is.NumericLiteral(value.expression) ||
+          (is.Literal(value.expression) &&
+            typeof value.expression.value === "boolean")
         ))
     ) {
-      const expr = (value as JSXExpressionContainer).expression;
+      const expr = value.expression;
 
       if (
         key === "ref" ||
@@ -537,7 +532,7 @@ function transformAttributes(
 
       if (ChildProperties.has(key)) {
         if (info.hydratable && key === "textContent" && value && expr) {
-          (value as JSXExpressionContainer).expression = b.LogicalExpression({
+          value.expression = b.LogicalExpression({
             operator: "||",
             left: expr,
             right: b.Literal({ value: " " }),
@@ -612,9 +607,9 @@ function transformAttributes(
                 optional: false,
               });
             }
-            (value as JSXExpressionContainer).expression = res;
+            value.expression = res;
           } else {
-            (value as JSXExpressionContainer).expression = b.CallExpression({
+            value.expression = b.CallExpression({
               callee: registerImportMethod(ctx, "ssrStyle"),
               arguments: [expr],
               optional: false,
@@ -637,7 +632,7 @@ function transformAttributes(
             ];
             transformClasslistObject(ctx, expr, clsValues, clsQuasis);
             if (!clsValues.length) {
-              (value as JSXExpressionContainer).expression = b.Literal({
+              value.expression = b.Literal({
                 value: clsQuasis[0].value.raw,
               });
             } else if (
@@ -645,15 +640,15 @@ function transformAttributes(
               !clsQuasis[0].value.raw &&
               !clsQuasis[1].value.raw
             ) {
-              (value as JSXExpressionContainer).expression = clsValues[0];
+              value.expression = clsValues[0];
             } else {
-              (value as JSXExpressionContainer).expression = b.TemplateLiteral({
+              value.expression = b.TemplateLiteral({
                 quasis: clsQuasis,
                 expressions: clsValues,
               });
             }
           } else {
-            (value as JSXExpressionContainer).expression = b.CallExpression({
+            value.expression = b.CallExpression({
               callee: registerImportMethod(ctx, "ssrClassList"),
               arguments: [expr],
               optional: false,
@@ -664,11 +659,7 @@ function transformAttributes(
         }
 
         if (doEscape) {
-          (value as JSXExpressionContainer).expression = escapeExpression(
-            ctx,
-            expr,
-            true,
-          );
+          value.expression = escapeExpression(ctx, expr, true);
         }
 
         if (!doEscape || is.Literal(expr)) {
@@ -682,8 +673,7 @@ function transformAttributes(
       }
     } else {
       if (key === "$ServerOnly") return;
-      if (is.JSXExpressionContainer(value))
-        value = (value as JSXExpressionContainer).expression;
+      if (is.JSXExpressionContainer(value)) value = value.expression;
       const normalizedKey = toAttribute(key, isSVG);
       const isBoolean = BooleanAttributes.has(normalizedKey);
       if (isBoolean && value && value.value !== "" && !value.value) return;
@@ -792,10 +782,7 @@ function transformChildren(
   const markers = hydratable && multi;
 
   filteredChildren.forEach((childNode) => {
-    if (
-      is.JSXElement(childNode) &&
-      getTagName(childNode as JSXElement) === "head"
-    ) {
+    if (is.JSXElement(childNode) && getTagName(childNode) === "head") {
       const child = transformNode(ctx, childNode, {
         doNotEscape,
         hydratable: false,
@@ -954,7 +941,7 @@ function createElement(
           return;
 
         if (is.JSXExpressionContainer(attrValue)) {
-          const innerExpr = (attrValue as JSXExpressionContainer).expression;
+          const innerExpr = attrValue.expression;
           const isValDynamic = isDynamic(ctx, innerExpr, {
             checkMember: true,
             checkTags: true,
@@ -967,7 +954,7 @@ function createElement(
             const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
             runningObject.push(
               b.Property({
-                key: computed ? b.Literal({ value: key }) : (id as Identifier),
+                key: computed ? b.Literal({ value: key }) : id,
                 value: b.FunctionExpression({
                   params: [],
                   body: b.BlockStatement({
@@ -984,7 +971,7 @@ function createElement(
             const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
             runningObject.push(
               b.Property({
-                key: computed ? b.Literal({ value: key }) : (id as Identifier),
+                key: computed ? b.Literal({ value: key }) : id,
                 value: innerExpr,
                 kind: "init",
                 method: false,
@@ -997,7 +984,7 @@ function createElement(
           const computed = !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key);
           runningObject.push(
             b.Property({
-              key: computed ? b.Literal({ value: key }) : (id as Identifier),
+              key: computed ? b.Literal({ value: key }) : id,
               value: attrValue,
               kind: "init",
               method: false,

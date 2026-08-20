@@ -1163,7 +1163,7 @@ function detectExpressions(
     )
       return true;
     if (is.JSXElement(node)) {
-      const tagName = getTagName(node as JSXElement);
+      const tagName = getTagName(node);
       if (isComponent(tagName)) return true;
     }
   }
@@ -1176,19 +1176,19 @@ function detectExpressions(
       )
         return true;
     } else if (is.JSXElement(child)) {
-      const tagName = getTagName(child as JSXElement);
+      const tagName = getTagName(child);
       if (isComponent(tagName)) return true;
       if (
         config.contextToCustomElements &&
         (tagName === "slot" ||
           tagName.indexOf("-") > -1 ||
-          (child as JSXElement).openingElement.attributes.some(
+          child.openingElement.attributes.some(
             (a: any) => a.name?.name === "is",
           ))
       )
         return true;
       if (
-        (child as JSXElement).openingElement.attributes.some(
+        child.openingElement.attributes.some(
           (attr: any) =>
             is.JSXSpreadAttribute(attr) ||
             ["textContent", "innerHTML", "innerText"].includes(
@@ -1205,7 +1205,7 @@ function detectExpressions(
         )
       )
         return true;
-      const nextChildren = filterChildren((child as JSXElement).children);
+      const nextChildren = filterChildren(child.children);
       if (
         nextChildren.length &&
         detectExpressions(ctx, nextChildren, 0, config)
@@ -1230,7 +1230,7 @@ function findLastElement(
       is.JSXText(node) ||
       getStaticExpression(ctx, node, null) !== false ||
       (is.JSXElement(node) &&
-        (tagName = getTagName(node as JSXElement)) &&
+        (tagName = getTagName(node)) &&
         !isComponent(tagName))
     ) {
       lastElement = i;
