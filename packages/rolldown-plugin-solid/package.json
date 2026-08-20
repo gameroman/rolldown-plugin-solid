@@ -27,9 +27,6 @@
     "test": "bun test --coverage",
     "typecheck": "tsc --noEmit"
   },
-  "overrides": {
-    "rolldown": "1.2.5"
-  },
   "dependencies": {
     "@babel/core": "^8.0.1",
     "@babel/helper-module-imports": "^8.0.0",
