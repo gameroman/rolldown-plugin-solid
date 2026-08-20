@@ -105,8 +105,7 @@ export default function transformComponent(
             runningObject.push(
               b.Property({
                 key: b.Identifier({ name: "ref" }),
-                value: b.Function({
-                  type: "function_expression",
+                value: b.FunctionExpression({
                   id: null,
                   params: [b.Identifier({ name: "r$" })],
                   body: b.BlockStatement({
@@ -147,9 +146,6 @@ export default function transformComponent(
                   }),
                   generator: false,
                   async: false,
-                  declare: false,
-                  typeParameters: null,
-                  returnType: null,
                 }),
                 computed: false,
                 shorthand: false,
@@ -180,8 +176,7 @@ export default function transformComponent(
             runningObject.push(
               b.Property({
                 key: id,
-                value: b.Function({
-                  type: "function_expression",
+                value: b.FunctionExpression({
                   id: null,
                   params: [],
                   body: b.BlockStatement({
@@ -189,9 +184,6 @@ export default function transformComponent(
                   }),
                   generator: false,
                   async: false,
-                  declare: false,
-                  typeParameters: null,
-                  returnType: null,
                 }),
                 computed: !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key),
                 shorthand: false,
@@ -201,8 +193,7 @@ export default function transformComponent(
             runningObject.push(
               b.Property({
                 key: id,
-                value: b.Function({
-                  type: "function_expression",
+                value: b.FunctionExpression({
                   id: null,
                   params: [],
                   body: b.BlockStatement({
@@ -210,9 +201,6 @@ export default function transformComponent(
                   }),
                   generator: false,
                   async: false,
-                  declare: false,
-                  typeParameters: null,
-                  returnType: null,
                 }),
                 computed: !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key),
                 shorthand: false,
@@ -243,8 +231,7 @@ export default function transformComponent(
       runningObject.push(
         b.Property({
           key: b.Identifier({ name: "children" }),
-          value: b.Function({
-            type: "function_expression",
+          value: b.FunctionExpression({
             id: null,
             params: [],
             body: b.BlockStatement({
@@ -252,9 +239,6 @@ export default function transformComponent(
             }),
             generator: false,
             async: false,
-            declare: false,
-            typeParameters: null,
-            returnType: null,
           }),
           computed: false,
           shorthand: false,

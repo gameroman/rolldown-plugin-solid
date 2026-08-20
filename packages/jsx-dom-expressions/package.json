@@ -10,7 +10,11 @@
   "files": [
     "dist"
   ],
-  "exports": "./index.js",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "tsdown",
     "test": "bun test --dots",
